@@ -1,41 +1,17 @@
 TYPO3 AI Suite
 ==============================================================
 
-**Currently the setup for TYPO3 v12.**
-
 
 ## Setup:
 
-
-```git clone git@github.com:krausandre/ai-suite.git .```
-
-```ddev start```
-
--------------------
-
-## Default Dev Admin User:
-
-**Username:** autodude
-
-**Password:** TYPO3-Admin-Local7
+- Install the extension via composer or via TER
+- Go to www.autodudes.de and get an API key
+- Add the API key to the extension settings
+- Enjoy AI powered content suggestions
 
 
-## Tests & Standards
+## How to use:
 
-**PHPStan**
+Watch our instruction video to get an overview of the extension and how to use it.
 
-Usage: ```ddev phpstan analyse```
-
-**PHP CS Fixer**
-
-Usage: ```ddev php-cs-fixer fix Classes/ --dry-run --verbose --using-cache no```
-
-**Use TYPO3 testing Framework**
-
-Usage: ```ddev test-acceptance``` (for acceptance tests)
-
-Usage: ```ddev test-unit``` (for unit tests)
-
-Usage: ```ddev test-unit -s functional``` (for functional tests)
-
-See all options: ```ddev test-unit -h```
+[![TYPO3 AI Suite](http://img.youtube.com/vi/Yy0p5FH1P_M/0.jpg)](http://www.youtube.com/watch?v=Yy0p5FH1P_M "AI Suite for TYPO3")

@@ -14,7 +14,7 @@ What does it do?
 
 This extension adds a backend module as well as various helper functionalities and features to your TYPO3 backend, which are intended to make the daily work easier and faster with the help of AI.
 
-..  youtube:: ID of video
+..  youtube:: Yy0p5FH1P_M
 
 
 Currently the following features are available:
