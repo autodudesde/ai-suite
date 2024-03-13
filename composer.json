@@ -1,0 +1,89 @@
+{
+    "name": "autodudes/ai-suite",
+    "type": "typo3-cms-extension",
+    "description": "Adds a backend module as well as various helper functionalities and features to your TYPO3 backend, which are intended to make the daily work of editors easier and faster with the help of AI.",
+    "authors": [
+        {
+            "name": "AutoDudes",
+            "role": "Developer",
+            "homepage": "https://www.autodudes.de",
+            "email": "service@autodudes.de"
+        }
+    ],
+    "homepage": "https://www.autodudes.de",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "keywords": [
+        "TYPO3 CMS",
+        "TYPO3 AI",
+        "Artificial Intelligence",
+        "Content Generation",
+        "Content Creation",
+        "Content Automation",
+        "AutoDudes",
+        "AI Suite"
+    ],
+    "version": "12.0.0",
+    "support": {
+        "issues": "https://github.com/krausandre/ai-suite/issues"
+    },
+    "require": {
+        "php": "~8.1 | ~8.2",
+        "ext-pdo": "*",
+        "ext-simplexml": "*",
+        "typo3/cms-backend": "^12.4",
+        "typo3/cms-core": "^12.4",
+        "typo3/cms-extbase": "^12.4",
+        "typo3/cms-filelist": "^12.4",
+        "typo3/cms-fluid": "^12.4",
+        "typo3/cms-rte-ckeditor": "^12.4",
+        "typo3/cms-seo": "^12.4",
+        "typo3/cms-setup": "^12.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "AutoDudes\\AiSuite\\": "Classes/"
+        }
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "sort-packages": true,
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true,
+            "composer/package-versions-deprecated": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "suggest": {
+        "bk2k/bootstrap-package": "^14.0"
+    },
+    "require-dev": {
+        "bk2k/bootstrap-package": "^14.0",
+        "friendsofphp/php-cs-fixer": "^3.27",
+        "georgringer/news": "^11.4",
+        "helhum/typo3-console": "^8.1",
+        "phpstan/phpstan": "^1.10.14",
+        "typo3/cms-beuser": "^12.4",
+        "typo3/cms-filemetadata": "^12.4",
+        "typo3/cms-fluid-styled-content": "^12.4",
+        "typo3/cms-frontend": "^12.4",
+        "typo3/cms-install": "^12.4",
+        "typo3/cms-lowlevel": "^12",
+        "typo3/cms-t3editor": "^12",
+        "typo3/cms-tstemplate": "^12.4",
+        "typo3/coding-standards": "^0.7",
+        "contentblocks/content-blocks": "^0.6",
+        "contentblocks/examples": "dev-main"
+    },
+    "prefer-stable": true,
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "ai_suite",
+            "app-dir": ".Build",
+            "web-dir": ".Build/Web"
+        }
+    }
+}

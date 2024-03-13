@@ -1,0 +1,40 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <section class="container">
+        <f:comment><![CDATA[
+            <f:asset.script  identifier="ai-suite-unload-checker" src="EXT:ai_suite/Resources/Public/JavaScript/helper/check-unload.js" />
+        ]]></f:comment>
+
+        <h2>
+            <f:translate key="AiSuite.module.Agencies.translateXlf.header.validate"/>
+        </h2>
+
+        <f:form action="writeXlf" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
+            <f:render partial="Agencies/AllProperties" arguments="{_all}" />
+
+                <f:for each="{originalValues}" key="sourceKey" as="sourceValue">
+                    <div class="form-group mb-4">
+                        <label for="input[translations][{sourceKey}]">{sourceValue.source}</label><br />
+                        <small>(ID: {sourceKey})</small><br />
+                        <f:form.textfield name="input[translations][{sourceKey}]" value="{sourceValue.translated}" class="form-control"/>
+                    </div>
+                </f:for>
+
+            <div class="form-group">
+                <f:form.submit value="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.submit.validate')}" class="btn btn-secondary"/>
+            </div>
+        </f:form>
+
+        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
+        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+
+    </section>
+
+</f:section>

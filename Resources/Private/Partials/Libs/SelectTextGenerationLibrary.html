@@ -1,0 +1,39 @@
+<f:if condition="{textGenerationLibraries -> f:count()} > 0">
+    <div class="row text-generation-library mt-2">
+        <div class="card card-size-large active">
+            <div class="card-header">
+                <h2 class="text-left text-gradient">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.textGenerationLibrary" />
+                </h2>
+                <f:for each="{textGenerationLibraries}" as="library" iteration="it">
+                    <div class="col-12 my-3">
+                        <input
+                            type="radio"
+                            id="text-generation-library-{library.model_identifier}"
+                            class="input-hidden mx-1 text-generation-library-selection"
+                            name="libraries[textGenerationLibrary]"
+                            value="{library.model_identifier}"
+                            {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
+                        {f:if(condition: it.isFirst, then: 'checked="checked"', else: '')}
+                        />
+                        <label for="text-generation-library-{library.model_identifier}">
+                            {library.name} {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
+                            <span class="request-amount">
+                                <f:if condition="{library.weight} == 1">
+                                    <f:then>
+                                        {library.weight} request
+                                    </f:then>
+                                    <f:else>
+                                        {library.weight} requests
+                                    </f:else>
+                                </f:if>
+                            </span>
+                        </label>
+                    </div>
+                </f:for>
+            </div>
+        </div>
+    </div>
+</f:if>
+
+

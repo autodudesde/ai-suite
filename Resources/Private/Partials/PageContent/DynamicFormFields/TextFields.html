@@ -1,0 +1,33 @@
+<f:if condition="{textFields -> f:count()} > 0">
+    <f:for each="{textFields}" key="fieldName" as="fieldData" iteration="it">
+        <f:switch expression="{fieldData.renderType}">
+            <f:case value="input">
+                <div class="form-group">
+                    <label for="{fieldName}">
+                        <f:format.case mode="capital">{fieldData.label}</f:format.case>
+                    </label><br />
+                    <f:form.textfield property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                </div>
+            </f:case>
+            <f:case value="text">
+                <div class="form-group">
+                    <label for="{fieldName}">
+                        <f:format.case mode="capital">{fieldData.label}</f:format.case>
+                    </label><br />
+                    <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                </div>
+            </f:case>
+            <f:defaultCase>
+                <div class="form-group">
+                    <label for="{fieldName}">
+                        <f:format.case mode="capital">{fieldData.label}</f:format.case>
+                    </label><br />
+                    <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                </div>
+            </f:defaultCase>
+        </f:switch>
+    </f:for>
+</f:if>
+
+
+

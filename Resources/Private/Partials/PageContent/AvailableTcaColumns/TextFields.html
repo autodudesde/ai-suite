@@ -1,0 +1,19 @@
+
+<f:if condition="{textFields -> f:count()} > 0">
+    <strong class="ps-0 pt-3 pb-2">
+        <f:translate key="aiSuite.module.availableInputFields"/>
+    </strong>
+    <f:for each="{textFields}" key="fieldName" as="data" iteration="it">
+        <div class="col-12 col-md-6 ps-0">
+            <f:form.checkbox
+                class="request-field-checkbox"
+                name="content[selectedTcaColumns][{table}][text][{fieldName}]"
+                id="content[selectedTcaColumns][{table}][text][{fieldName}]"
+                value="{data.renderType}" checked="checked"
+            />
+            <label class="mb-1" for="content[selectedTcaColumns][{table}][text][{fieldName}]">{data.label}</label>
+        </div>
+    </f:for>
+</f:if>
+
+

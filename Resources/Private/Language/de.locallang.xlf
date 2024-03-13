@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf" date="2023-05-14UTC21:34:060" product-name="ai_suite" target-language="de">
+        <body>
+            <trans-unit id="mlang_tabs_tab">
+                <source>AI Suite</source>
+            <target>AI-Suite</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.general.prompt" resname="tx_aisuite.module.general.prompt">
+                <source>Input statement for the AI (prompt)</source>
+            <target>Eingabeanweisung für die KI (Eingabeaufforderung)</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.promptTemplates" resname="tx_aisuite.module.general.promptTemplates">
+                <source>Prompt-Templates</source>
+                <target>Prompt-Vorlagen</target>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
+                <source>Select prompt template</source>
+                <target>Wähle eine Prompt-Vorlage</target>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.languageChooser" resname="tx_aisuite.module.general.languageChooser">
+                <source>Answer in the following language</source>
+            <target>Antwort in der folgende Sprache erhalten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.default" resname="tx_aisuite.module.general.spinner.default">
+                <source>Request is being processed...</source>
+            <target>Anfrage wird bearbeitet...</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.contentCreation" resname="tx_aisuite.module.general.spinner.contentCreation">
+                <source>Content is being generated, this may take a moment...</source>
+            <target>Der Inhalt wird generiert. Dies kann einen Moment dauern ...</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.error.try_again" resname="tx_aisuite.module.error.try_again">
+                <source>Please try again</source>
+            <target>Versuche es bitte erneut</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.actionmenu.dashboard" resname="tx_aisuite.module.actionmenu.dashboard">
+                <source>Dashboard</source>
+            <target>Dashboard</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.pages" resname="tx_aisuite.module.actionmenu.pages">
+                <source>Pages</source>
+            <target>Seiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.content" resname="tx_aisuite.module.actionmenu.content">
+                <source>Content</source>
+            <target>Inhalt</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.translate" resname="tx_aisuite.module.actionmenu.translate">
+                <source>Translate</source>
+            <target>Übersetzungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.files" resname="tx_aisuite.module.actionmenu.files">
+                <source>Files</source>
+            <target>Dateien</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.agencies" resname="tx_aisuite.module.actionmenu.agencies">
+                <source>Agency</source>
+            <target>Agentur</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.social" resname="tx_aisuite.module.actionmenu.social">
+                <source>Social Media</source>
+            <target>Soziale Medien</target></trans-unit>
+
+
+            <trans-unit id="tx_aisuite.module.dashboard.requestState" resname="tx_aisuite.module.dashboard.requestState">
+                <source>Available requests</source>
+            <target>Verfügbare Requests</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.header" resname="tx_aisuite.module.dashboard.header">
+                <source>Welcome to AI Suite Extension</source>
+            <target>Willkommen bei der AI Suite Extension</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.createContent.overview.header" resname="tx_aisuite.module.createContent.overview.header">
+                <source>Create content</source>
+            <target>Inhalte erstellen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.comming-soon" resname="tx_aisuite.module.dashboard.card.comming-soon">
+                <source>(Coming soon)</source>
+            <target>(Demnächst)</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.title" resname="tx_aisuite.module.dashboard.card.pagesSection.title">
+                <source>Work on pages</source>
+            <target>Arbeit an Seiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.description" resname="tx_aisuite.module.dashboard.card.pagesSection.description">
+                <source>Fill in page metadata or create complete page tree.</source>
+            <target>Fülle Seitenmetadaten aus oder erstelle einen vollständigen Seitenbaum.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.linklabel" resname="tx_aisuite.module.dashboard.card.pagesSection.linklabel">
+                <source>Pages section</source>
+            <target>Abschnitt „Seiten“.</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.title" resname="tx_aisuite.module.dashboard.card.contentSection.title">
+                <source>Create or edit content elements</source>
+            <target>Erstellen oder bearbeiten von Inhaltselementen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.description" resname="tx_aisuite.module.dashboard.card.contentSection.description">
+                <source>Create a whole content element with text and picture or edit an existing content element.</source>
+            <target>Erstelle ein ganzes Inhaltselement mit Text und Bild oder bearbeite ein vorhandenes Inhaltselement.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.linklabel" resname="tx_aisuite.module.dashboard.card.contentSection.linklabel">
+                <source>Content section</source>
+            <target>Inhaltsbereich</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.title" resname="tx_aisuite.module.dashboard.card.filesSection.title">
+                <source>Create files and edit metadata</source>
+            <target>Erstelle Dateien und bearbeite Metadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.description" resname="tx_aisuite.module.dashboard.card.filesSection.description">
+                <source>Create a new sepicific picture or edit metadata like alt tag or title tag for an excisting file.</source>
+            <target>Erstelle ein neues spezifisches Bild oder bearbeite Metadaten wie Alt-Tag oder Titel-Tag für eine vorhandene Datei.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.linklabel" resname="tx_aisuite.module.dashboard.card.filesSection.linklabel">
+                <source>Files section</source>
+            <target>Abschnitt „Dateien“.</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.title" resname="tx_aisuite.module.dashboard.card.translateSection.title">
+                <source>Translate</source>
+            <target>Übersetzen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.description" resname="tx_aisuite.module.dashboard.card.translateSection.description">
+                <source>Translate a content element or a whole page with the content inside. You also can translate a files metadata.</source>
+            <target>Übersetze ein Inhaltselement oder eine ganze Seite mit dem darin enthaltenen Inhalt. Du kannst auch die Metadaten einer Datei übersetzen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.linklabel" resname="tx_aisuite.module.dashboard.card.translateSection.linklabel">
+                <source>Translate section</source>
+            <target>Abschnitt „Übersetzen“.</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.title" resname="tx_aisuite.module.dashboard.card.agencySection.title">
+                <source>Agency features</source>
+            <target>Agenturfunktionen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.description" resname="tx_aisuite.module.dashboard.card.agencySection.description">
+                <source>Do very special stuff like translating a XLF file or import page content from another system.</source>
+            <target>Erledige ganz besondere Dinge wie das Übersetzen einer XLF-Datei oder den Import von Seiteninhalten aus einem anderen System.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.linklabel" resname="tx_aisuite.module.dashboard.card.agencySection.linklabel">
+                <source>Agency section</source>
+            <target>Agenturbereich</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.title" resname="tx_aisuite.module.dashboard.card.socialSection.title">
+                <source>Social Media</source>
+            <target>Soziale Medien</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.description" resname="tx_aisuite.module.dashboard.card.socialSection.description">
+                <source>Create posts or setup a auto scheduling of post for events.</source>
+            <target>Erstelle Beiträge oder richte eine automatische Planung von Beiträgen für Veranstaltungen ein.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.linklabel" resname="tx_aisuite.module.dashboard.card.socialSection.linklabel">
+                <source>Social Media section</source>
+            <target>Bereich „Social-Media“.</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.title" resname="tx_aisuite.module.dashboard.card.createPagetree.title">
+                <source>Create page tree</source>
+            <target>Seitenbaum erstellen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.description" resname="tx_aisuite.module.dashboard.card.createPagetree.description">
+                <source>With the help of AI, you can have a page tree created. This is created with the pages you want.</source>
+            <target>Mithilfe von KI kannst du einen Seitenbaum erstellen lassen. Dies wird mit den von dir gewünschten Seiten erstellt.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.linklabel" resname="tx_aisuite.module.dashboard.card.createPagetree.linklabel">
+                <source>Create page tree</source>
+            <target>Seitenbaum erstellen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.title" resname="tx_aisuite.module.dashboard.card.createPageMetadata.title">
+                <source>Edit page metadata</source>
+            <target>Seitenmetadaten bearbeiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.description" resname="tx_aisuite.module.dashboard.card.createPageMetadata.description">
+                <source>Create metadata for existing pages, like SEO description, SEO title or title and description for Open Graph tags.</source>
+            <target>Erstelle Metadaten für vorhandene Seiten, wie SEO-Beschreibung, SEO-Titel oder Titel und Beschreibung für Open Graph-Tags.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.linklabel" resname="tx_aisuite.module.dashboard.card.createPageMetadata.linklabel">
+                <source>Edit page metas</source>
+            <target>Bearbeite Seitenmetas</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title">
+                <source>Create page tree advanced</source>
+            <target>Erweiterte Seitenstruktur erstellen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.subtitle" resname="tx_aisuite.module.dashboard.card.createPagetree.subtitle">
+                <source>Generate page tree with content as you like.</source>
+            <target>Erstelle einen Seitenbaum mit Inhalten nach Ihren Wünschen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.description" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.description">
+                <source>Advanced page tree creation: Workflow to create a page tree with page metadata and content inside the new pages.</source>
+            <target>Erweiterte Seitenbaumerstellung: Workflow zum Erstellen eines Seitenbaums mit Seitenmetadaten und Inhalten innerhalb der neuen Seiten.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.linklabel" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.linklabel">
+                <source>Advanced page tree creation</source>
+            <target>Erweiterte Erstellung von Seitenbäumen</target></trans-unit>
+
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.title" resname="tx_aisuite.module.dashboard.card.createContentOverview.title">
+                <source>Create content</source>
+            <target>Inhalte erstellen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.subtitle" resname="tx_aisuite.module.dashboard.card.createContentOverview.subtitle">
+                <source>Create content for the current page.</source>
+            <target>Erstelle Inhalte für die aktuelle Seite.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.description" resname="tx_aisuite.module.dashboard.card.createContentOverview.description">
+                <source>Using AI, you can create content for the currently selected page.</source>
+            <target>Mithilfe von KI kannst du Inhalte für die aktuell ausgewählte Seite erstellen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.linklabel" resname="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel">
+                <source>Start content creation</source>
+            <target>Beginne mit der Inhaltserstellung</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.title" resname="tx_aisuite.module.dashboard.card.createContentTextpic.title">
+                <source>Create new TextPic CE</source>
+            <target>Erstelle ein neues TextPic CE</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.subtitle" resname="tx_aisuite.module.dashboard.card.createContentTextpic.subtitle">
+                <source>Create content element of type TextPic.</source>
+            <target>Erstelle ein Inhaltselement vom Typ TextPic.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.description" resname="tx_aisuite.module.dashboard.card.createContentTextpic.description">
+                <source>Generate a completely new content for an existing page of type TextPic.</source>
+            <target>Generiere einen völlig neuen Inhalt für eine bestehende Seite vom Typ TextPic.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel" resname="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel">
+                <source>Start TextPic creation</source>
+            <target>Starte die TextPic-Erstellung</target></trans-unit>
+
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.title" resname="tx_aisuite.module.dashboard.card.createContentImage.title">
+                <source>Create new Image CE</source>
+            <target>Erstelle ein neues Image CE</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.subtitle" resname="tx_aisuite.module.dashboard.card.createContentImage.subtitle">
+                <source>Create content element of type Image.</source>
+            <target>Erstelle ein Inhaltselement vom Typ Bild.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.description" resname="tx_aisuite.module.dashboard.card.createContentImage.description">
+                <source>Generate a completely new content for an existing page of type Image.</source>
+            <target>Generiere einen völlig neuen Inhalt für eine vorhandene Seite vom Typ Bild.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.linklabel" resname="tx_aisuite.module.dashboard.card.createContentImage.linklabel">
+                <source>Start Image creation</source>
+            <target>Starten die Bilderstellung</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.title" resname="tx_aisuite.module.dashboard.card.createContentText.title">
+                <source>Create new Text CE</source>
+            <target>Erstelle einen neuen Text CE</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.subtitle" resname="tx_aisuite.module.dashboard.card.createContentText.subtitle">
+                <source>Create content element of type Text.</source>
+            <target>Erstelle ein Inhaltselement vom Typ Text.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.description" resname="tx_aisuite.module.dashboard.card.createContentText.description">
+                <source>Generate a completely new content for an existing page of type Text.</source>
+            <target>Generiere einen völlig neuen Inhalt für eine bestehende Seite vom Typ Text.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.linklabel" resname="tx_aisuite.module.dashboard.card.createContentText.linklabel">
+                <source>Start Text creation</source>
+            <target>Starte die Texterstellung</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.title" resname="tx_aisuite.module.dashboard.card.refactorContentText.title">
+                <source>Refactor text</source>
+            <target>Text umgestalten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.description" resname="tx_aisuite.module.dashboard.card.refactorContentText.description">
+                <source>E.g. to optimize for SEO, or you need in general a better fitting text for a topic. Here you can refactor that text of content element with help of AI.</source>
+            <target>Zum Beispiel zur SEO-Optimierung, oder du benötigst generell einen besser passenden Text zu einem Thema. Hier kannst du den Text des Inhaltselements mithilfe von KI umgestalten.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.linklabel" resname="tx_aisuite.module.dashboard.card.refactorContentText.linklabel">
+                <source>Edit text of a CE</source>
+            <target>Bearbeite den Text eines CE</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.title" resname="tx_aisuite.module.dashboard.card.addImageToContent.title">
+                <source>Create and add new image to existing content element</source>
+            <target>Erstelle ein neues Bild und füge es einem vorhandenen Inhaltselement hinzu</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.description" resname="tx_aisuite.module.dashboard.card.addImageToContent.description">
+                <source>Add a new AI generated image to an existing content element.</source>
+            <target>Füge einem vorhandenen Inhaltselement ein neues KI-generiertes Bild hinzu.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.linklabel" resname="tx_aisuite.module.dashboard.card.addImageToContent.linklabel">
+                <source>Add image</source>
+            <target>Bild hinzufügen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.title" resname="tx_aisuite.module.dashboard.card.contentBlocks.title">
+                <source>Create a content block</source>
+            <target>Erstelle einen Inhaltsblock</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.description" resname="tx_aisuite.module.dashboard.card.contentBlocks.description">
+                <source>Create a content block skeleton with basic fields in it.</source>
+            <target>Erstelle ein Inhaltsblockgerüst mit grundlegenden Feldern darin.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.linklabel" resname="tx_aisuite.module.dashboard.card.contentBlocks.linklabel">
+                <source>Creation content block</source>
+            <target>Inhaltsblock erstellen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.title" resname="tx_aisuite.module.dashboard.card.pageImport.title">
+                <source>Page content import</source>
+            <target>Import von Seiteninhalten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.description" resname="tx_aisuite.module.dashboard.card.pageImport.description">
+                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over excisting content.</source>
+            <target>Bspw. wenn du von einem anderen System auf TYPO3 umsteigst und bestehende Inhalte importieren/übernehmen müsst.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.linklabel" resname="tx_aisuite.module.dashboard.card.pageImport.linklabel">
+                <source>Content import</source>
+            <target>Inhaltsimport</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.title" resname="tx_aisuite.module.dashboard.card.translateXlfFile.title">
+                <source>Translate an extensions XLF file</source>
+            <target>Übersetze eine XLF-Erweiterungsdatei</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.description" resname="tx_aisuite.module.dashboard.card.translateXlfFile.description">
+                <source>Translate an extensions XLF language file in a choosen language. Remember that there has to be a destination directory for the translation.</source>
+            <target>Übersetze eine XLF-Spracherweiterungsdatei in eine ausgewählte Sprache. Denke daran, dass es ein Zielverzeichnis für die Übersetzung geben muss.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel" resname="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel">
+                <source>Translate XLF file</source>
+            <target>XLF-Datei übersetzen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.title" resname="tx_aisuite.module.dashboard.card.createScreendesign.title">
+                <source>Create screendesign</source>
+            <target>Screendesign erstellen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.description" resname="tx_aisuite.module.dashboard.card.createScreendesign.description">
+                <source>When you need ideas for a look and feel of a webpage or simply a campaigns landingpage.</source>
+            <target>Wenn du Ideen für das Erscheinungsbild einer Webseite oder einfach einer Kampagnen-Landingpage benötigen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.linklabel" resname="tx_aisuite.module.dashboard.card.createScreendesign.linklabel">
+                <source>Get design suggestion</source>
+            <target>Hole dir Designvorschläge</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.title" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.title">
+                <source>Create SEO redirects</source>
+            <target>Erstelle SEO-Weiterleitungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.description" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.description">
+                <source>When launching a new website, you may need to redirect some old URLs. Crawl the old page (before launch) and get redirect suggestions.</source>
+            <target>Wenn du eine neue Website startest, musst du möglicherweise einige alte URLs umleiten. Crawle die alte Seite (vor dem Start) und erhalte Weiterleitungsvorschläge.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.linklabel" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.linklabel">
+                <source>Start with redirects</source>
+            <target>Beginne mit Weiterleitungen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.title" resname="tx_aisuite.module.dashboard.card.translatePage.title">
+                <source>Translate a page</source>
+            <target>Übersetze eine Seite</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.description" resname="tx_aisuite.module.dashboard.card.translatePage.description">
+                <source>Translate a complete page with page properties and content inside.</source>
+            <target>Übersetze eine vollständige Seite mit Seiteneigenschaften und Inhalt.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.linklabel" resname="tx_aisuite.module.dashboard.card.translatePage.linklabel">
+                <source>Translate Page</source>
+            <target>Seite übersetzen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.title" resname="tx_aisuite.module.dashboard.card.translateContentElement.title">
+                <source>Translate a content element</source>
+            <target>Übersetze ein Inhaltselement</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.description" resname="tx_aisuite.module.dashboard.card.translateContentElement.description">
+                <source>Translate a single content element. Remember that there has to be a mapping file for custom content elements.</source>
+            <target>Übersetze ein einzelnes Inhaltselement. Denke daran, dass für benutzerdefinierte Inhaltselemente eine Zuordnungsdatei vorhanden sein muss.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.linklabel" resname="tx_aisuite.module.dashboard.card.translateContentElement.linklabel">
+                <source>Translate content</source>
+            <target>Inhalte übersetzen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.title" resname="tx_aisuite.module.dashboard.card.translateFileProperties.title">
+                <source>Translate file properties</source>
+            <target>Dateieigenschaften übersetzen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.description" resname="tx_aisuite.module.dashboard.card.translateFileProperties.description">
+                <source>Translate a single file, e.g. alt and title attributes of a image file.</source>
+            <target>Übersetze eine einzelne Datei, z. B. Alt- und Titelattribute einer Bilddatei.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.linklabel" resname="tx_aisuite.module.dashboard.card.translateFileProperties.linklabel">
+                <source>Translate file</source>
+            <target>Datei übersetzen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.title" resname="tx_aisuite.module.dashboard.card.createImageFile.title">
+                <source>Create an image</source>
+            <target>Erstelle ein Bild</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.description" resname="tx_aisuite.module.dashboard.card.createImageFile.description">
+                <source>Create a single image or a set of images for using it as content anywhere.</source>
+            <target>Erstelle ein einzelnes Bild oder eine Reihe von Bildern, um es überall als Inhalt zu verwenden.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.linklabel" resname="tx_aisuite.module.dashboard.card.createImageFile.linklabel">
+                <source>Create image</source>
+            <target>Bild erstellen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.title" resname="tx_aisuite.module.dashboard.card.createVideo.title">
+                <source>Create a video</source>
+            <target>Erstelle ein Video</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.description" resname="tx_aisuite.module.dashboard.card.createVideo.description">
+                <source>Create a video via Ai support.</source>
+            <target>Erstelle ein Video über die KI-Unterstützung.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.linklabel" resname="tx_aisuite.module.dashboard.card.createVideo.linklabel">
+                <source>Create video</source>
+            <target>Video erstellen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.title" resname="tx_aisuite.module.dashboard.card.createFileMetadata.title">
+                <source>Metadata for files</source>
+            <target>Metadaten für Dateien</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.description" resname="tx_aisuite.module.dashboard.card.createFileMetadata.description">
+                <source>Create e.g. title and alt for images, needed for SEO or accessibility.</source>
+            <target>Erstelle beispielsweise Titel und Alt für Bilder, die für SEO oder Barrierefreiheit benötigt werden.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.linklabel" resname="tx_aisuite.module.dashboard.card.createFileMetadata.linklabel">
+                <source>Create file metadata</source>
+            <target>Erstelle Dateimetadaten</target></trans-unit>
+
+
+            <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
+                <source>Generate page structure</source>
+            <target>Seitenstruktur generieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.pageStructure.defaultPrompt" resname="tx_aisuite.module.pageStructure.defaultPrompt">
+                <source>Create me a page structure for [...].</source>
+            <target>Erstelle mir eine Seitenstruktur für [...].</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.pageStructure.pageChooser" resname="tx_aisuite.module.pageStructure.pageChooser">
+                <source>Paste the new structure under the following page:</source>
+            <target>Füge eine neue Struktur unter der folgenden Seite ein:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.pageStructure.submit" resname="tx_aisuite.module.pageStructure.submit">
+                <source>Request structure</source>
+            <target>Anfragestruktur</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.pageStructure.sortable-input.title" resname="tx_aisuite.module.pageStructure.sortable-input.title">
+                <source>Insert the new page title:</source>
+            <target>Füge einen neuen Seitentitel ein:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.pageStructure.sortable-input.submit" resname="tx_aisuite.module.pageStructure.sortable-input.submit">
+                <source>Submit</source>
+            <target>Einreichen</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.PageContent.description" resname="tx_aisuite.module.PageContent.description">
+                <source>This module works on the active page, which is selected in the page tree on the left.</source>
+            <target>Dieses Modul arbeitet auf der aktiven Seite, die im Seitenbaum links ausgewählt ist.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.submit" resname="tx_aisuite.module.PageContent.submit">
+                <source>Request content</source>
+            <target>Inhalte anfordern</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.whichPosition" resname="tx_aisuite.module.PageContent.whichPosition">
+                <source>Position of the new element</source>
+            <target>Position des neuen Elements</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.positionFirst" resname="tx_aisuite.module.PageContent.positionFirst">
+                <source>Insert on first position [0]</source>
+            <target>An erster Position einfügen [0]</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.positionAfter" resname="tx_aisuite.module.PageContent.whichPosition">
+                <source>Insert after</source>
+            <target>Danach einfügen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.headline" resname="tx_aisuite.module.PageContent.validate.headline">
+                <source>Validate AI result</source>
+            <target>KI-Ergebnis validieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.explanation" resname="tx_aisuite.module.PageContent.validate.explanation">
+                <source>Validate your AI result before adding this to your page.</source>
+            <target>Validiere das KI-Ergebnis, bevor du es es deiner Seite hinzufügen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.addContent" resname="tx_aisuite.module.PageContent.validate.addContent">
+                <source>Add content to page</source>
+            <target>Inhalt zur Seite hinzufügen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.addSocialContent" resname="tx_aisuite.module.PageContent.validate.addSocialContent">
+                <source>Add / generate post</source>
+            <target>Beitrag hinzufügen/generieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.imagePrompt" resname="tx_aisuite.module.PageContent.validate.imagePrompt">
+                <source>The image prompt. You can refactor the image prompt and reorder a for a new image.</source>
+            <target>Der Bild-Prompt. Du kannst die Bildaufforderung umgestalten und für ein neues Bild neu anordnen.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.requestImage" resname="tx_aisuite.module.PageContent.validate.requestImage">
+                <source>Request for a new image.</source>
+            <target>Bitte um ein neues Bild.</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.File.overview.header" resname="tx_aisuite.module.File.overview.header">
+                <source>Create new files or file metadata</source>
+            <target>Erstelle neue Dateien oder Dateimetadaten</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.Translate.overview.header" resname="tx_aisuite.module.Translate.overview.header">
+                <source>Translate for language support</source>
+            <target>Übersetze zur Sprachunterstützung</target></trans-unit>
+
+
+
+            <trans-unit id="AiSuite.module.Agencies.overview.header" resname="AiSuite.module.Agencies.overview.header">
+                <source>Support for agencies for the daily work</source>
+            <target>Unterstützung von Agenturen bei der täglichen Arbeit</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.header" resname="AiSuite.module.Agencies.translateXlf.header">
+                <source>Translate XLF file</source>
+            <target>XLF-Datei übersetzen</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.header.validate" resname="AiSuite.module.Agencies.translateXlf.header.validate">
+                <source>Validate translations before writing to the file system</source>
+            <target>Validiere die Übersetzungen, bevor sie in das Dateisystem geschrieben werden</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.insertExtKey" resname="AiSuite.module.Agencies.translateXlf.insertExtKey">
+                <source>Insert the extension key (e.g. 'sitepackage')</source>
+            <target>Gebe den Erweiterungsschlüssel ein (z. B. „sitepackage“).</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.destinationLang" resname="AiSuite.module.Agencies.translateXlf.destinationLang">
+                <source>Target language</source>
+            <target>Zielsprache</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.label" resname="AiSuite.module.Agencies.translateXlf.translationMode.label">
+                <source>Translation mode:</source>
+            <target>Übersetzungsmodus:</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.optionAll" resname="AiSuite.module.Agencies.translateXlf.translationMode.optionAll">
+                <source>Translate the whole file, overwrite existing translations</source>
+            <target>Übersetze die gesamte Datei und überschreibe vorhandene Übersetzungen</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly" resname="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly">
+                <source>Translate only missing items</source>
+            <target>Übersetze nur fehlende Elemente</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.fileName" resname="AiSuite.module.Agencies.translateXlf.fileName">
+                <source>Insert default language file name</source>
+            <target>Gebe den Dateinamen der Standardsprache ein</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.fileNamePlaceholder" resname="AiSuite.module.Agencies.translateXlf.fileNamePlaceholder">
+                <source>e.g. locallang.xlf</source>
+            <target>zB locallang.xlf</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.submit" resname="AiSuite.module.Agencies.translateXlf.submit">
+                <source>Translate file</source>
+            <target>Datei übersetzen</target></trans-unit>
+            <trans-unit id="AiSuite.module.Agencies.translateXlf.submit.validate" resname="AiSuite.module.Agencies.translateXlf.submit.validate">
+                <source>Write translations to file system</source>
+            <target>Übersetzungen in das Dateisystem schreiben</target></trans-unit>
+            <trans-unit id="AiSuite.module.misc.searchableDropdown.search" resname="AiSuite.module.misc.searchableDropdown.search">
+                <source>Search...</source>
+            <target>Suchen...</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.Pages.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
+                <source>Work on pages and page tree</source>
+            <target>Arbeite an Seiten und Seitenbaum</target></trans-unit>
+
+
+
+            <trans-unit id="tx_aisuite.module.Social.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
+                <source>Social Media interaction</source>
+            <target>Interaktion mit sozialen Medien</target></trans-unit>
+
+            <trans-unit id="AiSuite.generation.keywordsSuggestions" resname="AiSuite.generation.keywordsSuggestions">
+                <source>Generate keywords suggestions</source>
+            <target>Generiere Keyword-Vorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.generation.newsKeywordsSuggestions" resname="AiSuite.generation.newsKeywordsSuggestions">
+                <source>Generate keywords suggestions for news article</source>
+            <target>Generiere Keyword-Vorschläge für Nachrichtenartikel</target></trans-unit>
+            <trans-unit id="AiSuite.generation.metaDescriptionSuggestions" resname="AiSuite.generation.metaDescriptionSuggestions">
+                <source>Generate meta description suggestions</source>
+            <target>Generiere Vorschläge für Meta-Beschreibungen</target></trans-unit>
+            <trans-unit id="AiSuite.generation.pageTitleSuggestions" resname="AiSuite.generation.pageTitleSuggestions">
+                <source>Generate page title suggestions</source>
+            <target>Generiere Vorschläge für Seitentitel</target></trans-unit>
+            <trans-unit id="AiSuite.generation.ogTitleSuggestions" resname="AiSuite.generation.ogTitleSuggestions">
+                <source>Generate Open Graph title suggestions</source>
+            <target>Generiere Titelvorschläge für Open Graph</target></trans-unit>
+            <trans-unit id="AiSuite.generation.twitterTitleSuggestions" resname="AiSuite.generation.twitterTitleSuggestions">
+                <source>Generate Twitter title suggestions</source>
+            <target>Generiere Twitter-Titelvorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.generation.newsAlternativeTitleSuggestions" resname="AiSuite.generation.newsAlternativeTitleSuggestions">
+                <source>Generate alternative title suggestions for news article</source>
+            <target>Generiere alternative Titelvorschläge für Nachrichtenartikel</target></trans-unit>
+            <trans-unit id="AiSuite.generation.ogDescriptionSuggestions" resname="AiSuite.generation.ogDescriptionSuggestions">
+                <source>Generate Open Graph description suggestions</source>
+            <target>Generiere Beschreibungsvorschläge für Open Graph</target></trans-unit>
+            <trans-unit id="AiSuite.generation.twitterDescriptionSuggestions" resname="AiSuite.generation.twitterDescriptionSuggestions">
+                <source>Generate Twitter description suggestions</source>
+            <target>Generiere Twitter-Beschreibungsvorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
+                <source>Generate description suggestions for news article</source>
+            <target>Generiere Beschreibungsvorschläge für Nachrichtenartikel</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.start" resname="AiSuite.notification.generation.start">
+                <source>Started</source>
+            <target>Gestartet</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.finish" resname="AiSuite.notification.generation.finish">
+                <source>Finished</source>
+            <target>Fertig</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.copy" resname="AiSuite.notification.generation.copy">
+                <source>Copied</source>
+            <target>Kopiert</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.error" resname="AiSuite.notification.generation.error">
+                <source>Unexpected error</source>
+            <target>Unerwarteter Fehler</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.requestError" resname="AiSuite.notification.generation.requestError">
+                <source>Request error</source>
+            <target>Fehler bei der Anfrage</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.start.keywords" resname="AiSuite.notification.generation.start.keywords">
+                <source>Keywords generation is in progress. Please wait...</source>
+            <target>Die Generierung von Schlüsselwörtern ist im Gange. Bitte warten...</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.finish.keywords" resname="AiSuite.notification.generation.finish.keywords">
+                <source>Keywords were generated successfully.</source>
+            <target>Schlüsselwörter wurden erfolgreich generiert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.start.metaDescription" resname="AiSuite.notification.generation.start.metaDescription">
+                <source>Meta description generation is in progress. Please wait...</source>
+            <target>Die Generierung der Metabeschreibung ist in Bearbeitung. Bitte warten...</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.finish.metaDescription" resname="AiSuite.notification.generation.finish.metaDescription">
+                <source>Meta description was generated successfully.</source>
+            <target>Die Metabeschreibung wurde erfolgreich generiert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.start.suggestions" resname="AiSuite.notification.generation.start.suggestions">
+                <source>Suggestions generation is in progress. Please wait...</source>
+            <target>Die Generierung von Vorschlägen ist im Gange. Bitte warten...</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.finish.suggestions" resname="AiSuite.notification.generation.finish.suggestions">
+                <source>Suggestions were generated successfully.</source>
+            <target>Vorschläge wurden erfolgreich generiert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.missingSelection" resname="AiSuite.notification.generation.suggestions.missingSelection">
+                <source>Missing selection</source>
+            <target>Fehlende Auswahl</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.missingSelectionInfo" resname="AiSuite.notification.generation.suggestions.missingSelectionInfo">
+                <source>Please select a suggestion.</source>
+            <target>Bitte wähle einen Vorschlag aus.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.ogTwitterTitlesUpdated" resname="AiSuite.notification.generation.suggestions.ogTwitterTitlesUpdated">
+                <source>Copied selected suggestion to fields for Open Graph and Twitter title.</source>
+            <target>Ausgewählter Vorschlag in Felder für Open Graph und Twitter-Titel kopiert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated" resname="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated">
+                <source>Copied selected suggestion to fields for Open Graph and Twitter description.</source>
+            <target>Ausgewählter Vorschlag in Felder für Open Graph und Twitter-Beschreibung kopiert.</target></trans-unit>
+            <trans-unit id="AiSuite.unableToLinkToPage" resname="AiSuite.unableToLinkToPage">
+                <source>Unable to link to page with ID %s and language ID %s</source>
+            <target>Es konnte keine Verknüpfung zur Seite mit der ID %s und der Sprach-ID %s hergestellt werden</target></trans-unit>
+            <trans-unit id="AiSuite.NewsContentNotFound" resname="AiSuite.NewsContentNotFound">
+                <source>Content of news article could not be fetched. If you create a new one please save your changes first and try generation again.</source>
+            <target>Der Inhalt des Nachrichtenartikels konnte nicht abgerufen werden. Wenn du einen neuen Artikel erstellst, speichere bitte zuerst deine Änderungen und versuche es dann erneut.</target></trans-unit>
+            <trans-unit id="AiSuite.suggestionsHeader" resname="AiSuite.suggestionsHeader">
+                <source>Generated suggestions</source>
+            <target>Generierte Vorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.suggestionsSubheader" resname="AiSuite.suggestionsSubheader">
+                <source>Please select your favorite suggestion:</source>
+            <target>Bitte wählen deinen favorisierten Vorschlag aus:</target></trans-unit>
+            <trans-unit id="AiSuite.setSuggestion" resname="AiSuite.setSuggestion">
+                <source>Set selected suggestion</source>
+            <target>Ausgewählten Vorschlag festlegen</target></trans-unit>
+            <trans-unit id="AiSuite.removeSuggestions" resname="AiSuite.removeSuggestions">
+                <source>Remove suggestions</source>
+            <target>Vorschläge entfernen</target></trans-unit>
+            <trans-unit id="AiSuite.fetchContentFailed" resname="AiSuite.fetchContentFailed">
+                <source>Page content could not be loaded.</source>
+            <target>Der Seiteninhalt konnte nicht geladen werden.</target></trans-unit>
+            <trans-unit id="AiSuite.apiNotReachable" resname="AiSuite.apiNotReachable">
+                <source>Unfortunately, the OpenAI API is currently not available. Please try again later.</source>
+            <target>Leider ist die OpenAI API derzeit nicht verfügbar. Bitte versuche es später noch einmal.</target></trans-unit>
+            <trans-unit id="AiSuite.missingApiKey" resname="AiSuite.missingApiKey">
+                <source>OpenAI verification failed. Maybe you haven't saved your API key in the extension configuration yet?</source>
+            <target>Die OpenAI-Überprüfung ist fehlgeschlagen. Möglicherweise hast du deinen API-Schlüssel noch nicht in der Erweiterungskonfiguration gespeichert?</target></trans-unit>
+            <trans-unit id="AiSuite.pageNotAccessible" resname="AiSuite.pageNotAccessible">
+                <source>Page not found. If the page is hidden, please activate it (and possibly deactivate the option "Page in menus activated" within the page properties) so that the page is accessible.</source>
+            <target>Seite nicht gefunden. Sollte die Seite ausgeblendet sein, aktiviere diese bitte (und deaktiviere ggf. die Option „Seite in Menüs aktiviert“ innerhalb der Seiteneigenschaften), damit die Seite zugänglich ist.</target></trans-unit>
+
+            <trans-unit id="AiSuite.imageSuggestionsHeader" resname="AiSuite.imageSuggestionsHeader">
+                <source>Generated image suggestions</source>
+            <target>Generierte Bildvorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.useImageSuggestion" resname="AiSuite.useImageSuggestion">
+                <source>Use selected suggestion</source>
+            <target>Ausgewählten Vorschlag verwenden</target></trans-unit>
+            <trans-unit id="AiSuite.regenerateSuggestions" resname="AiSuite.regenerateSuggestions">
+                <source>Regenerate suggestion</source>
+            <target>Vorschlag neu generieren</target></trans-unit>
+            <trans-unit id="AiSuite.imageTitleSuggestionsHeader" resname="AiSuite.imageTitleSuggestionsHeader">
+                <source>Generated image title suggestions</source>
+            <target>Generierte Bildtitelvorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.imageWizardSlideOneHeader" resname="AiSuite.imageWizardSlideOneHeader">
+                <source>Enter prompt and image generation library</source>
+            <target>Gebe die Eingabeaufforderungs- und Bildgenerierungsbibliothek ein</target></trans-unit>
+            <trans-unit id="AiSuite.imageWizardSlideOneImagePrompt" resname="AiSuite.imageWizardSlideOneImagePrompt">
+                <source>Image prompt</source>
+            <target>Bildaufforderung</target></trans-unit>
+            <trans-unit id="AiSuite.imageWizardSlideOneImagePromptPlaceholder" resname="AiSuite.imageWizardSlideOneImagePromptPlaceholder">
+                <source>Type prompt ...</source>
+            <target>Gebe einen Prompt ein ...</target></trans-unit>
+            <trans-unit id="AiSuite.imageWizardSlideOneImageAmount" resname="AiSuite.imageWizardSlideOneImageAmount">
+                <source>Amout of images to be generated (maximum is 10)</source>
+            <target>Anzahl der zu generierenden Bilder (maximal 10)</target></trans-unit>
+            <trans-unit id="AiSuite.imageWizardSlideOneButton" resname="AiSuite.imageWizardSlideOneButton">
+                <source>Generate image and title suggestions</source>
+            <target>Generiere Bild- und Titelvorschläge</target></trans-unit>
+            <trans-unit id="AiSuite.textGenerationLibrary" resname="AiSuite.textGenerationLibrary">
+                <source>Select text generation AI</source>
+            <target>Wähle KI zur Textgenerierung</target></trans-unit>
+            <trans-unit id="AiSuite.translateGenerationLibrary" resname="AiSuite.translateGenerationLibrary">
+                <source>Select translation generation AI</source>
+            <target>Wähle die KI zur Übersetzungsgenerierung</target></trans-unit>
+            <trans-unit id="AiSuite.imageGenerationLibrary" resname="AiSuite.imageGenerationLibrary">
+                <source>Select image generation AI</source>
+            <target>Wähle die Bildgenerierung KI</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContentElement.title" resname="tx_aisuite.module.dashboard.card.createContentElement.title">
+                <source>Create new content element with CType </source>
+            <target>Erstelle ein neues Inhaltselement mit CType</target></trans-unit>
+            <trans-unit id="aiSuite.module.watchIntroductionVideo" xml:space="preserve">
+                <source>Watch introduction video</source>
+            <target>Sehe dir das Einführungsvideo an</target></trans-unit>
+            <trans-unit id="aiSuite.module.aiSuiteTrailer" xml:space="preserve">
+                <source>AI Suite trailer</source>
+            <target>AI Suite-Trailer</target></trans-unit>
+            <trans-unit id="aiSuite.module.freeRequests" xml:space="preserve">
+                <source>Free requests</source>
+            <target>Free Requests</target></trans-unit>
+            <trans-unit id="aiSuite.module.paidRequests" xml:space="preserve">
+                <source>Paid requests</source>
+            <target>Paid Requests</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
+                <source>We received an error during the response. Please try again and check your settings/inputs.</source>
+            <target>Wir haben während der Antwort eine Fehlermeldung erhalten. Bitte versuche es erneut und überprüfe deine Einstellungen/Eingaben.</target></trans-unit>
+            <trans-unit id="aiSuite.module.validateAiResult" xml:space="preserve">
+                <source>Validate the AI result</source>
+            <target>Validiere das KI-Ergebnis</target></trans-unit>
+            <trans-unit id="aiSuite.module.requestStructureAgain" xml:space="preserve">
+                <source>Request structure again</source>
+            <target>Struktur erneut anfordern</target></trans-unit>
+            <trans-unit id="aiSuite.module.availableInputFields" xml:space="preserve">
+                <source>Available input fields</source>
+            <target>Verfügbare Eingabefelder</target></trans-unit>
+            <trans-unit id="aiSuite.module.availableFileFields" xml:space="preserve">
+                <source>Available file fields</source>
+            <target>Verfügbare Dateifelder</target></trans-unit>
+            <trans-unit id="aiSuite.module.noSearchableList" xml:space="preserve">
+                <source>No searchableList given.</source>
+            <target>Keine durchsuchbare Liste angegeben.</target></trans-unit>
+            <trans-unit id="aiSuite.module.hideShowButtons" xml:space="preserve">
+                <source>Hide / show buttons</source>
+            <target>Schaltflächen ein-/ausblenden</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.close" xml:space="preserve">
+                <source>Close</source>
+            <target>Schließen</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelected" xml:space="preserve">
+                <source>You don't have selected any fields. Please select at least one field to continue.</source>
+            <target>Du hast keine Felder ausgewählt. Bitte wähle mindestens ein Feld aus, um fortzufahren.</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.warning" xml:space="preserve">
+                <source>Warning</source>
+            <target>Warnung</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationWizard" xml:space="preserve">
+                <source>Image generation wizard</source>
+            <target>Assistent zur Bildgenerierung</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imagePromptSettings" xml:space="preserve">
+                <source>Image prompt settings</source>
+            <target>Einstellungen für Bildaufforderungen</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.enteredPromptTitle" xml:space="preserve">
+                <source>Prompt is too short</source>
+            <target>Die Eingabeaufforderung ist zu kurz</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
+                <source>Please enter your prompt with at least five characters</source>
+            <target>Bitte gebe deine Eingabeaufforderung mit mindestens fünf Zeichen ein</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcess" xml:space="preserve">
+                <source>Image suggestions will be generated. This may take a while. Please wait...</source>
+            <target>Bildvorschläge werden generiert. Das kann eine Weile dauern. Bitte warten...</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageSelection" xml:space="preserve">
+                <source>Select your favorite generated image</source>
+            <target>Wählen dein bevorzugtes generiertes Bild aus</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.generatedImages" xml:space="preserve">
+                <source>Generated images</source>
+            <target>Erzeugte Bilder</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageSavingProcess" xml:space="preserve">
+                <source>Image is saved. Please wait...</source>
+            <target>Bild wird gespeichert. Bitte warten...</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationFailed" xml:space="preserve">
+                <source>Image generation failed with the following error: </source>
+            <target>Die Bildgenerierung ist mit folgendem Fehler fehlgeschlagen:</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noImageSelectedTitle" xml:space="preserve">
+                <source>No image selected</source>
+            <target>Kein Bild ausgewählt</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noImageSelectedMessage" xml:space="preserve">
+                <source>Please select your favorite image</source>
+            <target>Bitte wählen deinen Favoriten aus</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorMissingArguments.title" xml:space="preserve">
+                <source>Missing action arguments</source>
+            <target>Fehlende Aktionsargumente</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorMissingArguments.message" xml:space="preserve">
+                <source>Could not fetch required action arguments.</source>
+            <target>Erforderliche Aktionsargumente konnten nicht abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorValidContentElementResponse.title" xml:space="preserve">
+                <source>Could not fetch valid content element response.</source>
+            <target>Es konnte keine gültige Antwort auf das Inhaltselement abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.contentElementDataGenerate.message" xml:space="preserve">
+                <source>Content element data successfully created.</source>
+            <target>Inhaltselementdaten erfolgreich erstellt.</target></trans-unit>
+            <trans-unit id="aiSuite.module.contentElementDataGenerate.title" xml:space="preserve">
+                <source>Request successful</source>
+            <target>Anfrage erfolgreich</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorPageContentNotCreated.title" xml:space="preserve">
+                <source>Page content could not be created.</source>
+            <target>Seiteninhalt konnte nicht erstellt werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorFetchingLibraries.title" xml:space="preserve">
+                <source>Could not fetch available libraries.</source>
+            <target>Die verfügbaren Bibliotheken konnten nicht abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorFetchingPromptTemplates.title" xml:space="preserve">
+                <source>Could not fetch available prompt templates.</source>
+                <target>Die verfügbaren Prompt-Vorlagen konnten nicht abgerufen werden.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.errorFetchingPagetreeResponse.title" xml:space="preserve">
+                <source>Could not fetch valid page tree response.</source>
+            <target>Es konnte keine gültige Seitenbaumantwort abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.fetchingDataSuccessful.title" xml:space="preserve">
+                <source>Successfully fetched data</source>
+            <target>Daten erfolgreich abgerufen</target></trans-unit>
+            <trans-unit id="aiSuite.module.fetchingDataSuccessful.message" xml:space="preserve">
+                <source>Please check and confirm the results.</source>
+            <target>Bitte überprüfe und bestätige die Ergebnisse.</target></trans-unit>
+            <trans-unit id="aiSuite.module.pagetreeGenerationSuccessful.title" xml:space="preserve">
+                <source>Page tree generated successfully.</source>
+            <target>Seitenbaum erfolgreich generiert.</target></trans-unit>
+            <trans-unit id="aiSuite.module.pagetreeGenerationSuccessful.message" xml:space="preserve">
+                <source>Check your selected root page for new page tree.</source>
+            <target>Überprüfen deine ausgewählte Stammseite auf einen neuen Seitenbaum.</target></trans-unit>
+            <trans-unit id="aiSuite.module.warningFetchingRequestsState.title" xml:space="preserve">
+                <source>Could not fetch your current requests state</source>
+            <target>Dein aktueller Request Status konnte nicht abgerufen werden</target></trans-unit>
+            <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title" xml:space="preserve">
+                <source>Could not fetch the current status of the OpenAI API.</source>
+            <target>Der aktuelle Status der OpenAI-API konnte nicht abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.openAiStatus.detailedInfo" xml:space="preserve">
+                <source>For a detailed status overview visit the </source>
+            <target>Eine detaillierte Statusübersicht findest du unter</target></trans-unit>
+            <trans-unit id="aiSuite.module.openAiStatus.linkTitle" xml:space="preserve">
+                <source>OpenAI status page</source>
+            <target>OpenAI-Statusseite</target></trans-unit>
+            <trans-unit id="aiSuite.module.openAiStatus.ok" xml:space="preserve">
+                <source>All Systems Operational</source>
+            <target>Alle Systeme betriebsbereit</target></trans-unit>
+            <trans-unit id="aiSuite.module.openAiStatus.warning" xml:space="preserve">
+                <source>Partial System Outage</source>
+            <target>Teilweiser Systemausfall</target></trans-unit>
+            <trans-unit id="aiSuite.module.openAiStatus.critical" xml:space="preserve">
+                <source>Major Service Outage</source>
+            <target>Schwerwiegender Serviceausfall</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorTargetLangMissing.title" xml:space="preserve">
+                <source>Target language missing.</source>
+            <target>Zielsprache fehlt.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorTargetLangMissing.message" xml:space="preserve">
+                <source>You must choose a target language.</source>
+            <target>Du must eine Zielsprache auswählen.</target></trans-unit>
+            <trans-unit id="aiSuite.module.destinationFileNotFound.title" xml:space="preserve">
+                <source>Destination file not found</source>
+            <target>Zieldatei nicht gefunden</target></trans-unit>
+            <trans-unit id="aiSuite.module.destinationFileNotFound.message.prefix" xml:space="preserve">
+                <source>Destination file </source>
+            <target>Zieldatei</target></trans-unit>
+            <trans-unit id="aiSuite.module.destinationFileNotFound.message.suffix" xml:space="preserve">
+                <source> not found, will create a new one.</source>
+            <target>nicht gefunden, es wird eine neue Datei erstellt.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorFetchingTranslationResponse.title" xml:space="preserve">
+                <source>Could not fetch a valid translation response.</source>
+            <target>Es konnte keine gültige Übersetzungsantwort abgerufen werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorExtensionNotFound.title" xml:space="preserve">
+                <source>Extension not found.</source>
+            <target>Erweiterung nicht gefunden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorFileNotFound.title" xml:space="preserve">
+                <source>File not found.</source>
+            <target>Datei nicht gefunden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.errorWritingTranslationFile.message" xml:space="preserve">
+                <source>There was a problem while writing the translations.</source>
+            <target>Beim Schreiben der Übersetzungen ist ein Problem aufgetreten.</target></trans-unit>
+            <trans-unit id="aiSuite.module.cannotSendRequest.title" xml:space="preserve">
+                <source>Error before sending request to server</source>
+            <target>Fehler vor dem Senden der Anfrage an den Server</target></trans-unit>
+            <trans-unit id="aiSuite.module.translationGenerationSuccessful.title" xml:space="preserve">
+                <source>Translation successfully</source>
+            <target>Übersetzung erfolgreich</target></trans-unit>
+            <trans-unit id="aiSuite.module.translationGenerationSuccessful.message" xml:space="preserve">
+                <source>The new translations are written to the file system.</source>
+            <target>Die neuen Übersetzungen werden in das Dateisystem geschrieben.</target></trans-unit>
+            <trans-unit id="aiSuite.module.noTranslationsNeeded.title" xml:space="preserve">
+                <source>No translations needed</source>
+            <target>Keine Übersetzungen erforderlich</target></trans-unit>
+            <trans-unit id="aiSuite.module.noTranslationsNeeded.message" xml:space="preserve">
+                <source>Your selected file doesn't have any missing properties</source>
+            <target>In der ausgewählten Datei fehlen keine Eigenschaften</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noSelectionForFields" xml:space="preserve">
+                <source>You don't have selected an image for the following field(s): </source>
+            <target>Du hast für die folgenden Felder kein Bild ausgewählt:</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.continue" xml:space="preserve">
+                <source>Do you want to continue?</source>
+            <target>Möchtest du fortfahren?</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.saveAnyway" xml:space="preserve">
+                <source>Save anyway</source>
+            <target>Trotzdem speichern</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.abort" xml:space="preserve">
+                <source>Abort</source>
+            <target>Abbrechen</target></trans-unit>
+        </body>
+    </file>
+</xliff>

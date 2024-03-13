@@ -1,0 +1,25 @@
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<div class="card card-size-medium">
+    <div class="card-header">
+        <div class="card-icon">
+            <core:icon identifier="apps-pagetree-folder-contains-board" size="large"/>
+        </div>
+        <div class="card-header-body">
+            <h3 class="card-title">Create page tree</h3>
+            <span class="card-subtitle">
+                Create page tree with content if necessary.
+            </span>
+            <div class="card-longdesc">
+                <p>
+                    With the help of KI you can create a page tree. This is created with the pages you want.
+                </p>
+            </div>
+            <br>
+            <f:link.action controller="AiSuite" action="enterPageStructureData" pageUid="1" class="btn btn-secondary">Create page tree</f:link.action>
+
+        </div>
+
+    </div>
+</div>

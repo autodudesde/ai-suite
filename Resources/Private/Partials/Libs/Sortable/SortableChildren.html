@@ -1,0 +1,41 @@
+<div class="list-group nested-sortable">
+    <f:for each="{sortableList}" as="sortItem">
+        <div class="list-group-item nested">
+            <div class="handle">
+                <core:icon identifier="actions-sort-amount" size="small"/>
+            </div>
+            <span class="title" data-title="{sortItem.title}">
+                {sortItem.title}
+            </span>
+            <f:render section="editButton" />
+            <f:render section="deleteButton" />
+            <f:if condition="{sortItem.children}">
+                <f:then>
+                    <f:render partial="Libs/Sortable/SortableChildren" arguments="{sortableList: sortItem.children}" />
+                </f:then>
+                <f:else>
+                    <div class="list-group nested-sortable"></div>
+                </f:else>
+            </f:if>
+            <f:render section="addButton" />
+        </div>
+    </f:for>
+</div>
+
+<f:section name="addButton">
+    <button class="add">
+        <core:icon identifier="actions-add" size="small"/>
+    </button>
+</f:section>
+
+<f:section name="editButton">
+    <button class="edit btn btn-default">
+        <core:icon identifier="actions-open" size="small"/>
+    </button>
+</f:section>
+
+<f:section name="deleteButton">
+    <button class="delete btn btn-default">
+        <core:icon identifier="actions-delete" size="small"/>
+    </button>
+</f:section>

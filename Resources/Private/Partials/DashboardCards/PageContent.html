@@ -1,0 +1,25 @@
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<div class="card card-size-medium">
+    <div class="card-header">
+        <div class="card-icon">
+            <core:icon identifier="apps-pagetree-folder-contains-board" size="large"/>
+        </div>
+        <div class="card-header-body">
+            <h3 class="card-title">Create content</h3>
+            <span class="card-subtitle">
+                Create content for the current page.
+            </span>
+            <div class="card-longdesc">
+                <p>
+                    With the help of AI, you can create content for the currently selected page.
+                </p>
+            </div>
+            <br>
+            <f:link.action controller="CreateContent" action="overview" class="btn btn-secondary">Create content</f:link.action>
+
+        </div>
+
+    </div>
+</div>

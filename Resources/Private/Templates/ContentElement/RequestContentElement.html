@@ -1,0 +1,54 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <f:flashMessages />
+
+    <f:if condition="{error}">
+        <f:else>
+            <f:if condition="{errorActionUri}">
+                <f:then>
+                    <p>
+                        <f:translate key="aiSuite.module.errorDuringResponse"/>
+                    </p>
+                    <f:form actionUri="{errorActionUri}}">
+                        <div class="form-group">
+                            <f:form.submit value="{f:translate(key: 'tx_aisuite.module.error.try_again')}" class="btn btn-secondary" />
+                        </div>
+                    </f:form>
+                </f:then>
+                <f:else>
+                    <section class="container">
+                        <f:comment><![CDATA[
+                            <f:asset.script identifier="ai-suite-unload-checker" src="EXT:ai_suite/Resources/Public/JavaScript/helper/check-unload.js" />
+                        ]]></f:comment>
+                        <h2>
+                            <f:translate key="tx_aisuite.module.PageContent.validate.headline"/>
+                        </h2>
+
+                        <p>
+                            <f:translate key="tx_aisuite.module.PageContent.validate.explanation"/>
+                        </p>
+                        <f:form actionUri="{actionUri}" name="content" object="{content}" enctype="multipart/form-data">
+                            <f:form.hidden property="selectedTcaColumns" name="selectedTcaColumns" value="{content.selectedTcaColumns -> f:format.json()}" class="form-control" />
+                            <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
+
+                            <div class="form-group">
+                                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.PageContent.validate.addContent')}" class="btn btn-secondary" />
+                            </div>
+                        </f:form>
+
+                        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.default')}" />
+                        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+
+                    </section>
+                </f:else>
+            </f:if>
+        </f:else>
+    </f:if>
+</f:section>

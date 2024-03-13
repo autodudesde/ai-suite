@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang.xlf" date="2023-10-12T13:12:24Z" product-name="ai_suite">
+		<header/>
+		<body>
+            <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
+                <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
+            </trans-unit>
+            <trans-unit id="aiSuiteServer" resname="aiSuiteServer">
+                <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
+            </trans-unit>
+            <trans-unit id="useUrlForRequest" resname="useUrlForRequest">
+                <source>Use always URL for metadata requests: With this option you can use the corresponding URL of the page for all metadata analyses. As a result, you have to use fewer tokens to carry out your corresponding analyses. IMPORTANT: The page must be publicly accessible (hidden pages fail and pages in a local environment lead to poor results)</source>
+            </trans-unit>
+            <trans-unit id="singleNewsDisplayPage" resname="singleNewsDisplayPage">
+                <source>Enter the ID of one page that is used as a detail view for news articles of the news extension</source>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

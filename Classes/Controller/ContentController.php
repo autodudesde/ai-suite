@@ -1,0 +1,34 @@
+<?php
+
+/***
+ *
+ * This file is part of the "ai_suite" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *
+ ***/
+
+namespace AutoDudes\AiSuite\Controller;
+
+
+use Psr\Http\Message\ResponseInterface;
+
+class ContentController extends AbstractBackendController
+{
+    public function __construct(
+        array $extConf,
+    ) {
+        parent::__construct($extConf);
+        $this->extConf = $extConf;
+    }
+
+    public function overviewAction(): ResponseInterface
+    {
+        $this->moduleTemplate->assignMultiple([
+            'sectionActive' => 'content',
+        ]);
+        return $this->htmlResponse($this->moduleTemplate->render());
+    }
+}

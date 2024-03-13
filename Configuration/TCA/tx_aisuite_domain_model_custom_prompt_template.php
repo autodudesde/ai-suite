@@ -1,0 +1,177 @@
+<?php
+
+/***
+ *
+ * This file is part of the "ai_suite_server" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ *
+ ***/
+
+return [
+    'ctrl' => [
+        'title' => 'Custom Prompt-Templates',
+        'label' => 'name',
+        'label_alt' => 'scope',
+        'label_alt_force' => true,
+        'tstamp' => 'tstamp',
+        'crdate' => 'crdate',
+        'cruser_id' => 'cruser_id',
+        'versioningWS' => true,
+        'languageField' => 'sys_language_uid',
+        'transOrigPointerField' => 'l10n_parent',
+        'transOrigDiffSourceField' => 'l10n_diffsource',
+        'delete' => 'deleted',
+        'enablecolumns' => [
+            'disabled' => 'hidden',
+            'starttime' => 'starttime',
+            'endtime' => 'endtime',
+        ],
+        'searchFields' => 'name, prompt, scope, type,',
+        'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+        'security' => [
+            'ignorePageTypeRestriction' => true,
+        ],
+    ],
+    'types' => [
+        '1' => [
+            'showitem' => '
+            name, prompt, scope, type,
+            --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden,
+            --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid,',
+        ],
+    ],
+    'columns' => [
+        'crdate' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
+        'sys_language_uid' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
+            'config' => [
+                'type' => 'language',
+            ],
+        ],
+        'l10n_parent' => [
+            'displayCond' => 'FIELD:sys_language_uid:>:0',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['', 0],
+                ],
+                'foreign_table' => 'tx_aisuite_domain_model_custom_prompt_template',
+                'foreign_table_where' => 'AND tx_aisuite_domain_model_custom_prompt_template.pid=###CURRENT_PID### AND tx_aisuite_domain_model_custom_prompt_template.sys_language_uid IN (-1,0)',
+            ],
+        ],
+        'l10n_diffsource' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
+        't3ver_label' => [
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.versionLabel',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'max' => 255,
+            ],
+        ],
+        'hidden' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
+            'config' => [
+                'type' => 'check',
+                [
+                    [
+                        'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
+                        '',
+                    ]
+                ],
+            ],
+        ],
+        'starttime' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'eval' => 'datetime',
+                'default' => 0,
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ]
+            ]
+        ],
+        'endtime' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
+            'config' => [
+                'type' => 'input',
+                'renderType' => 'inputDateTime',
+                'eval' => 'datetime',
+                'default' => 0,
+                'range' => [
+                    'upper' => mktime(0, 0, 0, 1, 1, 2038),
+                ],
+                'behaviour' => [
+                    'allowLanguageSynchronization' => true,
+                ]
+            ]
+        ],
+        'name' => [
+            'exclude' => true,
+            'label' => 'Name',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'eval' => 'trim',
+                'required' => true
+            ],
+        ],
+        'prompt' => [
+            'exclude' => true,
+            'label' => 'Prompt template',
+            'config' => [
+                'type' => 'text',
+                'eval' => 'trim',
+                'required' => true,
+            ],
+        ],
+        'scope' => [
+            'exclude' => true,
+            'label' => 'Scope',
+            'onChange' => 'reload',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectSingle',
+                'items' => [
+                    ['PageTree Generation', 'pageTree'],
+                    ['ImageWizard', 'imageWizard'],
+                    ['Content Element Generation', 'contentElement'],
+                ],
+                'size' => 1,
+                'eval' => 'trim',
+            ],
+        ],
+        'type' => [
+            'exclude' => true,
+            'label' => 'Type (CType of Content Element)',
+            'displayCond' => 'FIELD:scope:=:contentElement',
+            'config' => [
+                'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
+                'items' => [],
+                'size' => 3,
+                'eval' => 'trim',
+                'default' => '',
+                'autoSizeMax' => 10,
+            ],
+        ],
+    ],
+];

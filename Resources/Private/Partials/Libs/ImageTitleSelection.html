@@ -1,0 +1,25 @@
+
+<div class="row image-title-suggestions mt-2">
+    <h2 class="text-left">
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleSuggestionsHeader" />
+    </h2>
+    <f:for each="{imageTitleSuggestions}" as="suggestion" iteration="it">
+        <div class="col-12 col-md-6 my-3 position-relative">
+            <input
+                type="radio"
+                name="fileData[content][contentElementData][{table}][{position}][{fieldName}][imageTitle]"
+                value="{suggestion}"
+                data-image-title="{suggestion}"
+                class="mx-1"
+                id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
+            >
+            <label class="d-inline-flex justify-content-start align-items-center mt-2"
+                   for="{table}-{position}-{fieldName}-image_title-{it.cycle}"
+                   style="font-size: 0.85rem;"
+            >
+                {suggestion}
+            </label>
+        </div>
+    </f:for>
+</div>
+

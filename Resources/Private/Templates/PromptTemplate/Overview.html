@@ -1,0 +1,31 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1 class="mb-2">
+        <f:translate key="AiSuite.module.promptTemplateManager.overview.header"/>
+    </h1>
+    <p><f:translate key="AiSuite.module.promptTemplateManager.overview.description"/></p>
+
+    <section class="card-container">
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-synchronize',
+            cardname: 'updatePromptTemplates',
+            controller: 'PromptTemplate',
+            action: 'updateServerPromptTemplates',
+            status: 'active'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-file-text',
+            cardname: 'managePromptTemplates',
+            controller: 'PromptTemplate',
+            action: 'manageCustomPromptTemplates',
+            status: 'active'
+        }" />
+    </section>
+</f:section>
+</html>

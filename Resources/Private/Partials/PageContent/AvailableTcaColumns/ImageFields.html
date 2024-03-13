@@ -1,0 +1,19 @@
+
+<f:if condition="{imageFields -> f:count()} > 0">
+    <strong class="ps-0 pt-3 pb-2">
+        <f:translate key="aiSuite.module.availableFileFields"/>
+    </strong>
+    <f:for each="{imageFields}" key="fieldName" as="data" iteration="it">
+        <div class="col-12 col-md-6 ps-0">
+            <f:form.checkbox
+                class="request-field-checkbox"
+                name="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                id="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                value="{data.renderType}" checked="checked"
+            />
+            <label class="mb-1" for="content[selectedTcaColumns][{table}][image][{fieldName}]">{data.label}</label>
+        </div>
+    </f:for>
+</f:if>
+
+

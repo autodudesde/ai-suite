@@ -1,0 +1,50 @@
+<f:for each="{content.availableTcaColumns}" key="table" as="data" iteration="it">
+    <div class="row mb-3" id="{table}">
+        <div class="card card-size-large active">
+            <div class="card-header">
+                <f:if condition="{table} == 'tt_content'">
+                    <f:then>
+                        <h3>
+                            <span class="text-gradient">{data.label}</span>
+                            <button
+                                class="btn btn-default collapsed float-end"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#fields-{table}"
+                                data-bs-parent="#{table}"
+                                aria-expanded="false"
+                                aria-controls="fields-{table}"
+                            >
+                                <core:icon identifier="actions-chevron-up" size="small" />
+                            </button>
+                        </h3>
+                    </f:then>
+                    <f:else>
+                        <h3>
+                            <span class="text-gradient">Fields of "{data.label}"</span>
+                            <button
+                                class="btn btn-default collapsed float-end"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#fields-{table}"
+                                data-bs-parent="#{table}"
+                                aria-expanded="false"
+                                aria-controls="fields-{table}"
+                            >
+                                <core:icon identifier="actions-chevron-up" size="small" />
+                            </button>
+                        </h3>
+                    </f:else>
+                </f:if>
+                <div
+                    id="fields-{table}"
+                    class="row collapse show"
+                    data-bs-parent="#{table}"
+                >
+                    <f:render partial="PageContent/AvailableTcaColumns/TextFields" arguments="{textFields: data.text, table: table}" />
+                    <f:render partial="PageContent/AvailableTcaColumns/ImageFields" arguments="{imageFields: data.image, table: table}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</f:for>

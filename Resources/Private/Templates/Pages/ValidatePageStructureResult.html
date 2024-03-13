@@ -1,0 +1,61 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <section class="container">
+        <f:comment><![CDATA[
+            <f:asset.script identifier="ai-suite-unload-checker" src="EXT:ai_suite/Resources/Public/JavaScript/helper/check-unload.js" />
+        ]]></f:comment>
+        <h2>
+            <f:translate key="aiSuite.module.validateAiResult"/>
+        </h2>
+
+        <f:if condition="{input.aiResult}">
+            <f:form action="createValidatedPageStructure" name="input" object="{input}" enctype="multipart/form-data" class="page-structure-create">
+                <f:render partial="PageStructure/AllProperties" arguments="{_all}" />
+                <f:render partial="Libs/Sortable/Sortable" arguments="{sortableList: input.aiResult.children}" />
+
+                <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
+                <f:form.hidden name="selectedPageTreeContent" value="" />
+                <div class="form-group">
+                    <span class="btn btn-secondary submit-page-structure">Create structure</span>
+                </div>
+            </f:form>
+
+            <br />
+            <br />
+            <hr />
+            <br />
+            <br />
+        </f:if>
+
+        <h2>
+            <f:translate key="aiSuite.module.requestStructureAgain"/>
+        </h2>
+        <f:form action="validatePageStructureResult" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
+            <f:render partial="PageStructure/AllProperties" arguments="{_all}" />
+            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+            <div class="form-group">
+                <label for="plainPrompt">
+                    <f:translate key="tx_aisuite.module.general.prompt"/>
+                </label><br />
+                <f:form.textarea property="plainPrompt" name="plainPrompt" class="form-control" />
+            </div>
+
+            <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
+
+            <div class="form-group">
+                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.pageStructure.submit')}" class="btn btn-secondary"/>
+            </div>
+        </f:form>
+    </section>
+
+    <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
+    <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+
+</f:section>

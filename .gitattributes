@@ -1,0 +1,7 @@
+*.yml text eol=lf
+# Declare the ddev command files that will always have LF line endings on checkout.
+
+*create-dev-admin text eol=lf
+*typo3cms text eol=lf
+*typo3 text eol=lf
+*update-template text eol=lf

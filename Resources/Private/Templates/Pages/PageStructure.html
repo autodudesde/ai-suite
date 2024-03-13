@@ -1,0 +1,54 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <section class="container">
+        <h2>
+            <f:translate key="tx_aisuite.module.pageStructure.headline"/>
+        </h2>
+
+        <f:form action="validatePageStructureResult" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
+            <f:render partial="PageStructure/AllProperties" arguments="{_all}" />
+            <f:form.hidden property="textGenerationLibraries" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
+            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+
+            <f:if condition="{promptTemplates -> f:count()} > 0">
+                <div class="form-group ps-0 pe-3">
+                    <label for="promptTemplates">
+                        <f:translate key="tx_aisuite.module.general.promptTemplates"/>
+                    </label><br />
+                    <f:form.select name="promptTemplates" class="form-control">
+                        <f:form.select.option value="">
+                            <f:translate key="tx_aisuite.module.general.selectPromptTemplate"/>
+                        </f:form.select.option>
+                        <f:for each="{promptTemplates}" as="template">
+                            <f:form.select.option value="{template.prompt}">{template.name}</f:form.select.option>
+                        </f:for>
+                    </f:form.select>
+                </div>
+            </f:if>
+
+            <div class="form-group">
+                <label for="plainPrompt">
+                    <f:translate key="tx_aisuite.module.general.prompt"/>
+                </label><br />
+                <f:form.textarea property="plainPrompt" name="plainPrompt" class="form-control"/>
+            </div>
+
+            <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
+
+            <div class="form-group">
+                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.pageStructure.submit')}" class="btn btn-secondary"/>
+            </div>
+        </f:form>
+
+        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
+        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+    </section>
+
+</f:section>

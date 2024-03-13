@@ -1,0 +1,107 @@
+
+.nested-sortable .list-group-item {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 1rem 1rem;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.nested-sortable .list-group {
+    flex-grow: 2;
+    flex-basis: 100%;
+    min-height: 30px;
+    border: 1px dashed rgba(0,0,0,.125);
+    margin-top: 1rem;
+}
+
+.list-group-item .list-group-item {
+    flex-grow: 2;
+    flex-basis: 100%;
+}
+
+.nested-sortable .nested {
+    background-color: #00000008;
+}
+
+.nested-sortable .list-group-item:first-child {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+.nested-sortable .list-group-item .list-group-item {
+    margin-top: 0.25rem;
+}
+
+.nested-sortable .list-group-item:focus, .list-group-item:hover {
+    z-index: 1;
+    text-decoration: none;
+}
+
+.nested-sortable .list-group-item:hover {
+    z-index: 0;
+}
+
+.nested-sortable .handle {
+    cursor: move;
+    margin-right: 0.5rem;
+    border: 1px solid rgba(0,0,0,.125);
+    padding: 5px 10px;
+}
+
+.nested-sortable button.add {
+    margin-top: 5px;
+    text-align: center;
+    width: 100%;
+}
+
+.nested-sortable button.edit {
+    margin-left: 2rem;
+}
+.nested-sortable button.delete {
+    margin-left: .5rem;
+}
+
+.sortable-wrap .sortable-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 99;
+    background: #00000091;
+    display: none;
+}
+.sortable-wrap .sortable-input.active {
+    display: block;
+}
+
+.sortable-wrap .sortable-input .inner-wrap {
+    position: relative;
+    margin: 25vh auto 0;
+    text-align: center;
+    background-color: #fff;
+    max-width: 300px;
+    padding: 2rem 0;
+    opacity: 0;
+    transition: all 0.9s ease-in-out;
+}
+.sortable-wrap .sortable-input.active .inner-wrap {
+    opacity: 1;
+}
+
+.sortable-wrap .sortable-input .inner-wrap span.close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 5px;
+    padding: 2px 6px;
+    transition: all 0.3s ease-in-out;
+}
+.sortable-wrap .sortable-input .inner-wrap span.close:hover {
+    background-color: #3a3a3a;
+    color: #fff;
+}

@@ -1,0 +1,86 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1 class="mb-2">
+        <f:translate key="tx_aisuite.module.dashboard.header"/>
+    </h1>
+
+    <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="my-3 px-3 py-2 btn btn-primary">
+        <core:icon identifier="actions-video" />
+        <f:translate key="aiSuite.module.watchIntroductionVideo"/>
+    </f:link.external>
+
+    <p class="request-state py-3">
+        <f:translate key="tx_aisuite.module.dashboard.requestState" />:
+        <span class="badge badge-warning p-2 mx-3">
+            <f:translate key="aiSuite.module.freeRequests"/>: {freeRequests}
+        </span>
+        <span class="badge badge-warning p-2">
+             <f:translate key="aiSuite.module.paidRequests"/>: {paidRequests}
+        </span>
+    </p>
+
+    <section class="card-container">
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'content-menu-pages',
+            cardname: 'pagesSection',
+            controller: 'Pages',
+            action: 'overview',
+            status: 'active'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'content-beside-text-img-centered-right',
+            cardname: 'contentSection',
+            controller: 'Content',
+            action: 'overview',
+            status: 'active'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'apps-filetree-folder-media',
+            cardname: 'filesSection',
+            controller: 'Files',
+            action: 'overview',
+            status: 'active'
+        }" />
+
+        <f:if condition="{languages}">
+            <f:if condition="{languages -> f:count()} > 1">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'install-manage-language',
+                    cardname: 'translateSection',
+                    controller: 'Languages',
+                    action: 'overview',
+                    status: 'active'
+                }" />
+            </f:if>
+        </f:if>
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-rocket',
+            cardname: 'agencySection',
+            controller: 'Agencies',
+            action: 'overview',
+            status: 'active'
+        }" />
+
+    </section>
+
+    <section class="status">
+        <h2>Status:</h2>
+        <h3 class="mt-2">
+            OpenAI API:
+            <span class="badge p-2 mx-3 {openAiState}">
+                <f:translate key="aiSuite.module.openAiStatus.{openAiState}" />
+            </span>
+        </h3>
+        (<f:translate key="aiSuite.module.openAiStatus.detailedInfo" /><a class="text-decoration-underline" target="_blank" href="https://status.openai.com/"><f:translate key="aiSuite.module.openAiStatus.linkTitle" /></a>)
+    </section>
+
+</f:section>

@@ -1,0 +1,42 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <h2>
+        <f:translate key="tx_aisuite.module.File.overview.header"/>
+    </h2>
+
+    <section class="card-container">
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'content-image',
+            cardname: 'createImageFile',
+            controller: 'Files',
+            action: 'overview',
+            status: 'comming-soon'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'mimetypes-media-video',
+            cardname: 'createVideo',
+            controller: 'Files',
+            action: 'overview',
+            status: 'comming-soon'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'apps-toolbar-menu-systeminformation',
+            cardname: 'createFileMetadata',
+            controller: 'Files',
+            action: 'overview',
+            status: 'comming-soon'
+        }" />
+
+    </section>
+
+</f:section>

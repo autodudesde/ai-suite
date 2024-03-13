@@ -1,0 +1,47 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <f:asset.css identifier="manage-custom-prompt-templates-search-form" href="EXT:ai_suite/Resources/Public/Css/PromptManager/prompt-manager-styles.css" />
+
+    <h1 class="mb-2">
+        <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.header"/>
+    </h1>
+
+
+    <br />
+    <br />
+    <f:form action="manageCustomPromptTemplates" name="input" enctype="multipart/form-data" method="post" class="manage-custom-prompt-templates-search-form">
+        <f:form.textfield id="search" name="search" property="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder')}"/>
+        <f:form.submit value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}" class="btn btn-primary"/>
+        <button class="btn btn-secondary" onclick="document.querySelector('form.manage-custom-prompt-templates-search-form #search').value = '';">
+            {f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset')}
+        </button>
+    </f:form>
+
+    <be:link.newRecord table="tx_aisuite_domain_model_custom_prompt_template"
+               returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}" class="btn btn-secondary"
+               pid="{pid}">
+        <core:icon identifier="actions-page-new" size="small"/>
+        {f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate')}
+    </be:link.newRecord>
+    <br />
+    <br />
+
+    <f:be.tableList tableName="tx_aisuite_domain_model_custom_prompt_template" fieldList="{0: 'name', 1: 'scope', 2: 'type'}"
+        storagePid="{pid}"
+        levels="50"
+        recordsPerPage="20"
+        sortField="name"
+        sortDescending="true"
+        enableClickMenu="true"
+        enableControlPanels="true"
+        clickTitleMode="edit"
+        filter="{search}"
+    />
+</f:section>
+</html>

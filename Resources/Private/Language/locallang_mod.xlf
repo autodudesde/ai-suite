@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf" date="2023-05-14UTC21:34:060" product-name="ai_suite">
+        <body>
+            <trans-unit id="mlang_tabs_tab">
+                <source>AI Suite</source>
+            </trans-unit>
+            <trans-unit id="image_generation_add.button">
+                <source>Generate Image with AI</source>
+            </trans-unit>
+            <trans-unit id="image_generation_add.submit">
+                <source>Generate Image with AI</source>
+            </trans-unit>
+            <trans-unit id="image_generation_add.placeholder">
+                <source>Generate Image with AI</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

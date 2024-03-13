@@ -1,0 +1,80 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:render partial="PageContent/AllProperties" arguments="{_all}" />
+
+<div class="row">
+    <f:for each="{content.contentElementData}" key="table" as="data">
+        <div class="col-12 mb-3" id="{table}">
+            <f:if condition="{table} == 'tt_content'">
+                <f:then>
+                    <h3>
+                        <button
+                            class="fields-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#fields-{table}"
+                            data-bs-parent="#{table}"
+                            aria-expanded="true"
+                            aria-controls="fields-{table}"
+                        >
+                            {data.label}
+                            <core:icon identifier="actions-chevron-up" size="small" />
+                        </button>
+                    </h3>
+                    <div
+                        id="fields-{table}"
+                        class="row collapse show"
+                        data-bs-parent="#{table}"
+                    >
+                        <f:if condition="{data.0.text}">
+                            <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: data.0.text, table: table, position: 0}" />
+                        </f:if>
+                        <f:if condition="{data.0.image">
+                            <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: data.0.image, table: table, itemLabel: '', initialPrompt: content.initialPrompt, imageAmount: content.imageAmount, position: 0, pageId: content.pid }" />
+                        </f:if>
+                    </div>
+                </f:then>
+                <f:else>
+                    {f:variable(name: 'count', value: 0)}
+                    <h3>
+                        {data.label}
+                        <core:icon identifier="actions-chevron-up" size="small" />
+                    </h3>
+                    <f:for each="{data}" key="position" as="childData">
+                        <f:if condition="{aiSuite:isArray(data: childData)}">
+                            <h4>
+                                <button
+                                    class="fields-button"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#fields-{table}-{position}"
+                                    data-bs-parent="#{table}"
+                                    aria-expanded="true"
+                                    aria-controls="fields-{table}-{position}"
+                                >
+                                    {data.label} {count +1}
+                                </button>
+                            </h4>
+                            <div
+                                id="fields-{table}-{position}"
+                                class="row collapse show"
+                                data-bs-parent="#{table}"
+                            >
+                                <f:if condition="{childData.text}">
+                                    <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: childData.text, table: table, position: count}" />
+                                </f:if>
+                                <f:if condition="{childData.image">
+                                    <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: childData.image, table: table, itemLabel: data.label, initialPrompt: content.initialPrompt, imageAmount: content.imageAmount, position: count, pageId: content.pid }" />
+                                </f:if>
+                            </div>
+                            {f:variable(name: 'count', value: '{count + 1}')}
+                        </f:if>
+                    </f:for>
+                </f:else>
+            </f:if>
+        </div>
+    </f:for>
+</div>
+
