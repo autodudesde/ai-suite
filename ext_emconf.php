@@ -26,5 +26,5 @@ $EM_CONF['ai_suite'] = [
     'uploadfolder' => 0,
     'createDirs' => '',
     'clearCacheOnLoad' => 1,
-    'version' => '12.0.0',
+    'version' => '12.0.1',
 ];

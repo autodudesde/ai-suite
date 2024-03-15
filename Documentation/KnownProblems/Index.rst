@@ -22,9 +22,13 @@ Sometimes, the AI somehow does not return a result for your prompt. This can hav
 We try to minimize the impact of these issues, but we can not guarantee that they will not occur. We try to detect these invalid responses and handle them properly. This means, that we do not charge you a request in those cases.
 In most cases, it helps to rephrase your prompt and give some more necessary infos and try again.
 
+Generation of content elements which have multiple record levels
+================================================================
+
+Content elements which have IRRE records in IRRE records (or Collections in Collections) are currently not supported by the AI Suite.
 
 Report problems
 ==============
 
 If you encounter a problem please create a report at
-`issue tracker <https://github.com/autodudes/ai-suite/issues>`_.
+`issue tracker <https://github.com/autodudesde/ai-suite/issues>`_.
