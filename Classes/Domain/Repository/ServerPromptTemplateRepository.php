@@ -2,7 +2,7 @@
 
 /***
  *
- * This file is part of the "ai_suite_server" Extension for TYPO3 CMS.
+ * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
@@ -23,7 +23,7 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
     public function __construct(
         protected ConnectionPool $connectionPool,
         protected string $table = 'tx_aisuite_domain_model_server_prompt_template',
-        string $sortBy = 'sorting'
+        string $sortBy = 'name'
     ) {
         parent::__construct(
             $connectionPool,

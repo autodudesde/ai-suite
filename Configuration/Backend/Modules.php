@@ -17,7 +17,7 @@ return [
             \AutoDudes\AiSuite\Controller\ContentElementController::class => 'createContentElement, requestContentElement, createPageContent,',
             \AutoDudes\AiSuite\Controller\FilesController::class => 'overview',
             \AutoDudes\AiSuite\Controller\PagesController::class => 'overview, editMetadata, pageStructure, validatePageStructureResult, createValidatedPageStructure',
-            \AutoDudes\AiSuite\Controller\PromptTemplateController::class => 'overview, updateServerPromptTemplates, manageCustomPromptTemplates',
+            \AutoDudes\AiSuite\Controller\PromptTemplateController::class => 'overview, updateServerPromptTemplates, manageCustomPromptTemplates, activate, deactivate, delete',
         ],
     ]
 ];

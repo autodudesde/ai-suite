@@ -89,7 +89,7 @@ class ContentElementController extends AbstractBackendController
         }
 
         $content = PageContent::createEmpty();
-        $content->setSysLanguageUid($request->getQueryParams()['defVals']['tt_content']['sysLanguageUid'] ?? 0);
+        $content->setSysLanguageUid($request->getQueryParams()['defVals']['tt_content']['sys_language_uid'] ?? 0);
         $content->setColPos($request->getQueryParams()['defVals']['tt_content']['colPos'] ?? 0);
         $content->setPid($request->getQueryParams()['defVals']['tt_content']['pid'] ?? $request->getQueryParams()['id']);
         $content->setCType($request->getQueryParams()['defVals']['tt_content']['CType'] ?? 'text');
@@ -112,7 +112,7 @@ class ContentElementController extends AbstractBackendController
                 ],
             ],
             'returnUrl' => $content->getReturnUrl(),
-            'defVals' => $defVals,
+            'defVals' => $defVals
         ]);
 
         $content->setErrorReturnUrl($errorActionUri);
@@ -126,6 +126,12 @@ class ContentElementController extends AbstractBackendController
             'controller' => 'ContentElement',
         ];
         $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
+
+        if(isset($request->getQueryParams()['selectedTcaColumns'])) {
+            $selectedTcaColumns = json_decode($request->getQueryParams()['selectedTcaColumns'], true);
+        } else {
+            $selectedTcaColumns = $requestFields;
+        }
         $this->moduleTemplate->assignMultiple([
             'content' => $content,
             'actionUri' => $actionUri,
@@ -135,8 +141,11 @@ class ContentElementController extends AbstractBackendController
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates(
                 'contentElement',
-                $request->getQueryParams()['defVals']['tt_content']['CType'] ?? 'text'
+                $request->getQueryParams()['defVals']['tt_content']['CType'] ?? 'text',
+                $content->getSysLanguageUid()
             ),
+            'initialPrompt' => $request->getQueryParams()['initialPrompt'] ?? '',
+            'selectedTcaColumns' => $selectedTcaColumns,
         ]);
         return $this->htmlResponse($this->moduleTemplate->render());
     }
@@ -245,6 +254,25 @@ class ContentElementController extends AbstractBackendController
             'controller' => 'ContentElement'
         ];
         $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
+        $regenerateActionUri = (string)$this->backendUriBuilder->buildUriFromRoute('ai_suite_record_edit', [
+            'edit' => [
+                'tt_content' => [
+                    $content->getUidPid() => 'new',
+                ],
+            ],
+            'returnUrl' => $content->getReturnUrl(),
+            'defVals' => [
+                'tt_content' => [
+                    'sys_language_uid' => $content->getSysLanguageUid(),
+                    'colPos' => $content->getColPos(),
+                    'pid' => $content->getPid(),
+                    'CType' => $content->getCType(),
+                ],
+            ],
+            'initialPrompt' => $content->getInitialPrompt(),
+            'selectedTcaColumns' => json_encode($selectedTcaColumns),
+        ]);
+        $this->moduleTemplate->assign('regenerateActionUri', $regenerateActionUri);
         $this->moduleTemplate->assign('actionUri', $actionUri);
         $this->moduleTemplate->addFlashMessage(
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
@@ -291,7 +319,6 @@ class ContentElementController extends AbstractBackendController
             $this->moduleTemplate->assign('errorActionUri', $content->getErrorReturnUrl());
             return $this->htmlResponse($this->moduleTemplate->render());
         }
-        // $this->addFlashMessage('Success', 'Page content successfully created.');
         return $this->redirectToUri($content->getReturnUrl());
     }
 }

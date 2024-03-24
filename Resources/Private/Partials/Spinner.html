@@ -1,8 +1,11 @@
 <div class="spinner-overlay">
-    <div class="spinner">
-        <core:icon identifier="spinner-circle-light" size="large" />
-        <br />
-        <br />
-        <p>{message}</p>
+    <div class="spinner"></div>
+    <p class="message">
+        {message}
+    </p>
+    <div class="cancel">
+        <button class="btn btn-secondary">
+            <f:translate key="tx_aisuite.module.spinner.cancel"/>
+        </button>
     </div>
 </div>

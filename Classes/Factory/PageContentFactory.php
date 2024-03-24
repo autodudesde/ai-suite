@@ -109,7 +109,9 @@ class PageContentFactory
                         'tablenames' => $table,
                         'uid_foreign' => $table === 'tt_content' ? $newStrings[$table] : $newStrings[$table][$key],
                         'fieldname' => $fieldName,
-                        'pid' => $content->getPid()
+                        'pid' => $content->getPid(),
+                        'title' => $fieldData['imageTitle'] ?? '',
+                        'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
                     if($table === 'tt_content') {
                         $data[$table][$newStrings[$table]][$fieldName] = $newString;

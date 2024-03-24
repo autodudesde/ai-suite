@@ -9,6 +9,7 @@ class Creation {
         this.hideShowTextLibraries();
         this.addFormSubmitEventListener();
         this.setPromptTemplate();
+        HelperFunctions.cancelGeneration();
     }
     setPromptTemplate() {
         let promptTemplates = document.querySelector('div[data-module-id="aiSuite"] select[name="promptTemplates"]');

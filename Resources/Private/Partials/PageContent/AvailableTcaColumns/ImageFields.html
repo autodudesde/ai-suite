@@ -5,12 +5,25 @@
     </strong>
     <f:for each="{imageFields}" key="fieldName" as="data" iteration="it">
         <div class="col-12 col-md-6 ps-0">
-            <f:form.checkbox
-                class="request-field-checkbox"
-                name="content[selectedTcaColumns][{table}][image][{fieldName}]"
-                id="content[selectedTcaColumns][{table}][image][{fieldName}]"
-                value="{data.renderType}" checked="checked"
-            />
+            <f:if condition="{selectedTcaColumns.{table}.image.{fieldName}}">
+                <f:then>
+                    <f:form.checkbox
+                        class="request-field-checkbox"
+                        name="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                        id="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                        value="{data.renderType}"
+                        checked="checked"
+                    />
+                </f:then>
+                <f:else>
+                    <f:form.checkbox
+                        class="request-field-checkbox"
+                        name="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                        id="content[selectedTcaColumns][{table}][image][{fieldName}]"
+                        value="{data.renderType}"
+                    />
+                </f:else>
+            </f:if>
             <label class="mb-1" for="content[selectedTcaColumns][{table}][image][{fieldName}]">{data.label}</label>
         </div>
     </f:for>

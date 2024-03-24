@@ -46,29 +46,49 @@ class AbstractPromptTemplateRepository extends Repository
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function findByScopeAndType(string $scope, string $type = ''): array
+    public function findByScopeAndType(string $scope, string $type = '', int $languageId = 0): array
     {
         $connection = $this->connectionPool->getConnectionForTable($this->table);
         $queryBuilder = $connection->createQueryBuilder();
-        $data = $queryBuilder
-            ->select('name', 'prompt')
-            ->from($this->table)
-            ->where(
-                $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope))
-            );
-
-        if ($type !== '') {
-            $data->andWhere(
-                $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($type)),
-                    $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($type .',%')),
-                    $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type)),
-                    $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type . ',%'))
+        if($type !== '') {
+            $queryBuilder->select('name', 'prompt')
+                ->from($this->table)
+                ->where(
+                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
+                    $queryBuilder->expr()->or(
+                        $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($type)),
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($type .',%')),
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type)),
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type . ',%'))
+                    )
+                )
+            ->orWhere(
+                $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('general')),
+                )
+            )
+            ->orWhere(
+                $queryBuilder->expr()->and(
+                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
+                    $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter(''))
                 )
             );
+        } else {
+            $queryBuilder->select('name', 'prompt')
+                ->from($this->table)
+                ->where(
+                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                    $queryBuilder->expr()->or(
+                        $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
+                        $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('general'))
+                    )
+                );
         }
-
-        $data = $data->executeQuery()
+        $queryBuilder->orderBy($this->sortBy, 'DESC');
+        $data = $queryBuilder->executeQuery()
             ->fetchAllAssociative();
         return $data ?: [];
     }

@@ -15,6 +15,7 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Model\Dto\XlfInput;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Exception\EmptyXliffException;
 use AutoDudes\AiSuite\Service\ConstantsService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\XliffUtility;
@@ -89,7 +90,7 @@ class AgenciesController extends AbstractBackendController
         }
         if ($input->getTranslationMode() === 'missingProperties') {
             try {
-                $destinationFile = XliffUtility::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' . $input->getFilename());
+                $destinationFile = XliffUtility::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' . $input->getFilename(), false);
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());
                 $this->addFlashMessage(
@@ -151,6 +152,8 @@ class AgenciesController extends AbstractBackendController
             foreach ($originalValues as $origKey => $origValue) {
                 if(array_key_exists($origKey, $translations)) {
                     $originalValues[$origKey]['translated'] = $translations[$origKey];
+                } else {
+                    unset($originalValues[$origKey]);
                 }
             }
 
@@ -178,6 +181,14 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.errorFileNotFound.title', 'ai_suite'),
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->redirect('translateXlf');
+        } catch (EmptyXliffException $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->addFlashMessage(
+                $exception->getMessage(),
+                LocalizationUtility::translate('aiSuite.module.sourceXliffFileEmpty.message', 'ai_suite'),
                 ContextualFeedbackSeverity::ERROR
             );
             return $this->redirect('translateXlf');

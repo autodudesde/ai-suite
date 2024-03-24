@@ -22,7 +22,6 @@ $exclusionCTypeList = [
 ];
 
 $cTypes = [];
-$types = $GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'];
 foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
     if (array_key_exists('label', $val) && array_key_exists('value', $val) && array_key_exists('group', $val)) {
         if(!in_array($val['group'], $exclusionTabList) && $val['value'] !== '--div--') {
@@ -32,9 +31,6 @@ foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as
         if(!in_array($val['3'], $exclusionTabList) && !in_array($val['1'], $exclusionCTypeList) && $val['1'] !== '--div--') {
             $cTypes[] = [$val['0'], $val['1']];
         }
-    }
-    if(array_key_exists('value', $val) && $val['value'] === 'CSV') {
-        $test = 0;
     }
 }
 

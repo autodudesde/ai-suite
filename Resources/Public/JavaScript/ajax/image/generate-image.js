@@ -178,6 +178,24 @@ class GenerateImage {
                         document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield').forEach(function(placeholderField) {
                             placeholderField.style.display = 'none';
                         });
+                        let titleFieldHidden = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[name="data[sys_file_reference][' + res.compilerInput.uid +'][title]"]');
+                        if(titleFieldHidden !== null && imageTitle !== undefined) {
+                            titleFieldHidden.value = imageTitle;
+                        }
+                        let titleField = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[data-formengine-input-name="data[sys_file_reference][' + res.compilerInput.uid +'][title]"]');
+                        if(titleField !== null && imageTitle !== undefined) {
+                            titleField.value = imageTitle;
+                            document.getElementById('control[active][sys_file_reference][' + res.compilerInput.uid +'][title]').click()
+                        }
+                        let altFieldHidden = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[name="data[sys_file_reference][' + res.compilerInput.uid +'][alternative]"]');
+                        if(altFieldHidden !== null && imageTitle !== undefined) {
+                            altFieldHidden.value = imageTitle;
+                        }
+                        let altField = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[data-formengine-input-name="data[sys_file_reference][' + res.compilerInput.uid +'][alternative]"]');
+                        if(altField !== null && imageTitle !== undefined) {
+                            altField.value = imageTitle;
+                            document.getElementById('control[active][sys_file_reference][' + res.compilerInput.uid +'][alternative]').click()
+                        }
                         document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield input[type="text"]').forEach(function(inputField) {
                             inputField.addEventListener('keyup', function(event) {
                                 document.querySelector('input[name="'+inputField.getAttribute('data-formengine-input-name')+'"]').value = event.target.value;

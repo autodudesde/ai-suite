@@ -12,7 +12,7 @@
 
 return [
     'ctrl' => [
-        'title' => 'Custom Prompt-Templates',
+        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel',
         'label' => 'name',
         'label_alt' => 'scope',
         'label_alt_force' => true,
@@ -126,7 +126,7 @@ return [
         ],
         'name' => [
             'exclude' => true,
-            'label' => 'Name',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.name',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
@@ -136,7 +136,7 @@ return [
         ],
         'prompt' => [
             'exclude' => true,
-            'label' => 'Prompt template',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate',
             'config' => [
                 'type' => 'text',
                 'eval' => 'trim',
@@ -145,15 +145,16 @@ return [
         ],
         'scope' => [
             'exclude' => true,
-            'label' => 'Scope',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scope',
             'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['PageTree Generation', 'pageTree'],
-                    ['ImageWizard', 'imageWizard'],
-                    ['Content Element Generation', 'contentElement'],
+                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral', 'general'],
+                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree', 'pageTree'],
+                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard', 'imageWizard'],
+                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement', 'contentElement'],
                 ],
                 'size' => 1,
                 'eval' => 'trim',
@@ -161,7 +162,7 @@ return [
         ],
         'type' => [
             'exclude' => true,
-            'label' => 'Type (CType of Content Element)',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope',
             'displayCond' => 'FIELD:scope:=:contentElement',
             'config' => [
                 'type' => 'select',

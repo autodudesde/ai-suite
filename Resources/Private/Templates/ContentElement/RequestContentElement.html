@@ -38,10 +38,18 @@
                             <f:form.hidden property="selectedTcaColumns" name="selectedTcaColumns" value="{content.selectedTcaColumns -> f:format.json()}" class="form-control" />
                             <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
 
-                            <div class="form-group">
-                                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.PageContent.validate.addContent')}" class="btn btn-secondary" />
+                            <div class="form-group button-bar">
+                                <button type="submit" class="btn btn-primary">
+                                    <core:icon identifier="actions-page-new" size="small"/>
+                                    {f:translate(key: 'tx_aisuite.module.PageContent.validate.addContent')}
+                                </button>
+                                <a href="{regenerateActionUri}" class="btn btn-secondary mx-3">
+                                    <core:icon identifier="actions-refresh" size="small" />
+                                    <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContentElement"/>
+                                </a>
                             </div>
                         </f:form>
+
 
                         <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.default')}" />
                         <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />

@@ -41,8 +41,8 @@
                     class="row collapse show"
                     data-bs-parent="#{table}"
                 >
-                    <f:render partial="PageContent/AvailableTcaColumns/TextFields" arguments="{textFields: data.text, table: table}" />
-                    <f:render partial="PageContent/AvailableTcaColumns/ImageFields" arguments="{imageFields: data.image, table: table}" />
+                    <f:render partial="PageContent/AvailableTcaColumns/TextFields" arguments="{textFields: data.text, table: table, selectedTcaColumns: selectedTcaColumns}" />
+                    <f:render partial="PageContent/AvailableTcaColumns/ImageFields" arguments="{imageFields: data.image, table: table, selectedTcaColumns: selectedTcaColumns}" />
                 </div>
             </div>
         </div>

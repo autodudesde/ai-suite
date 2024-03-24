@@ -5,43 +5,142 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
-
     <f:asset.css identifier="manage-custom-prompt-templates-search-form" href="EXT:ai_suite/Resources/Public/Css/PromptManager/prompt-manager-styles.css" />
 
     <h1 class="mb-2">
         <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.header"/>
     </h1>
-
-
     <br />
-    <br />
-    <f:form action="manageCustomPromptTemplates" name="input" enctype="multipart/form-data" method="post" class="manage-custom-prompt-templates-search-form">
-        <f:form.textfield id="search" name="search" property="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder')}"/>
-        <f:form.submit value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}" class="btn btn-primary"/>
-        <button class="btn btn-secondary" onclick="document.querySelector('form.manage-custom-prompt-templates-search-form #search').value = '';">
-            {f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset')}
-        </button>
-    </f:form>
-
-    <be:link.newRecord table="tx_aisuite_domain_model_custom_prompt_template"
-               returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}" class="btn btn-secondary"
-               pid="{pid}">
-        <core:icon identifier="actions-page-new" size="small"/>
-        {f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate')}
-    </be:link.newRecord>
-    <br />
-    <br />
-
-    <f:be.tableList tableName="tx_aisuite_domain_model_custom_prompt_template" fieldList="{0: 'name', 1: 'scope', 2: 'type'}"
-        storagePid="{pid}"
-        levels="50"
-        recordsPerPage="20"
-        sortField="name"
-        sortDescending="true"
-        enableClickMenu="true"
-        enableControlPanels="true"
-        clickTitleMode="edit"
-        filter="{search}"
-    />
+    <div class="recordlist">
+        <div class="recordlist-heading multi-record-selection-panel">
+            <div class="recordlist-heading-row">
+                <div class="recordlist-heading-title">
+                    <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel"/> (<f:count subject="{customPromptTemplates}" />)
+                </div>
+                <be:link.newRecord
+                    table="tx_aisuite_domain_model_custom_prompt_template"
+                    returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}" class="btn btn-secondary"
+                    pid="{pid}"
+                >
+                    <core:icon identifier="actions-page-new" size="small"/>
+                    <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate"/>
+                </be:link.newRecord>
+                <f:form action="manageCustomPromptTemplates" name="input" enctype="multipart/form-data" method="post" class="manage-custom-prompt-templates-search-form">
+                    <f:form.textfield id="search" name="search" property="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder')}"/>
+                    <f:form.submit value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}" class="btn btn-primary"/>
+                    <f:link.action
+                        action="manageCustomPromptTemplates"
+                        title="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset')}"
+                        class="btn btn-secondary"
+                    >
+                        <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset"/>
+                    </f:link.action>
+                </f:form>
+            </div>
+        </div>
+        <div class="">
+            <div class="table-fit">
+                <table class="table product-table table-striped recordlist">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">
+                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.name"/>
+                        </th>
+                        <th scope="col">
+                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.scope"/>
+                        </th>
+                        <th scope="col">
+                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope"/>
+                        </th>
+                        <th scope="col">
+                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.language"/>
+                        </th>
+                        <th scope="col">
+                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.actions"/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <f:for each="{customPromptTemplates}" as="template">
+                        <tr>
+                            <td width="20px">
+                                <f:image src="EXT:ai_suite/Resources/Public/Icons/Extension.svg" alt="Icon" width="18" height="18" />
+                            </td>
+                            <td>
+                                <be:link.editRecord
+                                    table="tx_aisuite_domain_model_custom_prompt_template"
+                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
+                                    uid="{template.uid}"
+                                    returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}"
+                                >
+                                    {template.name}
+                                </be:link.editRecord>
+                            </td>
+                            <td>
+                                <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.scope{template.scope -> f:format.case(mode: 'capital')}"/>
+                            </td>
+                            <td>
+                                {template.type}
+                            </td>
+                            <td>
+                                <f:if condition="{template.flag} != ''">
+                                    <f:then>
+                                        <core:icon identifier="{template.flag}"/>
+                                    </f:then>
+                                    <f:else>
+                                        {template.sys_language_uid}
+                                    </f:else>
+                                </f:if>
+                            </td>
+                            <td>
+                                <be:link.editRecord
+                                    table="tx_aisuite_domain_model_custom_prompt_template"
+                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
+                                    uid="{template.uid}"
+                                    returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}"
+                                    class="btn btn-default"
+                                >
+                                    <core:icon identifier="actions-open" size="small"/>
+                                </be:link.editRecord>
+                                <f:if condition="{template.hidden}">
+                                    <f:then>
+                                        <f:link.action
+                                            action="activate"
+                                            arguments="{recordId: template.uid}"
+                                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel')}"
+                                            class="btn btn-default"
+                                        >
+                                            <core:icon identifier="actions-toggle-off" size="small"/>
+                                        </f:link.action>
+                                    </f:then>
+                                    <f:else>
+                                        <f:link.action
+                                            action="deactivate"
+                                            arguments="{recordId: template.uid}"
+                                            pageUid="{template.pid}"
+                                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel')}"
+                                            class="btn btn-default"
+                                        >
+                                            <core:icon identifier="actions-toggle-on" size="small"/>
+                                        </f:link.action>
+                                    </f:else>
+                                </f:if>
+                                <f:link.action
+                                    action="delete"
+                                    arguments="{recordId: template.uid}"
+                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel')}"
+                                    class="btn btn-default"
+                                >
+                                    <core:icon identifier="actions-delete" size="small"/>
+                                </f:link.action>
+                            </td>
+                        </tr>
+                    </f:for>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </f:section>
 </html>

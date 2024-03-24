@@ -16,12 +16,14 @@ namespace AutoDudes\AiSuite\Utility;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\XlfInput;
 use AutoDudes\AiSuite\Domain\Model\Dto\XliffFile;
+use AutoDudes\AiSuite\Exception\EmptyXliffException;
 use SimpleXMLElement;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
 use TYPO3\CMS\Core\Package\PackageManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class XliffUtility
 {
@@ -29,13 +31,14 @@ class XliffUtility
      * @throws FileNotFoundException
      * @throws UnknownPackageException
      * @throws Exception
+     * @throws EmptyXliffException
      */
     public static function getTranslateValues(XlfInput $input): array
     {
         $sourceFile = self::readXliff($input->getExtensionKey(), $input->getFilename());
         $destinationFile = false;
         if ($input->getTranslationMode() === 'missingProperties') {
-            $destinationFile = self::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' . $input->getFilename());
+            $destinationFile = self::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' . $input->getFilename(), false);
         }
         $neededTranslations = $sourceFile->getFormatedData();
         // cleanup translation items
@@ -54,7 +57,7 @@ class XliffUtility
      * @throws UnknownPackageException
      * @throws \Exception
      */
-    public static function readXliff(string $extKey, string $filename, string $langKey = 'en'): XliffFile
+    public static function readXliff(string $extKey, string $filename, bool $sourceFile = true): XliffFile
     {
         $packageManager = GeneralUtility::makeInstance(PackageManager::class);
         $package = $packageManager->getPackage($extKey);
@@ -71,10 +74,14 @@ class XliffUtility
         }
         $xmlData = new \SimpleXMLElement($fileData);
         $rawData = self::simpleXMLElementToArray($xmlData);
+        if(empty($rawData['file']['body']) && $sourceFile) {
+            throw new EmptyXliffException(LocalizationUtility::translate('aiSuite.module.sourceXliffFileEmpty.title', 'ai_suite'));
+        } elseif (empty($rawData['file']['body']) && !$sourceFile) {
+            $rawData['file']['body'] = [];
+        }
         return new XliffFile(
             $filename,
             $package,
-            $langKey,
             $xmlData,
             $rawData,
             self::xmlArrayToStructuredArray($rawData)
@@ -118,13 +125,26 @@ class XliffUtility
     {
         $data = [];
         if (array_key_exists('file', $rawData) && array_key_exists('body', $rawData['file']) && array_key_exists('trans-unit', $rawData['file']['body'])) {
-            foreach ($rawData['file']['body']['trans-unit'] as $langItem) {
-                if (array_key_exists('@id', $langItem)) {
-                    $data[$langItem['@id']] = [
-                        'originalData' => $langItem,
-                        'source' => array_key_exists('source', $langItem) ? $langItem['source'] : '',
-                    ];
+            if (array_key_exists('0', $rawData['file']['body']['trans-unit'])) {
+                foreach ($rawData['file']['body']['trans-unit'] as $langItem) {
+                    if (is_array($langItem) && array_key_exists('@id', $langItem)) {
+                        $data[$langItem['@id']] = [
+                            'originalData' => $langItem,
+                            'source' => array_key_exists('source', $langItem) ? $langItem['source'] : '',
+                            'target' => array_key_exists('target', $langItem) ? $langItem['target'] : '',
+                        ];
+                    }
                 }
+            } else if (is_array($rawData['file']['body']['trans-unit'])) {
+                $itemData = [];
+                foreach ( $rawData['file']['body']['trans-unit'] as $key => $itemValue) {
+                    $itemData[$key] = $itemValue;
+                }
+                $data[$itemData['@id']] = [
+                    'originalData' => $itemData,
+                    'source' => array_key_exists('source', $itemData) ? $itemData['source'] : '',
+                    'target' => array_key_exists('target', $itemData) ? $itemData['target'] : '',
+                ];
             }
         }
         return $data;
@@ -138,20 +158,24 @@ class XliffUtility
         $translations = $input->getTranslations();
         $sourceFile = self::readXliff($input->getExtensionKey(), $input->getFilename());
         if ($input->getTranslationMode() === 'missingProperties') {
-            $destinationFile = self::readXliff($input->getExtensionKey(), $input->getFilename());
-            $newTranslation = $destinationFile->getSimpleXMLElement();
+            $destinationFile = self::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' .$input->getFilename(), false);
+            $newTranslation = $sourceFile->getSimpleXMLElement();
+            for ($i = 0; $i < count($sourceFile->getFormatedData()); $i++) {
+                $unitAttributes = self::getUnitAttributes($sourceFile, $i);
+                if (array_key_exists($unitAttributes, $translations)) {
+                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                } else {
+                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
+                }
+            }
         } else {
             $newTranslation = $sourceFile->getSimpleXMLElement();
-        }
-        $newTranslation->file->addAttribute('target-language', $input->getDestinationLanguage());
-        if($input->getTranslationMode() === 'missingProperties') {
-            $newTranslation->file->body->addChild('note', 'This file was automatically generated by the AI Suite extension. Please do not edit this file manually.');
-        }
-
-        for ($i = 0; $i < count($newTranslation->file->body->{"trans-unit"}); $i++) {
-            $unitAttributes = $newTranslation->file->body->{"trans-unit"}[$i]->attributes()["id"];
-            if (array_key_exists('' . $unitAttributes[0], $translations)) {
-                $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes[0]]);
+            $newTranslation->file->addAttribute('target-language', $input->getDestinationLanguage());
+            for ($i = 0; $i < count($sourceFile->getFormatedData()); $i++) {
+                $unitAttributes = self::getUnitAttributes($sourceFile, $i);
+                if (array_key_exists($unitAttributes, $translations)) {
+                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                }
             }
         }
 
@@ -160,5 +184,14 @@ class XliffUtility
         $packagePath = $package->getPackagePath();
         $file = $packagePath . 'Resources/Private/Language/' . $input->getDestinationLanguage() . '.' . $input->getFilename();
         return $newTranslation->asXML($file);
+    }
+
+    public static function getUnitAttributes($sourceFile, int $i): string {
+        if(array_key_exists($i, $sourceFile->getFormatedData())) {
+            $unitAttributes = $sourceFile->getFormatedData()[$i]['originalData']["@id"];
+        } else {
+            $unitAttributes = array_key_first($sourceFile->getFormatedData());
+        }
+        return $unitAttributes;
     }
 }

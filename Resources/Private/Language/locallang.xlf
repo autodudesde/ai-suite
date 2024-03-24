@@ -353,12 +353,14 @@
                 <source>Update prompt templates from server</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.description" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.description">
-                <source>The AI Suite brings prompt templates from server and you also can add prompt templates for your needs. With this action, only the server prompt templates get updated. Your custom prompt templates wouldn't get touched.</source>
+                <source>The AI Suite provides prompt templates. You can also add your own custom prompt templates. This action only updates the server prompt templates. Your custom prompt templates remain untouched.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel">
                 <source>Update server prompt templates</source>
             </trans-unit>
-
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
+                <source>Custom prompt templates</source>
+            </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.title" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.title">
                 <source>Manage your custom prompt templates</source>
             </trans-unit>
@@ -368,10 +370,48 @@
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel">
                 <source>Manage custom prompt templates</source>
             </trans-unit>
-
-
-
-
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.name" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.name">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scope">
+                <source>Scope</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral">
+                <source>General available</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard">
+                <source>Image generation</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree">
+                <source>Page tree generation</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement">
+                <source>ContentElements</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
+                <source>Prompt template</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope">
+                <source>ContentElements (leave empty for all elements)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.language" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.language">
+                <source>Language</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions">
+                <source>Actions</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel">
+                <source>Edit</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel">
+                <source>Activate</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel">
+                <source>Deactivate</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel">
+                <source>Delete</source>
+            </trans-unit>
 
             <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
@@ -417,6 +457,9 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.PageContent.validate.addContent" resname="tx_aisuite.module.PageContent.validate.addContent">
                 <source>Add content to page</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.regenerateContentElement" resname="tx_aisuite.module.PageContent.validate.regenerateContentElement">
+                <source>Regenerate content element</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.PageContent.validate.addSocialContent" resname="tx_aisuite.module.PageContent.validate.addSocialContent">
                 <source>Add / generate post</source>
@@ -501,10 +544,10 @@
                 <source>Speed up your daily work and get better results from AI by preparing your prompts efficiently.</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.header" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.header">
-                <source>Manage your custom promt templates</source>
+                <source>Manage your custom prompt templates</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder">
-                <source>Your search input...</source>
+                <source>Search...</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit">
                 <source>Search</source>
@@ -513,9 +556,8 @@
                 <source>Reset</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate">
-                <source>Create custom prompt template</source>
+                <source>Create prompt template</source>
             </trans-unit>
-
 
             <trans-unit id="AiSuite.generation.keywordsSuggestions" resname="AiSuite.generation.keywordsSuggestions">
                 <source>Generate keywords suggestions</source>
@@ -827,6 +869,12 @@
             <trans-unit id="aiSuite.module.errorWritingTranslationFile.message" xml:space="preserve">
                 <source>There was a problem while writing the translations.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.sourceXliffFileEmpty.title" xml:space="preserve">
+                <source>XLIFF file is empty</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.sourceXliffFileEmpty.message" xml:space="preserve">
+                <source>No trans-unit entries found in XLIFF file.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.cannotSendRequest.title" xml:space="preserve">
                 <source>Error before sending request to server</source>
             </trans-unit>
@@ -853,6 +901,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.abort" xml:space="preserve">
                 <source>Abort</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.spinner.cancel" xml:space="preserve">
+                <source>Cancel</source>
             </trans-unit>
         </body>
     </file>

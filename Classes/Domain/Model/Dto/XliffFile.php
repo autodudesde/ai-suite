@@ -29,14 +29,12 @@ class XliffFile
     public function __construct(
         string $filename,
         PackageInterface $package,
-        string $langKey,
         SimpleXMLElement $simpleXMLElement,
         array $rawData,
         array $formatedData
     ) {
         $this->filename = $filename;
         $this->package = $package;
-        $this->langKey = $langKey;
         $this->simpleXMLElement = $simpleXMLElement;
         $this->rawData = $rawData;
         $this->formatedData = $formatedData;
@@ -50,11 +48,6 @@ class XliffFile
     public function getPackage(): PackageInterface
     {
         return $this->package;
-    }
-
-    public function getLangKey(): string
-    {
-        return $this->langKey;
     }
 
     public function getSimpleXMLElement(): SimpleXMLElement

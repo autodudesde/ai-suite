@@ -24,6 +24,15 @@ class Functions {
         }, 100);
     }
 
+    cancelGeneration() {
+        let cancelButton = document.querySelector('div[data-module-id="aiSuite"] .spinner-overlay .cancel .btn');
+        if(this.isUsable(cancelButton)) {
+            cancelButton.addEventListener('click', function () {
+                history.go(0);
+            });
+        }
+    }
+
     /**
      *
      * @param {string} endpoint

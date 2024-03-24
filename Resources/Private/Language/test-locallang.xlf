@@ -9,14 +9,26 @@
             <trans-unit id="tx_aisuite.module.general.prompt" resname="tx_aisuite.module.general.prompt">
                 <source>Input statement for the AI (prompt)</source>
             </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.promptTemplates" resname="tx_aisuite.module.general.promptTemplates">
+                <source>Prompt Templates</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
+                <source>Select prompt template</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
+                <source>Select prompt template</source>
+            </trans-unit>
             <trans-unit id="tx_aisuite.module.general.languageChooser" resname="tx_aisuite.module.general.languageChooser">
-                <source>In which system language should the answer be?</source>
+                <source>Answer in the following language</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.general.spinner.default" resname="tx_aisuite.module.general.spinner.default">
                 <source>Request is being processed...</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.general.spinner.contentCreation" resname="tx_aisuite.module.general.spinner.contentCreation">
                 <source>Content is being generated, this may take a moment...</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.error.try_again" resname="tx_aisuite.module.error.try_again">
+                <source>Try again</source>
             </trans-unit>
 
         </body>

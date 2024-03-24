@@ -15,6 +15,7 @@ $EM_CONF['ai_suite'] = [
         ],
         'suggests' => [
             'bootstrap_package' => '14.0.0-14.99.99',
+            'content_blocks' => '0.6.0-1.0.0',
         ],
     ],
     'autoload' => [
@@ -24,7 +25,6 @@ $EM_CONF['ai_suite'] = [
     ],
     'state' => 'stable',
     'uploadfolder' => 0,
-    'createDirs' => '',
     'clearCacheOnLoad' => 1,
-    'version' => '12.0.1',
+    'version' => '12.0.2',
 ];

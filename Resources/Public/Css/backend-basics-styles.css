@@ -46,16 +46,67 @@ div[data-module-id="aiSuite"] .spinner-overlay.active {
     display: flex;
 }
 div[data-module-id="aiSuite"] .spinner-overlay.darken {
-    background-color: #0000008f;
+    background-color: rgba(0,0,0,0.75);
 }
 
-div[data-module-id="aiSuite"] .spinner {
+div[data-module-id="aiSuite"] .spinner,
+div[data-module-id="aiSuite"] .spinner:before,
+div[data-module-id="aiSuite"] .spinner:after{
     text-align: center;
     opacity: 0;
-    transition: opacity 0.9s ease-in-out;
+    width: 35px;
+    aspect-ratio: 1;
+    box-shadow: 0 0 0 3px inset #fff;
+    position: relative;
+    animation: 1.5s infinite 0.5s;
+    animation-name: l7-1,l7-2;
 }
-div[data-module-id="aiSuite"] .spinner-overlay.darken .spinner {
+div[data-module-id="aiSuite"] .spinner:before,
+div[data-module-id="aiSuite"] .spinner:after{
+    content: "";
+    position: absolute;
+    left: calc(100% + 5px);
+    animation-delay: 1s,0s;
+}
+div[data-module-id="aiSuite"] .spinner:after{
+    left: -40px;
+    animation-delay: 0s,1s;
+}
+@keyframes l7-1 {
+    0%,55%,100%  {border-top-left-radius:0;  border-bottom-right-radius:0}
+    20%,30%      {border-top-left-radius:50%;border-bottom-right-radius:50%}
+}
+@keyframes l7-2 {
+    0%,55%,100%  {border-bottom-left-radius:0;  border-top-right-radius:0}
+    20%,30%      {border-bottom-left-radius:50%;border-top-right-radius:50%}
+}
+
+div[data-module-id="aiSuite"] .spinner-overlay.darken .spinner,
+div[data-module-id="aiSuite"] .spinner-overlay.darken .spinner:before,
+div[data-module-id="aiSuite"] .spinner-overlay.darken .spinner:after {
     opacity: 1;
+}
+div[data-module-id="aiSuite"] .spinner-overlay.darken .message {
+    position: absolute;
+    top: 53%;
+    font-size: 0.9rem;
+}
+div[data-module-id="aiSuite"] .spinner-overlay.active .cancel {
+    display: flex;
+    position: absolute;
+    top: 56%;
+    font-size: 0.9rem;
+    animation: show 0s both;
+    animation-delay: 0.8s;
+}
+
+@keyframes show {
+    from {
+        visibility: hidden;
+    }
+    to {
+        visibility: visible;
+    }
 }
 
 div[data-module-id="aiSuite"] .request-state span {
@@ -366,3 +417,4 @@ div[data-module-id="aiSuite"] .status .badge.critical {
     background-color: darkred;
     color: white;
 }
+
