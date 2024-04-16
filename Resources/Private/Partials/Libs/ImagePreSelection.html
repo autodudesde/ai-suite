@@ -1,0 +1,32 @@
+
+<div class="row image-preselection mt-2">
+    <h3 class="text-gradient">
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.generatedPreselectionImageOptions" />
+    </h3>
+    <f:for each="{imageSuggestions}" as="preSelection" iteration="it">
+        <div class="col-12 my-3">
+            <img src="{preSelection.url}" />
+            <p class="mt-3">
+                <f:for each="{preSelection.components}" as="component" iteration="it">
+                    <f:if condition="{component.label}">
+                        <button
+                            class="component-button"
+                            data-custom-id="{component.custom_id}"
+                            data-m-id="{preSelection.id}"
+                            data-fieldname="{fieldName}"
+                            data-table="{table}"
+                            data-position="{position}"
+                            data-page-id="{pageId}"
+                            data-index="{it.cycle}"
+                            data-prompt="{preSelection.prompt}"
+                            data-uuid="{uuid}"
+                        >
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.preselectionUseImage" /> {it.cycle} ({component.label})
+                        </button>
+                    </f:if>
+                </f:for>
+            </p>
+        </div>
+    </f:for>
+</div>
+

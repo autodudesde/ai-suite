@@ -59,8 +59,8 @@
             </trans-unit>
 
 
-            <trans-unit id="tx_aisuite.module.dashboard.requestState" resname="tx_aisuite.module.dashboard.requestState">
-                <source>Available requests</source>
+            <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
+                <source>Available Credits</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.header" resname="tx_aisuite.module.dashboard.header">
                 <source>Welcome to AI Suite Extension</source>
@@ -423,7 +423,10 @@
                 <source>Paste the new structure under the following page:</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.pageStructure.submit" resname="tx_aisuite.module.pageStructure.submit">
-                <source>Request structure</source>
+                <source>Generate page structure</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.validatePageStructure.submit" resname="tx_aisuite.module.validatePageStructure.submit">
+                <source>Create structure</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.pageStructure.sortable-input.title" resname="tx_aisuite.module.pageStructure.sortable-input.title">
                 <source>Insert the new page title:</source>
@@ -432,13 +435,11 @@
                 <source>Submit</source>
             </trans-unit>
 
-
-
             <trans-unit id="tx_aisuite.module.PageContent.description" resname="tx_aisuite.module.PageContent.description">
                 <source>This module works on the active page, which is selected in the page tree on the left.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.PageContent.submit" resname="tx_aisuite.module.PageContent.submit">
-                <source>Request content</source>
+                <source>Generate content</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.PageContent.whichPosition" resname="tx_aisuite.module.PageContent.whichPosition">
                 <source>Position of the new element</source>
@@ -477,7 +478,17 @@
                 <source>Create new files or file metadata</source>
             </trans-unit>
 
+            <trans-unit id="AiSuite.contentElementPromptHeader" resname="AiSuite.contentElementPromptHeader">
+                <source>Prompt</source>
+            </trans-unit>
 
+            <trans-unit id="AiSuite.imageWizardPromptHeader" resname="AiSuite.imageWizardPromptHeader">
+                <source>Image prompt</source>
+            </trans-unit>
+
+            <trans-unit id="AiSuite.translateXlfHeader" resname="AiSuite.translateXlfHeader">
+                <source>XLF file properties</source>
+            </trans-unit>
 
             <trans-unit id="tx_aisuite.module.Translate.overview.header" resname="tx_aisuite.module.Translate.overview.header">
                 <source>Translate for language support</source>
@@ -525,13 +536,12 @@
                 <source>Search...</source>
             </trans-unit>
 
-
-
             <trans-unit id="tx_aisuite.module.Pages.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
                 <source>Work on pages and page tree</source>
             </trans-unit>
-
-
+            <trans-unit id="AiSuite.module.Pages.pagesSelect" resname="AiSuite.module.Pages.pagesSelect">
+                <source>Selected page</source>
+            </trans-unit>
 
             <trans-unit id="tx_aisuite.module.Social.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
                 <source>Social Media interaction</source>
@@ -560,34 +570,34 @@
             </trans-unit>
 
             <trans-unit id="AiSuite.generation.keywordsSuggestions" resname="AiSuite.generation.keywordsSuggestions">
-                <source>Generate keywords suggestions</source>
+                <source>Generate keywords suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.newsKeywordsSuggestions" resname="AiSuite.generation.newsKeywordsSuggestions">
-                <source>Generate keywords suggestions for news article</source>
+                <source>Generate keywords suggestions for news article (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.metaDescriptionSuggestions" resname="AiSuite.generation.metaDescriptionSuggestions">
-                <source>Generate meta description suggestions</source>
+                <source>Generate meta description suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.pageTitleSuggestions" resname="AiSuite.generation.pageTitleSuggestions">
-                <source>Generate page title suggestions</source>
+                <source>Generate page title suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.ogTitleSuggestions" resname="AiSuite.generation.ogTitleSuggestions">
-                <source>Generate Open Graph title suggestions</source>
+                <source>Generate Open Graph title suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.twitterTitleSuggestions" resname="AiSuite.generation.twitterTitleSuggestions">
-                <source>Generate Twitter title suggestions</source>
+                <source>Generate Twitter title suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.newsAlternativeTitleSuggestions" resname="AiSuite.generation.newsAlternativeTitleSuggestions">
-                <source>Generate alternative title suggestions for news article</source>
+                <source>Generate alternative title suggestions for news article (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.ogDescriptionSuggestions" resname="AiSuite.generation.ogDescriptionSuggestions">
-                <source>Generate Open Graph description suggestions</source>
+                <source>Generate Open Graph description suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.twitterDescriptionSuggestions" resname="AiSuite.generation.twitterDescriptionSuggestions">
-                <source>Generate Twitter description suggestions</source>
+                <source>Generate Twitter description suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
-                <source>Generate description suggestions for news article</source>
+                <source>Generate description suggestions for news article (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.start" resname="AiSuite.notification.generation.start">
                 <source>Started</source>
@@ -710,11 +720,11 @@
             <trans-unit id="aiSuite.module.aiSuiteTrailer" xml:space="preserve">
                 <source>AI Suite trailer</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.freeRequests" xml:space="preserve">
-                <source>Free requests</source>
+            <trans-unit id="aiSuite.module.freeCredits" xml:space="preserve">
+                <source>Free Credits</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.paidRequests" xml:space="preserve">
-                <source>Paid requests</source>
+            <trans-unit id="aiSuite.module.paidCredits" xml:space="preserve">
+                <source>Paid Credits</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
@@ -764,17 +774,53 @@
             <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
                 <source>Please enter your prompt with at least five characters</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcess" xml:space="preserve">
+            <trans-unit id="aiSuite.module.modal.generalImageGenerationSettings" xml:space="preserve">
+                <source>General image generation settings</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.generatedPreselectionImageOptions" xml:space="preserve">
+                <source>Generated pre-selection image options</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.preselectionUseImage" xml:space="preserve">
+                <source>Use image</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessDalle" xml:space="preserve">
                 <source>Image suggestions will be generated. This may take a while. Please wait...</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageSelection" xml:space="preserve">
-                <source>Select your favorite generated image</source>
+            <trans-unit id="aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney" xml:space="preserve">
+                <source>Pre-selection image options will be generated. This may take a while. Please wait...</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.modal.generatedImages" xml:space="preserve">
-                <source>Generated images</source>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
+                <source>Selected image will be generated. This may take a while. Please wait...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
+                <source>Selected image will be generated. This may take a while. Please wait...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
+                <source>Select pre-selection image option</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageSelection" xml:space="preserve">
+                <source>Select image and title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.dalleSlideOne" xml:space="preserve">
+                <source>Generated image suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.midjourneySlideOne" xml:space="preserve">
+                <source>Pre-selection image options</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.midjourneySlideTwo" xml:space="preserve">
+                <source>Select image and title</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageSavingProcess" xml:space="preserve">
                 <source>Image is saved. Please wait...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.midjourneyPreSelectionError" xml:space="preserve">
+                <source>Unable to load Midjourney pre-selection image options</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.midjourneySelectionError" xml:space="preserve">
+                <source>Unable to load selected Midjourney image</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.dalleSelectionError" xml:space="preserve">
+                <source>Unable to load DALL-E image suggestions</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationFailed" xml:space="preserve">
                 <source>Image generation failed with the following error: </source>
@@ -784,6 +830,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noImageSelectedMessage" xml:space="preserve">
                 <source>Please select your favorite image</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.oneCredit" xml:space="preserve">
+                <source>Credit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.multipleCredits" xml:space="preserve">
+                <source>Credits</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.errorMissingArguments.title" xml:space="preserve">
                 <source>Missing action arguments</source>
@@ -821,8 +873,14 @@
             <trans-unit id="aiSuite.module.pagetreeGenerationSuccessful.message" xml:space="preserve">
                 <source>Check your selected root page for new page tree.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.warningFetchingRequestsState.title" xml:space="preserve">
-                <source>Could not fetch your current requests state</source>
+            <trans-unit id="aiSuite.module.warningFetchingCreditsState.title" xml:space="preserve">
+                <source>Could not fetch your current Credits state.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.missingAiSuiteApiKey.title" xml:space="preserve">
+                <source>Please enter your AI Suite API key in the extension configuration.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.missingAiSuiteApiKey.message" xml:space="preserve">
+                <source>If you don't have an API key yet, you can get one at https://www.autodudes.de</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title" xml:space="preserve">
                 <source>Could not fetch the current status of the OpenAI API.</source>
@@ -904,6 +962,48 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.spinner.cancel" xml:space="preserve">
                 <source>Cancel</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageTitleFreeTextPlaceholder" xml:space="preserve">
+                <source>Enter custom image title</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney" xml:space="preserve">
+                <source>Additional Midjourney image settings</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.version" xml:space="preserve">
+                <source>Version</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.version.tooltip" xml:space="preserve">
+                <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.aspectRatio" xml:space="preserve">
+                <source>Aspect ratio</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.aspectRatio.tooltip" xml:space="preserve">
+                <source>Changes the aspect ratio of the generated image. An aspect ratio is the width-to-height ratio of an image.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.no" xml:space="preserve">
+                <source>Exclusions (Negative prompting)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.no.tooltip" xml:space="preserve">
+                <source>Tell Midjourney what not to include in your image. Accepts multiple words separated with commas.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.sref" xml:space="preserve">
+                <source>Style Reference (URL of an image)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.imageSettings.midjourney.sref.tooltip" xml:space="preserve">
+                <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.generateImageForField" xml:space="preserve">
+                <source>Generate image for field</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error_no_credits_table" xml:space="preserve">
+                <source>Please run database update (Credits table is missing)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.twoImagesAtFirstRequest" xml:space="preserve">
+                <source><![CDATA[A maximum of <strong>two images</strong> will be created in the course of the first request. Additional images can then be added at any time.]]></source>
+            </trans-unit>
+            <trans-unit id="aiSuite.generateImageWithAiButton" xml:space="preserve">
+                <source>Generate Image with AI</source>
             </trans-unit>
         </body>
     </file>

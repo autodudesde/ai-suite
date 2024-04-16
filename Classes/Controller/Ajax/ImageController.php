@@ -13,10 +13,13 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
+use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
+use AutoDudes\AiSuite\Utility\UuidUtility;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -25,10 +28,10 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -38,6 +41,7 @@ class ImageController extends ActionController
 {
     protected array $extConf;
     protected SendRequestService $requestService;
+    protected RequestsRepository $requestsRepository;
     protected PageContentFactory $pageContentFactory;
     protected Context $context;
     protected LoggerInterface $logger;
@@ -45,12 +49,14 @@ class ImageController extends ActionController
     public function __construct(
         array $extConf,
         SendRequestService $requestService,
+        RequestsRepository $requestsRepository,
         PageContentFactory $pageContentFactory,
         Context $context,
         LoggerInterface $logger
     ) {
         $this->extConf = $extConf;
         $this->requestService = $requestService;
+        $this->requestsRepository = $requestsRepository;
         $this->pageContentFactory = $pageContentFactory;
         $this->context = $context;
         $this->logger = $logger;
@@ -58,45 +64,32 @@ class ImageController extends ActionController
 
     public function getImageWizardSlideOneAction(ServerRequestInterface $request): ResponseInterface
     {
-        $response = new Response();
-
-        $parsedBody = $request->getParsedBody();
-        $params = [
-            'imageAiValue' => $parsedBody['imageAiValue'],
-            'promptValue' => $parsedBody['promptValue']
-        ];
         $librariesAnswer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
                 'generationLibraries',
                 [
-                    'library_types' => GenerationLibrariesEnumeration::IMAGE
+                    'library_types' => GenerationLibrariesEnumeration::IMAGE,
+                    'target_endpoint' => 'createImage'
                 ]
             )
         );
+
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logError(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), $response, 500);
-            return $response;
+            $this->logger->error(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'));
+            return new HtmlResponse('<div class="alert alert-danger" role="alert">' . LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite') . '</div>');
         }
 
         $params['promptTemplates'] = PromptTemplateUtility::getAllPromptTemplates('imageWizard');
         $params['imageGenerationLibraries'] = $librariesAnswer->getResponseData()['imageGenerationLibraries'];
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
+        $params['uuid'] = UuidUtility::generateUuid();
         $output = $this->getContentFromTemplate(
             $request,
             'WizardSlideOne',
             $params
         );
-
-        $response->getBody()->write(
-            json_encode(
-                [
-                    'success' => true,
-                    'output' => $output
-                ]
-            )
-        );
-        return $response;
+        return new HtmlResponse($output);
     }
 
     /**
@@ -110,7 +103,7 @@ class ImageController extends ActionController
         try {
             $languageId = $this->context->getPropertyFromAspect('language', 'id');
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-            $site = $siteFinder->getSiteByPageId($request->getParsedBody()['pageId']);
+            $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
             $language = $site->getLanguageById($languageId);
             $langIsoCode = $language->getLocale()->getLanguageCode();
         } catch(Exception $exception) {
@@ -122,11 +115,14 @@ class ImageController extends ActionController
             new ServerRequest(
                 $this->extConf,
                 'createImage',
-                [],
+                [
+                    'uuid' => $request->getParsedBody()['uuid'],
+                    'progress' => 'prepare'
+                ],
                 $request->getParsedBody()['imagePrompt'],
                 $langIsoCode,
                 [
-                    'image' => $request->getParsedBody()['imageAi'],
+                    'image' => $request->getParsedBody()['imageAiModel'],
                 ]
             )
         );
@@ -134,16 +130,88 @@ class ImageController extends ActionController
             $this->logError($answer->getResponseData()['message'], $response, 503);
             return $response;
         }
+        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+        BackendUtility::setUpdateSignal('updateTopbar');
+        $params = [
+            'imageAiModel' => $request->getParsedBody()['imageAiModel'],
+            'imageSuggestions' => $answer->getResponseData()['images'],
+            'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
+            'fieldName' => $request->getParsedBody()['fieldName'],
+            'table' => $request->getParsedBody()['table'],
+            'position' => $request->getParsedBody()['position'],
+            'pageId' => $request->getParsedBody()['pageId'],
+            'uuid' => $request->getParsedBody()['uuid']
+        ];
+        $output = $this->getContentFromTemplate(
+            $request,
+            'WizardSlideTwo',
+            $params
+        );
+        $response->getBody()->write(
+            json_encode(
+                [
+                    'success' => true,
+                    'output' => $output
+                ]
+            )
+        );
+        return $response;
+
+    }
+
+    /**
+     * @throws SiteNotFoundException
+     * @throws AspectNotFoundException
+     */
+    public function getImageWizardSlideThreeAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+
+        try {
+            $languageId = $this->context->getPropertyFromAspect('language', 'id');
+            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+            $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
+            $language = $site->getLanguageById($languageId);
+            $langIsoCode = $language->getLocale()->getLanguageCode();
+        } catch(Exception $exception) {
+            $this->logError($exception->getMessage(), $response, 503);
+            return $response;
+        }
+
+        $answer = $this->requestService->sendRequest(
+            new ServerRequest(
+                $this->extConf,
+                'createImage',
+                [
+                    'uuid' => $request->getParsedBody()['uuid'],
+                    'progress' => 'finish',
+                    'customId' => $request->getParsedBody()['customId'],
+                    'mId' => $request->getParsedBody()['mId'],
+                    'index' => $request->getParsedBody()['index']
+                ],
+                $request->getParsedBody()['imagePrompt'],
+                $langIsoCode,
+                [
+                    'image' => $request->getParsedBody()['imageAiModel'],
+                ]
+            )
+        );
+        if ($answer->getType() === 'Error') {
+            $this->logError($answer->getResponseData()['message'], $response, 503);
+            return $response;
+        }
+        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+        BackendUtility::setUpdateSignal('updateTopbar');
         $params = [
             'imageSuggestions' => $answer->getResponseData()['images'],
-            'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'],
+            'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
             'fieldName' => $request->getParsedBody()['fieldName'],
             'table' => $request->getParsedBody()['table'],
             'position' => $request->getParsedBody()['position'],
         ];
         $output = $this->getContentFromTemplate(
             $request,
-            'WizardSlideTwo',
+            'WizardSlideThree',
             $params
         );
         $response->getBody()->write(
@@ -168,7 +236,7 @@ class ImageController extends ActionController
         try {
             $languageId = $this->context->getPropertyFromAspect('language', 'id');
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-            $site = $siteFinder->getSiteByPageId($request->getParsedBody()['pageId']);
+            $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
             $language = $site->getLanguageById($languageId);
             $langIsoCode = $language->getLocale()->getLanguageCode();
         } catch(Exception $exception) {
@@ -180,11 +248,17 @@ class ImageController extends ActionController
             new ServerRequest(
                 $this->extConf,
                 'createImage',
-                [],
+                [
+                    'uuid' => $request->getParsedBody()['uuid'],
+                    'progress' => 'finish',
+                    'customId' => $request->getParsedBody()['customId'] ?? '',
+                    'mId' => $request->getParsedBody()['mId'] ?? '',
+                    'index' => $request->getParsedBody()['index'] ?? 0
+                ],
                 $request->getParsedBody()['imagePrompt'],
                 $langIsoCode,
                 [
-                    'image' => $request->getParsedBody()['imageAi'],
+                    'image' => $request->getParsedBody()['imageAiModel'],
                 ]
             )
         );
@@ -192,6 +266,9 @@ class ImageController extends ActionController
             $this->logError($answer->getResponseData()['message'], $response, 500);
             return $response;
         }
+        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+        BackendUtility::setUpdateSignal('updateTopbar');
+
         $params = [
             'imageSuggestions' => $answer->getResponseData()['images'],
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'],
@@ -199,8 +276,7 @@ class ImageController extends ActionController
             'pageId' => $request->getParsedBody()['pageId'],
             'fieldName' => $request->getParsedBody()['fieldName'],
             'position' => $request->getParsedBody()['position'],
-            'imagePrompt' => $request->getParsedBody()['imagePrompt'],
-            'imageAi' => $request->getParsedBody()['imageAi'],
+            'uuid' => $request->getParsedBody()['uuid']
         ];
 
         $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);

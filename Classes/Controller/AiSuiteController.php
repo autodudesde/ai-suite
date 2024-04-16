@@ -13,8 +13,10 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
+use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -23,13 +25,17 @@ class AiSuiteController extends AbstractBackendController
     protected array $extConf;
     protected SendRequestService $requestService;
 
+    protected RequestsRepository $requestsRepository;
+
     public function __construct(
         array $extConf,
-        SendRequestService $requestService
+        SendRequestService $requestService,
+        RequestsRepository $requestsRepository
     ) {
         parent::__construct($extConf);
         $this->extConf = $extConf;
         $this->requestService = $requestService;
+        $this->requestsRepository = $requestsRepository;
     }
 
     /**
@@ -42,6 +48,13 @@ class AiSuiteController extends AbstractBackendController
         $openAiStatus = '-';
         $openAiState = '-';
 
+        if($this->extConf['aiSuiteApiKey'] === '') {
+            $this->addFlashMessage(
+                LocalizationUtility::translate('aiSuite.module.missingAiSuiteApiKey.message', 'ai_suite'),
+                LocalizationUtility::translate('aiSuite.module.missingAiSuiteApiKey.title', 'ai_suite'),
+                ContextualFeedbackSeverity::NOTICE
+            );
+        }
         $answer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -51,10 +64,20 @@ class AiSuiteController extends AbstractBackendController
         if ($answer->getType() === 'RequestsState') {
             $freeRequests = $answer->getResponseData()['free_requests'];
             $paidRequests = $answer->getResponseData()['paid_requests'];
+            try {
+                $this->requestsRepository->setRequests($freeRequests, $paidRequests);
+            } catch (\Exception $e) {
+                $this->addFlashMessage(
+                    $e->getMessage(),
+                    LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'),
+                    ContextualFeedbackSeverity::ERROR
+                );
+            }
+            BackendUtility::setUpdateSignal('updateTopbar');
         } else {
             $this->addFlashMessage(
                 $answer->getResponseData()['message'],
-                LocalizationUtility::translate('aiSuite.module.warningFetchingRequestsState.title', 'ai_suite'),
+                LocalizationUtility::translate('aiSuite.module.warningFetchingCreditsState.title', 'ai_suite'),
                 ContextualFeedbackSeverity::WARNING
             );
         }

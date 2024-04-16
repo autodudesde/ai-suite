@@ -14,6 +14,7 @@ namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Model\Dto\XlfInput;
+use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\EmptyXliffException;
 use AutoDudes\AiSuite\Service\ConstantsService;
@@ -21,6 +22,7 @@ use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\XliffUtility;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Exception;
@@ -30,14 +32,17 @@ class AgenciesController extends AbstractBackendController
 {
     protected array $extConf;
     protected SendRequestService $requestService;
+    protected RequestsRepository $requestsRepository;
 
     public function __construct(
         array $extConf,
-        SendRequestService $requestService
+        SendRequestService $requestService,
+        RequestsRepository $requestsRepository
     ) {
         parent::__construct($extConf);
         $this->extConf = $extConf;
         $this->requestService = $requestService;
+        $this->requestsRepository = $requestsRepository;
     }
 
     public function overviewAction(): ResponseInterface
@@ -56,7 +61,8 @@ class AgenciesController extends AbstractBackendController
                 $this->extConf,
                 'generationLibraries',
                 [
-                    'library_types' => GenerationLibrariesEnumeration::GOOGLE_TRANSLATE
+                    'library_types' => GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,
+                    'target_endpoint' => 'translate'
                 ]
             )
         );
@@ -147,6 +153,8 @@ class AgenciesController extends AbstractBackendController
                 return $this->redirect('translateXlf');
             }
             $translations = $answer->getResponseData()['translations'];
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
             $input->setTranslations($translations);
             $originalValues = XliffUtility::readXliff($input->getExtensionKey(), $input->getFilename())->getFormatedData();
             foreach ($originalValues as $origKey => $origValue) {

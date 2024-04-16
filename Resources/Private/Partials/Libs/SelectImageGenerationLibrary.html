@@ -1,10 +1,15 @@
 <f:if condition="{imageGenerationLibraries -> f:count()} > 0">
-    <div class="row image-generation-library mt-2">
-        <div class="card card-size-large active">
+    <div class="row image-generation-library library">
+        <div class="card card-size-large active mt-3 mb-0">
             <div class="card-header">
-                <h2 class="text-left text-gradient">
+                <h3 class="text-gradient">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageGenerationLibrary" />
-                </h2>
+                </h3>
+                <f:if condition="{showMaxImageHint}">
+                    <p>
+                        <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.twoImagesAtFirstRequest" /></f:format.raw>
+                    </p>
+                </f:if>
                 <f:for each="{imageGenerationLibraries}" as="library" iteration="it">
                     <div class="col-12 my-3">
                         <input
@@ -17,17 +22,7 @@
                         {f:if(condition: it.isFirst, then: 'checked="checked"', else: '')}
                         />
                         <label for="image-generation-library-{library.model_identifier}">
-                            {library.name} {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
-                            <span class="request-amount">
-                                <f:if condition="{library.weight} == 1">
-                                    <f:then>
-                                        {library.weight} request
-                                    </f:then>
-                                    <f:else>
-                                        {library.weight} requests
-                                    </f:else>
-                                </f:if>
-                            </span>
+                            <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
                         </label>
                     </div>
                 </f:for>

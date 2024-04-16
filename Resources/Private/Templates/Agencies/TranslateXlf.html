@@ -8,53 +8,62 @@
 <f:section name="Content">
 
     <section class="container">
-        <h2>
+        <h2 class="text-gradient">
             <f:translate key="AiSuite.module.Agencies.translateXlf.header"/>
         </h2>
 
         <f:form action="validateXlfResult" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
             <f:render partial="Agencies/AllProperties" arguments="{_all}" />
             <f:render partial="Libs/SelectTranslateGenerationLibrary" arguments="{translateGenerationLibraries: translateGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <div class="form-group">
-                <label for="extensionKey">
-                    <f:translate key="AiSuite.module.Agencies.translateXlf.insertExtKey"/>
-                </label><br />
-                <f:form.textfield property="extensionKey" name="extensionKey" class="form-control" required="required"/>
-            </div>
+            <div class="row prompt-settings">
+                <div class="card card-size-large active">
+                    <div class="card-header">
+                        <h3 class="text-gradient">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.translateXlfHeader" />
+                        </h3>
+                        <br />
+                        <div class="form-group">
+                            <label for="extensionKey">
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.insertExtKey"/>
+                            </label><br />
+                            <f:form.textfield property="extensionKey" name="extensionKey" class="form-control" required="required" id="translateXlf-insertExtKey"/>
+                        </div>
 
-            <div class="form-group">
-                <label for="filename">
-                    <f:translate key="AiSuite.module.Agencies.translateXlf.fileName"/>
-                </label><br />
-                <f:form.textfield property="filename" name="filename" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.fileNamePlaceholder')}" required="required"/>
-            </div>
+                        <div class="form-group">
+                            <label for="filename">
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.fileName"/>
+                            </label><br />
+                            <f:form.textfield property="filename" name="filename" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.fileNamePlaceholder')}" required="required" id="translateXlf-fileName"/>
+                        </div>
 
-            <f:render partial="Libs/SearchableDropdown" arguments="{
-                searchableList: allLanguagesList,
-                translateKeyButton: 'AiSuite.module.Agencies.translateXlf.destinationLang',
-                propertyName: 'destinationLanguage'
-            }" />
-
-
-            <div class="form-group">
-                <label>
-                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.label"/>
-                </label><br />
-                <f:form.select property="translationMode" class="form-control mb-4">
-                    <f:form.select.option value="all">
-                        <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.optionAll"/>
-                    </f:form.select.option>
-                    <f:form.select.option value="missingProperties">
-                        <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly"/>
-                    </f:form.select.option>
-                </f:form.select>
-            </div>
-
-            <div class="form-group">
-                <f:form.submit value="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.submit')}" class="btn btn-secondary"/>
+                        <f:render partial="Libs/SearchableDropdown" arguments="{
+                            searchableList: allLanguagesList,
+                            translateKeyButton: 'AiSuite.module.Agencies.translateXlf.destinationLang',
+                            propertyName: 'destinationLanguage'
+                        }" />
+                        <div class="form-group">
+                            <label>
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.label"/>
+                            </label><br />
+                            <f:form.select property="translationMode" class="form-control mb-4">
+                                <f:form.select.option value="all">
+                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.optionAll"/>
+                                </f:form.select.option>
+                                <f:form.select.option value="missingProperties">
+                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly"/>
+                                </f:form.select.option>
+                            </f:form.select>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-0">
+                    <button type="submit" class="btn btn-primary">
+                        <core:icon identifier="actions-translate" size="small"/>
+                        <f:translate key="AiSuite.module.Agencies.translateXlf.submit"/>
+                    </button>
+                </div>
             </div>
         </f:form>
-
         <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
         <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
     </section>

@@ -1,159 +1,6 @@
 <html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
     <f:asset.css identifier="wizardSlideOneCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-one.css" />
-    <f:asset.css identifier="wizardSlideOneCssInline">
-        .modal-severity-info .modal-header {
-            background: #F09C42;
-            color: #fff;
-            border-bottom: 0;
-        }
-        .modal-footer .btn-info{
-            display: none;
-        }
-        .progress-bar {
-            background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
-        }
-        .text-gradient {
-            font-weight: 700;
-            font-size: 16px;
-            display: inline-block;
-            -webkit-text-fill-color: transparent;
-            background: -webkit-linear-gradient(45deg,#ef4625,#fcaa45);
-            -webkit-background-clip: text;
-        }
-        #aiSuiteGenerateImageBtn {
-            background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
-            color: white;
-            border: none;
-        }
-        .ai-suite#wizardSlideOne .card-container {
-            display: block;
-        }
-        .ai-suite#wizardSlideOne .card-container .row {
-            margin-right: -15px;
-        }
-        .ai-suite#wizardSlideOne .card-container .card {
-            margin-left: 0;
-        }
-        .ai-suite#wizardSlideOne select {
-            font-size: 0.875rem;
-            padding: 0.5rem;
-        }
-        .text-generation-library, .image-generation-library, .translate-generation-library {
-        margin-left: 0;
-        }
-        .text-generation-library label, .image-generation-library label, .translate-generation-library label {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        padding: 0.75rem 0.5rem 0.75rem 2.25rem !important;
-        }
-        .text-generation-library label .request-amount, .image-generation-library label .request-amount, .translate-generation-library label .request-amount {
-        position: absolute;
-        top: 0;
-        right: 0;
-        padding: 10px;
-        font-size: 0.8rem;
-        background: linear-gradient(90deg, rgba(238, 70, 36, 1) 0%, rgba(252, 168, 68, 1) 100%);
-        height: 100%;
-        justify-content: center;
-        display: flex;
-        align-items: center;
-        min-width: 100px;
-        color: white;
-        font-weight: 600;
-        }
-        .text-generation-library label, .image-generation-library label, .translate-generation-library label {
-        background-color: #fefefe !important;
-        border: 1px solid #bbb !important;
-        border-radius: 0.125rem !important;
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
-        }
-        .text-generation-library label:hover, .image-generation-library label:hover {
-        background-color: #f9f9f9 !important;
-        }
-        :root {
-        --checkbox-radio-size: 18px;
-        --checkbox-radio-gap: 10px;
-        --checkbox-radio-border-width: 1px;
-        --checkbox-radio-line-height: 1.4;
-        --radio-marker-size: 8px;
-        --checkbox-marker-size: 12px;
-        --checkbox-radius: 4px;
-        }
-        .ai-suite#wizardSlideOne:not(.image-selection) input[type="radio"], .ai-suite#wizardSlideOne:not(.image-selection) input[type="checkbox"] {
-        position: absolute;
-        padding: 0;
-        margin: 0;
-        margin-top: calc((1em * var(--checkbox-radio-line-height) - var(--checkbox-radio-size)) / 2);
-        opacity: 0;
-        height: var(--checkbox-radio-size);
-        width: 100%;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:not(.image-selection) + label, .ai-suite#wizardSlideOne input[type="checkbox"]:not(.image-selection) + label {
-        display: inline-block;
-        line-height: var(--checkbox-radio-line-height);
-        user-select: none;
-        cursor: pointer;
-        padding-left: calc(var(--checkbox-radio-size) + var(--checkbox-radio-gap));
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:not(.image-selection) + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:not(.image-selection) + label::before {
-        content: '';
-        box-sizing: border-box;
-        display: inline-block;
-        position: relative;
-        vertical-align: middle;
-        top: -0.1em;
-        margin-left: calc(-1 * (var(--checkbox-radio-size) + var(--checkbox-radio-gap)));
-        flex-shrink: 0;
-        width: var(--checkbox-radio-size);
-        height: var(--checkbox-radio-size);
-        background-color: white;
-        border-width: var(--checkbox-radio-border-width);
-        border-color: rgba(240, 156, 66, 0.65);
-        border-style: solid;
-        box-shadow: 0 0.9px 1.25px rgba(0, 0, 0, 0.025), 0 3px 5px rgba(0, 0, 0, 0.05), 0 12px 20px rgba(0, 0, 0, 0.09);
-        background-repeat: no-repeat;
-        background-position: center;
-        margin-right: var(--checkbox-radio-gap);
-        transition: transform 0.2s, border 0.2s;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:not(:checked):not(:focus) + label:hover::before, .ai-suite#wizardSlideOne input[type="checkbox"]:not(:checked):not(:focus) + label:hover::before {
-        border-color: #a2a2a9;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"] + label::before {
-        border-radius: 50%;
-        }
-        .ai-suite#wizardSlideOne input[type="checkbox"] + label::before {
-        border-radius: var(--checkbox-radius);
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:checked + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:checked + label::before {
-        background-color: #f09c42;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-        border-color: #f09c42;
-        transition: transform 0.2s;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:active + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:active + label::before {
-        transform: scale(0.8);
-        transition: transform 0.2s;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:checked:active + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:checked:active + label::before {
-        transform: none;
-        transition: none;
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:checked + label::before {
-        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg class='nc-icon-wrapper' fill='%23ffffff'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23ffffff'%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");
-        background-size: var(--radio-marker-size);
-        }
-        .ai-suite#wizardSlideOne input[type="checkbox"]:checked + label::before {
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='1 6.5 4 9.5 11 2.5' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
-        background-size: var(--checkbox-marker-size);
-        }
-        .ai-suite#wizardSlideOne input[type="radio"]:checked:active + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:checked:active + label::before, .ai-suite#wizardSlideOne input[type="radio"]:focus + label::before, .ai-suite#wizardSlideOne input[type="checkbox"]:focus + label::before {
-        border-color: #f09c42;
-        box-shadow: 0 0 0 3px rgba(240, 156, 66, 0.2);
-        }
-    </f:asset.css>
 
     <div class="ai-suite" id="wizardSlideOne">
         <div class="card-container">
@@ -166,26 +13,32 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <f:if condition="{promptTemplates -> f:count()} > 0">
-                        <label for="promptTemplates">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.promptTemplates"/>
-                        </label><br />
-                        <select id="promptTemplates" name="promptTemplates" class="form-control mb-3">
-                            <option value="">
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.selectPromptTemplate"/>
-                            </option>
-                            <f:for each="{promptTemplates}" as="template">
-                                <option value="{template.prompt}">{template.name}</option>
-                            </f:for>
-                        </select>
-                    </f:if>
-                    <label for="imageGenerationPrompt">
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneImagePrompt" />
-                    </label>
-                    <textarea class="p-2 w-100 mb-2" id="imageGenerationPrompt" required></textarea>
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                    <div class="row prompt-settings mt-3">
+                        <div class="card card-size-large active">
+                            <div class="card-header">
+                                <h3 class="text-gradient">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardPromptHeader" />
+                                </h3>
+                                <br />
+                                <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+                                <div class="mt-2">
+                                    <label for="imageGenerationPrompt" class="mt-3">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneImagePrompt" />
+                                    </label>
+                                    <textarea class="p-2 w-100" id="imageGenerationPrompt" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
                     <div class="card-footer px-0">
-                        <button type="button" class="btn btn-primary" data-inline="1" value="blank" data-identifier="aiSuiteGenerateImage" id="aiSuiteGenerateImageBtn">
+                        <button type="button" class="btn btn-primary"
+                                data-uuid="{uuid}"
+                                data-inline="1" value="blank"
+                                data-identifier="aiSuiteGenerateImage"
+                                id="aiSuiteGenerateImageBtn"
+                        >
                             <core:icon identifier="actions-add" size="small" />
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneButton" />
                         </button>

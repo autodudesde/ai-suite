@@ -38,7 +38,7 @@ class PageStructureInput extends AbstractEntity
     {
         return new self(
             1,
-            'Create a page structure for [...].',
+            '',
             '',
         );
     }

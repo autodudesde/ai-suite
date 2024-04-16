@@ -6,9 +6,11 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
+use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\NewsContentNotAvailableException;
+use AutoDudes\AiSuite\Utility\UuidUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -31,17 +33,21 @@ class MetadataService
     protected RequestFactory $requestFactory;
     protected SendRequestService $requestService;
 
+    protected RequestsRepository $requestsRepository;
+
     public function __construct(
         PageRepository $pageRepository,
         SiteMatcher $siteMatcher,
         RequestFactory $requestFactory,
         SendRequestService $requestService,
+        RequestsRepository $requestsRepository,
         array $extConf
     ) {
         $this->pageRepository = $pageRepository;
         $this->siteMatcher = $siteMatcher;
-        $this->requestService = $requestService;
         $this->requestFactory = $requestFactory;
+        $this->requestService = $requestService;
+        $this->requestsRepository = $requestsRepository;
         $this->extConf = $extConf;
     }
 
@@ -83,6 +89,7 @@ class MetadataService
                 $this->extConf,
                 'createMetadata',
                 [
+                    'uuid' => UuidUtility::generateUuid(),
                     'request_content' => trim($content)
                 ],
                 'PromptPrefix_' . $type,
@@ -93,6 +100,8 @@ class MetadataService
             )
         );
         if ($answer instanceof ClientAnswer && $answer->getType() === 'Metadata') {
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
             return $answer->getResponseData()['metadataResult'];
         }
         throw new AiSuiteServerException($answer->getResponseData()['message']);

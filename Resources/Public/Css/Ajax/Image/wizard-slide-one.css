@@ -1,24 +1,48 @@
-.ai-suite#wizardSlideOne label,
+:root {
+    --checkbox-radio-size: 18px;
+    --checkbox-radio-gap: 10px;
+    --checkbox-radio-border-width: 1px;
+    --checkbox-radio-line-height: 1.4;
+    --radio-marker-size: 8px;
+    --checkbox-marker-size: 12px;
+    --checkbox-radius: 4px;
+}
+.ai-suite#wizardSlideOne label {
+    font-size: 0.875rem;
+    position: relative;
+    width: 100%;
+}
+
 .ai-suite#wizardSlideOne input,
 .ai-suite#wizardSlideOne #aiSuiteGenerateImageBtn {
     font-size: 0.875rem;
 }
-
-.ai-suite#wizardSlideOne .card.comming-soon {
-    opacity: .5;
+.ai-suite#wizardSlideOne .card-container {
+    display: block;
+}
+.ai-suite#wizardSlideOne .card-container .row {
+    margin-right: -15px;
+}
+.ai-suite#wizardSlideOne .card-container .card {
+    margin-left: 0;
+}
+.ai-suite#wizardSlideOne select {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}
+.ai-suite#wizardSlideOne .text-generation-library,
+.ai-suite#wizardSlideOne .image-generation-library,
+.ai-suite#wizardSlideOne .translate-generation-library,
+.ai-suite#wizardSlideOne .prompt-settings,
+.ai-suite#wizardSlideOne .image-settings {
+    margin-left: 0;
 }
 
-.ai-suite#wizardSlideOne .card .card-header {
-    height: 100%;
-}
-.ai-suite#wizardSlideOne .btn-secondary {
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
+.ai-suite#wizardSlideOne .image-settings-midjourney {
+    display: none;
 }
 
-.ai-suite#wizardSlideOne .btn-primary svg,
-.ai-suite#wizardSlideOne .btn-secondary svg {
+.ai-suite#wizardSlideOne .btn-primary svg {
     fill: #fff;
 }
 
@@ -28,9 +52,38 @@
     appearance: auto;
 }
 
-.ai-suite#wizardSlideOne .code-preview {
+.ai-suite#wizardSlideOne .tooltip {
+    position: absolute;
+    right: 0;
+    display: inline-block;
+    opacity: 1;
+    width: 16px;
+    height: 16px;
+    background: black;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    top: 4px;
+    font-size: 12px;
+}
+
+.ai-suite#wizardSlideOne .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 350px;
     background-color: black;
-    color: #ffc700;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 10px;
+    position: absolute;
+    z-index: 10;
+    top: -5px;
+    right: 105%;
+}
+
+.ai-suite#wizardSlideOne .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }
 
 .ai-suite#wizardSlideOne .spinner-overlay {
@@ -71,16 +124,10 @@
     min-height: 150px;
 }
 
-#introductionVideoLink {
-    border: none;
-    background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
-    transition: all ease-in-out 0.3s;
-}
-
 .ai-suite#wizardSlideOne .btn.btn-primary,
 .t3js-ai-suite-image-generation-add-btn {
-    background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
-    color: white;
+    background: #F09C42;
+    color: black;
     border: none;
 }
 
@@ -88,77 +135,18 @@
     color: white
 }
 
-
 .ai-suite#wizardSlideOne .badge-warning {
     background: #f2f2f2;
     color: black;
 }
 
-.ai-suite#wizardSlideTwo .image-suggestions .input-hidden:checked + label {
-    border: 2px solid #F09C42 !important;;
-    box-shadow: #ff8700 0px 0px 2px 0 !important;
-}
-
-.ai-suite#wizardSlideTwo .image-suggestions input[type="radio"] + label > div.icon {
-    border-radius: 0 !important;
-    left: unset !important;
-    right: -1px !important;
-    top: -1px !important;
-    background-color: #F09C42 !important;
-    transform: none !important;
-    clip-path: polygon(15% 0%,100% 0%,100% 85%) !important;
-}
-.ai-suite#wizardSlideTwo .image-suggestions input[type="radio"] + label > div.icon span.icon {
-    top: 5px !important;
-    right: 0 !important;
-    transform: none !important;
-}
-
-.ai-suite#wizardSlideTwo .image-suggestions input[type=radio] + label>img {
-    border: none !important;
-}
-
-.ai-suite#wizardSlideTwo .image-suggestions input[type=radio]:checked + label>img {
-    box-shadow: 0 0 3px 0 #F09C42 !important;
-    border: none !important;
-}
-
-.ai-suite#wizardSlideTwo .image-suggestions input[type=radio] + label>img {
-    border: 1px solid #444;
-}
-
-.text-generation-library,
-.image-generation-library,
-.translate-generation-library {
-    margin-left: 0;
-    label {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        padding: 0.75rem 0.5rem 0.75rem 2.25rem !important;
-
-        .request-amount {
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 10px;
-            font-size: 0.8rem;
-            background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
-            height: 100%;
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            min-width: 100px;
-            color: white;
-            font-weight: 600;
-        }
-    }
-}
-
 .text-generation-library label,
 .image-generation-library label,
-.translate-generation-library label,
-.ai-suite#wizardSlideTwo .image-title-suggestions label {
+.translate-generation-library label {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0.75rem 0.5rem 0.75rem 2.25rem !important;
     background-color: #fefefe !important;
     border: 1px solid #bbb !important;
     border-radius: 0.125rem !important;
@@ -166,23 +154,41 @@
 }
 
 .text-generation-library label:hover,
-.image-generation-library label:hover,
-.ai-suite#wizardSlideTwo .image-title-suggestions label:hover {
+.image-generation-library label:hover {
     background-color: #f9f9f9 !important;
+}
+
+.text-generation-library label .request-amount,
+.image-generation-library label .request-amount,
+.translate-generation-library label .request-amount {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 0.8rem;
+    background: #F09C42;
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    min-width: 100px;
+    color: black;
+    font-weight: 600;
 }
 
 .ai-suite#wizardSlideOne .btn.btn-secondary {
     background: #F09C42;
     border: none;
+    color: black;
 }
 
 .ai-suite#wizardSlideOne .fields-button {
-    background: linear-gradient(90deg, rgba(238,70,36,1) 0%, rgba(252,168,68,1) 100%);
+    background: #F09C42;
     border: none;
     padding: 0.375rem 0.75rem;
     border-radius: 0.125rem;
     font-size: 0.75rem;
-    color: white;
+    color: black;
 }
 
 .ai-suite#wizardSlideOne button:not(.btn) {
@@ -211,20 +217,6 @@
 .ai-suite#wizardSlideOne button.edit:hover,
 .ai-suite#wizardSlideOne button.delete:hover{
     background: #cacaca;
-}
-
-
-:root {
-
-    --checkbox-radio-size: 18px;
-    --checkbox-radio-gap: 10px;
-    --checkbox-radio-border-width: 1px;
-    --checkbox-radio-line-height: 1.4;
-
-    --radio-marker-size: 8px;
-
-    --checkbox-marker-size: 12px;
-    --checkbox-radius: 4px;
 }
 
 .ai-suite#wizardSlideOne:not(.image-selection) input[type="radio"],
@@ -321,11 +313,6 @@
     box-shadow: 0 0 0 3px rgba(240, 156, 66, 0.2);
 }
 
-.ai-suite#wizardSlideTwo .image-title-suggestions input[type=radio]:checked + label {
-    border: 1px solid #F09C42 !important;
-    background-color: rgba(240, 156, 66, 0.4) !important;
-}
-
 .ai-suite#wizardSlideOne .form-control:focus {
     border-color: #F09C42;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075),0 0 0 0.25rem rgba(240, 156, 66, .25) !important;
@@ -334,24 +321,16 @@
 
 .text-gradient {
     font-weight: 700;
-    font-size: 16px;
     display: inline-block;
     -webkit-text-fill-color: transparent;
-    background: -webkit-linear-gradient(45deg,#ef4625,#fcaa45);
+    background: #F09C42;
     -webkit-background-clip: text;
 }
 
-.aisuite-modal.modal-severity-info .modal-header {
-    background: #F09C42 !important;
-    border-bottom-color: #F09C42 !important;
-}
-
-
 .aisuite-modal .progress-bar {
-    background-color: #F09C42 !important;
+    background-color: #F09C42;
 }
 
 .aisuite-modal .btn-primary {
-    background: #F09C42 !important;
-    border-color: #F09C42 !important;;
+    background: #F09C42;
 }

@@ -15,6 +15,7 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Domain\Model\Dto\PageStructureInput;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
@@ -29,6 +30,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class PagesController extends AbstractBackendController
 {
     protected SendRequestService $requestService;
+
+    protected RequestsRepository $requestsRepository;
     protected PageStructureFactory $pageStructureFactory;
     protected PagesRepository $pagesRepository;
     protected DataHandler $dataHandler;
@@ -36,6 +39,7 @@ class PagesController extends AbstractBackendController
     public function __construct(
         array $extConf,
         SendRequestService $requestService,
+        RequestsRepository $requestsRepository,
         PageStructureFactory $pageStructureFactory,
         PagesRepository $pagesRepository,
         DataHandler $dataHandler
@@ -43,6 +47,7 @@ class PagesController extends AbstractBackendController
         parent::__construct($extConf);
         $this->extConf = $extConf;
         $this->requestService = $requestService;
+        $this->requestsRepository = $requestsRepository;
         $this->pageStructureFactory = $pageStructureFactory;
         $this->pagesRepository = $pagesRepository;
         $this->dataHandler = $dataHandler;
@@ -67,7 +72,8 @@ class PagesController extends AbstractBackendController
                 $this->extConf,
                 'generationLibraries',
                 [
-                    'library_types' => GenerationLibrariesEnumeration::PAGETREE
+                    'library_types' => GenerationLibrariesEnumeration::PAGETREE,
+                    'target_endpoint' => 'pageTree'
                 ]
             )
         );
@@ -85,18 +91,9 @@ class PagesController extends AbstractBackendController
             $this->moduleTemplate->assign('error', true);
             return $this->htmlResponse($this->moduleTemplate->render());
         }
-
-        $foundPages = $this->pagesRepository->findAiStructurePages('uid');
-        foreach ($foundPages as $key => $page) {
-            $pageInWebMount = $this->getBackendUser()->isInWebMount($page['uid']);
-            if($pageInWebMount === null) {
-                unset($foundPages[$key]);
-            }
-        }
-
         $this->moduleTemplate->assignMultiple([
             'input' => PageStructureInput::createEmpty(),
-            'pagesSelect' => $foundPages,
+            'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
             'textGenerationLibraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
@@ -132,10 +129,12 @@ class PagesController extends AbstractBackendController
             );
             return $this->redirect('pageStructure');
         }
+        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+        BackendUtility::setUpdateSignal('updateTopbar');
         $input->setAiResult($answer->getResponseData()['pagetreeResult']);
         $this->moduleTemplate->assignMultiple([
             'input' => $input,
-            'pagesSelect' => $this->pagesRepository->findAiStructurePages(),
+            'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
             'textGenerationLibraries' => json_decode($input->getTextGenerationLibraries(), true),
         ]);
@@ -158,5 +157,18 @@ class PagesController extends AbstractBackendController
             LocalizationUtility::translate('aiSuite.module.pagetreeGenerationSuccessful.title', 'ai_suite'),
         );
         return $this->redirect('overview');
+    }
+
+    private function getPagesInWebMount(): array
+    {
+        $foundPages = $this->pagesRepository->findAiStructurePages('uid');
+        $pagesSelect = [];
+        foreach ($foundPages as $page) {
+            $pageInWebMount = $this->getBackendUser()->isInWebMount($page['uid']);
+            if($pageInWebMount !== null) {
+                $pagesSelect[$page['uid']] = $page['title'];
+            }
+        }
+        return $pagesSelect;
     }
 }

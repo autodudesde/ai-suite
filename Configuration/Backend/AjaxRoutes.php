@@ -49,9 +49,17 @@ return [
         'path' => '/generate/ai-image-slide-two',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::getImageWizardSlideTwoAction'
     ],
+    'aisuite_image_generation_slide_three' => [
+        'path' => '/generate/ai-image-slide-three',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::getImageWizardSlideThreeAction'
+    ],
     'aisuite_image_generation_save' => [
         'path' => '/generate/ai-image-save',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::saveGeneratedImageAction'
+    ],
+    'aisuite_generation_status' => [
+        'path' => '/generate/ai-status',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\StatusController::class . '::getStatusAction'
     ],
     'aisuite_regenerate_images' => [
         'path' => '/generate/ai-image-regenerate',

@@ -1,5 +1,6 @@
-import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
 import Notification from "@typo3/backend/notification.js";
+import Ajax from "@autodudes/ai-suite/helper/ajax.js";
+import Metadata from "@autodudes/ai-suite/helper/metadata.js";
 
 class GenerateSuggestions {
     constructor() {
@@ -8,7 +9,7 @@ class GenerateSuggestions {
 
     addEventListener() {
         let handleResponse = this.handleResponse;
-        let executeRequest = this.sendAjaxRequest;
+        let executeRequest = Ajax.sendMetadataAjaxRequest;
         let addSelectionToAdditionalFields = this.addSelectionToAdditionalFields;
 
         document.querySelectorAll('.ai-suite-suggestions-generation-btn').forEach(function(button) {
@@ -17,38 +18,12 @@ class GenerateSuggestions {
 
                 let pageId = parseInt(this.getAttribute('data-page-id'));
                 let fieldName = this.getAttribute('data-field-name');
-
-                executeRequest(pageId, fieldName, handleResponse, addSelectionToAdditionalFields);
+                let postData = {
+                    pageId: pageId
+                };
+                executeRequest(pageId, fieldName, postData, handleResponse, '', addSelectionToAdditionalFields);
             });
         });
-    }
-
-    /**
-     *
-     * @param {int} pageId
-     * @param {string} fieldName
-     * @param {function} handleResponse
-     * @param {function} addSelectionToAdditionalFields
-     */
-    sendAjaxRequest(pageId, fieldName, handleResponse, addSelectionToAdditionalFields) {
-        Notification.info(TYPO3.lang['AiSuite.notification.generation.start'], TYPO3.lang['AiSuite.notification.generation.start.suggestions'], 8);
-        new AjaxRequest(TYPO3.settings.ajaxUrls[fieldName+'_generation'])
-            .post(
-                { pageId: pageId }
-            )
-            .then(async function (response) {
-                const resolved = await response.resolve();
-                const responseBody = JSON.parse(resolved);
-                if(responseBody.error) {
-                    Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], responseBody.error);
-                } else {
-                    handleResponse(pageId, fieldName, responseBody, addSelectionToAdditionalFields)
-                    Notification.success(TYPO3.lang['AiSuite.notification.generation.finish'], TYPO3.lang['AiSuite.notification.generation.finish.suggestions'], 8);
-                }
-            })
-            .catch((error) => {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], error);
-            });
     }
 
     /**
@@ -59,50 +34,26 @@ class GenerateSuggestions {
      * @param addSelectionToAdditionalFields
      */
     handleResponse(pageId, fieldName, responseBody, addSelectionToAdditionalFields) {
-        let selection = document.querySelector('.ai-suite-suggestions');
-        if(selection) {
-            document.querySelector('.ai-suite-suggestions').remove();
-        }
-
-        selection = document.createElement('div');
-        selection.innerHTML = responseBody.output;
-        selection.classList.add('ai-suite-suggestions');
+        let selection = Metadata.getSelectionOptions(responseBody.output);
         document.getElementById(fieldName+'_generation').closest('.formengine-field-item').append(selection);
         if(document.getElementById('suggestionBtnSet')) {
             document.getElementById('suggestionBtnSet').addEventListener('click', function(ev) {
                 ev.preventDefault();
                 let selectedSuggestion = document.querySelector('input[name="generatedSuggestions"]:checked');
-                let addToAdditionalFieldsCheckbox = document.querySelector('input[name="addToAdditionalFields"]:checked');
-                let addToAdditionalFields = false;
-                if(addToAdditionalFieldsCheckbox !== null) {
-                    addToAdditionalFields = true;
-                }
                 if(selectedSuggestion === null) {
                     Notification.info(TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelection'], TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelectionInfo'], 8);
                 } else {
-                    if(document.querySelector('input[data-formengine-input-name="data[pages]['+pageId+']['+fieldName+']"]')) {
-                        document.querySelector('input[data-formengine-input-name="data[pages]['+pageId+']['+fieldName+']"]').value = selectedSuggestion.value;
-                        document.querySelector('input[name="data[pages]['+pageId+']['+fieldName+']"]').value = selectedSuggestion.value;
-                        if(addToAdditionalFields) {
-                            addSelectionToAdditionalFields(pageId, fieldName, selectedSuggestion.value);
-                        }
-                    } else {
-                        document.querySelector('textarea[data-formengine-input-name="data[pages]['+pageId+']['+fieldName+']"]').value = selectedSuggestion.value;
-                        document.querySelector('textarea[name="data[pages]['+pageId+']['+fieldName+']"]').value = selectedSuggestion.value;
-                        if(addToAdditionalFields) {
-                            addSelectionToAdditionalFields(pageId, fieldName, selectedSuggestion.value);
-                        }
+                    let addToAdditionalFieldsCheckbox = document.querySelector('input[name="addToAdditionalFields"]:checked');
+                    let addToAdditionalFields = false;
+                    if(addToAdditionalFieldsCheckbox !== null) {
+                        addToAdditionalFields = true;
                     }
+                    Metadata.insertSelectedSuggestions('pages', pageId, fieldName, selectedSuggestion, addToAdditionalFields, addSelectionToAdditionalFields);
                     selection.remove();
                 }
             });
         }
-        if(document.getElementById('suggestionBtnRemove')) {
-            document.getElementById('suggestionBtnRemove').addEventListener('click', function (ev) {
-                ev.preventDefault();
-                selection.remove();
-            });
-        }
+        Metadata.addRemoveButtonListener(selection);
     }
 
     addSelectionToAdditionalFields(pageId, fieldName, selectedSuggestionValue) {

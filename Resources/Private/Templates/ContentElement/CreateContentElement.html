@@ -13,57 +13,52 @@
 
         <f:if condition="{error}">
             <f:else>
-                <f:comment><![CDATA[
-                    <f:asset.script identifier="ai-suite-unload-checker" src="EXT:ai_suite/Resources/Public/JavaScript/helper/check-unload.js" />
-                ]]></f:comment>
-                <h1>
+                <h1 class="text-gradient">
                     <f:translate key="tx_aisuite.module.dashboard.card.createContentElement.title"/> "{content.CType}"
                 </h1>
-
                 <f:form actionUri="{actionUri}" name="content" object="{content}" enctype="multipart/form-data" class="with-spinner">
                     <f:form.hidden property="availableTcaColumns" name="availableTcaColumns" value="{content.availableTcaColumns -> f:format.json()}" />
+                    <f:form.hidden name="additionalImageSettings" value="" />
+                    <f:form.hidden name="uuid" value="{uuid}" />
+
+                    <f:render partial="PageContent/AllProperties" arguments="{_all}" />
+                    <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                    <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable, showMaxImageHint: showMaxImageHint}" />
+                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
+                    <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
                     <div class="row">
-                        <f:render partial="PageContent/AllProperties" arguments="{_all}" />
-                        <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                        <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                        <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
-
-                        <div class="row">
-                            <f:if condition="{promptTemplates -> f:count()} > 0">
-                                <div class="form-group ps-0 pe-3">
-                                    <label for="promptTemplates">
-                                        <f:translate key="tx_aisuite.module.general.promptTemplates"/>
+                        <div class="card card-size-large active mt-3">
+                            <div class="card-header">
+                                <h3 class="text-gradient">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" />
+                                </h3>
+                                <br />
+                                <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+                                <div class="mt-3">
+                                    <label for="initialPrompt">
+                                        <f:translate key="tx_aisuite.module.general.prompt"/>
                                     </label><br />
-                                    <f:form.select name="promptTemplates" class="form-control">
-                                        <f:form.select.option value="">
-                                            <f:translate key="tx_aisuite.module.general.selectPromptTemplate"/>
-                                        </f:form.select.option>
-                                        <f:for each="{promptTemplates}" as="template">
-                                            <f:form.select.option value="{template.prompt}">{template.name}</f:form.select.option>
-                                        </f:for>
-                                    </f:form.select>
+                                    <f:form.textarea property="initialPrompt" name="initialPrompt" class="form-control initial-prompt" value="{initialPrompt}" />
                                 </div>
-                            </f:if>
-                            <div class="form-group ps-0 pe-3">
-                                <label for="initialPrompt">
-                                    <f:translate key="tx_aisuite.module.general.prompt"/>
-                                </label><br />
-                                <f:form.textarea property="initialPrompt" name="initialPrompt" class="form-control" value="{initialPrompt}" />
                             </div>
-
-                            <div class="form-group ps-0">
-                                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.PageContent.submit')}" class="btn btn-secondary" />
-                            </div>
+                        </div>
+                        <div class="form-group ps-0">
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                data-uuid="{uuid}"
+                                data-page-id="{content.pid}"
+                            >
+                                <core:icon identifier="actions-file-text" size="small"/>
+                                {f:translate(key: 'tx_aisuite.module.PageContent.submit')}
+                            </button>
+                            <p class="calculated-requests"></p>
                         </div>
                     </div>
                 </f:form>
-
                 <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
                 <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
-
             </f:else>
         </f:if>
-
     </section>
-
 </f:section>

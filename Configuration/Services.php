@@ -38,7 +38,9 @@ use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
 use AutoDudes\AiSuite\Service\ContentElementService;
 use AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener;
+use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 use Symfony\Component\Filesystem\Filesystem;
+use AutoDudes\AiSuite\Controller\Ajax\StatusController;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -61,10 +63,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ]);
 
     $services->set(SendRequestService::class)
-        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
-        ->private()
-        ->autowire()
-        ->autoconfigure();
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
 
     $services->set(ContentElementService::class);
 
@@ -76,6 +75,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(ImageController::class)
         ->arg('$requestService', service(SendRequestService::class))
         ->arg('$pageContentFactory', service(PageContentFactory::class))
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
+        ->arg('$logger', service('PsrLogInterface'))
+        ->public();
+
+    $services->set(StatusController::class)
+        ->arg('$requestService', service(SendRequestService::class))
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
         ->arg('$logger', service('PsrLogInterface'))
         ->public();
@@ -130,8 +135,10 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->arg('$pagePermissionAssembler', service(PagePermissionAssembler::class));
 
     $services->set(Filesystem::class);
+
     $services->set(PageContentFactory::class)
-        ->arg('$filesystem', service(Filesystem::class));
+        ->arg('$filesystem', service(Filesystem::class))
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
 
     $services->set(FileControlsEventListener::class)
         ->tag('event.listener', [
@@ -143,5 +150,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\ModifyNewContentElementWizardItemsEvent',
+        ]);
+
+    $services->set(AfterTcaCompilationEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
         ]);
 };

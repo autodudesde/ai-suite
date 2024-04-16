@@ -1,8 +1,8 @@
-import HelperFunctions from "../helper/functions.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
 
 class Creation {
     constructor() {
-        HelperFunctions.addFormSubmitEventListener();
+        Generation.addFormSubmitEventListener();
     }
 }
 export default new Creation();

@@ -8,7 +8,7 @@
 <f:section name="Content">
 
     <section class="container">
-        <h2>
+        <h2 class="text-gradient">
             <f:translate key="tx_aisuite.module.pageStructure.headline"/>
         </h2>
 
@@ -17,33 +17,29 @@
             <f:form.hidden property="textGenerationLibraries" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
             <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
 
-            <f:if condition="{promptTemplates -> f:count()} > 0">
-                <div class="form-group ps-0 pe-3">
-                    <label for="promptTemplates">
-                        <f:translate key="tx_aisuite.module.general.promptTemplates"/>
-                    </label><br />
-                    <f:form.select name="promptTemplates" class="form-control">
-                        <f:form.select.option value="">
-                            <f:translate key="tx_aisuite.module.general.selectPromptTemplate"/>
-                        </f:form.select.option>
-                        <f:for each="{promptTemplates}" as="template">
-                            <f:form.select.option value="{template.prompt}">{template.name}</f:form.select.option>
-                        </f:for>
-                    </f:form.select>
+            <div class="row prompt-settings mt-3">
+                <div class="card card-size-large active">
+                    <div class="card-header">
+                        <h3 class="text-gradient">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" />
+                        </h3>
+                        <br />
+                        <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+                        <div class="mt-3">
+                            <label for="plainPrompt">
+                                <f:translate key="tx_aisuite.module.general.prompt"/>
+                            </label><br />
+                            <f:form.textarea property="plainPrompt" name="plainPrompt" class="form-control plainPrompt"/>
+                        </div>
+                    </div>
                 </div>
-            </f:if>
-
-            <div class="form-group">
-                <label for="plainPrompt">
-                    <f:translate key="tx_aisuite.module.general.prompt"/>
-                </label><br />
-                <f:form.textarea property="plainPrompt" name="plainPrompt" class="form-control"/>
-            </div>
-
-            <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
-
-            <div class="form-group">
-                <f:form.submit value="{f:translate(key: 'tx_aisuite.module.pageStructure.submit')}" class="btn btn-secondary"/>
+                <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
+                <div class="p-0">
+                    <button type="submit" class="btn btn-primary">
+                        <core:icon identifier="actions-file-add" size="small"/>
+                        <f:translate key="tx_aisuite.module.pageStructure.submit"/>
+                    </button>
+                </div>
             </div>
         </f:form>
 

@@ -3,7 +3,7 @@
     <f:form.hidden property="availableTcaColumns" {f:if(condition: '{content.availableTcaColumns-> f:count()} > 0', then: 'respectSubmittedDataValue="false" value=""')} />
     <f:form.hidden property="selectedTcaColumns" {f:if(condition: '{content.selectedTcaColumns-> f:count()} > 0', then: 'respectSubmittedDataValue="false" value=""')} />
     <f:form.hidden property="returnUrl" />
-    <f:form.hidden property="errorReturnUrl" />
+    <f:form.hidden property="regenerateReturnUrl" />
     <f:form.hidden property="initialPrompt" />
     <f:form.hidden property="pid" />
     <f:form.hidden property="uidPid" />
@@ -11,4 +11,5 @@
     <f:form.hidden property="colPos" />
     <f:form.hidden property="sysLanguageUid" />
     <f:form.hidden property="uid" />
+    <f:form.hidden property="additionalImageSettings" />
 </div>

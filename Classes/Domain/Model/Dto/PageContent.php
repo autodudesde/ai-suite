@@ -18,7 +18,7 @@ class PageContent
     protected array $availableTcaColumns = [];
     protected array $selectedTcaColumns = [];
     protected string $returnUrl;
-    protected string $errorReturnUrl;
+    protected string $regenerateReturnUrl;
     protected int $pid;
     protected int $uidPid;
     protected string $cType;
@@ -26,26 +26,28 @@ class PageContent
     protected int $sysLanguageUid;
     protected string $initialPrompt;
     protected string $uid;
+    protected string $additionalImageSettings;
 
     public function __construct(
         array $contentElementData,
         array $availableTcaColumns,
         array $selectedTcaColumns,
         string $returnUrl,
-        string $errorReturnUrl,
+        string $regenerateReturnUrl,
         int $pid,
         int $uidPid,
         string $cType,
         int $colPos,
         int $sysLanguageUid,
         string $initialPrompt,
-        string $uid
+        string $uid,
+        string $additionalImageSettings
     ) {
         $this->contentElementData = $contentElementData;
         $this->availableTcaColumns = $availableTcaColumns;
         $this->selectedTcaColumns = $selectedTcaColumns;
         $this->returnUrl = $returnUrl;
-        $this->errorReturnUrl = $errorReturnUrl;
+        $this->regenerateReturnUrl = $regenerateReturnUrl;
         $this->uidPid = $uidPid;
         $this->pid = $pid;
         $this->cType = $cType;
@@ -53,6 +55,7 @@ class PageContent
         $this->sysLanguageUid = $sysLanguageUid;
         $this->initialPrompt = $initialPrompt;
         $this->uid = $uid;
+        $this->additionalImageSettings = $additionalImageSettings;
     }
 
     public static function createEmpty(): self
@@ -69,7 +72,8 @@ class PageContent
             0,
             0,
             '',
-            0
+            0,
+            ''
         );
     }
 
@@ -117,14 +121,15 @@ class PageContent
         return $this;
     }
 
-    public function getErrorReturnUrl(): string
+    public function getRegenerateReturnUrl(): string
     {
-        return $this->errorReturnUrl;
+        return $this->regenerateReturnUrl;
     }
 
-    public function setErrorReturnUrl(string $errorReturnUrl): void
+    public function setRegenerateReturnUrl(string $regenerateReturnUrl): self
     {
-        $this->errorReturnUrl = $errorReturnUrl;
+        $this->regenerateReturnUrl = $regenerateReturnUrl;
+        return $this;
     }
 
     public function getPid(): int
@@ -201,6 +206,17 @@ class PageContent
     public function setUid(string $uid): self
     {
         $this->uid = $uid;
+        return $this;
+    }
+
+    public function getAdditionalImageSettings(): string
+    {
+        return $this->additionalImageSettings;
+    }
+
+    public function setAdditionalImageSettings(string $additionalImageSettings): self
+    {
+        $this->additionalImageSettings = $additionalImageSettings;
         return $this;
     }
 }

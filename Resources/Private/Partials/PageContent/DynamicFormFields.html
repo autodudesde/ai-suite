@@ -3,7 +3,6 @@
       data-namespace-typo3-fluid="true">
 
 <f:render partial="PageContent/AllProperties" arguments="{_all}" />
-
 <div class="row">
     <f:for each="{content.contentElementData}" key="table" as="data">
         <div class="col-12 mb-3" id="{table}">
@@ -31,8 +30,8 @@
                         <f:if condition="{data.0.text}">
                             <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: data.0.text, table: table, position: 0}" />
                         </f:if>
-                        <f:if condition="{data.0.image">
-                            <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: data.0.image, table: table, itemLabel: '', initialPrompt: content.initialPrompt, imageAmount: content.imageAmount, position: 0, pageId: content.pid }" />
+                        <f:if condition="{data.0.image}">
+                            <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: data.0.image, table: table, itemLabel: '', position: 0, pageId: content.pid, imageAi: initialImageAi, uuid: uuid}" />
                         </f:if>
                     </div>
                 </f:then>
@@ -65,8 +64,8 @@
                                 <f:if condition="{childData.text}">
                                     <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: childData.text, table: table, position: count}" />
                                 </f:if>
-                                <f:if condition="{childData.image">
-                                    <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: childData.image, table: table, itemLabel: data.label, initialPrompt: content.initialPrompt, imageAmount: content.imageAmount, position: count, pageId: content.pid }" />
+                                <f:if condition="{childData.image}">
+                                    <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: childData.image, table: table, itemLabel: data.label, position: count, pageId: content.pid, imageAi: initialImageAi, uuid: uuid}" />
                                 </f:if>
                             </div>
                             {f:variable(name: 'count', value: '{count + 1}')}

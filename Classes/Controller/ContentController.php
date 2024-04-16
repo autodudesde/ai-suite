@@ -18,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 class ContentController extends AbstractBackendController
 {
     public function __construct(
-        array $extConf,
+        array $extConf
     ) {
         parent::__construct($extConf);
         $this->extConf = $extConf;

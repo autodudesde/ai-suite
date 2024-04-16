@@ -91,7 +91,7 @@ class ContentElementService
         array &$requestFields,
         array $formData,
         int $pid,
-        string $table = 'tt_content',
+        string $table = 'tt_content'
     ): void
     {
         // palette needs a palette name reference, otherwise it does not make sense to try rendering of it

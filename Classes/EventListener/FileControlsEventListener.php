@@ -26,9 +26,9 @@ class FileControlsEventListener
             $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
             $buttonIcon = $iconFactory->getIcon('apps-clipboard-images', Icon::SIZE_SMALL)->render();
 
-            $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:image_generation_add.button'));
-            $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:image_generation_add.placeholder'));
-            $buttonSubmit = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:image_generation_add.submit'));
+            $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
+            $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
+            $buttonSubmit = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
 
             $objectPrefix = $event->getFormFieldIdentifier() . '-' . $event->getFieldConfig()['foreign_table'];
 

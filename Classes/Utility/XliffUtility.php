@@ -160,10 +160,16 @@ class XliffUtility
         if ($input->getTranslationMode() === 'missingProperties') {
             $destinationFile = self::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' .$input->getFilename(), false);
             $newTranslation = $sourceFile->getSimpleXMLElement();
-            for ($i = 0; $i < count($sourceFile->getFormatedData()); $i++) {
+            for ($i = 0; $i < count($sourceFile->getRawData()['file']['body']['trans-unit']); $i++) {
                 $unitAttributes = self::getUnitAttributes($sourceFile, $i);
                 if (array_key_exists($unitAttributes, $translations)) {
-                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                    if(count($sourceFile->getFormatedData()) === 1) {
+                        if($newTranslation->file->body->{"trans-unit"}->target->count() === 0) {
+                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $translations['' . $unitAttributes]);
+                        }
+                    } else {
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                    }
                 } else {
                     $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
                 }
@@ -171,10 +177,16 @@ class XliffUtility
         } else {
             $newTranslation = $sourceFile->getSimpleXMLElement();
             $newTranslation->file->addAttribute('target-language', $input->getDestinationLanguage());
-            for ($i = 0; $i < count($sourceFile->getFormatedData()); $i++) {
+            for ($i = 0; $i < count($sourceFile->getRawData()['file']['body']['trans-unit']); $i++) {
                 $unitAttributes = self::getUnitAttributes($sourceFile, $i);
                 if (array_key_exists($unitAttributes, $translations)) {
-                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                    if(count($sourceFile->getFormatedData()) === 1) {
+                        if($newTranslation->file->body->{"trans-unit"}->target->count() === 0) {
+                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $translations['' . $unitAttributes]);
+                        }
+                    } else {
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                    }
                 }
             }
         }
@@ -187,8 +199,8 @@ class XliffUtility
     }
 
     public static function getUnitAttributes($sourceFile, int $i): string {
-        if(array_key_exists($i, $sourceFile->getFormatedData())) {
-            $unitAttributes = $sourceFile->getFormatedData()[$i]['originalData']["@id"];
+        if(array_key_exists($i, $sourceFile->getRawData()['file']['body']['trans-unit'])) {
+            $unitAttributes = $sourceFile->getRawData()['file']['body']['trans-unit'][$i]["@id"];
         } else {
             $unitAttributes = array_key_first($sourceFile->getFormatedData());
         }

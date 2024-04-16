@@ -1,19 +1,22 @@
 
 <div class="row image-title-suggestions mt-2">
-    <h2 class="text-left">
+    <h3 class="text-gradient">
         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleSuggestionsHeader" />
-    </h2>
+    </h3>
     <f:for each="{imageTitleSuggestions}" as="suggestion" iteration="it">
         <div class="col-12 col-md-6 my-3 position-relative">
             <input
-                type="radio"
+                type="checkbox"
                 name="fileData[content][contentElementData][{table}][{position}][{fieldName}][imageTitle]"
                 value="{suggestion}"
                 data-image-title="{suggestion}"
-                class="mx-1"
+                class="mx-1 image-title-selection"
                 id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
+                data-selection-group="{table}-{position}-{fieldName}-image_title"
             >
-            <label class="d-inline-flex justify-content-start align-items-center mt-2"
+            <label class="d-inline-flex justify-content-start align-items-center ce-image-title-selection"
+                   data-selection-group="{table}-{position}-{fieldName}-image_title"
+                   data-selection-id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
                    for="{table}-{position}-{fieldName}-image_title-{it.cycle}"
                    style="font-size: 0.85rem;"
             >
@@ -21,5 +24,15 @@
             </label>
         </div>
     </f:for>
+    <div class="col-12 col-md-6 my-3 position-relative image-title-wrapper">
+        <input
+            type="text"
+            name="fileData[content][contentElementData][{table}][{position}][{fieldName}][imageTitleFreeText]"
+            value=""
+            placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleFreeTextPlaceholder')}"
+            class="image-title-free-text-input"
+            id="{table}-{position}-{fieldName}-image_title-free_text"
+        >
+    </div>
 </div>
 

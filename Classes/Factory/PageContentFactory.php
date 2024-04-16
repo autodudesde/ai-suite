@@ -14,13 +14,16 @@ namespace AutoDudes\AiSuite\Factory;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
 use AutoDudes\AiSuite\Service\FileNameSanitizerService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\StorageRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PageContentFactory
 {
@@ -28,17 +31,22 @@ class PageContentFactory
     protected StorageRepository $storageRepository;
     protected Filesystem $filesystem;
     protected LinkService $linkService;
+    protected array $extConf;
+    protected LoggerInterface $logger;
 
     public function __construct(
         DataHandler $dataHandler,
         StorageRepository $storageRepository,
         Filesystem $filesystem,
-        LinkService $linkService
+        LinkService $linkService,
+        array $extConf
     ) {
         $this->dataHandler = $dataHandler;
         $this->storageRepository = $storageRepository;
         $this->filesystem = $filesystem;
         $this->linkService = $linkService;
+        $this->extConf = $extConf;
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
     /**
@@ -150,8 +158,20 @@ class PageContentFactory
 
         $storage = $this->storageRepository->getDefaultStorage();
         $defaultFolder = $storage->getDefaultFolder();
-        $defaultFolder->hasFolder('ai-images') ?: $defaultFolder->createFolder('ai-images');
-        $aiImagesFolder = $defaultFolder->getSubfolder('ai-images');
+
+        if($this->extConf['mediaStorageFolder'] !== '') {
+            try {
+                $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
+                $defaultFolder->createFolder($this->extConf['mediaStorageFolder']);
+                $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
+            }
+        } else {
+            $defaultFolder->hasFolder('ai-images') ?: $defaultFolder->createFolder('ai-images');
+            $aiImagesFolder = $defaultFolder->getSubfolder('ai-images');
+        }
+
         $destinationPath = Environment::getPublicPath() . $aiImagesFolder->getPublicUrl();
 
         $this->filesystem->copy(

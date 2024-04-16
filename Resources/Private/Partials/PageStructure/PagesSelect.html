@@ -1,15 +1,8 @@
-<div class="form-group">
+<div class="pages-select">
     <label for="startStructureFromPid">{f:translate(key: 'tx_aisuite.module.pageStructure.pageChooser')}</label><br />
-    <f:form.select name="startStructureFromPid" property="startStructureFromPid" class="form-control">
-        <f:for each="{pagesSelect}" as="page">
-            <f:if condition="{page.uid} == {input.uid}">
-                <f:then>
-                    <f:form.select.option value="{page.uid}" selected="true">{page.title} [{page.uid}]</f:form.select.option>
-                </f:then>
-                <f:else>
-                    <f:form.select.option value="{page.uid}">{page.title} [{page.uid}]</f:form.select.option>
-                </f:else>
-            </f:if>
-        </f:for>
-    </f:form.select>
+    <f:render partial="Libs/SearchableDropdown" arguments="{
+        searchableList: pagesSelect,
+        translateKeyButton: 'AiSuite.module.Pages.pagesSelect',
+        propertyName: 'startStructureFromPid'
+    }" />
 </div>

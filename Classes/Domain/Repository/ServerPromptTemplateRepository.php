@@ -20,9 +20,13 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
 {
+    protected ConnectionPool $connectionPool;
+    protected string $table;
+    protected string $sortBy;
+
     public function __construct(
-        protected ConnectionPool $connectionPool,
-        protected string $table = 'tx_aisuite_domain_model_server_prompt_template',
+        ConnectionPool $connectionPool,
+        string $table = 'tx_aisuite_domain_model_server_prompt_template',
         string $sortBy = 'name'
     ) {
         parent::__construct(
@@ -31,8 +35,7 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
             $sortBy
         );
     }
-
-
+    
     /**
      * @return int returns the number of affected rows
      */

@@ -20,9 +20,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
 {
+    protected ConnectionPool $connectionPool;
+    protected string $table;
+    protected string $sortBy;
+
     public function __construct(
-        protected ConnectionPool $connectionPool,
-        protected string $table = 'tx_aisuite_domain_model_custom_prompt_template',
+        ConnectionPool $connectionPool,
+        string $table = 'tx_aisuite_domain_model_custom_prompt_template',
         string $sortBy = 'name'
     ) {
         parent::__construct(

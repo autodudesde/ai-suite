@@ -1,18 +1,11 @@
-import HelperFunctions from "../helper/functions.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 
 class Creation {
     constructor() {
-        HelperFunctions.cancelGeneration();
-        HelperFunctions.addFormSubmitEventListener();
-        this.setPromptTemplate();
-    }
-    setPromptTemplate() {
-        let promptTemplates = document.querySelector('div[data-module-id="aiSuite"] select[name="promptTemplates"]');
-        if(promptTemplates !== null) {
-            promptTemplates.addEventListener('change', function (event) {
-                document.querySelector('div[data-module-id="aiSuite"] textarea[name="input[plainPrompt]"]').value = event.target.value;
-            });
-        }
+        Generation.cancelGeneration();
+        Generation.addFormSubmitEventListener();
+        PromptTemplate.loadPromptTemplates('input[plainPrompt]');
     }
 }
 export default new Creation();
