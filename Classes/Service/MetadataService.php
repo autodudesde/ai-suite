@@ -10,13 +10,16 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\NewsContentNotAvailableException;
+use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Routing\SiteMatcher;
 use TYPO3\CMS\Core\Routing\UnableToLinkToPageException;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
@@ -34,6 +37,7 @@ class MetadataService
     protected SendRequestService $requestService;
 
     protected RequestsRepository $requestsRepository;
+    protected FileRepository $fileRepository;
 
     public function __construct(
         PageRepository $pageRepository,
@@ -41,6 +45,7 @@ class MetadataService
         RequestFactory $requestFactory,
         SendRequestService $requestService,
         RequestsRepository $requestsRepository,
+        FileRepository $fileRepository,
         array $extConf
     ) {
         $this->pageRepository = $pageRepository;
@@ -48,6 +53,7 @@ class MetadataService
         $this->requestFactory = $requestFactory;
         $this->requestService = $requestService;
         $this->requestsRepository = $requestsRepository;
+        $this->fileRepository = $fileRepository;
         $this->extConf = $extConf;
     }
 
@@ -65,7 +71,29 @@ class MetadataService
                 return $this->requestMetadataFromServer($newsContent, $promptPrefix, $siteLanguage->getLocale()->getLanguageCode());
             }
             throw new NewsContentNotAvailableException();
-        } else {
+        } elseif ($promptPrefix === 'Alternative' || $promptPrefix === 'Title') {
+            $fileId = (int)$parsedBody['sysFileId'];
+            $file = $this->fileRepository->findByUid($fileId);
+            $absoluteImageUrl = Environment::getPublicPath() . $file->getPublicUrl();
+
+            $type = pathinfo($absoluteImageUrl, PATHINFO_EXTENSION);
+            $data = file_get_contents($absoluteImageUrl);
+            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+            $sites = SiteUtility::getAvailableSites();
+            $firstSiteLanguageTwoLetterIsoCode = "";
+            foreach ($sites as $site) {
+                foreach ($site->getLanguages() as $language) {
+                    $firstSiteLanguageTwoLetterIsoCode = $language->getLocale()->getLanguageCode();
+                    break 2;
+                }
+            }
+            if(empty($firstSiteLanguageTwoLetterIsoCode)) {
+                throw new FetchedContentFailedException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.fetchContentFailed'));
+            }
+            return $this->requestMetadataFromServer($base64, $promptPrefix, $firstSiteLanguageTwoLetterIsoCode);
+        }
+        else {
             $siteLanguage = $this->getSiteLanguageFromPageId((int)$parsedBody['pageId']);
             $previewUrl = $this->getPreviewUrl((int)$parsedBody['pageId'], $siteLanguage->getLanguageId());
 
@@ -95,7 +123,7 @@ class MetadataService
                 'PromptPrefix_' . $type,
                 $languageIsoCode,
                 [
-                    'text' => 'ChatGPT'
+                    'text' => $type === 'Alternative' || $type === 'Title' ? 'Vision' :'ChatGPT'
                 ]
             )
         );

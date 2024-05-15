@@ -1,5 +1,4 @@
-import Modal from "@typo3/backend/modal.js";
-import Severity from "@typo3/backend/severity.js";
+import Notification from "@typo3/backend/notification.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
@@ -16,6 +15,8 @@ class Creation {
         this.calculateRequestAmount();
         this.handleModelChange();
         Generation.cancelGeneration();
+        this.handleCheckboxChange('.request-field-checkbox[value="file"]', '.image-generation-library', this.calculateRequestAmount);
+        this.handleCheckboxChange('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]', '.text-generation-library', this.calculateRequestAmount);
         this.intervalId = null;
     }
 
@@ -82,7 +83,14 @@ class Creation {
                     const atLeastOneChecked = Array.from(fileCheckboxes).some(function (checkbox) {
                         return checkbox.checked;
                     });
-                    if(atLeastOneChecked) {
+                    let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="content[initialPrompt]"]').value
+                    if (enteredPrompt.length < 5) {
+                        Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
+                    }
+                    if(atLeastOneChecked === false) {
+                        Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedTitle'], TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedMessage'], 8);
+                    }
+                    if(atLeastOneChecked && enteredPrompt.length > 4) {
                         Generation.showSpinner();
                         const submitBtn = form.querySelector('button[type="submit"]');
                         let data = {
@@ -91,15 +99,6 @@ class Creation {
                         };
                         StatusHandling.fetchStatusContentElement(data, self);
                         form.submit();
-                    } else {
-                        Modal.confirm(TYPO3.lang['aiSuite.module.notification.warning'], TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelected'], Severity.warning, [
-                            {
-                                text: TYPO3.lang['aiSuite.module.notification.modal.close'],
-                                trigger: function() {
-                                    Modal.dismiss();
-                                }
-                            }
-                        ]);
                     }
                 });
             });

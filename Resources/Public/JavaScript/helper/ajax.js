@@ -64,7 +64,7 @@ class Ajax {
      * @param {function} addSelectionToAdditionalFields
      */
     sendMetadataAjaxRequest(modelId, fieldName, postData, handleResponse, ajaxUrlPrefix = '', addSelectionToAdditionalFields = null) {
-        Notification.info(TYPO3.lang['AiSuite.notification.generation.start'], TYPO3.lang['AiSuite.notification.generation.start.suggestions'], 8);
+        Notification.info(TYPO3.lang['AiSuite.notification.generation.start'], TYPO3.lang['AiSuite.notification.generation.start.suggestions'], 16);
         new AjaxRequest(TYPO3.settings.ajaxUrls[ajaxUrlPrefix + fieldName+'_generation'])
             .post(
                 postData

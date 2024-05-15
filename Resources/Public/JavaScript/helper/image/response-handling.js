@@ -2,6 +2,7 @@ import Notification from "@typo3/backend/notification.js";
 import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import General from "@autodudes/ai-suite/helper/general.js";
+import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 
 class ResponseHandling {
     handleResponse(res, errorMessage) {
@@ -38,7 +39,7 @@ class ResponseHandling {
                 if (regenerateButton !== null) {
                     regenerateButton.addEventListener('click', function(ev) {
                         ev.preventDefault();
-                        GenerationHandling.showGeneralImageSettingsModal(data, true);
+                        GenerationHandling.showGeneralImageSettingsModal(data, 'ContentElement');
                     });
                 }
                 Notification.success(TYPO3.lang['AiSuite.notification.generation.finish'], TYPO3.lang['AiSuite.notification.generation.finish.suggestions'], 8);

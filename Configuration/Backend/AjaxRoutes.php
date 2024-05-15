@@ -41,6 +41,14 @@ return [
         'path' => '/generate/news-keywords',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::generateNewsKeywordsAction'
     ],
+    'alternative_generation' => [
+        'path' => '/generate/sys-file-alternative',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::generateAlternativeAction'
+    ],
+    'title_generation' => [
+        'path' => '/generate/sys-file-title',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::generateTitleAction'
+    ],
     'aisuite_image_generation_slide_one' => [
         'path' => '/generate/ai-image-slide-one',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::getImageWizardSlideOneAction'
@@ -64,5 +72,13 @@ return [
     'aisuite_regenerate_images' => [
         'path' => '/generate/ai-image-regenerate',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::regenerateImageAction'
+    ],
+    'aisuite_regenerate_filelist_images' => [
+        'path' => '/generate/ai-image-regenerate-filelist',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::regenerateImageFileListAction'
+    ],
+    'aisuite_file_process' => [
+        'path' => '/generate/file/process',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::fileProcessAction'
     ],
 ];

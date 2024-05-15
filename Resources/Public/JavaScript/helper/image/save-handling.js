@@ -1,9 +1,9 @@
 import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import Notification from "@typo3/backend/notification.js";
 import ImageManipulation from "@typo3/backend/image-manipulation.js";
-import LinkPopup from "@typo3/backend/form-engine/field-control/link-popup.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
+import General from "@autodudes/ai-suite/helper/general.js";
 
 class SaveHandling {
     backToSlideOneButton(modal) {
@@ -25,16 +25,12 @@ class SaveHandling {
         });
     }
     saveGeneratedImageButton(modal, data, slide) {
-        let getSelectedImageTitleFn = this.getSelectedImageTitle;
-        let addImageToFileControlsPanelFn = this.addImageToFileControlsPanel;
-        let setSysFileReferenceFieldFn = this.setSysFileReferenceField;
-        let addInputFieldKeyupListenerFn = this.addInputFieldKeyupListener;
-        let addLinkTooltipFunctionalityFn = this.addLinkTooltipFunctionality;
+        let self = this;
         let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
             let selectedImageRadioBtn = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][newImageUrl]"]:checked');
             if(selectedImageRadioBtn.length > 0) {
-                let imageTitle = getSelectedImageTitleFn(modal, data);
+                let imageTitle = self.getSelectedImageTitle(modal, data);
                 let imageUrl = selectedImageRadioBtn.data('url');
                 let postData = {
                     imageUrl: imageUrl,
@@ -53,16 +49,16 @@ class SaveHandling {
                 let res = await Ajax.sendAjaxRequest('file_reference_create', postData, true);
                 if(res !== null) {
                     let dataKey = Object.keys(res.inlineData.map)[0];
-                    addImageToFileControlsPanelFn(modal, data.fileContextConfig, res, dataKey);
+                    self.addImageToFileControlsPanel(modal, data.fileContextConfig, res, dataKey);
                     document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield').forEach(function(placeholderField) {
                         placeholderField.style.display = 'none';
                     });
                     if(imageTitle !== undefined) {
-                        setSysFileReferenceFieldFn('title', res.compilerInput.uid, dataKey, imageTitle);
-                        setSysFileReferenceFieldFn('alternative', res.compilerInput.uid, dataKey, imageTitle);
+                        self.setSysFileReferenceField('title', res.compilerInput.uid, dataKey, imageTitle);
+                        self.setSysFileReferenceField('alternative', res.compilerInput.uid, dataKey, imageTitle);
                     }
-                    addInputFieldKeyupListenerFn(dataKey);
-                    addLinkTooltipFunctionalityFn(dataKey, res);
+                    self.addInputFieldKeyupListener(dataKey);
+                    self.addLinkTooltipFunctionality(dataKey, res);
                     ImageManipulation.initializeTrigger();
                     MultiStepWizard.dismiss();
                 }
@@ -71,9 +67,62 @@ class SaveHandling {
             }
         });
     }
-    getSelectedImageTitle(modal, data) {
+    saveGeneratedImageFileListButton(modal, data, slide) {
+        let self = this;
+        let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
+        aiSuiteSaveGeneratedImageButton.on('click', async function() {
+            let selectedImageRadioBtn = modal.find('.modal-body').find('input.image-selection:checked');
+            if(selectedImageRadioBtn.length > 0) {
+                let imageTitle = self.getSelectedImageTitle(modal, data, true);
+                let imageName = General.sanitizeFileName(imageTitle);
+                let imageUrl = selectedImageRadioBtn.data('url');
+                slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageSavingProcess']));
+                modal.find('.spinner-wrapper').css('overflow', 'hidden');
+                await fetch(imageUrl, {mode: 'cors'})
+                    .then(res => res.blob())
+                    .then(blob => {
+                        imageName += '.' + blob.type.split('/')[1];
+                    });
+                let postData = {
+                    'fileName': imageName,
+                    'fileTarget': data.targetFolder
+                };
+                let existFileRes = await Ajax.sendAjaxRequest('file_exists', postData, true);
+                if(General.isUsable(existFileRes) && General.isUsable(existFileRes.id)) {
+                    imageName = Date.now() + '_' + imageName;
+                }
+
+                postData = {
+                    'fileName': imageName,
+                    'fileTitle': imageTitle,
+                    'fileTarget': data.targetFolder,
+                    'fileUrl': imageUrl
+                };
+
+                let processFileRes = await Ajax.sendAjaxRequest('aisuite_file_process', postData, true);
+
+                if(General.isUsable(processFileRes)) {
+                    if(General.isUsable(processFileRes.error)) {
+                        Notification.error(TYPO3.lang['aiSuite.module.modal.error'], processFileRes.error, 8);
+                        return;
+                    } else {
+                        Notification.info(TYPO3.lang["file_upload.reload.filelist"], TYPO3.lang["file_upload.reload.filelist.message"], 10);
+                        Notification.success("", TYPO3.lang['aiSuite.module.notification.filelist.upload.success.message'], 8);
+                    }
+                }
+                MultiStepWizard.dismiss();
+            } else {
+                Notification.warning(TYPO3.lang['aiSuite.module.modal.noImageSelectedTitle'], TYPO3.lang['aiSuite.module.modal.noImageSelectedMessage'], 8);
+            }
+        });
+    }
+    getSelectedImageTitle(modal, data, fromFileList = false) {
         let selectedImageTitleRadioBtn = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitle]"]:checked');
         let selectedImageTitleInputFreeText = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitleFreeText]"]').val();
+        if(fromFileList) {
+            selectedImageTitleRadioBtn = modal.find('.modal-body').find('input.image-title-selection:checked');
+            selectedImageTitleInputFreeText = modal.find('.modal-body').find('input.image-title-free-text-input').val();
+        }
         let imageTitle = '';
         if(selectedImageTitleRadioBtn !== null) {
             imageTitle = selectedImageTitleRadioBtn.data('image-title');
@@ -108,9 +157,10 @@ class SaveHandling {
                 inputLinkTooltip.value = event.target.value;
             });
         });
-        res.scriptItems.forEach(function(scriptItem) {
+        res.scriptItems.forEach(async function(scriptItem) {
             if(scriptItem.payload.name === '@typo3/backend/form-engine/field-control/link-popup.js') {
                 let inputLinkId = scriptItem.payload.items[0].args[0];
+                const LinkPopup = (await import('@typo3/backend/form-engine/field-control/link-popup.js')).default
                 new LinkPopup(inputLinkId);
             }
         });

@@ -41,6 +41,7 @@ use AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListe
 use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 use Symfony\Component\Filesystem\Filesystem;
 use AutoDudes\AiSuite\Controller\Ajax\StatusController;
+use AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -156,5 +157,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
+        ]);
+
+    $services->set(ModifyButtonBarEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
         ]);
 };

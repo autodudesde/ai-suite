@@ -171,7 +171,9 @@ class XliffUtility
                         $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
                     }
                 } else {
-                    $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
+                    if(array_key_exists($unitAttributes, $destinationFile->getFormatedData())) {
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
+                    }
                 }
             }
         } else {

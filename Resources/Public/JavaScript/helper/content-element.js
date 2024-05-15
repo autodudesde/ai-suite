@@ -35,7 +35,7 @@ class ContentElement {
                     position: ev.target.getAttribute('data-position'),
                     fieldName: ev.target.getAttribute('data-fieldname'),
                 }
-                ImageGeneration.showGeneralImageSettingsModal(data, true);
+                ImageGeneration.showGeneralImageSettingsModal(data, 'ContentElement');
             });
         });
     }

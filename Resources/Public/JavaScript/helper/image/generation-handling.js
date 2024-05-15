@@ -4,7 +4,7 @@ import Modal from "@typo3/backend/modal.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 
 class GenerationHandling {
-    showGeneralImageSettingsModal(data, contentElementScope = false) {
+    showGeneralImageSettingsModal(data, scope = '') {
         Modal.advanced(
             {
                 type: Modal.types.ajax,
@@ -19,7 +19,7 @@ class GenerationHandling {
                             currentModal.querySelector('#wizardSlideOne textarea#imageGenerationPrompt').value = event.target.value;
                         });
                     }
-                    this.addGenerateImageButton(currentModal, data, contentElementScope);
+                    this.addGenerateImageButton(currentModal, data, scope);
                 }
             },
         );
@@ -27,7 +27,7 @@ class GenerationHandling {
     addGenerateImageButton(
         modal,
         data,
-        contentElementScope
+        scope
     ) {
         let self = this;
         let aiSuiteGenerateImageButton = modal.querySelector('.modal-body button#aiSuiteGenerateImageBtn');
@@ -46,7 +46,7 @@ class GenerationHandling {
                 data.imagePrompt = enteredPrompt;
                 data.imageAiModel = imageAiModel;
                 Modal.dismiss();
-                if (contentElementScope) {
+                if (scope === 'ContentElement') {
                     if (data.imageAiModel === 'DALL-E') {
                         const DalleContentElement = (await import('./wizards/dalle-content-element.js')).default
                         DalleContentElement.addImageGenerationWizard(data);
@@ -54,7 +54,16 @@ class GenerationHandling {
                         const MidjourneyContentElement = (await import('./wizards/midjourney-content-element.js')).default
                         MidjourneyContentElement.addImageGenerationWizard(data);
                     }
-                } else {
+                } else if(scope === 'FileList') {
+                    if (data.imageAiModel === 'DALL-E') {
+                        const DalleFileList = (await import('./wizards/dalle.js')).default
+                        DalleFileList.addImageGenerationWizard(data, true);
+                    } else if (data.imageAiModel === 'Midjourney') {
+                        const MidjourneyFileList = (await import('./wizards/midjourney.js')).default
+                        MidjourneyFileList.addImageGenerationWizard(data, true);
+                    }
+                }
+                else {
                     if (data.imageAiModel === 'DALL-E') {
                         const Dalle = (await import('./wizards/dalle.js')).default
                         Dalle.addImageGenerationWizard(data);

@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
+use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use Psr\Http\Message\ResponseInterface;
@@ -26,11 +27,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -44,6 +48,8 @@ class ImageController extends ActionController
     protected RequestsRepository $requestsRepository;
     protected PageContentFactory $pageContentFactory;
     protected Context $context;
+    protected ResourceFactory $fileFactory;
+    protected Filesystem $filesystem;
     protected LoggerInterface $logger;
 
     public function __construct(
@@ -52,6 +58,8 @@ class ImageController extends ActionController
         RequestsRepository $requestsRepository,
         PageContentFactory $pageContentFactory,
         Context $context,
+        ResourceFactory $fileFactory,
+        Filesystem $filesystem,
         LoggerInterface $logger
     ) {
         $this->extConf = $extConf;
@@ -59,6 +67,8 @@ class ImageController extends ActionController
         $this->requestsRepository = $requestsRepository;
         $this->pageContentFactory = $pageContentFactory;
         $this->context = $context;
+        $this->fileFactory = $fileFactory;
+        $this->filesystem = $filesystem;
         $this->logger = $logger;
     }
 
@@ -120,7 +130,7 @@ class ImageController extends ActionController
                     'progress' => 'prepare'
                 ],
                 $request->getParsedBody()['imagePrompt'],
-                $langIsoCode,
+                $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
                 [
                     'image' => $request->getParsedBody()['imageAiModel'],
                 ]
@@ -136,9 +146,9 @@ class ImageController extends ActionController
             'imageAiModel' => $request->getParsedBody()['imageAiModel'],
             'imageSuggestions' => $answer->getResponseData()['images'],
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
-            'fieldName' => $request->getParsedBody()['fieldName'],
-            'table' => $request->getParsedBody()['table'],
-            'position' => $request->getParsedBody()['position'],
+            'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
+            'table' => $request->getParsedBody()['table'] ?? '',
+            'position' => $request->getParsedBody()['position'] ?? '',
             'pageId' => $request->getParsedBody()['pageId'],
             'uuid' => $request->getParsedBody()['uuid']
         ];
@@ -190,7 +200,7 @@ class ImageController extends ActionController
                     'index' => $request->getParsedBody()['index']
                 ],
                 $request->getParsedBody()['imagePrompt'],
-                $langIsoCode,
+                $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
                 [
                     'image' => $request->getParsedBody()['imageAiModel'],
                 ]
@@ -205,9 +215,9 @@ class ImageController extends ActionController
         $params = [
             'imageSuggestions' => $answer->getResponseData()['images'],
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
-            'fieldName' => $request->getParsedBody()['fieldName'],
-            'table' => $request->getParsedBody()['table'],
-            'position' => $request->getParsedBody()['position'],
+            'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
+            'table' => $request->getParsedBody()['table'] ?? '',
+            'position' => $request->getParsedBody()['position'] ?? '',
         ];
         $output = $this->getContentFromTemplate(
             $request,
@@ -322,6 +332,30 @@ class ImageController extends ActionController
             $this->logError($e->getMessage(), $response, 403);
         }
         return $response;
+    }
+
+    public function fileProcessAction(ServerRequestInterface $request): ResponseInterface
+    {
+        try {
+            $parsedBody = $request->getParsedBody();
+            $fileTarget = $parsedBody['fileTarget'];
+            $fileTargetObject = $this->fileFactory->retrieveFileOrFolderObject($fileTarget);
+
+            $destinationPath = Environment::getPublicPath() . $fileTargetObject->getPublicUrl();
+
+            $this->filesystem->copy(
+                $parsedBody['fileUrl'],
+                $destinationPath . $parsedBody['fileName']
+            );
+            $newFile = $fileTargetObject ->getFile($parsedBody['fileName']);
+            $newFile->getMetaData()->offsetSet('title', $parsedBody['fileTitle']);
+            $newFile->getMetaData()->offsetSet('alternative', $parsedBody['fileTitle']);
+            $newFile->getMetaData()->save();
+            return new JsonResponse(['success' => true]);
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+            return new JsonResponse(['success' => false, 'error' => $e->getMessage()], 500);
+        }
     }
 
     private function getContentFromTemplate(

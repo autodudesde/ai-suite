@@ -80,6 +80,16 @@ class MetadataController
         return $this->generateSuggestions($request, 'TwitterDescription');
     }
 
+    public function generateAlternativeAction(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->generateSuggestions($request, 'Alternative');
+    }
+
+    public function generateTitleAction(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->generateSuggestions($request, 'Title');
+    }
+
     private function generateSuggestions(ServerRequestInterface $request, string $type): Response
     {
         $response = new Response();

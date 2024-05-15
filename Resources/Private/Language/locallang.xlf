@@ -599,6 +599,12 @@
             <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
                 <source>Generate description suggestions for news article (1 Credit)</source>
             </trans-unit>
+            <trans-unit id="AiSuite.generation.alternativeSuggestions" resname="AiSuite.generation.alternativeSuggestions">
+                <source>Generate alternative suggestions for file (1 Credit)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.generation.titleSuggestions" resname="AiSuite.generation.titleSuggestions">
+                <source>Generate title suggestions for file (1 Credit)</source>
+            </trans-unit>
             <trans-unit id="AiSuite.notification.generation.start" resname="AiSuite.notification.generation.start">
                 <source>Started</source>
             </trans-unit>
@@ -643,6 +649,9 @@
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated" resname="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated">
                 <source>Copied selected suggestion to fields for Open Graph and Twitter description.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.sysFileMetadataUpdated" resname="AiSuite.notification.generation.suggestions.sysFileMetadataUpdated">
+                <source>Copied selected suggestion to title and alternative field.</source>
             </trans-unit>
             <trans-unit id="AiSuite.unableToLinkToPage" resname="AiSuite.unableToLinkToPage">
                 <source>Unable to link to page with ID %s and language ID %s</source>
@@ -756,7 +765,10 @@
             <trans-unit id="aiSuite.module.notification.modal.close" xml:space="preserve">
                 <source>Close</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelected" xml:space="preserve">
+            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedTitle" xml:space="preserve">
+                <source>No fields selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedMessage" xml:space="preserve">
                 <source>You don't have selected any fields. Please select at least one field to continue.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.notification.warning" xml:space="preserve">
@@ -1004,6 +1016,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.generateImageWithAiButton" xml:space="preserve">
                 <source>Generate Image with AI</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageTitle" xml:space="preserve">
+                <source>No page selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageMessage" xml:space="preserve">
+                <source>You don't have selected a page. Please select one.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.notification.filelist.upload.success.message" xml:space="preserve">
+                <source>File was uploaded successfully and metadata was set</source>
             </trans-unit>
         </body>
     </file>

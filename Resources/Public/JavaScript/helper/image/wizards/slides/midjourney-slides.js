@@ -46,7 +46,7 @@ class MidjourneySlides {
         });
     }
 
-    slideTwo(data, addSelectionEventListenersFn) {
+    slideTwo(data, filelistScope, addSelectionEventListenersFn) {
         let self = this;
         MultiStepWizard.addSlide('ai-suite-midjourney-image-generation-step-2', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.midjourneySlideTwo'], async function(slide, settings) {
             MultiStepWizard.blurCancelStep();
@@ -60,7 +60,7 @@ class MidjourneySlides {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.midjourneySelectionError']);
                     slide.html(settings['generatedImages']);
-                    addSelectionEventListenersFn(modal, data, slide, self);
+                    addSelectionEventListenersFn(modal, data, slide, filelistScope, self);
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);

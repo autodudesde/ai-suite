@@ -12,7 +12,7 @@ class Dalle {
     constructor() {
         this.intervalId = null;
     }
-    addImageGenerationWizard(data) {
+    addImageGenerationWizard(data, filelistScope = false) {
         let self = this;
         MultiStepWizard.addSlide('ai-suite-dalle-image-generation-step-1', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.dalleSlideOne'], async function (slide, settings) {
             let modalContent = MultiStepWizard.setup.$carousel.closest('.t3js-modal');
@@ -33,7 +33,7 @@ class Dalle {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.dalleSelectionError']);
                     slide.html(settings['generatedImages']);
-                    self.addSelectionEventListeners(modal, data, slide, self);
+                    self.addSelectionEventListeners(modal, data, slide, self, filelistScope);
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
@@ -49,11 +49,15 @@ class Dalle {
         });
     }
 
-    addSelectionEventListeners(modal, data, slide, self) {
+    addSelectionEventListeners(modal, data, slide, self, filelistScope) {
         self.backToSlideOneButton(modal, data);
         SaveHandling.selectionHandler(modal, 'img.ce-image-selection');
         SaveHandling.selectionHandler(modal, 'label.ce-image-title-selection');
-        SaveHandling.saveGeneratedImageButton(modal, data, slide);
+        if(filelistScope) {
+            SaveHandling.saveGeneratedImageFileListButton(modal, data, slide);
+        } else {
+            SaveHandling.saveGeneratedImageButton(modal, data, slide);
+        }
     }
 
     backToSlideOneButton(modal, data) {

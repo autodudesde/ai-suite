@@ -268,7 +268,6 @@ class ContentElementController extends AbstractBackendController
         $this->moduleTemplate->assign('content', $content);
         $this->moduleTemplate->assign('initialImageAi', $imageAi);
         $this->moduleTemplate->assign('uuid', UuidUtility::generateUuid());
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
 
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content-element/validation.js');
         $moduleName = 'web_aisuite';

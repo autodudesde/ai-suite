@@ -1,4 +1,5 @@
 import Notification from "@typo3/backend/notification.js";
+import General from "@autodudes/ai-suite/helper/general.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import Metadata from "@autodudes/ai-suite/helper/metadata.js";
 
@@ -15,13 +16,25 @@ class GenerateSuggestions {
         document.querySelectorAll('.ai-suite-suggestions-generation-btn').forEach(function(button) {
             button.addEventListener("click", function(ev) {
                 ev.preventDefault();
-
-                let pageId = parseInt(this.getAttribute('data-page-id'));
                 let fieldName = this.getAttribute('data-field-name');
-                let postData = {
-                    pageId: pageId
-                };
-                executeRequest(pageId, fieldName, postData, handleResponse, '', addSelectionToAdditionalFields);
+                if(
+                    General.isUsable(this.getAttribute('data-sys-file-metadata-id')) &&
+                    General.isUsable(this.getAttribute('data-sys-file-id'))
+                ) {
+                    let sysFileMetadataId = parseInt(this.getAttribute('data-sys-file-metadata-id'));
+                    let sysFileId = parseInt(this.getAttribute('data-sys-file-id'));
+                    let postData = {
+                        sysFileMetadataId: sysFileMetadataId,
+                        sysFileId: sysFileId
+                    };
+                    executeRequest(sysFileMetadataId, fieldName, postData, handleResponse, '', addSelectionToAdditionalFields);
+                } else {
+                    let pageId = parseInt(this.getAttribute('data-page-id'));
+                    let postData = {
+                        pageId: pageId
+                    };
+                    executeRequest(pageId, fieldName, postData, handleResponse, '', addSelectionToAdditionalFields);
+                }
             });
         });
     }
@@ -44,11 +57,16 @@ class GenerateSuggestions {
                     Notification.info(TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelection'], TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelectionInfo'], 8);
                 } else {
                     let addToAdditionalFieldsCheckbox = document.querySelector('input[name="addToAdditionalFields"]:checked');
+                    let addToAdditionalSysFileFieldsCheckbox = document.querySelector('input[name="addToAdditionalSysFileFields"]:checked');
                     let addToAdditionalFields = false;
-                    if(addToAdditionalFieldsCheckbox !== null) {
+                    if(General.isUsable(addToAdditionalFieldsCheckbox) || General.isUsable(addToAdditionalSysFileFieldsCheckbox)) {
                         addToAdditionalFields = true;
                     }
-                    Metadata.insertSelectedSuggestions('pages', pageId, fieldName, selectedSuggestion, addToAdditionalFields, addSelectionToAdditionalFields);
+                    let type = 'pages';
+                    if(fieldName === 'title' || fieldName === 'alternative') {
+                        type = 'sys_file_metadata';
+                    }
+                    Metadata.insertSelectedSuggestions(type, pageId, fieldName, selectedSuggestion, addToAdditionalFields, addSelectionToAdditionalFields);
                     selection.remove();
                 }
             });
@@ -70,6 +88,13 @@ class GenerateSuggestions {
             document.querySelector('textarea[name="data[pages]['+pageId+'][og_description]"]').value = selectedSuggestionValue;
             document.querySelector('textarea[data-formengine-input-name="data[pages]['+pageId+'][twitter_description]"]').value = selectedSuggestionValue;
             document.querySelector('textarea[name="data[pages]['+pageId+'][twitter_description]"]').value = selectedSuggestionValue;
+        }
+        if(fieldName === 'title' || fieldName === 'alternative') {
+            Notification.info(TYPO3.lang['AiSuite.notification.generation.copy'], TYPO3.lang['AiSuite.notification.generation.suggestions.sysFileMetadataUpdated'], 8);
+            document.querySelector('input[data-formengine-input-name="data[sys_file_metadata]['+pageId+'][title]"]').value = selectedSuggestionValue;
+            document.querySelector('input[name="data[sys_file_metadata]['+pageId+'][title]"]').value = selectedSuggestionValue;
+            document.querySelector('input[data-formengine-input-name="data[sys_file_metadata]['+pageId+'][alternative]"]').value = selectedSuggestionValue;
+            document.querySelector('input[name="data[sys_file_metadata]['+pageId+'][alternative]"]').value = selectedSuggestionValue;
         }
     }
 }

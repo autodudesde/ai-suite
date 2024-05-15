@@ -37,7 +37,7 @@ class PageStructureInput extends AbstractEntity
     public static function createEmpty(): self
     {
         return new self(
-            1,
+            0,
             '',
             '',
         );

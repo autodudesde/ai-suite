@@ -83,6 +83,7 @@ abstract class AbstractBackendController extends ActionController
             $this->moduleTemplate->setModuleId('aiSuite');
             $this->generateButtonBar();
 
+            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
             $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         } catch (NoSuchArgumentException|RouteNotFoundException $exception) {
             $this->logger->error($exception->getMessage());

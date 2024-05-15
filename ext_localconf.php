@@ -48,6 +48,18 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410683] = [
     'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoTwitterDescription::class
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410687] = [
+    'nodeName' => 'aiSysFileAlternative',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\FileList\AiSysFileAlternative::class
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410688] = [
+    'nodeName' => 'aiSysFileTitle',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\FileList\AiSysFileTitle::class
+];
+
 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410684] = [
         'nodeName' => 'aiNewsMetaDescription',

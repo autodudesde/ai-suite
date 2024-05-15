@@ -14,8 +14,6 @@ return [
     'ctrl' => [
         'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel',
         'label' => 'name',
-        'label_alt' => 'scope',
-        'label_alt_force' => true,
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',

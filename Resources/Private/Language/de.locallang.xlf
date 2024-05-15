@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <xliff version="1.0">
-    <file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf" date="2023-05-14UTC21:34:060" product-name="ai_suite" target-language="de">
+    <file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf" date="2023-05-14UTC21:34:060" product-name="ai_suite">
         <body>
             <trans-unit id="mlang_tabs_tab">
                 <source>AI Suite</source>
@@ -599,6 +599,12 @@
             <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
                 <source>Generate description suggestions for news article (1 Credit)</source>
             <target>Beschreibungsvorschläge für News-Artikel generieren (1 Credit)</target></trans-unit>
+            <trans-unit id="AiSuite.generation.alternativeSuggestions" resname="AiSuite.generation.alternativeSuggestions">
+                <source>Generate alternative suggestions for file (1 Credit)</source>
+            <target>Alternativvorschläge für Datei generieren (1 Credit)</target></trans-unit>
+            <trans-unit id="AiSuite.generation.titleSuggestions" resname="AiSuite.generation.titleSuggestions">
+                <source>Generate title suggestions for file (1 Credit)</source>
+            <target>Titelvorschläge für Datei generieren (1 Credit)</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.start" resname="AiSuite.notification.generation.start">
                 <source>Started</source>
             <target>Gestartet</target></trans-unit>
@@ -644,6 +650,9 @@
             <trans-unit id="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated" resname="AiSuite.notification.generation.suggestions.ogTwitterDescriptionsUpdated">
                 <source>Copied selected suggestion to fields for Open Graph and Twitter description.</source>
             <target>Ausgewählten Vorschlag in Felder für Open Graph und Twitter-Beschreibung kopiert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.suggestions.sysFileMetadataUpdated" resname="AiSuite.notification.generation.suggestions.sysFileMetadataUpdated">
+                <source>Copied selected suggestion to title and alternative field.</source>
+            <target>Ausgewählten Vorschlag in Titel und Alternativfeld kopiert.</target></trans-unit>
             <trans-unit id="AiSuite.unableToLinkToPage" resname="AiSuite.unableToLinkToPage">
                 <source>Unable to link to page with ID %s and language ID %s</source>
             <target>Verknüpfung mit Seite mit ID %s und Sprach-ID %s nicht möglich</target></trans-unit>
@@ -756,7 +765,10 @@
             <trans-unit id="aiSuite.module.notification.modal.close" xml:space="preserve">
                 <source>Close</source>
             <target>Schließen</target></trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelected" xml:space="preserve">
+            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedTitle" xml:space="preserve">
+                <source>No fields selected</source>
+            <target>Keine Felder ausgewählt</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedMessage" xml:space="preserve">
                 <source>You don't have selected any fields. Please select at least one field to continue.</source>
             <target>Du hast keine Felder ausgewählt. Bitte wähle mindestens ein Feld aus, um fortzufahren.</target></trans-unit>
             <trans-unit id="aiSuite.module.notification.warning" xml:space="preserve">
@@ -914,7 +926,7 @@
             <target>Zieldatei</target></trans-unit>
             <trans-unit id="aiSuite.module.destinationFileNotFound.message.suffix" xml:space="preserve">
                 <source> not found, will create a new one.</source>
-            <target> nicht gefunden, werde eine neue Datei erstellen.</target></trans-unit>
+            <target>nicht gefunden, werde eine neue Datei erstellen.</target></trans-unit>
             <trans-unit id="aiSuite.module.errorFetchingTranslationResponse.title" xml:space="preserve">
                 <source>Could not fetch a valid translation response.</source>
             <target>Es konnte keine gültige Übersetzungsantwort abgerufen werden.</target></trans-unit>
@@ -1001,12 +1013,19 @@
             <target>Bitte Datenbank-Aktualisierung durchführen (Credits-Tabelle fehlt)</target></trans-unit>
             <trans-unit id="aiSuite.twoImagesAtFirstRequest" xml:space="preserve">
                 <source><![CDATA[A maximum of <strong>two images</strong> will be created in the course of the first request. Additional images can then be added at any time.]]></source>
-                <target><![CDATA[Im Zuge der ersten Anfrage werden maximal <strong>zwei Bilder</strong> erstellt. Weitere Bilder können dann jederzeit hinzugefügt werden.]]></target>
-            </trans-unit>
+            <target><![CDATA[Im Zuge der ersten Anfrage werden maximal <strong>zwei Bilder</strong> erstellt. Weitere Bilder können dann jederzeit hinzugefügt werden.]]></target></trans-unit>
             <trans-unit id="aiSuite.generateImageWithAiButton" xml:space="preserve">
                 <source>Generate Image with AI</source>
-                <target>Bild mit KI generieren</target>
-            </trans-unit>
+            <target>Bild mit KI generieren</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageTitle" xml:space="preserve">
+                <source>No page selected</source>
+            <target>Keine Seite ausgewählt</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageMessage" xml:space="preserve">
+                <source>You don't have selected a page. Please select one.</source>
+            <target>Du hast keine Seite ausgewählt. Bitte wähle eine aus.</target></trans-unit>
+            <trans-unit id="aiSuite.module.notification.filelist.upload.success.message" xml:space="preserve">
+                <source>File was uploaded successfully and metadata was set</source>
+            <target>Die Datei wurde erfolgreich hochgeladen und die Metadaten wurden festgelegt.</target></trans-unit>
         </body>
     </file>
 </xliff>
