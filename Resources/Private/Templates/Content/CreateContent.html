@@ -16,8 +16,8 @@
                 <h1 class="text-gradient">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.createContent.title"/> "{contentTypeTitle}"
                 </h1>
-                <f:form actionUri="{actionUri}" name="content" object="{content}" enctype="multipart/form-data" class="with-spinner">
-                    <f:form.hidden property="availableTcaColumns" name="availableTcaColumns" value="{content.availableTcaColumns -> f:format.json()}" />
+                <f:form actionUri="{actionUri}" name="tx_aisuite_web_aisuiteaisuite[content]" object="{content}" enctype="multipart/form-data" class="with-spinner">
+                    <f:form.hidden property="availableTcaColumns" name="tx_aisuite_web_aisuiteaisuite[content][availableTcaColumns]" value="{content.availableTcaColumns -> f:format.json()}" />
                     <f:form.hidden name="defVals" value="{defVals -> f:format.json()}" />
                     <f:form.hidden name="additionalImageSettings" value="" />
                     <f:form.hidden name="uuid" value="{uuid}" />
@@ -36,10 +36,10 @@
                                 <br />
                                 <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                                 <div class="mt-3">
-                                    <label for="initialPrompt">
-                                        <f:translate key="tx_aisuite.module.general.prompt"/>
+                                    <label for="tx_aisuite_web_aisuiteaisuite[content][initialPrompt]">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.prompt"/>
                                     </label><br />
-                                    <f:form.textarea property="initialPrompt" name="initialPrompt" class="form-control initial-prompt" value="{initialPrompt}" />
+                                    <f:form.textarea property="initialPrompt" name="tx_aisuite_web_aisuiteaisuite[content][initialPrompt]" class="form-control initial-prompt" value="{initialPrompt}" />
                                 </div>
                             </div>
                         </div>
@@ -51,13 +51,13 @@
                                 data-page-id="{content.pid}"
                             >
                                 <core:icon identifier="actions-file-text" size="small"/>
-                                {f:translate(key: 'tx_aisuite.module.PageContent.submit')}
+                                {f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.PageContent.submit')}
                             </button>
                             <p class="calculated-requests"></p>
                         </div>
                     </div>
                 </f:form>
-                <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
+                <f:variable name="spinnerMessage" value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.spinner.contentCreation')}" />
                 <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
             </f:else>
         </f:if>

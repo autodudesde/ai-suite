@@ -29,7 +29,6 @@ class AbstractRepository extends Repository
         string $table = '',
         string $sortBy = ''
     ) {
-        parent::__construct();
         $this->connectionPool = $connectionPool;
         $this->table = $table;
         $this->sortBy = $sortBy;

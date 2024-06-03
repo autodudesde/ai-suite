@@ -23,4 +23,5 @@ final class GenerationLibrariesEnumeration
     public const GOOGLE_TRANSLATE = 'translate';
     public const CONTENT = 'text,image';
     public const CREATE_FACEBOOK_POST = 'text,image';
+    public const REQUESTS_STATE = '';
 }

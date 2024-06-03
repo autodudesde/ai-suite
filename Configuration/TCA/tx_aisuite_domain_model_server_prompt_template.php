@@ -32,10 +32,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'name, prompt, scope, type,',
-        'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
-        'security' => [
-            'ignorePageTypeRestriction' => true,
-        ],
+        'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg'
     ],
     'types' => [
         '1' => [

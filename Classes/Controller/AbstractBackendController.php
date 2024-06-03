@@ -24,7 +24,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
@@ -62,11 +62,20 @@ abstract class AbstractBackendController extends ActionController
                 $propertyMappingConfiguration->allowProperties(
                     'contentElementData',
                     'availableTcaColumns',
-                    'selectedTcaColumns'
+                    'selectedTcaColumns',
+                    'returnUrl',
+                    'regenerateReturnUrl',
+                    'initialPrompt',
+                    'pid',
+                    'uidPid',
+                    'cType',
+                    'colPos',
+                    'sysLanguageUid',
+                    'uid',
+                    'additionalImageSettings'
                 );
                 $this->setDefaultContentValues();
             }
-
             if (!isset($this->settings['dateFormat'])) {
                 $this->settings['dateFormat'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] ?: 'd-m-Y';
             }
@@ -87,7 +96,7 @@ abstract class AbstractBackendController extends ActionController
             $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         } catch (NoSuchArgumentException|RouteNotFoundException $exception) {
             $this->logger->error($exception->getMessage());
-            $this->addFlashMessage('Could not initialize module', 'Initialization error', ContextualFeedbackSeverity::ERROR);
+            $this->addFlashMessage('Could not initialize module', 'Initialization error', AbstractMessage::ERROR);
             $this->redirect('dashboard');
         }
     }
@@ -97,12 +106,13 @@ abstract class AbstractBackendController extends ActionController
      */
     protected function generateButtonBar(): void
     {
-        $moduleName = 'web_aisuite';
-        $rootPageId = $this->request->getAttribute('site')->getRootPageId();
+        $moduleName = 'web_AiSuiteAisuite';
         $uriParameters = [
-            'id' => $this->request->getQueryParams()['id'] ?? $rootPageId,
-            'action' => 'dashboard',
-            'controller' => 'AiSuite'
+            'id' => $this->request->getQueryParams()['id'] ?? 1,
+            'tx_aisuite_web_aisuiteaisuite' => [
+                'action' => 'dashboard',
+                'controller' => 'AiSuite'
+            ]
         ];
 
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
@@ -113,32 +123,32 @@ abstract class AbstractBackendController extends ActionController
         $buttonBar->addButton($dashboardButton);
 
         // pages button
-        $uriParameters['action'] = 'overview';
-        $uriParameters['controller'] = 'Pages';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['action'] = 'overview';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['controller'] = 'Pages';
         $pagesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $pagesButton = $this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-secondary mx-2 rounded', $pagesUrl);
         $buttonBar->addButton($pagesButton);
 
         // content button
-        $uriParameters['controller'] = 'Content';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['controller'] = 'Content';
         $contentUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $contentButton = $this->buildButton('actions-document', 'tx_aisuite.module.actionmenu.content', 'btn-md btn-secondary rounded', $contentUrl);
         $buttonBar->addButton($contentButton);
 
         // files button
-        $uriParameters['controller'] = 'Files';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['controller'] = 'Files';
         $filesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $filesButton = $this->buildButton('apps-clipboard-images', 'tx_aisuite.module.actionmenu.files', 'btn-md btn-default mx-2 rounded', $filesUrl);
         $buttonBar->addButton($filesButton);
 
         // agencies button
-        $uriParameters['controller'] = 'Agencies';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['controller'] = 'Agencies';
         $agenciesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $agenciesButton = $this->buildButton('content-store', 'tx_aisuite.module.actionmenu.agencies', 'btn-md btn-default rounded', $agenciesUrl);
         $buttonBar->addButton($agenciesButton);
 
         // promtTemplate button
-        $uriParameters['controller'] = 'PromptTemplate';
+        $uriParameters['tx_aisuite_web_aisuiteaisuite']['controller'] = 'PromptTemplate';
         $promptUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $promptButton = $this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default mx-2 rounded', $promptUrl);
         $buttonBar->addButton($promptButton);

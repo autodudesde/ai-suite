@@ -9,7 +9,7 @@ $EM_CONF['ai_suite'] = [
     'author_company' => 'AutoDudes',
     'constraints' => [
         'depends' => [
-            'typo3' => '12.4.0-12.4.99'
+            'typo3' => '11.5.0-11.5.99'
         ],
         'conflicts' => [
         ],
@@ -24,5 +24,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '12.3.0',
+    'version' => '11.0.0',
 ];

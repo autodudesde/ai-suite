@@ -27,7 +27,7 @@ class PageStructureInput extends AbstractEntity
     public function __construct(
         int $startStructureFromPid,
         string $plainPrompt,
-        string $textGenerationLibraries,
+        string $textGenerationLibraries
     ) {
         $this->startStructureFromPid = $startStructureFromPid;
         $this->plainPrompt = $plainPrompt;

@@ -89,14 +89,16 @@ class XliffUtility
     }
 
 
-    public static function simpleXMLElementToArray(SimpleXMLElement $xml): string|array
+    public static function simpleXMLElementToArray(SimpleXMLElement $xml): array
     {
-        $attributes = $xml->attributes();
-        $children = $xml->children();
-        $text = trim((string) $xml);
+        if ($xml instanceof \SimpleXMLElement) {
+            $attributes = $xml->attributes();
+            $children = $xml->children();
+            $text = trim((string) $xml);
+        }
 
         if (count($children) == 0 && count($attributes) == 0) {
-            return $text;
+            return ['label' => $text];
         }
 
         $arr = [];
@@ -120,6 +122,7 @@ class XliffUtility
 
         return $arr;
     }
+
 
     protected static function xmlArrayToStructuredArray(array $rawData): array
     {
@@ -172,7 +175,7 @@ class XliffUtility
                     }
                 } else {
                     if(array_key_exists($unitAttributes, $destinationFile->getFormatedData())) {
-                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']['label']);
                     }
                 }
             }

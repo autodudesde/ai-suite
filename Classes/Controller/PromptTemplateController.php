@@ -20,7 +20,7 @@ use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Site\Entity\NullSite;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PromptTemplateController extends AbstractBackendController
@@ -46,10 +46,11 @@ class PromptTemplateController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'promptTemplate',
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -79,13 +80,14 @@ class PromptTemplateController extends AbstractBackendController
                 }
             }
         }
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'promptTemplate',
             'customPromptTemplates' => $customPromptTemplates,
             'search' => $search,
             'pid' => $this->request->getQueryParams()['id'] ?? $rootPageId
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function updateServerPromptTemplatesAction(): ResponseInterface
@@ -105,7 +107,7 @@ class PromptTemplateController extends AbstractBackendController
             $this->addFlashMessage(
                 $answer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.updatePromptTemplatesError', 'ai_suite'),
-                ContextualFeedbackSeverity::WARNING
+                AbstractMessage::WARNING
             );
         }
         return $this->redirect('overview');

@@ -4,62 +4,74 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\ContentElement;
 
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
-use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
 {
-    protected function wizardAction(ServerRequestInterface $request): ResponseInterface
+    /**
+     * Creating the module output.
+     *
+     * @throws \UnexpectedValueException
+     */
+    protected function prepareWizardContent(ServerRequestInterface $request): void
     {
-        if (!$this->id || $this->pageInfo === []) {
-            // No pageId or no access.
-            return new HtmlResponse('No Access');
+        $hasAccess = $this->id && $this->pageInfo !== [];
+        $this->view->assign('hasAccess', $hasAccess);
+        if (!$hasAccess) {
+            return;
         }
         // Whether position selection must be performed (no colPos was yet defined)
-        $positionSelection = $this->colPos === null;
+        $positionSelection = !isset($this->colPos);
+        $this->view->assign('positionSelection', $positionSelection);
 
-        // Get processed and modified wizard items
-        $wizardItems = $this->eventDispatcher->dispatch(
-            new ModifyNewContentElementWizardItemsEvent(
-                $this->getWizards(),
-                $this->pageInfo,
-                $this->colPos,
-                $this->sys_language,
-                $this->uid_pid,
-            )
-        )->getWizardItems();
+        // Get processed wizard items from configuration
+        $wizardItems = $this->getWizards();
 
-        $key = 'common';
-        $categories = [];
-        foreach ($wizardItems as $wizardKey => $wizardItem) {
-            // An item is either a header or an item rendered with title/description and icon:
-            if (isset($wizardItem['header'])) {
-                $key = $wizardKey;
-                $categories[$key] = [
-                    'identifier' => $key,
-                    'label' => $wizardItem['header'] ?: '-',
-                    'items' => [],
+        // Call hooks for manipulating the wizard items
+        foreach ($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook'] ?? [] as $className) {
+            $hookObject = GeneralUtility::makeInstance($className);
+            if (!$hookObject instanceof NewContentElementWizardHookInterface) {
+                throw new \UnexpectedValueException(
+                    $className . ' must implement interface ' . NewContentElementWizardHookInterface::class,
+                    1227834741
+                );
+            }
+            $hookObject->manipulateWizardItems($wizardItems, $this);
+        }
+
+        $key = 0;
+        $menuItems = [];
+        // Traverse items for the wizard.
+        // An item is either a header or an item rendered with title/description and icon:
+        foreach ($wizardItems as $wizardKey => $wInfo) {
+            if (isset($wInfo['header'])) {
+                $menuItems[] = [
+                    'label' => $wInfo['header'] ?: '-',
+                    'content' => '',
                 ];
+                $key = count($menuItems) - 1;
             } else {
                 // Initialize the view variables for the item
-                $item = [
-                    'identifier' => $wizardKey,
-                    'icon' => $wizardItem['iconIdentifier'] ?? '',
-                    'label' => $wizardItem['title'] ?? '',
-                    'description' => $wizardItem['description'] ?? '',
+                $viewVariables = [
+                    'wizardInformation' => $wInfo,
+                    'wizardKey' => $wizardKey,
+                    'icon' => $this->iconFactory->getIcon(($wInfo['iconIdentifier'] ?? ''), Icon::SIZE_DEFAULT, ($wInfo['iconOverlay'] ?? ''))->render(),
                 ];
 
-                // Get default values for the wizard item
-                $defVals = (array)($wizardItem['tt_content_defValues'] ?? []);
+                // Check wizardItem for defVals
+                $itemParams = [];
+                parse_str($wInfo['params'] ?? '', $itemParams);
+                $defVals = $itemParams['defVals']['tt_content'] ?? [];
+
+                // In case no position has to be selected, we can just add the target
                 if (!$positionSelection) {
-                    // In case no position has to be selected, we can just add the target
-                    if (($wizardItem['saveAndClose'] ?? false)) {
-                        // Go to DataHandler directly instead of FormEngine
-                        $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('tce_db', [
+                    // Go to DataHandler directly instead of FormEngine
+                    if (($wInfo['saveAndClose'] ?? false)) {
+                        $viewVariables['target'] = (string)$this->uriBuilder->buildUriFromRoute('tce_db', [
                             'data' => [
                                 'tt_content' => [
                                     StringUtility::getUniqueId('NEW') => array_replace($defVals, [
@@ -69,33 +81,34 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                                     ]),
                                 ],
                             ],
-                            'redirect' => $this->returnUrl,
+                            'redirect' => $this->R_URI,
                         ]);
                     } else {
-                        if($key === 'aisuite') {
-                            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
+                        if(strpos($wizardKey, "aisuite_") === 0) {
+                            $viewVariables['target'] = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                                 'edit' => [
                                     'tt_content' => [
                                         $this->uid_pid => 'new',
                                     ],
                                 ],
-                                'returnUrl' => $this->returnUrl,
+                                'returnUrl' => $this->R_URI,
                                 'defVals' => [
                                     'tt_content' => array_replace($defVals, [
                                         'colPos' => $this->colPos,
                                         'pid' => $this->id,
+                                        'CType' => str_replace("aisuite_", "", $wizardKey),
                                         'sys_language_uid' => $this->sys_language,
                                     ]),
                                 ],
                             ]);
                         } else {
-                            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                            $viewVariables['target'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
                                 'edit' => [
                                     'tt_content' => [
                                         $this->uid_pid => 'new',
                                     ],
                                 ],
-                                'returnUrl' => $this->returnUrl,
+                                'returnUrl' => $this->R_URI,
                                 'defVals' => [
                                     'tt_content' => array_replace($defVals, [
                                         'colPos' => $this->colPos,
@@ -106,29 +119,25 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                         }
                     }
                 } else {
-                    $item['url'] = (string)$this->uriBuilder
-                        ->buildUriFromRoute(
-                            'new_content_element_wizard',
-                            [
-                                'action' => 'positionMap',
-                                'id' => $this->id,
-                                'sys_language_uid' => $this->sys_language,
-                                'returnUrl' => $this->returnUrl,
-                            ]
-                        );
-                    $item['requestType'] = 'ajax';
-                    $item['defaultValues'] = $defVals;
-                    $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
+                    $viewVariables['positionMapArguments'] = GeneralUtility::jsonEncodeForHtmlAttribute([
+                        'url' => (string)$this->uriBuilder->buildUriFromRoute('new_content_element_wizard', [
+                            'action' => 'positionMap',
+                            'id' => $this->id,
+                            'sys_language_uid' => $this->sys_language,
+                            'returnUrl' => $this->R_URI,
+                        ]),
+                        'defVals' => $defVals,
+                        'saveAndClose' => (bool)($wInfo['saveAndClose'] ?? false),
+                    ], true);
                 }
-                $categories[$key]['items'][] = $item;
+
+                $menuItems[$key]['content'] .= $this->getFluidTemplateObject('MenuItem')->assignMultiple($viewVariables)->render();
             }
         }
 
-        $view = $this->backendViewFactory->create($request);
-        $view->assignMultiple([
-            'positionSelection' => $positionSelection,
-            'categoriesJson' => GeneralUtility::jsonEncodeForHtmlAttribute($categories, false),
-        ]);
-        return new HtmlResponse($view->render('NewContentElement/Wizard'));
+        $this->view->assign('renderedTabs', $this->moduleTemplateFactory->create($request)->getDynamicTabMenu(
+            $menuItems,
+            'new-content-element-wizard'
+        ));
     }
 }

@@ -25,7 +25,7 @@ use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -48,15 +48,17 @@ class AgenciesController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'agencies',
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function translateXlfAction(): ResponseInterface
     {
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agencies/creation.js');
+//        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agencies/creation.js');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Agencies/Creation');
         $librariesAnswer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -72,18 +74,19 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 $librariesAnswer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('overview');
         }
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'allLanguagesList' => ConstantsService::LANGUAGES,
             'sectionActive' => 'agencies',
             'input' => XlfInput::createEmpty(),
             'translateGenerationLibraries' => $librariesAnswer->getResponseData()['translateGenerationLibraries'],
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable']
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function validateXlfResultAction(XlfInput $input): ResponseInterface
@@ -92,7 +95,7 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.errorTargetLangMissing.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.errorTargetLangMissing.title', 'ai_suite'),
-                ContextualFeedbackSeverity::WARNING
+                AbstractMessage::WARNING
             );
             return $this->redirect('translateXlf');
         }
@@ -106,7 +109,7 @@ class AgenciesController extends AbstractBackendController
                     $input->getDestinationLanguage() . '.' . $input->getFilename() .
                     LocalizationUtility::translate('aiSuite.module.destinationFileNotFound.message.suffix', 'ai_suite'),
                     LocalizationUtility::translate('aiSuite.module.destinationFileNotFound.title', 'ai_suite'),
-                    ContextualFeedbackSeverity::WARNING
+                    AbstractMessage::WARNING
                 );
                 $input->setTranslationMode('all');
             } catch (\Exception $exception) {
@@ -114,7 +117,7 @@ class AgenciesController extends AbstractBackendController
                 $this->addFlashMessage(
                     $exception->getMessage(),
                     LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
-                    ContextualFeedbackSeverity::ERROR
+                    AbstractMessage::ERROR
                 );
                 return $this->redirect('translateXlf');
             }
@@ -126,7 +129,7 @@ class AgenciesController extends AbstractBackendController
                 $this->addFlashMessage(
                     LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.message', 'ai_suite'),
                     LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.title', 'ai_suite'),
-                    ContextualFeedbackSeverity::WARNING
+                    AbstractMessage::WARNING
                 );
                 return $this->redirect('translateXlf');
             }
@@ -151,7 +154,7 @@ class AgenciesController extends AbstractBackendController
                 $this->addFlashMessage(
                     $answer->getResponseData()['message'],
                     LocalizationUtility::translate('aiSuite.module.errorFetchingTranslationResponse.title', 'ai_suite'),
-                    ContextualFeedbackSeverity::ERROR
+                    AbstractMessage::ERROR
                 );
                 return $this->redirect('translateXlf');
             }
@@ -170,7 +173,7 @@ class AgenciesController extends AbstractBackendController
                 }
             }
 
-            $this->moduleTemplate->assignMultiple([
+            $this->view->assignMultiple([
                 'allLanguagesList' => ConstantsService::LANGUAGES,
                 'sectionActive' => 'agencies',
                 'input' => $input,
@@ -180,13 +183,14 @@ class AgenciesController extends AbstractBackendController
                 LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite'),
             );
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         } catch (UnknownPackageException $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.errorExtensionNotFound.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('translateXlf');
         } catch (FileNotFoundException|Exception $exception) {
@@ -194,7 +198,7 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.errorFileNotFound.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('translateXlf');
         } catch (EmptyXliffException $exception) {
@@ -202,7 +206,7 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.sourceXliffFileEmpty.message', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('translateXlf');
         } catch (\Exception $exception) {
@@ -210,7 +214,7 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('translateXlf');
         }
@@ -230,7 +234,7 @@ class AgenciesController extends AbstractBackendController
             $this->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.errorWritingTranslationFile.message', 'ai_suite'),
                 LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
         }
         return $this->redirect('overview');

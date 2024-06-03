@@ -601,7 +601,7 @@
             </trans-unit>
             <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
                 <source>Generate description suggestions for news article (1 Credit)</source>
-            </trans-unit>
+           </trans-unit>
             <trans-unit id="AiSuite.generation.alternativeSuggestions" resname="AiSuite.generation.alternativeSuggestions">
                 <source>Generate alternative suggestions for file (1 Credit)</source>
             </trans-unit>

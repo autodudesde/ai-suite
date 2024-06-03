@@ -21,7 +21,6 @@ use AutoDudes\AiSuite\Controller\FilesController;
 use AutoDudes\AiSuite\Controller\PagesController;
 use AutoDudes\AiSuite\Controller\PromptTemplateController;
 use AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener;
-use AutoDudes\AiSuite\EventListener\FileControlsEventListener;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\ContentService;
@@ -32,15 +31,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
-use TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent;
+use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
-use AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener;
-use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
-use Symfony\Component\Filesystem\Filesystem;
 use AutoDudes\AiSuite\Controller\Ajax\StatusController;
-use AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener;
+use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -131,33 +127,15 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->arg('$filesystem', service(Filesystem::class))
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
 
-    $services->set(FileControlsEventListener::class)
+    $services->set('AfterFormEnginePageInitializedEventListener', AfterFormEnginePageInitializedEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Form\\Event\\CustomFileControlsEvent',
-        ]);
-
-    $services->set(ModifyNewContentElementWizardItemsEventListener::class)
-        ->tag('event.listener', [
-            'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\ModifyNewContentElementWizardItemsEvent',
+            'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\AfterFormEnginePageInitializedEvent',
         ]);
 
     $services->set(AfterTcaCompilationEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
-        ]);
-
-    $services->set('AfterFormEnginePageInitializedEventListener', AfterFormEnginePageInitializedEventListener::class)
-        ->tag('event.listener', [
-            'method' => 'onPagePropertiesLoad',
-            'event' => AfterFormEnginePageInitializedEvent::class,
-        ]);
-
-    $services->set(ModifyButtonBarEventListener::class)
-        ->tag('event.listener', [
-            'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
         ]);
 };

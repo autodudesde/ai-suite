@@ -8,6 +8,15 @@
     --checkbox-radius: 4px;
 }
 
+div[data-module-id="aiSuite"] .module {
+    overflow-x: hidden;
+}
+
+div[data-module-id="aiSuite"] .module:has(.searchable.dropdown) {
+    overflow-x: visible;
+    overflow-y: visible;
+}
+
 div[data-module-id="aiSuite"] .card.comming-soon {
     opacity: .5;
 }
@@ -26,10 +35,10 @@ div[data-module-id="aiSuite"] .btn-secondary {
     border-color: #6c757d;
 }
 
-div[data-module-id="aiSuite"] .btn-primary svg,
-div[data-module-id="aiSuite"] .btn-secondary svg {
-    fill: #fff;
-}
+/*div[data-module-id="aiSuite"] .btn-primary svg,*/
+/*div[data-module-id="aiSuite"] .btn-secondary svg {*/
+/*    fill: #fff;*/
+/*}*/
 
 div[data-module-id="aiSuite"] .form-control {
     -webkit-appearance: auto;
@@ -56,6 +65,7 @@ div[data-module-id="aiSuite"] .tooltip {
     border-radius: 10px;
     top: 4px;
     font-size: 12px;
+    padding: 0;
 }
 
 div[data-module-id="aiSuite"] .tooltip .tooltiptext {

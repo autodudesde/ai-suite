@@ -17,7 +17,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AiSuiteController extends AbstractBackendController
@@ -50,7 +50,7 @@ class AiSuiteController extends AbstractBackendController
             $this->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.missingAiSuiteApiKey.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.missingAiSuiteApiKey.title', 'ai_suite'),
-                ContextualFeedbackSeverity::NOTICE
+                AbstractMessage::NOTICE
             );
         }
         $answer = $this->requestService->sendRequest(
@@ -63,7 +63,7 @@ class AiSuiteController extends AbstractBackendController
             $freeRequests = $answer->getResponseData()['free_requests'] ?? -1;
             $paidRequests = $answer->getResponseData()['paid_requests'] ?? -1;
             if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
-                $this->moduleTemplate->assignMultiple([
+                $this->view->assignMultiple([
                     'freeRequests' => $answer->getResponseData()['free_requests'],
                     'paidRequests' => $answer->getResponseData()['paid_requests']
                 ]);
@@ -74,7 +74,7 @@ class AiSuiteController extends AbstractBackendController
                 $this->addFlashMessage(
                     $e->getMessage(),
                     LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'),
-                    ContextualFeedbackSeverity::ERROR
+                    AbstractMessage::ERROR
                 );
             }
             BackendUtility::setUpdateSignal('updateTopbar');
@@ -82,7 +82,7 @@ class AiSuiteController extends AbstractBackendController
             $this->addFlashMessage(
                 $answer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.warningFetchingCreditsState.title', 'ai_suite'),
-                ContextualFeedbackSeverity::WARNING
+                AbstractMessage::WARNING
             );
         }
 
@@ -99,15 +99,16 @@ class AiSuiteController extends AbstractBackendController
             $this->addFlashMessage(
                 $answer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.warningFetchingOpenAiStatus.title', 'ai_suite'),
-                ContextualFeedbackSeverity::WARNING
+                AbstractMessage::WARNING
             );
         }
 
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'dashboard',
             'openAiStatus' => $openAiStatus,
             'openAiState' => $openAiState
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 }

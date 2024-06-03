@@ -69,7 +69,7 @@ class MetadataService
             $newsId = (int)$parsedBody['newsId'];
             if($newsId > 0) {
                 $newsContent = $this->fetchContentOfNewsArticle((int)$parsedBody['newsId'], $siteLanguage->getLanguageId());
-                return $this->requestMetadataFromServer($newsContent, $promptPrefix, $siteLanguage->getLocale()->getLanguageCode());
+                return $this->requestMetadataFromServer($newsContent, $promptPrefix, $siteLanguage->getTwoLetterIsoCode());
             }
             throw new NewsContentNotAvailableException();
         } elseif ($promptPrefix === 'Alternative' || $promptPrefix === 'Title') {
@@ -85,7 +85,7 @@ class MetadataService
             $firstSiteLanguageTwoLetterIsoCode = "";
             foreach ($sites as $site) {
                 foreach ($site->getLanguages() as $language) {
-                    $firstSiteLanguageTwoLetterIsoCode = $language->getLocale()->getLanguageCode();
+                    $firstSiteLanguageTwoLetterIsoCode = $language->getTwoLetterIsoCode();
                     break 2;
                 }
             }
@@ -101,9 +101,9 @@ class MetadataService
             $pageContent = $this->fetchContentFromUrl($previewUrl);
 
             if ($this->extConf['useUrlForRequest'] === '1') {
-                return $this->requestMetadataFromServer($previewUrl, $promptPrefix, $siteLanguage->getLocale()->getLanguageCode());
+                return $this->requestMetadataFromServer($previewUrl, $promptPrefix, $siteLanguage->getTwoLetterIsoCode());
             } else {
-                return $this->requestMetadataFromServer($pageContent, $promptPrefix, $siteLanguage->getLocale()->getLanguageCode());
+                return $this->requestMetadataFromServer($pageContent, $promptPrefix, $siteLanguage->getTwoLetterIsoCode());
             }
         }
     }

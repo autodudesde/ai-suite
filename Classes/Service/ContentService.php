@@ -50,12 +50,12 @@ class ContentService
     ];
 
     public array $consideredImageRenderTypes = [
-        'file'
+        'inline'
     ];
 
     public function fetchRequestFields(ServerRequestInterface $request, array $defaultValues, string $cType, int $pid, $table): array
     {
-        $formData = $this->getFormData($request, $defaultValues, $pid, $table);
+        $formData = $this->getFormData($defaultValues, $pid, $table);
 
         $requestFields[$table] = [
             'label' => 'General fields',
@@ -65,7 +65,7 @@ class ContentService
 
         $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
+        $this->iterateOverFieldsArray($request, $fieldsArray, $requestFields, $formData, $pid, $table);
         return ContentUtility::cleanupRequestField($requestFields, $table);
     }
 
@@ -88,6 +88,7 @@ class ContentService
     }
 
     protected function createPaletteContentArray(
+        ServerRequestInterface $request,
         string $paletteName,
         array &$requestFields,
         array $formData,
@@ -104,13 +105,14 @@ class ContentService
                 if ($fieldName === '--linebreak--') {
                     continue;
                 } else {
-                    $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
+                    $this->checkSingleField($request, $formData, $fieldName, $requestFields, $pid, $table);
                 }
             }
         }
     }
 
     public function checkSingleField(
+        ServerRequestInterface $request,
         array $formData,
         string $fieldName,
         array &$requestFields,
@@ -143,11 +145,11 @@ class ContentService
         // Override fieldConf by fieldTSconfig:
         $parameterArray['fieldConf']['config'] = FormEngineUtility::overrideFieldConf($parameterArray['fieldConf']['config'], $parameterArray['fieldTSConfig']);
 
-        if($parameterArray['fieldConf']['config']['type'] === 'inline') {
+        if($parameterArray['fieldConf']['config']['type'] === 'inline' && $parameterArray['fieldConf']['config']['foreign_table'] !== 'sys_file_reference') {
             $foreignTable = $parameterArray['fieldConf']['config']['foreign_table'];
             $requestFields[$foreignTable]['label'] = $parameterArray['fieldConf']['label'];
             $requestFields[$foreignTable]['foreignField'] = $table;
-            $this->fetchIrreRequestFields($formData['request'], $formData['defaultValues'], $requestFields, $foreignTable, $pid);
+            $this->fetchIrreRequestFields($request, $formData['defaultValues'], $requestFields, $foreignTable, $pid);
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
             $renderType = $parameterArray['fieldConf']['config']['renderType'];
@@ -161,22 +163,15 @@ class ContentService
                 'renderType' => $renderType
             ];
         }
-        if (in_array($renderType, $this->consideredImageRenderTypes)) {
-            if(array_key_exists('allowed', $parameterArray['fieldConf']['config']) &&
-                (str_contains($parameterArray['fieldConf']['config']['allowed'], 'jpg') || str_contains($parameterArray['fieldConf']['config']['allowed'], 'jpeg'))) {
-                $requestFields[$table]['image'][$fieldName] = [
-                    'label' => $parameterArray['fieldConf']['label'],
-                    'renderType' => $renderType
-                ];
-            } else {
-                $allowedFileExtensions = $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'];
-                if((str_contains($allowedFileExtensions, 'jpg') || str_contains($allowedFileExtensions, 'jpeg'))) {
-                    $requestFields[$table]['image'][$fieldName] = [
-                        'label' => $parameterArray['fieldConf']['label'],
-                        'renderType' => $renderType
-                    ];
-                }
-            }
+
+        if (in_array($renderType, $this->consideredImageRenderTypes) &&
+            ((strpos($parameterArray['fieldConf']['config']['filter'][0]['parameters']['allowedFileExtensions'], 'jpg') !== false ||
+                strpos($parameterArray['fieldConf']['config']['filter'][0]['parameters']['allowedFileExtensions'], 'jpeg') !== false))
+        ) {
+            $requestFields[$table]['image'][$fieldName] = [
+                'label' => $parameterArray['fieldConf']['label'],
+                'renderType' => $renderType
+            ];
         }
     }
 
@@ -188,28 +183,29 @@ class ContentService
         int $pid
     ): void
     {
-        $formData = $this->getFormData($request, $defaultValues, $pid, $table);
+        $formData = $this->getFormData($defaultValues, $pid, $table);
 
         $showItemKey = array_key_first($GLOBALS['TCA'][$table]['types']);
         $itemList = $GLOBALS['TCA'][$table]['types'][$showItemKey]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
+        $this->iterateOverFieldsArray($request, $fieldsArray, $requestFields, $formData, $pid, $table);
     }
 
-    protected function getFormData(ServerRequestInterface $request, array $defaultValues, int $pid, string $table) {
-        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class);
+    protected function getFormData(array $defaultValues, int $pid, string $table) {
+        $formDataGroup = GeneralUtility::makeInstance(TcaDatabaseRecord::class);
+        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class, $formDataGroup);
         $formDataCompilerInput = [
-            'request' => $request,
             'tableName' => $table,
             'vanillaUid' => $pid,
             'command' => 'new',
             'returnUrl' => '',
             'defaultValues' => $defaultValues,
         ];
-        return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
+        return $formDataCompiler->compile($formDataCompilerInput);
     }
 
     protected function iterateOverFieldsArray(
+        ServerRequestInterface $request,
         array $fieldsArray,
         array &$requestFields,
         array $formData,
@@ -221,12 +217,12 @@ class ContentService
             $fieldConfiguration = $this->explodeSingleFieldShowItemConfiguration($fieldString);
             $fieldName = $fieldConfiguration['fieldName'];
             if ($fieldName === '--palette--') {
-                $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $requestFields, $formData, $pid, $table);
+                $this->createPaletteContentArray($request, $fieldConfiguration['paletteName'] ?? '', $requestFields, $formData, $pid, $table);
             } else {
                 if (!is_array($formData['processedTca']['columns'][$fieldName] ?? null)) {
                     continue;
                 }
-                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
+                $this->checkSingleField($request, $formData, $fieldName, $requestFields, $pid, $table);
             }
         }
     }

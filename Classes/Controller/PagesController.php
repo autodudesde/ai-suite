@@ -25,7 +25,7 @@ use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PagesController extends AbstractBackendController
@@ -56,10 +56,11 @@ class PagesController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'pages',
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -67,7 +68,7 @@ class PagesController extends AbstractBackendController
      */
     public function pageStructureAction(): ResponseInterface
     {
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/creation.js');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Pages/Creation');
         $librariesAnswer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -83,17 +84,18 @@ class PagesController extends AbstractBackendController
             $this->addFlashMessage(
                 $librariesAnswer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('overview');
         }
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), ContextualFeedbackSeverity::ERROR);
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
+            $this->view->assign('error', true);
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'input' => PageStructureInput::createEmpty(),
             'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
@@ -101,7 +103,8 @@ class PagesController extends AbstractBackendController
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates('pageTree'),
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function validatePageStructureResultAction(PageStructureInput $input): ResponseInterface
@@ -129,7 +132,7 @@ class PagesController extends AbstractBackendController
             $this->addFlashMessage(
                 $answer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.errorFetchingPagetreeResponse.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
             return $this->redirect('pageStructure');
         }
@@ -138,23 +141,24 @@ class PagesController extends AbstractBackendController
             BackendUtility::setUpdateSignal('updateTopbar');
         }
         $input->setAiResult($answer->getResponseData()['pagetreeResult']);
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'input' => $input,
             'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
             'textGenerationLibraries' => json_decode($input->getTextGenerationLibraries(), true),
         ]);
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/validation.js');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Pages/Validation');
         $this->addFlashMessage(
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite'),
         );
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function createValidatedPageStructureAction(PageStructureInput $input): ResponseInterface
     {
-        $selectedPageTreeContent = $this->request->getParsedBody()['selectedPageTreeContent'] ?? '';
+        $selectedPageTreeContent = $this->request->getParsedBody()['tx_aisuite_web_aisuiteaisuite']['selectedPageTreeContent'] ?? '';
         $input->setAiResult(json_decode($selectedPageTreeContent, true));
         $this->pageStructureFactory->createFromArray($input->getAiResult(), $input->getStartStructureFromPid());
         BackendUtility::setUpdateSignal('updatePageTree');

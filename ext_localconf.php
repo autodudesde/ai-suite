@@ -6,6 +6,17 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Cont
     'className' => \AutoDudes\AiSuite\Controller\ContentElement\NewContentElementController::class,
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][1715536019] = \AutoDudes\AiSuite\Backend\ToolbarItems\RequestsToolbarItem::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['addAiSuiteElements'] = \AutoDudes\AiSuite\Hook\WizardItemsHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['modifyButtonBarHook'] = \AutoDudes\AiSuite\Hook\ModifyButtonBarHook::class.'->modifyButtonBar';
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676477686] = [
+    'nodeName' => 'inline',
+    'priority' => 50,
+    'class' => \AutoDudes\AiSuite\FormEngine\Container\InlineControlContainer::class,
+];
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410677] = [
     'nodeName' => 'aiSeoMetaDescription',
     'priority' => 30,

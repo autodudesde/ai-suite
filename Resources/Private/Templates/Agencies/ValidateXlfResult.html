@@ -18,10 +18,9 @@
 
         <f:form action="writeXlf" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
             <f:render partial="Agencies/AllProperties" arguments="{_all}" />
-
                 <f:for each="{originalValues}" key="sourceKey" as="sourceValue">
                     <div class="form-group mb-4">
-                        <label for="input[translations][{sourceKey}]">{sourceValue.source}</label><br />
+                        <label for="input[translations][{sourceKey}]">{sourceValue.source.label}</label><br />
                         <small>(ID: {sourceKey})</small><br />
                         <f:form.textfield name="input[translations][{sourceKey}]" value="{sourceValue.translated}" class="form-control source-translated"/>
                     </div>

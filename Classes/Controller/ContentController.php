@@ -30,11 +30,12 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
 use TYPO3\CMS\Extbase\Mvc\Request;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class ContentController extends AbstractBackendController
 {
@@ -65,10 +66,11 @@ class ContentController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'content',
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function initializeCreateContentAction(): void
@@ -105,8 +107,9 @@ class ContentController extends AbstractBackendController
         );
         if ($librariesAnswer->getType() === 'Error') {
             $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->view->assign('error', true);
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
 
         $content = PageContent::createEmpty();
@@ -127,7 +130,6 @@ class ContentController extends AbstractBackendController
         } else {
             $content->setUidPid($request->getQueryParams()['id']);
         }
-
         $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content->getCType(), $content->getPid(), $table);
         $content->setAvailableTcaColumns($requestFields);
 
@@ -137,19 +139,25 @@ class ContentController extends AbstractBackendController
             $selectedTcaColumns = $requestFields;
         }
 
-        $moduleName = 'web_aisuite';
+        $moduleName = 'web_AiSuiteAisuite';
         $uriParameters = [
             'id' => $content->getPid(),
-            'action' => 'requestContent',
-            'controller' => 'Content',
+            'tx_aisuite_web_aisuiteaisuite' => [
+                'action' => 'requestContent',
+                'controller' => 'Content'
+            ],
             'table' => $table,
         ];
         $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
 
-        $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/creation.js');
-
-        $this->moduleTemplate->assignMultiple([
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplateRootPaths(['EXT:ai_suite/Resources/Private/Templates/Content/']);
+        $view->setLayoutRootPaths(['EXT:ai_suite/Resources/Private/Layouts/']);
+        $view->setPartialRootPaths(['EXT:ai_suite/Resources/Private/Partials/']);
+        $view->getRenderingContext()->setControllerName('Content');
+        $view->getRenderingContext()->setControllerAction('createContent');
+        $view->setTemplate('CreateContent');
+        $view->assignMultiple([
             'content' => $content,
             'actionUri' => $actionUri,
             'textGenerationLibraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
@@ -165,10 +173,14 @@ class ContentController extends AbstractBackendController
             'defVals' => $defVals,
             'showMaxImageHint' => true,
             'uuid' => UuidUtility::generateUuid(),
-            'contentTypeTitle' => $content->getCType() === '0' ? 'news' : $content->getCType()
+            'contentTypeTitle' => $content->getCType() === '0' ? 'news' : $content->getCType(),
         ]);
 
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Content/Creation');
+
+        $this->moduleTemplate->setContent($view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function initializeRequestContentAction(): void
@@ -185,8 +197,8 @@ class ContentController extends AbstractBackendController
     public function requestContentAction(PageContent $content): ResponseInterface
     {
         $table = $this->request->getQueryParams()['table'];
-        $selectedTcaColumns = $this->request->getParsedBody()['content']['selectedTcaColumns'] ?? [];
-        $availableTcaColumns = json_decode($this->request->getParsedBody()['content']['availableTcaColumns'],true) ?? [];
+        $selectedTcaColumns = $this->request->getParsedBody()['tx_aisuite_web_aisuiteaisuite']['content']['selectedTcaColumns'] ?? [];
+        $availableTcaColumns = json_decode($this->request->getParsedBody()['tx_aisuite_web_aisuiteaisuite']['content']['availableTcaColumns'],true) ?? [];
         $defVals = json_decode($this->request->getParsedBody()['defVals'],true) ?? [];
         $additionalImageSettings = $this->request->getParsedBody()['additionalImageSettings'] ?? '';
 
@@ -209,16 +221,17 @@ class ContentController extends AbstractBackendController
 
         $regenerateActionUri = (string)$this->backendUriBuilder->buildUriFromRoute('ai_suite_record_edit', $uriParams);
         $content->setRegenerateReturnUrl($regenerateActionUri);
-        $this->moduleTemplate->assign('regenerateActionUri', $regenerateActionUri);
+        $this->view->assign('regenerateActionUri', $regenerateActionUri);
 
         if($content->getPid() === 0 && $content->getUid() == 0 && $content->getUidPid() === 0) {
-            $this->moduleTemplate->assign('error', true);
+            $this->view->assign('error', true);
             $this->moduleTemplate->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.errorMissingArguments.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.errorMissingArguments.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
 
         try {
@@ -226,16 +239,17 @@ class ContentController extends AbstractBackendController
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId($content->getPid());
             $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
+            $langIsoCode = $language->getTwoLetterIsoCode();
         } catch(Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.cannotSendRequest.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->view->assign('error', true);
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
         $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
         $imageAi = !empty($this->request->getParsedBody()['libraries']['imageGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['imageGenerationLibrary'] : '';
@@ -285,10 +299,11 @@ class ContentController extends AbstractBackendController
             $this->moduleTemplate->addFlashMessage(
                 $answer->getResponseData()['message'],
                 LocalizationUtility::translate('aiSuite.module.errorValidContentElementResponse.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->view->assign('error', true);
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
         if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
             $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
@@ -296,31 +311,34 @@ class ContentController extends AbstractBackendController
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
         $content->setContentElementData($contentElementData);
-        $this->moduleTemplate->assign('content', $content);
-        $this->moduleTemplate->assign('initialImageAi', $imageAi);
-        $this->moduleTemplate->assign('uuid', UuidUtility::generateUuid());
+        $this->view->assign('content', $content);
+        $this->view->assign('initialImageAi', $imageAi);
+        $this->view->assign('uuid', UuidUtility::generateUuid());
 
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/validation.js');
-        $moduleName = 'web_aisuite';
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Content/Validation');
+        $moduleName = 'web_AiSuiteAisuite';
         $uriParameters = [
             'id' => $content->getPid(),
-            'action' => 'createPageContent',
-            'controller' => 'Content'
+            'tx_aisuite_web_aisuiteaisuite' => [
+                'action' => 'createPageContent',
+                'controller' => 'Content'
+            ]
         ];
         $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
-        $this->moduleTemplate->assign('actionUri', $actionUri);
+        $this->view->assign('actionUri', $actionUri);
         $this->moduleTemplate->addFlashMessage(
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite')
         );
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     public function createPageContentAction(PageContent $content): ResponseInterface
     {
         try {
-            $selectedTcaColumns = json_decode($this->request->getParsedBody()['content']['selectedTcaColumns'], true) ?? [];
-            $contentElementTextData = $this->request->getParsedBody()['content']['contentElementData'] ?? [];
+            $selectedTcaColumns = json_decode($this->request->getParsedBody()['tx_aisuite_web_aisuiteaisuite']['content']['selectedTcaColumns'], true) ?? [];
+            $contentElementTextData = $this->request->getParsedBody()['tx_aisuite_web_aisuiteaisuite']['content']['contentElementData'] ?? [];
             $contentElementImageData = [];
 
             $parsedBody = $this->request->getParsedBody() ?? [];
@@ -356,10 +374,11 @@ class ContentController extends AbstractBackendController
             $this->addFlashMessage(
                 $exception->getMessage(),
                 LocalizationUtility::translate('aiSuite.module.errorPageContentNotCreated.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
+                AbstractMessage::ERROR
             );
-            $this->moduleTemplate->assign('errorActionUri', $content->getRegenerateReturnUrl());
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->view->assign('errorActionUri', $content->getRegenerateReturnUrl());
+            $this->moduleTemplate->setContent($this->view->render());
+            return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
         return $this->redirectToUri($content->getReturnUrl());
     }

@@ -5,33 +5,19 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Backend\ToolbarItems;
 
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Backend\Toolbar\RequestAwareToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
-use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
-class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarItemInterface
+class RequestsToolbarItem implements ToolbarItemInterface
 {
     protected LoggerInterface $logger;
-    private ServerRequestInterface $request;
 
-    protected BackendViewFactory $backendViewFactory;
-
-    public function __construct(
-        BackendViewFactory $backendViewFactory
-    ) {
-        $this->backendViewFactory = $backendViewFactory;
+    public function __construct() {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-    }
-
-    public function setRequest(ServerRequestInterface $request): void
-    {
-        $this->request = $request;
     }
 
     public function checkAccess(): bool
@@ -41,7 +27,7 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
 
     public function getItem(): string
     {
-        $view = $this->backendViewFactory->create($this->request, ['ai_suite']);
+        $view = $this->getFluidTemplateObject('RequestsToolbarItem.html');
         try {
             $requestsRepository = GeneralUtility::makeInstance(RequestsRepository::class);
             $requests = $requestsRepository->findFirstEntry();
@@ -54,7 +40,16 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
                 $view->assign('error', LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'));
             }
         }
-        return $view->render('ToolbarItems/RequestsToolbarItem');
+        return $view->render();
+    }
+
+    protected function getFluidTemplateObject(string $filename): StandaloneView
+    {
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplateRootPaths(['EXT:ai_suite/Resources/Private/Templates/ToolbarItems']);
+        $view->setTemplate($filename);
+        $view->getRequest()->setControllerExtensionName('AiSuite');
+        return $view;
     }
 
     public function getAdditionalAttributes(): array
@@ -72,9 +67,6 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
         return '';
     }
 
-    /**
-     * Position relative to others, requests should be very left.
-     */
     public function getIndex(): int
     {
         return 15;

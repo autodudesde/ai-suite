@@ -29,21 +29,15 @@ class AfterTcaCompilationEventListener
         'audio'
     ];
 
-
-    // @todo this is unused in v12. Replace with BeforeTcaOverridesEvent in v13.
     public function __invoke(AfterTcaCompilationEvent $event): void
     {
         $GLOBALS['TCA'] = $event->getTca();
 
         $cTypes = [];
         foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-            if (array_key_exists('label', $val) && array_key_exists('value', $val) && array_key_exists('group', $val)) {
-                if(!in_array($val['group'], $this->exclusionTabList) && !in_array($val['value'], $this->exclusionCTypeList) && $val['value'] !== '--div--') {
-                    $cTypes[] = ['label' => $val['label'], 'value' => $val['value']];
-                }
-            } else if (array_key_exists('0', $val) && array_key_exists('1', $val) && array_key_exists('3', $val)) {
+            if (array_key_exists('0', $val) && array_key_exists('1', $val) && array_key_exists('3', $val)) {
                 if(!in_array($val['3'], $this->exclusionTabList) && !in_array($val['1'], $this->exclusionCTypeList) && $val['1'] !== '--div--') {
-                    $cTypes[] = ['label' => $val['0'], 'value' => $val['1']];
+                    $cTypes[] = [$val['0'], $val['1']];
                 }
             }
         }

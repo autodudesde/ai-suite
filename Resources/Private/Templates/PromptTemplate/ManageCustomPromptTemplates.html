@@ -14,17 +14,19 @@
     <div class="recordlist">
         <div class="recordlist-heading multi-record-selection-panel">
             <div class="recordlist-heading-row">
-                <div class="recordlist-heading-title">
-                    <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel"/> (<f:count subject="{customPromptTemplates}" />)
+                <div class="d-flex w-100 mb-3 align-items-center">
+                    <div class="recordlist-heading-title">
+                        <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel"/> (<f:count subject="{customPromptTemplates}" />)
+                    </div>
+                    <be:link.newRecord
+                        table="tx_aisuite_domain_model_custom_prompt_template"
+                        returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}" class="btn btn-secondary"
+                        pid="{pid}"
+                    >
+                        <core:icon identifier="actions-page-new" size="small"/>
+                        <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate"/>
+                    </be:link.newRecord>
                 </div>
-                <be:link.newRecord
-                    table="tx_aisuite_domain_model_custom_prompt_template"
-                    returnUrl="{f:uri.action(action: 'manageCustomPromptTemplates')}" class="btn btn-secondary"
-                    pid="{pid}"
-                >
-                    <core:icon identifier="actions-page-new" size="small"/>
-                    <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate"/>
-                </be:link.newRecord>
                 <f:form action="manageCustomPromptTemplates" name="input" enctype="multipart/form-data" method="post" class="manage-custom-prompt-templates-search-form">
                     <f:form.textfield id="search" name="search" property="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder')}"/>
                     <f:form.submit value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}" class="btn btn-primary"/>

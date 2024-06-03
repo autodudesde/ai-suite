@@ -10,9 +10,18 @@
     border-bottom: 1px solid #ddd;
     box-shadow: none;
 }
-
+.searchable.dropdown ul.dropdown-menu {
+    background-color: transparent;
+    margin-top: -10px !important;
+}
+.searchable.dropdown ul.dropdown-menu .searchbox .searchableInput {
+    color: #000;
+}
 .searchable.dropdown ul.dropdown-menu li {
     background-color: rgb(237, 237, 237);
+}
+.searchable.dropdown ul.dropdown-menu li a:hover {
+    background-color: #fff;
 }
 .searchable.dropdown ul.dropdown-menu li a.dropdown-item {
     color: #000;
@@ -26,9 +35,11 @@
     border: 1px solid #F09C42;
     color: #000;
     width: 100%;
+    display: flex;
     justify-content: flex-start;
 }
 .searchable.dropdown button.dropdown-toggle:after {
     position: absolute;
     right: 1rem;
+    top: 0.8rem;
 }

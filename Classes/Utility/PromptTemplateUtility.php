@@ -67,24 +67,28 @@ class PromptTemplateUtility
         } else {
             $mountPoints = [$id];
         }
-        $expressionBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getQueryBuilderForTable('pages')
-            ->expr();
-        $permsClause = $backendUser->getPagePermsClause(Permission::PAGE_SHOW);
-        // This will hide records from display - it has nothing to do with user rights!!
-        $pidList = GeneralUtility::intExplode(',', (string)($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? '1'), true);
-        if (!empty($pidList)) {
-            $permsClause .= ' AND ' . $expressionBuilder->notIn('pages.uid', $pidList);
-        }
 
         $idList = $mountPoints;
         $repository = GeneralUtility::makeInstance(PageTreeRepository::class);
-        $repository->setAdditionalWhereClause($permsClause);
-        $pages = $repository->getFlattenedPages($mountPoints, $depth);
-        foreach ($pages as $page) {
-            $idList[] = (int)$page['uid'];
+        $pageTree = $repository->getTree($id, null, $mountPoints, true);
+        $idList[] = $pageTree['uid'];
+        if(array_key_exists('_children', $pageTree) && count($pageTree['_children']) > 0) {
+            $idList = self::iterateOverPageTree($pageTree['_children'], $idList);
         }
-        return array_unique($idList);
+        $uniqueIdList = array_unique($idList);
+        asort($uniqueIdList);
+        return $uniqueIdList;
+    }
+
+    public static function iterateOverPageTree(array $pageTree, array $pageIds): array
+    {
+        foreach ($pageTree as $page) {
+            $pageIds[] = $page['uid'];
+            if (array_key_exists('_children', $page) && count($page['_children']) > 0) {
+                self::iterateOverPageTree($page['_children'], $pageIds);
+            }
+        }
+        return $pageIds;
     }
 
     public static function getBackendUserAuthentication(): BackendUserAuthentication

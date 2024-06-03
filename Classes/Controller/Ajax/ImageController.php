@@ -117,7 +117,7 @@ class ImageController extends ActionController
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
             $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
+            $langIsoCode = $language->getTwoLetterIsoCode();
         } catch(Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;
@@ -187,7 +187,7 @@ class ImageController extends ActionController
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
             $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
+            $langIsoCode = $language->getTwoLetterIsoCode();
         } catch(Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;
@@ -256,7 +256,7 @@ class ImageController extends ActionController
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
             $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
+            $langIsoCode = $language->getTwoLetterIsoCode();
         } catch(Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;

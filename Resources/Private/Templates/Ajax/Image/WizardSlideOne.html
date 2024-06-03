@@ -14,6 +14,7 @@
                 </div>
                 <div class="card-body">
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
                     <div class="row prompt-settings mt-3">
                         <div class="card card-size-large active">
                             <div class="card-header">
@@ -31,7 +32,6 @@
                             </div>
                         </div>
                     </div>
-                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
                     <div class="card-footer px-0">
                         <button type="button" class="btn btn-primary"
                                 data-uuid="{uuid}"

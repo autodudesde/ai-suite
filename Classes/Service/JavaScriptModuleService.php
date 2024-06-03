@@ -9,12 +9,14 @@ class JavaScriptModuleService
 {
     public function addModules(): array
     {
-        $resultArray['javaScriptModules'] = [
-            JavaScriptModuleInstruction::create('@autodudes/ai-suite/metadata/generate-suggestions.js'),
+
+        $resultArray['requireJsModules'] = [
+            JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/AiSuite/Metadata/GenerateSuggestions')
         ];
         if (ExtensionManagementUtility::isLoaded('news')) {
-            $resultArray['javaScriptModules'][] = JavaScriptModuleInstruction::create('@autodudes/ai-suite/metadata/news-generate-suggestions.js');
+            $resultArray['requireJsModules'][] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/AiSuite/Metadata/NewsGenerateSuggestions');
         }
+
         return $resultArray;
     }
 }

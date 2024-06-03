@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AfterFormEnginePageInitializedEventListener
 {
-    public function onPagePropertiesLoad(AfterFormEnginePageInitializedEvent $event): void
+    public function __invoke(AfterFormEnginePageInitializedEvent $event): void
     {
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');

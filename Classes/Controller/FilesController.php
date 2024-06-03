@@ -24,9 +24,10 @@ class FilesController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'sectionActive' => 'files',
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 }
