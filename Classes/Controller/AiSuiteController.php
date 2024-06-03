@@ -43,8 +43,6 @@ class AiSuiteController extends AbstractBackendController
      */
     public function dashboardAction(): ResponseInterface
     {
-        $freeRequests = '-';
-        $paidRequests = '-';
         $openAiStatus = '-';
         $openAiState = '-';
 
@@ -62,8 +60,14 @@ class AiSuiteController extends AbstractBackendController
             )
         );
         if ($answer->getType() === 'RequestsState') {
-            $freeRequests = $answer->getResponseData()['free_requests'];
-            $paidRequests = $answer->getResponseData()['paid_requests'];
+            $freeRequests = $answer->getResponseData()['free_requests'] ?? -1;
+            $paidRequests = $answer->getResponseData()['paid_requests'] ?? -1;
+            if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+                $this->moduleTemplate->assignMultiple([
+                    'freeRequests' => $answer->getResponseData()['free_requests'],
+                    'paidRequests' => $answer->getResponseData()['paid_requests']
+                ]);
+            }
             try {
                 $this->requestsRepository->setRequests($freeRequests, $paidRequests);
             } catch (\Exception $e) {
@@ -101,8 +105,6 @@ class AiSuiteController extends AbstractBackendController
 
         $this->moduleTemplate->assignMultiple([
             'sectionActive' => 'dashboard',
-            'freeRequests' => $freeRequests,
-            'paidRequests' => $paidRequests,
             'openAiStatus' => $openAiStatus,
             'openAiState' => $openAiState
         ]);

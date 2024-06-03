@@ -388,6 +388,9 @@
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement">
                 <source>ContentElements</source>
             <target>Inhaltselemente</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
+                <source>News</source>
+            <target>News</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
                 <source>Prompt template</source>
             <target>Eingabeaufforderungsvorlage</target></trans-unit>
@@ -459,9 +462,9 @@
             <trans-unit id="tx_aisuite.module.PageContent.validate.addContent" resname="tx_aisuite.module.PageContent.validate.addContent">
                 <source>Add content to page</source>
             <target>Inhalt zur Seite hinzufügen</target></trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.regenerateContentElement" resname="tx_aisuite.module.PageContent.validate.regenerateContentElement">
-                <source>Regenerate content element</source>
-            <target>Inhaltselement neu generieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.PageContent.validate.regenerateContent" resname="tx_aisuite.module.PageContent.validate.regenerateContent">
+                <source>Regenerate content</source>
+            <target>Inhalt neu generieren</target></trans-unit>
             <trans-unit id="tx_aisuite.module.PageContent.validate.addSocialContent" resname="tx_aisuite.module.PageContent.validate.addSocialContent">
                 <source>Add / generate post</source>
             <target>Beitrag hinzufügen/generieren</target></trans-unit>
@@ -720,9 +723,9 @@
             <trans-unit id="AiSuite.imageGenerationLibrary" resname="AiSuite.imageGenerationLibrary">
                 <source>Select image generation AI</source>
             <target>Wählen das KI-Model für die Bildgenerierung</target></trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentElement.title" resname="tx_aisuite.module.dashboard.card.createContentElement.title">
-                <source>Create new content element with CType </source>
-            <target>Erstellen eines neuen Inhaltselements mit CType</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.createContent.title" resname="tx_aisuite.module.dashboard.card.createContent.title">
+                <source>Create new content of type </source>
+            <target>Erstellen eines neuen Inhalts vom Typ </target></trans-unit>
             <trans-unit id="aiSuite.module.watchIntroductionVideo" xml:space="preserve">
                 <source>Watch introduction video</source>
             <target>Einführungsvideo ansehen</target></trans-unit>
@@ -1026,6 +1029,9 @@
             <trans-unit id="aiSuite.module.notification.filelist.upload.success.message" xml:space="preserve">
                 <source>File was uploaded successfully and metadata was set</source>
             <target>Die Datei wurde erfolgreich hochgeladen und die Metadaten wurden festgelegt.</target></trans-unit>
+            <trans-unit id="aiSuite.generateNewsWithAiButton" xml:space="preserve">
+                <source>News with AI</source>
+            <target>News mit KI</target></trans-unit>
         </body>
     </file>
 </xliff>

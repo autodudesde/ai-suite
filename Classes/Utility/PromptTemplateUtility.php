@@ -61,6 +61,12 @@ class PromptTemplateUtility
     {
         $backendUser = self::getBackendUserAuthentication();
 
+        if (!$backendUser->isAdmin() && $id === 0) {
+            $mountPoints = array_map('intval', $backendUser->returnWebmounts());
+            $mountPoints = array_unique($mountPoints);
+        } else {
+            $mountPoints = [$id];
+        }
         $expressionBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('pages')
             ->expr();
@@ -71,13 +77,6 @@ class PromptTemplateUtility
             $permsClause .= ' AND ' . $expressionBuilder->notIn('pages.uid', $pidList);
         }
 
-        if (!$backendUser->isAdmin() && $id === 0) {
-            $mountPoints = array_map('intval', $backendUser->returnWebmounts());
-            $mountPoints = array_unique($mountPoints);
-        } else {
-            $mountPoints = [$id];
-        }
-        // Add the initial mount points to the pids
         $idList = $mountPoints;
         $repository = GeneralUtility::makeInstance(PageTreeRepository::class);
         $repository->setAdditionalWhereClause($permsClause);

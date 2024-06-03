@@ -1,6 +1,6 @@
-# cat=API Key; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteApiKey
+# cat=AI Suite API; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteApiKey
 aiSuiteApiKey =
-# cat=API Key; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteServer
+# cat=AI Suite API; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteServer
 aiSuiteServer = https://api.autodudes.de/
 # cat=Media; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mediaStorageFolder
 mediaStorageFolder =
@@ -8,6 +8,12 @@ mediaStorageFolder =
 singleNewsDisplayPage = 1
 # cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:useUrlForRequest
 useUrlForRequest = 0
-
-
+# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
+openAiApiKey =
+# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:googleTranslateApiKey
+googleTranslateApiKey =
+# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyApiKey
+midjourneyApiKey =
+# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyId
+midjourneyId =
 

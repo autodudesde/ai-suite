@@ -10,6 +10,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\NewsContentNotAvailableException;
+use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use Psr\Http\Message\ServerRequestInterface;
@@ -112,24 +113,28 @@ class MetadataService
      */
     public function requestMetadataFromServer(string $content, string $type, string $languageIsoCode): string
     {
+        $textAi = $type === 'Alternative' || $type === 'Title' ? 'Vision' :'ChatGPT';
         $answer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
                 'createMetadata',
                 [
                     'uuid' => UuidUtility::generateUuid(),
-                    'request_content' => trim($content)
+                    'request_content' => trim($content),
+                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$textAi])
                 ],
                 'PromptPrefix_' . $type,
                 $languageIsoCode,
                 [
-                    'text' => $type === 'Alternative' || $type === 'Title' ? 'Vision' :'ChatGPT'
+                    'text' => $textAi
                 ]
             )
         );
         if ($answer instanceof ClientAnswer && $answer->getType() === 'Metadata') {
-            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-            BackendUtility::setUpdateSignal('updateTopbar');
+            if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+                $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+                BackendUtility::setUpdateSignal('updateTopbar');
+            }
             return $answer->getResponseData()['metadataResult'];
         }
         throw new AiSuiteServerException($answer->getResponseData()['message']);

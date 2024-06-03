@@ -64,11 +64,17 @@ class PageContentFactory
         $newStrings = [];
         // content element without text or textarea fields, set inital data
         if(count($contentElementTextData) === 0) {
-            $newStrings['tt_content'] = $this->newStringPlaceholder('tt_content');
-            $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content->getColPos();
-            $data['tt_content'][$newStrings['tt_content']]["CType"] = $content->getCType();
-            $data['tt_content'][$newStrings['tt_content']]["pid"] = $content->getPid();
-            $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content->getSysLanguageUid();
+            if(array_key_exists('tt_content', $contentElementImageData)) {
+                $newStrings['tt_content'] = $this->newStringPlaceholder('tt_content');
+                $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content->getColPos();
+                $data['tt_content'][$newStrings['tt_content']]["CType"] = $content->getCType();
+                $data['tt_content'][$newStrings['tt_content']]["pid"] = $content->getPid();
+                $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content->getSysLanguageUid();
+            } else {
+                $newStrings['tx_news_domain_model_news'] = $this->newStringPlaceholder('tx_news_domain_model_news');
+                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content->getPid();
+                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["sys_language_uid"] = $content->getSysLanguageUid();
+            }
         }
 
         foreach ($contentElementTextData as $table => $fieldsArray) {
@@ -80,6 +86,14 @@ class PageContentFactory
                     $data[$table][$newStrings[$table]]["CType"] = $content->getCType();
                     $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
+                    foreach($fields as $fieldName => $fieldValue) {
+                        $data[$table][$newStrings[$table]][$fieldName] = $fieldValue;
+                    }
+                } else if ($table === 'tx_news_domain_model_news') {
+                    $newStrings[$table] = $this->newStringPlaceholder($table);
+                    $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
+                    $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
+                    $data[$table][$newStrings[$table]]["datetime"] = time();
                     foreach($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table]][$fieldName] = $fieldValue;
                     }
@@ -115,13 +129,13 @@ class PageContentFactory
                         'table_local' => 'sys_file',
                         'uid_local' => $newFileUid,
                         'tablenames' => $table,
-                        'uid_foreign' => $table === 'tt_content' ? $newStrings[$table] : $newStrings[$table][$key],
+                        'uid_foreign' => ($table === 'tt_content' || $table === 'tx_news_domain_model_news') ? $newStrings[$table] : $newStrings[$table][$key],
                         'fieldname' => $fieldName,
                         'pid' => $content->getPid(),
                         'title' => $fieldData['imageTitle'] ?? '',
                         'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
-                    if($table === 'tt_content') {
+                    if($table === 'tt_content' || $table === 'tx_news_domain_model_news') {
                         $data[$table][$newStrings[$table]][$fieldName] = $newString;
                     } else {
                         $data[$table][$newStrings[$table][$key]][$fieldName] = $newString;
@@ -140,12 +154,13 @@ class PageContentFactory
             throw new Exception('Error while creating content element with message: '. $this->dataHandler->errorLog[0]);
         }
 
-        $tempUid = array_key_first($data['tt_content']);
-
-        $uid = $this->dataHandler->substNEWwithIDs[$tempUid];
-        $cmd['tt_content'][$uid]['move'] = $content->getUidPid();
-        $this->dataHandler->start([], $cmd);
-        $this->dataHandler->process_cmdmap();
+        if(array_key_exists('tt_content', $data)) {
+            $tempUid = array_key_first($data['tt_content']);
+            $uid = $this->dataHandler->substNEWwithIDs[$tempUid];
+            $cmd['tt_content'][$uid]['move'] = $content->getUidPid();
+            $this->dataHandler->start([], $cmd);
+            $this->dataHandler->process_cmdmap();
+        }
     }
 
     /**

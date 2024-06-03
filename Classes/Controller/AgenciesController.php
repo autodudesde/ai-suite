@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\EmptyXliffException;
 use AutoDudes\AiSuite\Service\ConstantsService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\XliffUtility;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -62,7 +63,8 @@ class AgenciesController extends AbstractBackendController
                 'generationLibraries',
                 [
                     'library_types' => GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,
-                    'target_endpoint' => 'translate'
+                    'target_endpoint' => 'translate',
+                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf,['translate'])
                 ]
             )
         );
@@ -136,6 +138,7 @@ class AgenciesController extends AbstractBackendController
                         'source_lang' => 'en',
                         'target_lang' => $input->getDestinationLanguage(),
                         'translation_content' => $neededTranslations,
+                        'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$translateAi])
                     ],
                     '',
                     '',
@@ -153,8 +156,10 @@ class AgenciesController extends AbstractBackendController
                 return $this->redirect('translateXlf');
             }
             $translations = $answer->getResponseData()['translations'];
-            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-            BackendUtility::setUpdateSignal('updateTopbar');
+            if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+                $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+                BackendUtility::setUpdateSignal('updateTopbar');
+            }
             $input->setTranslations($translations);
             $originalValues = XliffUtility::readXliff($input->getExtensionKey(), $input->getFilename())->getFormatedData();
             foreach ($originalValues as $origKey => $origValue) {

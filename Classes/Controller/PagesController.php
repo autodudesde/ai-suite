@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -73,7 +74,8 @@ class PagesController extends AbstractBackendController
                 'generationLibraries',
                 [
                     'library_types' => GenerationLibrariesEnumeration::PAGETREE,
-                    'target_endpoint' => 'pageTree'
+                    'target_endpoint' => 'pageTree',
+                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf,['text'])
                 ]
             )
         );
@@ -113,11 +115,13 @@ class PagesController extends AbstractBackendController
             new ServerRequest(
                 $this->extConf,
                 'pageTree',
-                [],
+                [
+                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$textAi])
+                ],
                 $input->getPlainPrompt(),
                 $defaultLanguageIsoCode,
                 [
-                    'text' => $textAi
+                    'text' => $textAi,
                 ],
             )
         );
@@ -129,8 +133,10 @@ class PagesController extends AbstractBackendController
             );
             return $this->redirect('pageStructure');
         }
-        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-        BackendUtility::setUpdateSignal('updateTopbar');
+        if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
+        }
         $input->setAiResult($answer->getResponseData()['pagetreeResult']);
         $this->moduleTemplate->assignMultiple([
             'input' => $input,

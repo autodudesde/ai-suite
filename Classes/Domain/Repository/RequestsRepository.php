@@ -52,8 +52,10 @@ class RequestsRepository extends AbstractPromptTemplateRepository
      */
     public function setRequests(int $freeRequests, int $paidRequests): void
     {
-        if(count($this->findFirstEntry()) > 0) {
+        if(count($this->findFirstEntry()) > 0 && $freeRequests > -1 && $paidRequests > -1) {
             $this->updateRequests($freeRequests, $paidRequests);
+        } elseif(count($this->findFirstEntry()) > 0 && $freeRequests < 0 && $paidRequests < 0) {
+            $this->deleteRequests();
         } else {
             $this->insertRequests($freeRequests, $paidRequests);
         }
@@ -82,6 +84,12 @@ class RequestsRepository extends AbstractPromptTemplateRepository
                 'free_requests' => $freeRequests,
                 'paid_requests' => $paidRequests
             ])
+            ->executeStatement();
+    }
+    public function deleteRequests(): void {
+        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+        $queryBuilder
+            ->delete($this->table)
             ->executeStatement();
     }
 }

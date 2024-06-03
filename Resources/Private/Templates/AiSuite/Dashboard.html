@@ -14,15 +14,17 @@
         <f:translate key="aiSuite.module.watchIntroductionVideo"/>
     </f:link.external>
 
-    <p class="request-state py-3">
-        <f:translate key="tx_aisuite.module.dashboard.creditState" />:
-        <span class="badge badge-warning p-2 mx-3">
+    <f:if condition="{freeRequests} && {paidRequests}">
+        <p class="request-state py-3">
+            <f:translate key="tx_aisuite.module.dashboard.creditState" />:
+            <span class="badge badge-warning p-2 mx-3">
             <f:translate key="aiSuite.module.freeCredits"/>: {freeRequests}
         </span>
-        <span class="badge badge-warning p-2">
+            <span class="badge badge-warning p-2">
              <f:translate key="aiSuite.module.paidCredits"/>: {paidRequests}
         </span>
-    </p>
+        </p>
+    </f:if>
 
     <section class="card-container">
 

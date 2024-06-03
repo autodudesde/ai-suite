@@ -17,6 +17,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use Symfony\Component\Filesystem\Filesystem;
@@ -80,7 +81,8 @@ class ImageController extends ActionController
                 'generationLibraries',
                 [
                     'library_types' => GenerationLibrariesEnumeration::IMAGE,
-                    'target_endpoint' => 'createImage'
+                    'target_endpoint' => 'createImage',
+                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf,['image'])
                 ]
             )
         );
@@ -127,7 +129,8 @@ class ImageController extends ActionController
                 'createImage',
                 [
                     'uuid' => $request->getParsedBody()['uuid'],
-                    'progress' => 'prepare'
+                    'progress' => 'prepare',
+                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$request->getParsedBody()['imageAiModel']])
                 ],
                 $request->getParsedBody()['imagePrompt'],
                 $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
@@ -140,8 +143,10 @@ class ImageController extends ActionController
             $this->logError($answer->getResponseData()['message'], $response, 503);
             return $response;
         }
-        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-        BackendUtility::setUpdateSignal('updateTopbar');
+        if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
+        }
         $params = [
             'imageAiModel' => $request->getParsedBody()['imageAiModel'],
             'imageSuggestions' => $answer->getResponseData()['images'],
@@ -197,7 +202,8 @@ class ImageController extends ActionController
                     'progress' => 'finish',
                     'customId' => $request->getParsedBody()['customId'],
                     'mId' => $request->getParsedBody()['mId'],
-                    'index' => $request->getParsedBody()['index']
+                    'index' => $request->getParsedBody()['index'],
+                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$request->getParsedBody()['imageAiModel']])
                 ],
                 $request->getParsedBody()['imagePrompt'],
                 $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
@@ -210,8 +216,10 @@ class ImageController extends ActionController
             $this->logError($answer->getResponseData()['message'], $response, 503);
             return $response;
         }
-        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-        BackendUtility::setUpdateSignal('updateTopbar');
+        if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
+        }
         $params = [
             'imageSuggestions' => $answer->getResponseData()['images'],
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
@@ -263,7 +271,8 @@ class ImageController extends ActionController
                     'progress' => 'finish',
                     'customId' => $request->getParsedBody()['customId'] ?? '',
                     'mId' => $request->getParsedBody()['mId'] ?? '',
-                    'index' => $request->getParsedBody()['index'] ?? 0
+                    'index' => $request->getParsedBody()['index'] ?? 0,
+                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$request->getParsedBody()['imageAiModel']])
                 ],
                 $request->getParsedBody()['imagePrompt'],
                 $langIsoCode,
@@ -276,8 +285,10 @@ class ImageController extends ActionController
             $this->logError($answer->getResponseData()['message'], $response, 500);
             return $response;
         }
-        $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-        BackendUtility::setUpdateSignal('updateTopbar');
+        if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
+            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+            BackendUtility::setUpdateSignal('updateTopbar');
+        }
 
         $params = [
             'imageSuggestions' => $answer->getResponseData()['images'],

@@ -4,12 +4,14 @@ namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ModifyButtonBarEventListener
@@ -24,14 +26,13 @@ class ModifyButtonBarEventListener
     public function __invoke(ModifyButtonBarEvent $event): void
     {
         $request = $GLOBALS['TYPO3_REQUEST'];
-        $languageService = $this->getLanguageService();
-        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
-        $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image-filelist.js');
         $buttons = $event->getButtons();
-
         if ($request->getUri()->getPath() === '/typo3/module/file/list') {
+            $languageService = $this->getLanguageService();
+            $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image-filelist.js');
             $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', Icon::SIZE_SMALL);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
@@ -44,6 +45,33 @@ class ModifyButtonBarEventListener
                 ->setTitle($buttonText)
                 ->setShowLabelText(true)
                 ->setIcon($buttonIcon);
+            $event->setButtons($buttons);
+        }
+        if ($request->getUri()->getPath() === '/typo3/module/web/list' && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams())) {
+            $languageService = $this->getLanguageService();
+            $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateNewsWithAiButton'));
+            $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+            $buttonIcon = $iconFactory->getIcon('content-news', Icon::SIZE_SMALL);
+            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+            $uri = (string)$uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
+                'edit' => [
+                    'tx_news_domain_model_news' => [
+                        $request->getQueryParams()['id'] => 'new',
+                    ],
+                ],
+                'returnUrl' => '/typo3/module/web/list?token=' . $request->getQueryParams()['token'] .'&id=' . $request->getQueryParams()['id'],
+                'recordType' => '0',
+                'recordTable' => 'tx_news_domain_model_news',
+                'pid' => $request->getQueryParams()['id']
+            ]);
+            $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
+                ->makeLinkButton()
+                ->setClasses('btn btn-default t3js-ai-suite-news-generation-add-btn')
+                ->setTitle($buttonText)
+                ->setShowLabelText(true)
+                ->setHref($uri)
+                ->setIcon($buttonIcon);
+
             $event->setButtons($buttons);
         }
     }

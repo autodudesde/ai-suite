@@ -1,11 +1,14 @@
 {library.name} {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
-<span class="request-amount">
-    <f:if condition="{library.weight} == 1">
-        <f:then>
-            <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.oneCredit"/>
-        </f:then>
-        <f:else>
-            <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.multipleCredits"/>
-        </f:else>
-    </f:if>
-</span>
+<f:if condition="{library.weight}">
+    <span class="request-amount">
+        <f:if condition="{library.weight} == 1">
+            <f:then>
+                <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.oneCredit"/>
+            </f:then>
+            <f:else>
+                <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.multipleCredits"/>
+            </f:else>
+        </f:if>
+    </span>
+</f:if>
+

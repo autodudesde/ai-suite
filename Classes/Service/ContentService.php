@@ -2,6 +2,7 @@
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Utility\ContentUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
@@ -9,7 +10,7 @@ use TYPO3\CMS\Backend\Form\Utility\FormEngineUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ContentElementService
+class ContentService
 {
     protected array $ignoredTcaFields = [
         'uid',
@@ -52,20 +53,20 @@ class ContentElementService
         'file'
     ];
 
-    public function fetchRequestFields(ServerRequestInterface $request, array $defaultValues, string $cType, int $pid): array
+    public function fetchRequestFields(ServerRequestInterface $request, array $defaultValues, string $cType, int $pid, $table): array
     {
-        $formData = $this->getFormData($request, $defaultValues, $pid,'tt_content');
+        $formData = $this->getFormData($request, $defaultValues, $pid, $table);
 
-        $requestFields['tt_content'] = [
+        $requestFields[$table] = [
             'label' => 'General fields',
             'text' => [],
             'image' => []
         ];
 
-        $itemList = $GLOBALS['TCA']['tt_content']['types'][$cType]['showitem'];
+        $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid);
-        return $requestFields;
+        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
+        return ContentUtility::cleanupRequestField($requestFields, $table);
     }
 
     protected function explodeSingleFieldShowItemConfiguration($field): array
@@ -91,7 +92,7 @@ class ContentElementService
         array &$requestFields,
         array $formData,
         int $pid,
-        string $table = 'tt_content'
+        string $table
     ): void
     {
         // palette needs a palette name reference, otherwise it does not make sense to try rendering of it
@@ -145,7 +146,7 @@ class ContentElementService
         if($parameterArray['fieldConf']['config']['type'] === 'inline') {
             $foreignTable = $parameterArray['fieldConf']['config']['foreign_table'];
             $requestFields[$foreignTable]['label'] = $parameterArray['fieldConf']['label'];
-            $requestFields[$foreignTable]['foreignField'] = 'tt_content';
+            $requestFields[$foreignTable]['foreignField'] = $table;
             $this->fetchIrreRequestFields($formData['request'], $formData['defaultValues'], $requestFields, $foreignTable, $pid);
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
@@ -213,7 +214,7 @@ class ContentElementService
         array &$requestFields,
         array $formData,
         int $pid,
-        string $table = 'tt_content'
+        string $table
     ): void
     {
         foreach ($fieldsArray as $fieldString) {

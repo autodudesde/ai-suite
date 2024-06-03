@@ -14,10 +14,11 @@
         <f:if condition="{error}">
             <f:else>
                 <h1 class="text-gradient">
-                    <f:translate key="tx_aisuite.module.dashboard.card.createContentElement.title"/> "{content.CType}"
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.createContent.title"/> "{contentTypeTitle}"
                 </h1>
                 <f:form actionUri="{actionUri}" name="content" object="{content}" enctype="multipart/form-data" class="with-spinner">
                     <f:form.hidden property="availableTcaColumns" name="availableTcaColumns" value="{content.availableTcaColumns -> f:format.json()}" />
+                    <f:form.hidden name="defVals" value="{defVals -> f:format.json()}" />
                     <f:form.hidden name="additionalImageSettings" value="" />
                     <f:form.hidden name="uuid" value="{uuid}" />
 

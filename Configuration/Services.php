@@ -17,7 +17,6 @@ use AutoDudes\AiSuite\Controller\AiSuiteController;
 use AutoDudes\AiSuite\Controller\Ajax\ImageController;
 use AutoDudes\AiSuite\Controller\Ajax\MetadataController;
 use AutoDudes\AiSuite\Controller\ContentController;
-use AutoDudes\AiSuite\Controller\ContentElementController;
 use AutoDudes\AiSuite\Controller\FilesController;
 use AutoDudes\AiSuite\Controller\PagesController;
 use AutoDudes\AiSuite\Controller\PromptTemplateController;
@@ -25,6 +24,7 @@ use AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener;
 use AutoDudes\AiSuite\EventListener\FileControlsEventListener;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
+use AutoDudes\AiSuite\Service\ContentService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
@@ -36,7 +36,6 @@ use TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
-use AutoDudes\AiSuite\Service\ContentElementService;
 use AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener;
 use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 use Symfony\Component\Filesystem\Filesystem;
@@ -66,7 +65,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(SendRequestService::class)
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
 
-    $services->set(ContentElementService::class);
+    $services->set(ContentService::class);
 
     $services->set(MetadataController::class)
         ->arg('$metadataService', service(MetadataService::class))
@@ -86,12 +85,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->arg('$logger', service('PsrLogInterface'))
         ->public();
 
-    $services->set('AfterFormEnginePageInitializedEventListener', AfterFormEnginePageInitializedEventListener::class)
-        ->tag('event.listener', [
-            'method' => 'onPagePropertiesLoad',
-            'event' => AfterFormEnginePageInitializedEvent::class,
-        ]);
-
     $services->set(MetadataService::class)
         ->arg('$requestService', service(SendRequestService::class))
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
@@ -107,11 +100,8 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->arg('$requestService', service(SendRequestService::class));
 
     $services->set(ContentController::class)
-        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'));
-
-    $services->set(ContentElementController::class)
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
-        ->arg('$contentElementService', service(ContentElementService::class))
+        ->arg('$contentService', service(ContentService::class))
         ->arg('$requestService', service(SendRequestService::class))
         ->arg('$pageContentFactory', service(PageContentFactory::class));
 
@@ -157,6 +147,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
+        ]);
+
+    $services->set('AfterFormEnginePageInitializedEventListener', AfterFormEnginePageInitializedEventListener::class)
+        ->tag('event.listener', [
+            'method' => 'onPagePropertiesLoad',
+            'event' => AfterFormEnginePageInitializedEvent::class,
         ]);
 
     $services->set(ModifyButtonBarEventListener::class)
