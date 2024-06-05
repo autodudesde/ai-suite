@@ -10,6 +10,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\NewsContentNotAvailableException;
+use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
@@ -59,7 +60,12 @@ class MetadataService
     }
 
     /**
-     * @throws UnableToLinkToPageException|AiSuiteServerException|FetchedContentFailedException|SiteNotFoundException|NewsContentNotAvailableException
+     * @throws AiSuiteServerException
+     * @throws FetchedContentFailedException
+     * @throws NewsContentNotAvailableException
+     * @throws UnableToFetchNewsRecordException
+     * @throws UnableToLinkToPageException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getMetadataContent(ServerRequestInterface $request, string $promptPrefix): string {
         $parsedBody = $request->getParsedBody();
@@ -109,7 +115,7 @@ class MetadataService
     }
 
     /**
-     * @throws AiSuiteServerException
+     * @throws AiSuiteServerException|\Doctrine\DBAL\Driver\Exception
      */
     public function requestMetadataFromServer(string $content, string $type, string $languageIsoCode): string
     {
@@ -141,7 +147,13 @@ class MetadataService
     }
 
     /**
-     * @throws UnableToLinkToPageException|AiSuiteServerException|FetchedContentFailedException|SiteNotFoundException|NewsContentNotAvailableException
+     * @throws AiSuiteServerException
+     * @throws FetchedContentFailedException
+     * @throws NewsContentNotAvailableException
+     * @throws SiteNotFoundException
+     * @throws UnableToFetchNewsRecordException
+     * @throws UnableToLinkToPageException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getContentForSuggestions(ServerRequestInterface $request, string $type): string
     {
@@ -161,8 +173,10 @@ class MetadataService
         }
         return $fetchedContent;
     }
+
     /**
      * @throws UnableToLinkToPageException
+     * @throws UnableToFetchNewsRecordException
      */
     protected function getPreviewUrl(int $pageId, int $pageLanguage, array $additionalQueryParameters = []): string
     {
@@ -180,6 +194,9 @@ class MetadataService
             ->buildUri();
 
         if ($previewUri === null) {
+            if(array_key_exists('tx_news_pi1[news]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[action]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[controller]', $additionalQueryParameters)) {
+                throw new UnableToFetchNewsRecordException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.unableToFetchNewsRecord', null, [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
+            }
             throw new UnableToLinkToPageException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.unableToLinkToPage', null, [$pageId, $pageLanguage]));
         }
         $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
@@ -202,7 +219,7 @@ class MetadataService
     }
 
     /**
-     * @throws FetchedContentFailedException|UnableToLinkToPageException
+     * @throws FetchedContentFailedException|UnableToLinkToPageException|UnableToFetchNewsRecordException
      */
     protected function fetchContentOfNewsArticle(int $newsId, int $pageLanaguage): string
     {

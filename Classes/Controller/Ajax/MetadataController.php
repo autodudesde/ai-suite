@@ -7,6 +7,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\NewsContentNotAvailableException;
+use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use AutoDudes\AiSuite\Service\MetadataService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -103,7 +104,7 @@ class MetadataController
                 )
             );
             return $response;
-        } catch(UnableToLinkToPageException|FetchedContentFailedException|SiteNotFoundException $e) {
+        } catch(UnableToLinkToPageException|FetchedContentFailedException|SiteNotFoundException|UnableToFetchNewsRecordException $e) {
             $this->logError($e->getMessage(), $response, 404);
         } catch (AiSuiteServerException $e) {
             $this->logError($e->getMessage(), $response);
