@@ -24,5 +24,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '11.0.0',
+    'version' => '11.0.1',
 ];

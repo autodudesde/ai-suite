@@ -659,6 +659,9 @@
             <trans-unit id="AiSuite.unableToLinkToPage" resname="AiSuite.unableToLinkToPage">
                 <source>Unable to link to page with ID %s and language ID %s</source>
             </trans-unit>
+            <trans-unit id="AiSuite.unableToFetchNewsRecord" resname="AiSuite.unableToFetchNewsRecord">
+                <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the "Metadata" tab for fetching the news record.</source>
+            </trans-unit>
             <trans-unit id="AiSuite.NewsContentNotFound" resname="AiSuite.NewsContentNotFound">
                 <source>Content of news article could not be fetched. If you create a new one please save your changes first and try generation again.</source>
             </trans-unit>
