@@ -81,4 +81,16 @@ return [
         'path' => '/generate/file/process',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::fileProcessAction'
     ],
+    'aisuite_localization_libraries' => [
+        'path' => '/generate/translation-libraries',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::librariesAction'
+    ],
+    'aisuite_ckeditor_libraries' => [
+        'path' => '/generate/ckeditor-libraries',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::librariesAction'
+    ],
+    'aisuite_ckeditor_request' => [
+        'path' => '/generate/ckeditor-request',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::requestAction'
+    ],
 ];

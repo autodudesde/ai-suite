@@ -14,7 +14,21 @@
                     <label for="{fieldName}">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
                     </label><br />
-                    <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                    <f:if condition="{fieldData.rteConfig}">
+                        <f:then>
+                            <f:form.hidden property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="rte-content form-control"/>
+                            <div
+                                data-field-identifier="content[contentElementData][{table}][{position}][{fieldName}]"
+                                class="rte-textarea"
+                            >
+                                <typo3-rte-ckeditor-ckeditor5 {fieldData.rteConfig -> f:format.raw()}>
+                                </typo3-rte-ckeditor-ckeditor5>
+                            </div>
+                        </f:then>
+                        <f:else>
+                            <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                        </f:else>
+                    </f:if>
                 </div>
             </f:case>
             <f:defaultCase>

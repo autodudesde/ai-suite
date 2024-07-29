@@ -46,6 +46,13 @@ class Validation {
                         imageFieldsWithoutSelection += key + ', ';
                     }
                 })
+                let rteTextFields = document.querySelectorAll('.rte-textarea');
+                rteTextFields.forEach(function(rte) {
+                    let rteFieldIdentifier = rte.getAttribute('data-field-identifier');
+                    let rteContent = rte.querySelector('typo3-rte-ckeditor-ckeditor5 textarea').innerHTML;
+                    let rteContentField = document.querySelector('input.rte-content[name="' + rteFieldIdentifier + '"]');
+                    rteContentField.value = rteContent;
+                });
                 if(imageFieldsWithoutSelection !== '') {
                     ContentElement.showImageFieldsWithoutSelectionModal(imageFieldsWithoutSelection, form);
                 } else {

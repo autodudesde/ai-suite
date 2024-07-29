@@ -12,7 +12,7 @@ class StatusHandling {
                 }
                 ResponseHandling.handleStatusResponse(statusRes, modal);
                 resolve(statusRes);
-            }, 4500);
+            }, 2500);
         });
     }
 
@@ -22,7 +22,7 @@ class StatusHandling {
             if(General.isUsable(statusRes)) {
                 ResponseHandling.handleStatusContentElementResponse(statusRes);
             }
-        }, 4500);
+        }, 2500);
     }
 }
 

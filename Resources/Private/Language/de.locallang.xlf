@@ -391,6 +391,9 @@
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
                 <source>News</source>
             <target>News</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent">
+                <source>RTE Content Editing</source>
+            <target>RTE-Inhaltsbearbeitung</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
                 <source>Prompt template</source>
             <target>Eingabeaufforderungsvorlage</target></trans-unit>
@@ -601,7 +604,7 @@
             <target>Twitter-Beschreibungsvorschläge generieren (1 Credit)</target></trans-unit>
             <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
                 <source>Generate description suggestions for news article (1 Credit)</source>
-            <target>Beschreibungsvorschläge für News-Artikel generieren (1 Credit)</target></trans-unit>
+           <target>Beschreibungsvorschläge für News-Artikel generieren (1 Credit)</target></trans-unit>
             <trans-unit id="AiSuite.generation.alternativeSuggestions" resname="AiSuite.generation.alternativeSuggestions">
                 <source>Generate alternative suggestions for file (1 Credit)</source>
             <target>Alternativvorschläge für Datei generieren (1 Credit)</target></trans-unit>
@@ -728,7 +731,7 @@
             <target>Wählen das KI-Model für die Bildgenerierung</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.createContent.title" resname="tx_aisuite.module.dashboard.card.createContent.title">
                 <source>Create new content of type </source>
-            <target>Erstellen eines neuen Inhalts vom Typ </target></trans-unit>
+            <target>Erstellen eines neuen Inhalts vom Typ</target></trans-unit>
             <trans-unit id="aiSuite.module.watchIntroductionVideo" xml:space="preserve">
                 <source>Watch introduction video</source>
             <target>Einführungsvideo ansehen</target></trans-unit>
@@ -1019,7 +1022,7 @@
             <target>Bitte Datenbank-Aktualisierung durchführen (Credits-Tabelle fehlt)</target></trans-unit>
             <trans-unit id="aiSuite.twoImagesAtFirstRequest" xml:space="preserve">
                 <source><![CDATA[A maximum of <strong>two images</strong> will be created in the course of the first request. Additional images can then be added at any time.]]></source>
-            <target><![CDATA[Im Zuge der ersten Anfrage werden maximal <strong>zwei Bilder</strong> erstellt. Weitere Bilder können dann jederzeit hinzugefügt werden.]]></target></trans-unit>
+            <target>Im Zuge der ersten Anfrage werden maximal &lt;strong&gt;zwei Bilder&lt;/strong&gt; erstellt. Weitere Bilder können dann jederzeit hinzugefügt werden.</target></trans-unit>
             <trans-unit id="aiSuite.generateImageWithAiButton" xml:space="preserve">
                 <source>Generate Image with AI</source>
             <target>Bild mit KI generieren</target></trans-unit>
@@ -1035,6 +1038,27 @@
             <trans-unit id="aiSuite.generateNewsWithAiButton" xml:space="preserve">
                 <source>News with AI</source>
             <target>News mit KI</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.adjustContentWithAi" xml:space="preserve">
+                <source>Adjust content with AI</source>
+            <target>Inhalte mit KI modifizieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.noContentSelected" xml:space="preserve">
+                <source>No content selected. Please select some content.</source>
+            <target>Kein Inhalt ausgewählt. Bitte wähle einen Inhalt aus.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.useWholeContent" xml:space="preserve">
+                <source>Use whole content</source>
+            <target>Gesamten Inhalt verwenden</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.contentGenerationInProcess" xml:space="preserve">
+                <source>Content will be generated. This may take a while. Please wait...</source>
+            <target>Inhalte werden generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+            <trans-unit id="aiSuite.translateRecord" xml:space="preserve">
+                <source>Translate record (1 Credit)</source>
+            <target>Datensatz übersetzen (1 Credit)</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.translationInProcess" xml:space="preserve">
+                <source>Translation is in progress </source>
+            <target>Übersetzungen werden erstellt</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable" xml:space="preserve">
+                <source>No translation libraries available.</source>
+            <target>Keine Übersetzungsbibliotheken verfügbar.</target></trans-unit>
         </body>
     </file>
 </xliff>

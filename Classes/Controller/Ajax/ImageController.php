@@ -133,7 +133,7 @@ class ImageController extends ActionController
                     'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$request->getParsedBody()['imageAiModel']])
                 ],
                 $request->getParsedBody()['imagePrompt'],
-                $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
+                $langIsoCode ?? 'en',
                 [
                     'image' => $request->getParsedBody()['imageAiModel'],
                 ]
@@ -206,7 +206,7 @@ class ImageController extends ActionController
                     'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$request->getParsedBody()['imageAiModel']])
                 ],
                 $request->getParsedBody()['imagePrompt'],
-                $langIsoCode ?? 'en', // TODO: get language from request or somewhere else
+                $langIsoCode ?? 'en',
                 [
                     'image' => $request->getParsedBody()['imageAiModel'],
                 ]

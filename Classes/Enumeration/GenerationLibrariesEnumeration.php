@@ -21,6 +21,8 @@ final class GenerationLibrariesEnumeration
     public const METADATA = 'text';
     public const PAGETREE = 'text';
     public const GOOGLE_TRANSLATE = 'translate';
+    public const TRANSLATE = 'text';
+
     public const CONTENT = 'text,image';
-    public const CREATE_FACEBOOK_POST = 'text,image';
+    public const RTE_CONTENT = 'text';
 }

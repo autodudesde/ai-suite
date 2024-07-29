@@ -6,6 +6,25 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Cont
     'className' => \AutoDudes\AiSuite\Controller\ContentElement\NewContentElementController::class,
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
+    'className' => \AutoDudes\AiSuite\Controller\Page\LocalizationController::class,
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
+    'className' => \AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class,
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
+    = \AutoDudes\AiSuite\Hooks\TranslationHook::class;
+
+if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('container')) {
+    if (class_exists(\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class] = [
+            'className' => \AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook::class,
+        ];
+    }
+}
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410677] = [
     'nodeName' => 'aiSeoMetaDescription',
     'priority' => 30,

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
@@ -19,13 +18,13 @@ use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Resource\FileRepository;
-use TYPO3\CMS\Core\Routing\SiteMatcher;
 use TYPO3\CMS\Core\Routing\UnableToLinkToPageException;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class MetadataService
@@ -33,17 +32,18 @@ class MetadataService
     protected array $extConf;
 
     protected PageRepository $pageRepository;
-    protected SiteMatcher $siteMatcher;
-
+    protected SiteFinder $siteFinder;
     protected RequestFactory $requestFactory;
     protected SendRequestService $requestService;
 
     protected RequestsRepository $requestsRepository;
     protected FileRepository $fileRepository;
 
+    protected array $page = [];
+
     public function __construct(
         PageRepository $pageRepository,
-        SiteMatcher $siteMatcher,
+        SiteFinder $siteFinder,
         RequestFactory $requestFactory,
         SendRequestService $requestService,
         RequestsRepository $requestsRepository,
@@ -51,7 +51,7 @@ class MetadataService
         array $extConf
     ) {
         $this->pageRepository = $pageRepository;
-        $this->siteMatcher = $siteMatcher;
+        $this->siteFinder = $siteFinder;
         $this->requestFactory = $requestFactory;
         $this->requestService = $requestService;
         $this->requestsRepository = $requestsRepository;
@@ -66,6 +66,7 @@ class MetadataService
      * @throws UnableToFetchNewsRecordException
      * @throws UnableToLinkToPageException
      * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws Exception
      */
     public function getMetadataContent(ServerRequestInterface $request, string $promptPrefix): string {
         $parsedBody = $request->getParsedBody();
@@ -136,7 +137,7 @@ class MetadataService
                 ]
             )
         );
-        if ($answer instanceof ClientAnswer && $answer->getType() === 'Metadata') {
+        if ($answer->getType() === 'Metadata') {
             if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
                 $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
                 BackendUtility::setUpdateSignal('updateTopbar');
@@ -150,7 +151,6 @@ class MetadataService
      * @throws AiSuiteServerException
      * @throws FetchedContentFailedException
      * @throws NewsContentNotAvailableException
-     * @throws SiteNotFoundException
      * @throws UnableToFetchNewsRecordException
      * @throws UnableToLinkToPageException
      * @throws \Doctrine\DBAL\Driver\Exception
@@ -161,9 +161,22 @@ class MetadataService
     }
 
     /**
-     * @throws FetchedContentFailedException
+     * @throws Exception
      */
     protected function fetchContentFromUrl(string $previewUrl): string
+    {
+        try {
+            return $this->getContentFromPreviewUrl($previewUrl);
+        } catch (Exception $e) {
+            $previewUrl = rtrim($previewUrl, '/');
+            return $this->getContentFromPreviewUrl($previewUrl);
+        }
+    }
+
+    /**
+     * @throws FetchedContentFailedException
+     */
+    public function getContentFromPreviewUrl(string $previewUrl): string
     {
         $response = $this->requestFactory->request($previewUrl);
         $fetchedContent = $response->getBody()->getContents();
@@ -180,6 +193,9 @@ class MetadataService
      */
     protected function getPreviewUrl(int $pageId, int $pageLanguage, array $additionalQueryParameters = []): string
     {
+        if($this->page['is_siteroot'] === 1 && $this->page['l10n_parent'] > 0) {
+            $pageId = $this->page['l10n_parent'];
+        }
         $additionalGetVars = '_language='.$pageLanguage;
         foreach ($additionalQueryParameters as $key => $value) {
             if (!empty($additionalGetVars)) {
@@ -190,6 +206,7 @@ class MetadataService
 
         $previewUriBuilder = PreviewUriBuilder::create($pageId);
         $previewUri = $previewUriBuilder
+            ->withLanguage($pageLanguage)
             ->withAdditionalQueryParameters($additionalGetVars)
             ->buildUri();
 
@@ -201,6 +218,14 @@ class MetadataService
         }
         $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
         $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
+        if($previewUri->getScheme() === '' || $previewUri->getHost() === '') {
+            $request = $GLOBALS['TYPO3_REQUEST'];
+            $previewUri = $previewUri->withScheme($request->getUri()->getScheme());
+            $previewUri = $previewUri->withHost($request->getUri()->getHost());
+            $previewUri = $previewUri->withPort($request->getUri()->getPort());
+            $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
+            $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
+        }
         if (count($additionalQueryParameters) > 0) {
             return $uri . '?' . $previewUri->getQuery();
         } else {
@@ -208,14 +233,19 @@ class MetadataService
         }
     }
 
+
+    /**
+     * @throws SiteNotFoundException
+     */
     protected function getSiteLanguageFromPageId(int $pageId): SiteLanguage
     {
-        $rootLine = BackendUtility::BEgetRootLine($pageId);
-        $siteMatcher = GeneralUtility::makeInstance(SiteMatcher::class);
-        $site = $siteMatcher->matchByPageId($pageId, $rootLine);
-        $page = $this->pageRepository->getPage($pageId);
+        $this->page = $this->pageRepository->getPage($pageId);
+        if($this->page['is_siteroot'] === 1 && $this->page['l10n_parent'] > 0) {
+            $pageId = $this->page['l10n_parent'];
+        }
+        $site = $this->siteFinder->getSiteByPageId($pageId);
 
-        return  $site->getLanguageById($page['sys_language_uid']);
+        return $site->getLanguageById($this->page['sys_language_uid']);
     }
 
     /**

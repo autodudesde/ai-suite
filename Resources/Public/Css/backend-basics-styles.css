@@ -267,7 +267,7 @@ div[data-module-id="aiSuite"] .fields-button {
     color: black;
 }
 
-div[data-module-id="aiSuite"] button:not(.btn) {
+div[data-module-id="aiSuite"]:not(:has(.rte-textarea)) button:not(.btn):not(.add) {
     background: #F09C42;
     border: none;
     padding: 0.375rem 0.75rem;
@@ -439,3 +439,198 @@ div[data-module-id="aiSuite"] .status .badge.critical {
     color: white;
 }
 
+.ck-ai-plugin .ck-dialog-headerbar .ck-button-cancel {
+    color: black !important;
+    margin-right: -1rem;
+    margin-top:-2px;
+    font-size: 0.9rem;
+}
+.ck-ai-plugin .ck-dialog-headerbar .ck-button-cancel:hover {
+    background-color: transparent !important;
+    color: #F09C42 !important;
+}
+.ck-ai-plugin .ck-dialog-headerbar .ck-button-cancel:focus {
+    border: 0;
+    box-shadow: none;
+}
+
+.ck-ai-plugin .ck-prompt-input textarea {
+    width: 100% !important;
+    border: 1px solid black !important;
+    border-radius: 3px !important;
+}
+
+.ck-ai-plugin .ck-prompt-input textarea:focus {
+    box-shadow: 0 0 0 3px rgba(240, 156, 66, 0.25) !important;
+}
+
+.ck-ai-plugin .ck.ck-dialog-overlay.ck-dialog-overlay__transparent .ck.ck-dialog {
+    border-radius: 5px;
+}
+
+.ck-ai-plugin .ck.ck-dropdown .ck-button.ck-dropdown__button {
+    width: 100%;
+}
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-dropdown {
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-dropdown .ck-button.ck-dropdown__button:hover,
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-dropdown .ck-button.ck-dropdown__button:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0;
+    color: black;
+}
+
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-dropdown .ck-button.ck-dropdown__button,
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-dropdown .ck-button.ck-dropdown__button .ck-button__label {
+    width: 100%;
+    color: black !important;
+    background: transparent !important;
+}
+
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-button:active,
+.ck-ai-plugin .ck-prompt-template-dropdown .ck.ck-button:focus,
+.ck-ai-plugin .ck-prompt-template-dropdown a.ck.ck-button:active,
+.ck-ai-plugin .ck-prompt-template-dropdown a.ck.ck-button:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0;
+    border-color: transparent;
+}
+
+.ck-ai-plugin .ck-save-button .ck.ck-button.ck-button_with-text {
+    background: #F09C42;
+    color: black;
+    border: none;
+    border-radius: 3px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    transition: all ease-in-out .3s;
+    cursor: pointer;
+}
+
+.ck-ai-plugin .ck-radio-button-group label {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-right: 1.5rem !important;
+}
+
+.ck-ai-plugin .ck-radio-button-group label input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    display: none;
+    cursor: pointer;
+}
+
+.ck-ai-plugin .ck-radio-button-group label .checkmark {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: #bbb;
+    border-radius: 5px;
+}
+
+.ck-ai-plugin .ck-radio-button-group label:hover input[type="radio"] ~ .checkmark {
+    background-color: #ccc;
+}
+
+.ck-ai-plugin .ck-radio-button-group label input[type="radio"]:checked ~ .checkmark {
+    background-color: #F09C42;
+}
+
+.ck-ai-plugin .ck-radio-button-group label .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.ck-ai-plugin .ck-radio-button-group label input[type="radio"]:checked ~ .checkmark:after {
+    display: block;
+}
+
+.ck-ai-plugin .ck-radio-button-group label .checkmark:after {
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='1 6.5 4 9.5 11 2.5' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: var(--checkbox-marker-size);
+    background-repeat: no-repeat;
+}
+.ck-ai-plugin .ck.ck-dialog__actions {
+    padding: 0 !important;
+}
+
+.ck-spinner-wrapper .spinner-wrapper {
+    width: 600px !important;
+    height: 400px !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.ck-spinner-wrapper .spinner-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-content: center !important;
+    flex-wrap: wrap !important;
+    background-color: #00000000 !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    transition: background-color .9s ease-in-out !important;
+}
+
+.ck-spinner-wrapper .spinner-overlay.darken {
+    background-color: rgba(0, 0, 0, .75) !important;
+}
+
+.ck-spinner-wrapper .spinner,
+.ck-spinner-wrapper .spinner:after,
+.ck-spinner-wrapper .spinner:before {
+    text-align: center !important;
+    opacity: 0 !important;
+    width: 35px !important;
+    aspect-ratio: 1 !important;
+    box-shadow: 0 0 0 3px inset #fff !important;
+    position: relative !important;
+    animation: 1.5s .5s infinite !important;
+    animation-name: l7-1, l7-2 !important;
+}
+
+.ck-spinner-wrapper .spinner:after,
+.ck-spinner-wrapper .spinner:before {
+    content: "" !important;
+    position: absolute !important;
+    left: calc(100% + 5px) !important;
+    animation-delay: 1s, 0s !important;
+}
+
+.ck-spinner-wrapper .spinner:after {
+    left: -40px !important;
+    animation-delay: 0s, 1s !important;
+}
+
+.ck-spinner-wrapper .spinner-overlay.darken .spinner,
+.ck-spinner-wrapper .spinner-overlay.darken .spinner:after,
+.ck-spinner-wrapper .spinner-overlay.darken .spinner:before {
+    opacity: 1 !important;
+}
+
+.ck-spinner-wrapper .spinner-overlay.darken .message {
+    position: absolute !important;
+    top: 54% !important;
+    font-size: .9rem !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+}
+
+.ai-suite-record-localization span {
+    pointer-events: none;
+}

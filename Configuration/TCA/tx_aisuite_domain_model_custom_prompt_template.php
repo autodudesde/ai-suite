@@ -154,6 +154,7 @@ return [
                     ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard', 'imageWizard'],
                     ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement', 'contentElement'],
                     ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord', 'newsRecord'],
+                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent', 'editContent'],
                 ],
                 'size' => 1,
                 'eval' => 'trim',

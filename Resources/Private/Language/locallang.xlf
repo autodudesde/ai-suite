@@ -391,6 +391,9 @@
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
                 <source>News</source>
             </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent">
+                <source>RTE Content Editing</source>
+            </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
                 <source>Prompt template</source>
             </trans-unit>
@@ -1034,6 +1037,27 @@
             </trans-unit>
             <trans-unit id="aiSuite.generateNewsWithAiButton" xml:space="preserve">
                 <source>News with AI</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.adjustContentWithAi" xml:space="preserve">
+                <source>Adjust content with AI</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.noContentSelected" xml:space="preserve">
+                <source>No content selected. Please select some content.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.useWholeContent" xml:space="preserve">
+                <source>Use whole content</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.contentGenerationInProcess" xml:space="preserve">
+                <source>Content will be generated. This may take a while. Please wait...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translateRecord" xml:space="preserve">
+                <source>Translate record (1 Credit)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.translationInProcess" xml:space="preserve">
+                <source>Translation is in progress </source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable" xml:space="preserve">
+                <source>No translation libraries available.</source>
             </trans-unit>
         </body>
     </file>

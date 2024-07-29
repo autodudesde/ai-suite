@@ -41,6 +41,9 @@ use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 use Symfony\Component\Filesystem\Filesystem;
 use AutoDudes\AiSuite\Controller\Ajax\StatusController;
 use AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener;
+use AutoDudes\AiSuite\Controller\Ajax\CkeditorController;
+use AutoDudes\AiSuite\Controller\Ajax\TranslationController;
+use AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -80,6 +83,18 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public();
 
     $services->set(StatusController::class)
+        ->arg('$requestService', service(SendRequestService::class))
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
+        ->arg('$logger', service('PsrLogInterface'))
+        ->public();
+
+    $services->set(TranslationController::class)
+        ->arg('$requestService', service(SendRequestService::class))
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
+        ->arg('$logger', service('PsrLogInterface'))
+        ->public();
+
+    $services->set(CkeditorController::class)
         ->arg('$requestService', service(SendRequestService::class))
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
         ->arg('$logger', service('PsrLogInterface'))
@@ -159,5 +174,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
+        ]);
+
+    $services->set(BeforePrepareConfigurationForEditorEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => 'TYPO3\\CMS\\RteCKEditor\\Form\\Element\\Event\\BeforePrepareConfigurationForEditorEvent',
         ]);
 };

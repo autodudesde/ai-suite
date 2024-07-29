@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\ContentService;
+use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
@@ -29,6 +30,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -104,7 +106,11 @@ class ContentController extends AbstractBackendController
             )
         );
         if ($librariesAnswer->getType() === 'Error') {
-            $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
+            $this->moduleTemplate->addFlashMessage(
+                $librariesAnswer->getResponseData()['message'],
+                LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'),
+                ContextualFeedbackSeverity::ERROR)
+            ;
             $this->moduleTemplate->assign('error', true);
             return $this->htmlResponse($this->moduleTemplate->render());
         }
@@ -117,6 +123,8 @@ class ContentController extends AbstractBackendController
             $content->setColPos((int)$request->getQueryParams()['defVals'][$table]['colPos']);
             $content->setPid((int)$request->getQueryParams()['defVals'][$table]['pid']);
             $content->setCType($request->getQueryParams()['defVals'][$table]['CType'] ?? 'text');
+            $txContainerParent = isset($request->getQueryParams()['defVals'][$table]['tx_container_parent']) ? (int)$request->getQueryParams()['defVals'][$table]['tx_container_parent'] : 0;
+            $content->setContainerParentUid($txContainerParent);
         } else {
             $content->setPid((int)$request->getQueryParams()['pid']);
             $content->setCType($request->getQueryParams()['recordType'] ?? '');
@@ -222,11 +230,10 @@ class ContentController extends AbstractBackendController
         }
 
         try {
-            $languageId = $this->context->getPropertyFromAspect('language', 'id');
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId($content->getPid());
-            $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
+            $siteLanguage = $site->getLanguageById($content->getSysLanguageUid());
+            $langIsoCode = $siteLanguage->getLocale()->getLanguageCode();
         } catch(Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
@@ -295,6 +302,22 @@ class ContentController extends AbstractBackendController
             BackendUtility::setUpdateSignal('updateTopbar');
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
+        foreach ($contentElementData as $tableName => $fields) {
+            foreach($fields as $key => $field) {
+                if(is_array($field) && array_key_exists('text', $field)) {
+                    foreach ($field['text'] as $fieldName => $renderType) {
+                        if(array_key_exists('rteConfig', $contentElementData[$tableName][$key]['text'][$fieldName])) {
+                            $rteConfigData = is_array($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'])
+                                ? $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig']
+                                : json_decode($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'], true);
+                            $richTextElementService = GeneralUtility::makeInstance(RichTextElementService::class, $rteConfigData);
+                            $value = $contentElementData[$tableName][$key]['text'][$fieldName]['content'] ?? '';
+                            $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'] = $richTextElementService->fetchRteConfig($value);
+                        }
+                    }
+                }
+            }
+        }
         $content->setContentElementData($contentElementData);
         $this->moduleTemplate->assign('content', $content);
         $this->moduleTemplate->assign('initialImageAi', $imageAi);

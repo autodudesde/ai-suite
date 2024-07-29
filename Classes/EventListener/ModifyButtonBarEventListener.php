@@ -74,6 +74,18 @@ class ModifyButtonBarEventListener
 
             $event->setButtons($buttons);
         }
+        if($request->getUri()->getPath() === '/typo3/module/web/layout') {
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+            $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+        }
+        if($request->getUri()->getPath() === '/typo3/module/web/list' || $request->getUri()->getPath() === '/typo3/record/edit') {
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+            $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
+        }
     }
 
     protected function getLanguageService(): LanguageService
