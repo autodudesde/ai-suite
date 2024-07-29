@@ -37,6 +37,10 @@ use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
 use AutoDudes\AiSuite\Controller\Ajax\StatusController;
 use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
+use AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener;
+use AutoDudes\AiSuite\Controller\Ajax\CkeditorController;
+use AutoDudes\AiSuite\Controller\Ajax\TranslationController;
+use AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -76,6 +80,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public();
 
     $services->set(StatusController::class)
+        ->arg('$requestService', service(SendRequestService::class))
+        ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
+        ->arg('$logger', service('PsrLogInterface'))
+        ->public();
+
+    $services->set(TranslationController::class)
         ->arg('$requestService', service(SendRequestService::class))
         ->arg('$extConf', new ReferenceConfigurator('ExtConf.aiSuite'))
         ->arg('$logger', service('PsrLogInterface'))

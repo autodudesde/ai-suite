@@ -23,8 +23,10 @@ final class ModelTypeEnumeration
 
     // model - api mapping
     public const CHATGPT = 'openAiApiKey';
+    public const ANTHROPIC = 'anthropicApiKey';
     public const VISION = 'openAiApiKey';
     public const DALLE = 'openAiApiKey';
     public const MIDJOURNEY = 'midjourneyApiKey,midjourneyId';
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';
+    public const DEEPL = 'deeplApiKey,deeplApiMode';
 }

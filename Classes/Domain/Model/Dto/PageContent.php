@@ -27,6 +27,7 @@ class PageContent
     protected string $initialPrompt;
     protected string $uid;
     protected string $additionalImageSettings;
+    protected int $containerParentUid;
 
     public function __construct(
         array $contentElementData,
@@ -41,7 +42,8 @@ class PageContent
         int $sysLanguageUid,
         string $initialPrompt,
         string $uid,
-        string $additionalImageSettings
+        string $additionalImageSettings,
+        int $containerParentUid
     ) {
         $this->contentElementData = $contentElementData;
         $this->availableTcaColumns = $availableTcaColumns;
@@ -56,6 +58,7 @@ class PageContent
         $this->initialPrompt = $initialPrompt;
         $this->uid = $uid;
         $this->additionalImageSettings = $additionalImageSettings;
+        $this->containerParentUid = $containerParentUid;
     }
 
     public static function createEmpty(): self
@@ -73,7 +76,8 @@ class PageContent
             0,
             '',
             0,
-            ''
+            '',
+            0
         );
     }
 
@@ -217,6 +221,15 @@ class PageContent
     public function setAdditionalImageSettings(string $additionalImageSettings): self
     {
         $this->additionalImageSettings = $additionalImageSettings;
+        return $this;
+    }
+    public function getContainerParentUid(): int
+    {
+        return $this->containerParentUid;
+    }
+    public function setContainerParentUid(int $containerParentUid): self
+    {
+        $this->containerParentUid = $containerParentUid;
         return $this;
     }
 }

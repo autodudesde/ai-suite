@@ -1,6 +1,6 @@
 <?php
 
-namespace AutoDudes\AiSuite\Hook;
+namespace AutoDudes\AiSuite\Hooks;
 
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 
@@ -49,6 +49,9 @@ class WizardItemsHook implements NewContentElementWizardHookInterface
                 'description' => $wizardItem['title'] . ' (with AI generated content)',
                 'tt_content_defValues' => $wizardItem['tt_content_defValues'],
             ];
+            if(array_key_exists('params', $wizardItem)) {
+                $wizardItems['aisuite_'.$wizardItemParts[1]]['params'] = $wizardItem['params'];
+            }
             $addedAiSuiteWizardItems[] = $wizardItemParts[1];
         }
 

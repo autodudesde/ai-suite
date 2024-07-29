@@ -277,7 +277,7 @@ div[data-module-id="aiSuite"] .fields-button {
     color: black;
 }
 
-div[data-module-id="aiSuite"] button:not(.btn) {
+div[data-module-id="aiSuite"]:not(:has(.rte-textarea)) button:not(.btn) {
     background: #F09C42;
     border: none;
     padding: 0.375rem 0.75rem;
@@ -449,3 +449,7 @@ div[data-module-id="aiSuite"] .status .badge.critical {
     color: white;
 }
 
+
+.ai-suite-record-localization span {
+    pointer-events: none;
+}

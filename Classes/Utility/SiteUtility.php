@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Utility;
 
-use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,10 +31,26 @@ class SiteUtility
         $availableLanguages = [];
         foreach ($availableSites as $site) {
             foreach ($site->getLanguages() as $language) {
-                $availableLanguages[$language->getLocale()->getLanguageCode()] = $language->getTitle();
+                $availableLanguages[$language->getTwoLetterIsoCode()] = $language->getTitle();
             }
         }
         return $availableLanguages;
+    }
+
+    /**
+     * @throws SiteNotFoundException
+     */
+    public static function getIsoCodeByLanguageId(int $languageId): string
+    {
+        $availableSites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
+        foreach ($availableSites as $site) {
+            foreach ($site->getLanguages() as $language) {
+                if($language->getLanguageId() === $languageId) {
+                    return $language->getTwoLetterIsoCode();
+                }
+            }
+        }
+        throw new SiteNotFoundException('No site found for language id ' . $languageId);
     }
 
     public static function getAvailableRootPages(): array
@@ -46,14 +61,5 @@ class SiteUtility
             $availableRootPages[] = $site->getRootPageId();
         }
         return $availableRootPages;
-    }
-    public static function getSiteByRootPage(int $rootPageId, int $languageId): ?UriInterface
-    {
-        try {
-            $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($rootPageId);
-            return $site->getRouter()->generateUri($site->getLanguageById($languageId));
-        } catch (SiteNotFoundException $e) {
-            return null;
-        }
     }
 }

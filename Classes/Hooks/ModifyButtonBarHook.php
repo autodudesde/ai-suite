@@ -1,6 +1,6 @@
 <?php
 
-namespace AutoDudes\AiSuite\Hook;
+namespace AutoDudes\AiSuite\Hooks;
 
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
@@ -64,8 +64,18 @@ class ModifyButtonBarHook
                 ->setShowLabelText(true)
                 ->setHref($uri)
                 ->setIcon($buttonIcon);
-
-            return $buttons;
+        }
+        if($request->getUri()->getPath() === '/typo3/module/web/layout') {
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Translation/Localization');
+        }
+        if($request->getUri()->getPath() === '/typo3/module/web/list' || $request->getUri()->getPath() === '/typo3/record/edit') {
+            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+            $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+            $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Translation/RecordLocalization');
         }
         return $buttons;
     }

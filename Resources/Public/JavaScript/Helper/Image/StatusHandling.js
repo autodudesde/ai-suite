@@ -3,6 +3,7 @@ define([
     "TYPO3/CMS/AiSuite/Helper/Ajax",
     "TYPO3/CMS/AiSuite/Helper/Image/ResponseHandling"
 ], function(General, Ajax, ResponseHandling) {
+
     let intervalId = null;
     function fetchStatus(data, modal) {
         return new Promise((resolve, reject) => {
@@ -13,7 +14,7 @@ define([
                 }
                 ResponseHandling.handleStatusResponse(statusRes, modal);
                 resolve(statusRes);
-            }, 4500);
+            }, 2500);
         });
     }
 
@@ -26,7 +27,7 @@ define([
                 }
                 ResponseHandling.handleStatusContentElementResponse(statusRes);
                 resolve(statusRes);
-            }, 4500);
+            }, 2500);
         });
     }
     function stopInterval() {

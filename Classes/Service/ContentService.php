@@ -162,6 +162,21 @@ class ContentService
                 'label' => $parameterArray['fieldConf']['label'],
                 'renderType' => $renderType
             ];
+            if ((bool)($parameterArray['fieldConf']['config']['enableRichtext'] ?? false) === true
+                && is_array($parameterArray['fieldConf']['config']['richtextConfiguration'] ?? null)
+                && !($parameterArray['fieldConf']['config']['richtextConfiguration']['disabled'] ?? false)
+            ) {
+                $data = [
+                    'parameterArray' => $parameterArray,
+                    'databaseRow' => $formData['databaseRow'],
+                    'systemLanguageRows' => $formData['systemLanguageRows'],
+                    'tableName' => $table,
+                    'fieldName' => $fieldName,
+                    'effectivePid' => $pid,
+                    'recordTypeValue' => 'text'
+                ];
+                $requestFields[$table]['text'][$fieldName]['rteConfig'] = json_encode($data);
+            }
         }
 
         if (in_array($renderType, $this->consideredImageRenderTypes) &&

@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "11.0.1",
+    "version": "11.1.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -34,6 +34,15 @@
         "typo3/cms-filelist": "^11.5",
         "typo3/cms-fluid": "^11.5",
         "typo3/cms-seo": "^11.5"
+    },
+    "suggest": {
+        "b13/container": "*"
+    },
+    "conflict": {
+        "passionweb/ai-seo-helper": "*",
+        "dmitryd/dd-deepl": "^12.0",
+        "web-vision/wv_deepltranslate": "^4.3",
+        "pits/ai_translate": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -48,19 +57,21 @@
             "typo3/class-alias-loader": true,
             "typo3/cms-composer-installers": true,
             "composer/package-versions-deprecated": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
         }
     },
     "require-dev": {
+        "b13/container": "^2.3",
         "bk2k/bootstrap-package": "^14.0",
+        "friendsofphp/php-cs-fixer": "^3.52",
         "georgringer/news": "^11.4",
-        "typo3/coding-standards": "^0.6",
         "helhum/typo3-console": "^7.1",
         "phpstan/phpstan": "^1.10",
-        "friendsofphp/php-cs-fixer": "^3.52",
         "typo3/cms-beuser": "^11.5",
         "typo3/cms-lowlevel": "^11.5",
-        "typo3/cms-tstemplate": "^11.5"
+        "typo3/cms-tstemplate": "^11.5",
+        "typo3/coding-standards": "^0.6"
     },
     "prefer-stable": true,
     "extra": {

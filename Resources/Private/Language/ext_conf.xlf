@@ -18,11 +18,26 @@
             <trans-unit id="singleNewsDisplayPage" resname="singleNewsDisplayPage">
                 <source>Enter the ID of one page that is used as a detail view for news articles of the news extension</source>
             </trans-unit>
+            <trans-unit id="openTranslatedRecordInEditMode" resname="openTranslatedRecordInEditMode">
+                <source>Open translated record in edit mode</source>
+            </trans-unit>
             <trans-unit id="openAiApiKey" resname="openAiApiKey">
                 <source>Enter your OpenAI API key</source>
             </trans-unit>
+            <trans-unit id="anthropicApiKey" resname="openAiApiKey">
+                <source>Enter your Anthropic API key</source>
+            </trans-unit>
             <trans-unit id="googleTranslateApiKey" resname="googleTranslateApiKey">
                 <source>Enter your GoogleTranslate API key</source>
+            </trans-unit>
+            <trans-unit id="deeplApiKey" resname="deeplApiKey">
+                <source>Enter your DeepL API key</source>
+            </trans-unit>
+            <trans-unit id="deeplApiKey" resname="deeplApiKey">
+                <source>Enter your DeepL API key</source>
+            </trans-unit>
+            <trans-unit id="deeplApiMode" resname="deeplApiMode">
+                <source>Free version of DeepL API</source>
             </trans-unit>
             <trans-unit id="midjourneyApiKey" resname="midjourneyApiKey">
                 <source>Enter your Midjourney API key</source>

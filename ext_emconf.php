@@ -12,6 +12,7 @@ $EM_CONF['ai_suite'] = [
             'typo3' => '11.5.0-11.5.99'
         ],
         'conflicts' => [
+            'ai_seo_helper' => '0.1.0-1.9.99',
         ],
         'suggests' => [
         ],
@@ -24,5 +25,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '11.0.1',
+    'version' => '11.1.0',
 ];

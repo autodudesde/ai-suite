@@ -72,7 +72,8 @@ abstract class AbstractBackendController extends ActionController
                     'colPos',
                     'sysLanguageUid',
                     'uid',
-                    'additionalImageSettings'
+                    'additionalImageSettings',
+                    'containerParentUid'
                 );
                 $this->setDefaultContentValues();
             }

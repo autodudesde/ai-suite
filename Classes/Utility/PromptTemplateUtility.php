@@ -80,10 +80,12 @@ class PromptTemplateUtility
         return $uniqueIdList;
     }
 
-    public static function iterateOverPageTree(array $pageTree, array $pageIds): array
+    public static function iterateOverPageTree(array $pageTree, array &$pageIds): array
     {
         foreach ($pageTree as $page) {
-            $pageIds[] = $page['uid'];
+            if(!in_array($page['uid'], $pageIds)) {
+                $pageIds[] = $page['uid'];
+            }
             if (array_key_exists('_children', $page) && count($page['_children']) > 0) {
                 self::iterateOverPageTree($page['_children'], $pageIds);
             }

@@ -5,3 +5,8 @@ module.tx_aisuite {
         }
     }
 }
+module.tx_backend.view {
+    partialRootPaths {
+        20 = EXT:ai_suite/Resources/Private/Partials/
+    }
+}

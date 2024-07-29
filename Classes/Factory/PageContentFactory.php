@@ -70,6 +70,9 @@ class PageContentFactory
                 $data['tt_content'][$newStrings['tt_content']]["CType"] = $content->getCType();
                 $data['tt_content'][$newStrings['tt_content']]["pid"] = $content->getPid();
                 $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content->getSysLanguageUid();
+                if($content->getContainerParentUid() !== 0) {
+                    $data['tt_content'][$newStrings['tt_content']]["tx_container_parent"] = $content->getContainerParentUid();
+                }
             } else {
                 $newStrings['tx_news_domain_model_news'] = $this->newStringPlaceholder('tx_news_domain_model_news');
                 $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content->getPid();
@@ -86,8 +89,11 @@ class PageContentFactory
                     $data[$table][$newStrings[$table]]["CType"] = $content->getCType();
                     $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
+                    if($content->getContainerParentUid() !== 0) {
+                        $data[$table][$newStrings[$table]]["tx_container_parent"] = $content->getContainerParentUid();
+                    }
                     foreach($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table]][$fieldName] = $fieldValue;
+                        $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 } else if ($table === 'tx_news_domain_model_news') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
@@ -95,14 +101,14 @@ class PageContentFactory
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
                     $data[$table][$newStrings[$table]]["datetime"] = time();
                     foreach($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table]][$fieldName] = $fieldValue;
+                        $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 } else {
                     $newStrings[$table][$key] = $this->newStringPlaceholder($table, $key);
                     $data[$table][$newStrings[$table][$key]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table][$key]]["sys_language_uid"] = $content->getSysLanguageUid();
                     foreach($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table][$key]][$fieldName] = $fieldValue;
+                        $data[$table][$newStrings[$table][$key]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 }
             }

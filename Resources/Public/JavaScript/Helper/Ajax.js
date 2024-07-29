@@ -90,9 +90,28 @@ define([
                 Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], error);
             });
     }
+    function fetchLibraries(endpoint) {
+        return new AjaxRequest(TYPO3.settings.ajaxUrls[endpoint])
+            .post({})
+            .then(async function (response) {
+
+                const resolved = await response.resolve();
+                const responseBody = JSON.parse(resolved);
+                if (responseBody.error) {
+                    return null;
+                } else {
+                    return responseBody;
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+                return null;
+            });
+    }
     return {
         sendStatusAjaxRequest: sendStatusAjaxRequest,
         sendAjaxRequest: sendAjaxRequest,
-        sendMetadataAjaxRequest: sendMetadataAjaxRequest
+        sendMetadataAjaxRequest: sendMetadataAjaxRequest,
+        fetchLibraries: fetchLibraries
     };
 });

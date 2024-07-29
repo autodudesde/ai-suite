@@ -5,16 +5,45 @@ defined('TYPO3') || die('Access denied.');
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController::class] = [
     'className' => \AutoDudes\AiSuite\Controller\ContentElement\NewContentElementController::class,
 ];
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\PageLayoutController::class] = [
+    'className' => \AutoDudes\AiSuite\Controller\Page\PageLayoutController::class,
+];
+
+if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('container')) {
+    if (class_exists(\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class] = [
+            'className' => \AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook::class,
+        ];
+    }
+}
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][1715536019] = \AutoDudes\AiSuite\Backend\ToolbarItems\RequestsToolbarItem::class;
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['addAiSuiteElements'] = \AutoDudes\AiSuite\Hook\WizardItemsHook::class;
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['modifyButtonBarHook'] = \AutoDudes\AiSuite\Hook\ModifyButtonBarHook::class.'->modifyButtonBar';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['addAiSuiteElements']
+    = \AutoDudes\AiSuite\Hooks\WizardItemsHook::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['modifyButtonBarHook']
+    = \AutoDudes\AiSuite\Hooks\ModifyButtonBarHook::class.'->modifyButtonBar';
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
+    = \AutoDudes\AiSuite\Hooks\TranslationHook::class;
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+    '@import "EXT:ai_suite/Configuration/page.tsconfig"'
+);
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676477686] = [
     'nodeName' => 'inline',
     'priority' => 50,
     'class' => \AutoDudes\AiSuite\FormEngine\Container\InlineControlContainer::class,
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
+    'className' => \AutoDudes\AiSuite\Controller\Page\LocalizationController::class,
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList::class] = [
+    'className' => \AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class,
 ];
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410677] = [

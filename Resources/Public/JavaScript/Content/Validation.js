@@ -22,7 +22,7 @@ define([
     }
 
     function addEventListenerFormSubmit() {
-        document.querySelectorAll('form[name="tx_aisuite_web_aisuiteaisuite[content]"]').forEach(function(form) {
+        document.querySelectorAll('form[name="content"]').forEach(function(form) {
             form.addEventListener('submit', function(ev) {
                 ev.preventDefault();
 
@@ -51,6 +51,14 @@ define([
                         imageFieldsWithoutSelection += key + ', ';
                     }
                 })
+                let rteTextFields = document.querySelectorAll('.rte-textarea');
+                rteTextFields.forEach(function(rte) {
+                    let rteFieldIdentifier = rte.getAttribute('data-field-identifier');
+                    let rteContentIframe = rte.querySelector('.rte-textarea .cke_contents .cke_wysiwyg_frame');
+                    let rteContent = rteContentIframe.contentWindow.document.querySelector('body').innerHTML;
+                    let rteContentField = document.querySelector('input.rte-content[data-field-identifier="' + rteFieldIdentifier + '"]');
+                    rteContentField.value = rteContent;
+                });
                 if(imageFieldsWithoutSelection !== '') {
                     ContentElement.showImageFieldsWithoutSelectionModal(imageFieldsWithoutSelection, form);
                 } else {

@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\ContentService;
+use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
@@ -29,6 +30,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -93,6 +95,14 @@ class ContentController extends AbstractBackendController
         $this->moduleTemplate->setTitle('AI Suite');
         $this->moduleTemplate->setModuleId('aiSuite');
 
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setTemplateRootPaths(['EXT:ai_suite/Resources/Private/Templates/Content/']);
+        $view->setLayoutRootPaths(['EXT:ai_suite/Resources/Private/Layouts/']);
+        $view->setPartialRootPaths(['EXT:ai_suite/Resources/Private/Partials/']);
+        $view->getRenderingContext()->setControllerName('Content');
+        $view->getRenderingContext()->setControllerAction('createContent');
+        $view->setTemplate('CreateContent');
+
         $table = array_key_first($request->getQueryParams()['edit']);
         $librariesAnswer = $this->requestService->sendRequest(
             new ServerRequest(
@@ -107,8 +117,8 @@ class ContentController extends AbstractBackendController
         );
         if ($librariesAnswer->getType() === 'Error') {
             $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
-            $this->view->assign('error', true);
-            $this->moduleTemplate->setContent($this->view->render());
+            $view->assign('error', true);
+            $this->moduleTemplate->setContent($view->render());
             return $this->htmlResponse($this->moduleTemplate->renderContent());
         }
 
@@ -120,6 +130,8 @@ class ContentController extends AbstractBackendController
             $content->setColPos((int)$request->getQueryParams()['defVals'][$table]['colPos']);
             $content->setPid((int)$request->getQueryParams()['defVals'][$table]['pid']);
             $content->setCType($request->getQueryParams()['defVals'][$table]['CType'] ?? 'text');
+            $txContainerParent = isset($request->getQueryParams()['defVals'][$table]['tx_container_parent']) ? (int)$request->getQueryParams()['defVals'][$table]['tx_container_parent'] : 0;
+            $content->setContainerParentUid($txContainerParent);
         } else {
             $content->setPid((int)$request->getQueryParams()['pid']);
             $content->setCType($request->getQueryParams()['recordType'] ?? '');
@@ -150,13 +162,6 @@ class ContentController extends AbstractBackendController
         ];
         $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
 
-        $view = GeneralUtility::makeInstance(StandaloneView::class);
-        $view->setTemplateRootPaths(['EXT:ai_suite/Resources/Private/Templates/Content/']);
-        $view->setLayoutRootPaths(['EXT:ai_suite/Resources/Private/Layouts/']);
-        $view->setPartialRootPaths(['EXT:ai_suite/Resources/Private/Partials/']);
-        $view->getRenderingContext()->setControllerName('Content');
-        $view->getRenderingContext()->setControllerAction('createContent');
-        $view->setTemplate('CreateContent');
         $view->assignMultiple([
             'content' => $content,
             'actionUri' => $actionUri,
@@ -235,11 +240,10 @@ class ContentController extends AbstractBackendController
         }
 
         try {
-            $languageId = $this->context->getPropertyFromAspect('language', 'id');
             $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
             $site = $siteFinder->getSiteByPageId($content->getPid());
-            $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getTwoLetterIsoCode();
+            $siteLanguage = $site->getLanguageById($content->getSysLanguageUid());
+            $langIsoCode = $siteLanguage->getTwoLetterIsoCode();
         } catch(Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
@@ -310,6 +314,22 @@ class ContentController extends AbstractBackendController
             BackendUtility::setUpdateSignal('updateTopbar');
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
+        $counter = 0;
+        foreach ($contentElementData as $tableName => $fields) {
+            foreach($fields as $key => $field) {
+                if(is_array($field) && array_key_exists('text', $field)) {
+                    foreach ($field['text'] as $fieldName => $renderType) {
+                        if(array_key_exists('rteConfig', $contentElementData[$tableName][$key]['text'][$fieldName])) {
+                            $rteConfigData = is_array($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'])
+                                ? $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig']
+                                : json_decode($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'], true);
+                            $richTextElementService = GeneralUtility::makeInstance(RichTextElementService::class, $rteConfigData);
+                            $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'] = $richTextElementService->fetchRteConfig($counter++);
+                        }
+                    }
+                }
+            }
+        }
         $content->setContentElementData($contentElementData);
         $this->view->assign('content', $content);
         $this->view->assign('initialImageAi', $imageAi);

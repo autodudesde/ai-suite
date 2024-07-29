@@ -81,4 +81,8 @@ return [
         'path' => '/generate/file/process',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::fileProcessAction'
     ],
+    'aisuite_localization_libraries' => [
+        'path' => '/generate/translation-libraries',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::librariesAction'
+    ],
 ];

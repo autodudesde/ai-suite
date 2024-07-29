@@ -44,6 +44,9 @@
                 </f:form>
                 <f:variable name="spinnerMessage" value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.spinner.default')}" />
                 <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+                <form name="editform" class="d-none">
+                    <input type="hidden" name="closeDoc" value="1">
+                </form>
             </section>
         </f:else>
     </f:if>
