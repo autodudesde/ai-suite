@@ -107,7 +107,8 @@ class Creation {
     calculateRequestAmount() {
         let calculatedRequests = 0;
         document.querySelectorAll('.library').forEach(function (library) {
-            if(library.style.display !== 'none') {
+            let amountField = library.querySelector('.request-amount span');
+            if(library.style.display !== 'none' && amountField !== null) {
                 let modelId = library.querySelector('input[type="radio"]:checked').id;
                 let amount = parseInt(library.querySelector('label[for="' + modelId +'"] .request-amount span').textContent);
                 calculatedRequests += amount;

@@ -45,7 +45,7 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
         try {
             $requestsRepository = GeneralUtility::makeInstance(RequestsRepository::class);
             $requests = $requestsRepository->findFirstEntry();
-            if(count($requests) > 0) {
+            if(count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
                 $view->assign('requests', $requests);
             }
         } catch (\Exception $e) {

@@ -80,9 +80,6 @@ class TranslationHook
                 $translationResults = json_decode($answer->getResponseData()['translationResults'], true);
                 foreach ($translationResults as $tableKey => $table) {
                     foreach ($table as $ceDestLangUid => $fields) {
-                        foreach ($fields as $fieldName => $fieldValue) {
-                            $fields[$fieldName] = $translationService->cleanedContent($fieldValue);
-                        }
                         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($tableKey);
                         $queryBuilder->update(
                             $tableKey,

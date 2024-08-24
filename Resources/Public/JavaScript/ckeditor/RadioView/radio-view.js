@@ -4,9 +4,12 @@ import { View } from '@ckeditor/ckeditor5-ui';
 export default class RadioView extends View {
     constructor( locale , label, value, name, credits, checked = false) {
         super( locale );
-        let title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.oneCredit'] + ')';
-        if (credits > 1) {
-            title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.multipleCredits'] + ')';
+        let title = label;
+        if(credits !== undefined && credits !== null) {
+            title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.oneCredit'] + ')';
+            if (credits > 1) {
+                title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.multipleCredits'] + ')';
+            }
         }
 
         this.setTemplate( {

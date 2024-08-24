@@ -152,7 +152,6 @@ class TranslationService
         }
         if (in_array($renderType, $this->consideredTextRenderTypes)) {
             $fieldValue = $formData['databaseRow'][$fieldName] ?? '';
-            $fieldValue = $this->cleanedContent($fieldValue);
             if(!empty($fieldValue)) {
                 $translateFields[$fieldName] = $fieldValue;
             }
@@ -191,15 +190,5 @@ class TranslationService
                 $this->checkSingleField($formData, $fieldName, $translateFields);
             }
         }
-    }
-
-    public function cleanedContent(string $content): string
-    {
-        $pattern = '/<!--.*?-->/s';
-        $content = preg_replace($pattern, '', $content);
-        $content = html_entity_decode($content);
-        $content = str_replace("\<", "<", $content);
-        $content = str_replace("\>", ">", $content);
-        return str_replace("<\/", "</", $content);
     }
 }
