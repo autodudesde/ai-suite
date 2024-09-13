@@ -96,7 +96,7 @@
                 <source>Create files and edit metadata</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.description" resname="tx_aisuite.module.dashboard.card.filesSection.description">
-                <source>Create a new sepicific picture or edit metadata like alt tag or title tag for an excisting file.</source>
+                <source>Create a new picture or edit metadata like alt tag or title tag for an existing file.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.linklabel" resname="tx_aisuite.module.dashboard.card.filesSection.linklabel">
                 <source>Files section</source>
@@ -106,7 +106,7 @@
                 <source>Translate</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.description" resname="tx_aisuite.module.dashboard.card.translateSection.description">
-                <source>Translate a content element or a whole page with the content inside. You also can translate a files metadata.</source>
+                <source>Translate a content element or a whole page with the content inside. Files metadata will be translated too.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.linklabel" resname="tx_aisuite.module.dashboard.card.translateSection.linklabel">
                 <source>Translate section</source>
@@ -253,7 +253,7 @@
                 <source>Page content import</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.description" resname="tx_aisuite.module.dashboard.card.pageImport.description">
-                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over excisting content.</source>
+                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over existing content.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.linklabel" resname="tx_aisuite.module.dashboard.card.pageImport.linklabel">
                 <source>Content import</source>
@@ -805,16 +805,16 @@
                 <source>Use image</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessDalle" xml:space="preserve">
-                <source>Image suggestions will be generated. This may take a while. Please wait...</source>
+                <source>Image suggestions will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Pre-selection image options will be generated. This may take a while. Please wait...</source>
+                <source>Pre-selection image options will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a while. Please wait...</source>
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a while. Please wait...</source>
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
                 <source>Select pre-selection image option</source>
@@ -1048,7 +1048,7 @@
                 <source>Use whole content</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.general.contentGenerationInProcess" xml:space="preserve">
-                <source>Content will be generated. This may take a while. Please wait...</source>
+                <source>Content will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="aiSuite.translateRecord" xml:space="preserve">
                 <source>Translate record (1 Credit)</source>

@@ -94,7 +94,6 @@ define([
                         preselectionContent = document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML;
                         document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney']);
                     }
-                    document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML;
                     let res = await Ajax.sendAjaxRequest('aisuite_regenerate_images', data);
                     ResponseHandling.handleResponseContentElement(res, data, TYPO3.lang['aiSuite.module.modal.midjourneySelectionError'], preselectionContent);
                 });
