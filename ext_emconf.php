@@ -13,6 +13,7 @@ $EM_CONF['ai_suite'] = [
         ],
         'conflicts' => [
             'ai_seo_helper' => '0.1.0-1.9.99',
+            'wv_deepltranslate' => '4.0.0-4.99.99',
         ],
         'suggests' => [
         ],
@@ -25,5 +26,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '12.5.0',
+    'version' => '12.5.1',
 ];

@@ -56,7 +56,7 @@
             <target>Prompt-Manager</target></trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.social" resname="tx_aisuite.module.actionmenu.social">
                 <source>Social Media</source>
-            <target>Sozialen Medien</target></trans-unit>
+            <target>Soziale Medien</target></trans-unit>
 
 
             <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
@@ -77,7 +77,7 @@
             <target>An Seiten arbeiten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.description" resname="tx_aisuite.module.dashboard.card.pagesSection.description">
                 <source>Fill in page metadata or create complete page tree.</source>
-            <target>Füllen die Seitenmetadaten aus oder erstelle einen vollständigen Seitenbaum.</target></trans-unit>
+            <target>Fülle die Seitenmetadaten aus oder erstelle einen vollständigen Seitenbaum.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.linklabel" resname="tx_aisuite.module.dashboard.card.pagesSection.linklabel">
                 <source>Pages section</source>
             <target>Abschnitt „Seiten“</target></trans-unit>
@@ -87,17 +87,17 @@
             <target>Inhaltselemente erstellen oder bearbeiten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.description" resname="tx_aisuite.module.dashboard.card.contentSection.description">
                 <source>Create a whole content element with text and picture or edit an existing content element.</source>
-            <target>Erstelle ein ganzes Inhaltselement mit Text und Bild oder bearbeite ein bestehendes Inhaltselement.</target></trans-unit>
+            <target>Erstelle ein Inhaltselement mit Text und Bild oder bearbeite ein bestehendes Inhaltselement.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.linklabel" resname="tx_aisuite.module.dashboard.card.contentSection.linklabel">
                 <source>Content section</source>
-            <target>Inhaltsbereich</target></trans-unit>
+            <target>Abschnitt "Inhalt"</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.title" resname="tx_aisuite.module.dashboard.card.filesSection.title">
                 <source>Create files and edit metadata</source>
             <target>Erstellen von Dateien und Bearbeiten von Metadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.description" resname="tx_aisuite.module.dashboard.card.filesSection.description">
-                <source>Create a new sepicific picture or edit metadata like alt tag or title tag for an excisting file.</source>
-            <target>Erstelle ein neues bestimmtes Bild oder bearbeite Metadaten wie Alt-Tag oder Titel-Tag einer vorhandenen Datei.</target></trans-unit>
+                <source>Create a new picture or edit metadata like alt tag or title tag for an existing file.</source>
+            <target>Erstelle ein neues Bild oder bearbeite Metadaten wie Alt-Tag oder Titel-Tag einer vorhandenen Datei.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.linklabel" resname="tx_aisuite.module.dashboard.card.filesSection.linklabel">
                 <source>Files section</source>
             <target>Abschnitt „Dateien“</target></trans-unit>
@@ -106,8 +106,8 @@
                 <source>Translate</source>
             <target>Übersetzen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.description" resname="tx_aisuite.module.dashboard.card.translateSection.description">
-                <source>Translate a content element or a whole page with the content inside. You also can translate a files metadata.</source>
-            <target>Übersetze ein Inhaltselement oder eine ganze Seite mit dem darin enthaltenen Inhalt. Du kannst auch die Metadaten einer Datei übersetzen.</target></trans-unit>
+                <source>Translate a content element or a whole page with the content inside. Files metadata will be translated too.</source>
+            <target>Übersetze ein Inhaltselement oder eine ganze Seite mit dem darin enthaltenen Inhalt. Die Metadaten der Dateien werden ebenfalls übersetzt.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.linklabel" resname="tx_aisuite.module.dashboard.card.translateSection.linklabel">
                 <source>Translate section</source>
             <target>Abschnitt „Übersetzen“</target></trans-unit>
@@ -124,7 +124,7 @@
 
             <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.title" resname="tx_aisuite.module.dashboard.card.socialSection.title">
                 <source>Social Media</source>
-            <target>Sozialen Medien</target></trans-unit>
+            <target>Soziale Medien</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.description" resname="tx_aisuite.module.dashboard.card.socialSection.description">
                 <source>Create posts or setup a auto scheduling of post for events.</source>
             <target>Erstelle Beiträge oder richte eine automatische Planung von Beiträgen für Ereignisse ein.</target></trans-unit>
@@ -253,7 +253,7 @@
                 <source>Page content import</source>
             <target>Seiteninhalt importieren</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.description" resname="tx_aisuite.module.dashboard.card.pageImport.description">
-                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over excisting content.</source>
+                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over existing content.</source>
             <target>Beispielsweise wenn du von einem anderen System auf TYPO3 umsteigen und bestehende Inhalte importieren/übernehmen musst.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.linklabel" resname="tx_aisuite.module.dashboard.card.pageImport.linklabel">
                 <source>Content import</source>
@@ -354,13 +354,13 @@
             <target>Aktualisiere Prompt-Vorlagen vom Server</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.description" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.description">
                 <source>The AI Suite provides prompt templates. You can also add your own custom prompt templates. This action only updates the server prompt templates. Your custom prompt templates remain untouched.</source>
-            <target>Die AI Suite stellt Prompt-Vorlagen bereit. Du kannst auch deine eigenen benutzerdefinierten Eingabeaufforderungsvorlagen hinzufügen. Diese Aktion aktualisiert nur die Eingabeaufforderungsvorlagen des Servers. Deine benutzerdefinierten Prompt-Vorlagen bleiben unberührt.</target></trans-unit>
+            <target>Die AI Suite stellt Prompt-Vorlagen bereit. Du kannst auch deine eigenen benutzerdefinierten Prompt-Vorlagen hinzufügen. Diese Aktion aktualisiert nur die Prompt-Vorlagen des Servers. Deine benutzerdefinierten Prompt-Vorlagen bleiben unberührt.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel">
                 <source>Update server prompt templates</source>
             <target>Aktualisieren von Server-Prompt-Vorlagen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
                 <source>Custom prompt templates</source>
-            <target>Benutzerdefinierte Eingabeaufforderungsvorlagen</target></trans-unit>
+            <target>Benutzerdefinierte Prompt-Vorlagen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.title" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.title">
                 <source>Manage your custom prompt templates</source>
             <target>Verwalte deine benutzerdefinierten Prompt-Vorlagen</target></trans-unit>
@@ -375,7 +375,7 @@
             <target>Name</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scope">
                 <source>Scope</source>
-            <target>Umfang</target></trans-unit>
+            <target>Gültigkeitsbereich</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral">
                 <source>General available</source>
             <target>Allgemein verfügbar</target></trans-unit>
@@ -396,7 +396,7 @@
             <target>RTE-Inhaltsbearbeitung</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
                 <source>Prompt template</source>
-            <target>Eingabeaufforderungsvorlage</target></trans-unit>
+            <target>Prompt-Vorlage</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope">
                 <source>ContentElements (leave empty for all elements)</source>
             <target>ContentElements (für alle Elemente leer lassen)</target></trans-unit>
@@ -558,7 +558,7 @@
             <target>Prompt-Vorlagen-Manager</target></trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.overview.description" resname="AiSuite.module.promptTemplateManager.overview.description">
                 <source>Speed up your daily work and get better results from AI by preparing your prompts efficiently.</source>
-            <target>Beschleunige deine tägliche Arbeit und erziele bessere Ergebnisse mithilfe der KI, indem du deine Eingabeaufforderungen effizient vorbereitest.</target></trans-unit>
+            <target>Beschleunige deine tägliche Arbeit und erziele bessere Ergebnisse mithilfe der KI, indem du deine Prompts effizient vorbereitest.</target></trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.header" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.header">
                 <source>Manage your custom prompt templates</source>
             <target>Verwalte deine benutzerdefinierten Prompt-Vorlagen</target></trans-unit>
@@ -707,13 +707,13 @@
             <target>Generierte Bildtitelvorschläge</target></trans-unit>
             <trans-unit id="AiSuite.imageWizardSlideOneHeader" resname="AiSuite.imageWizardSlideOneHeader">
                 <source>Enter prompt and image generation library</source>
-            <target>Gebe deine Eingabeaufforderung (Prompt) ein und wähle das KI-Model für die Bildgenerierung</target></trans-unit>
+            <target>Gebe deine Prompt ein und wähle das KI-Model für die Bildgenerierung</target></trans-unit>
             <trans-unit id="AiSuite.imageWizardSlideOneImagePrompt" resname="AiSuite.imageWizardSlideOneImagePrompt">
                 <source>Image prompt</source>
             <target>Bild-Prompt</target></trans-unit>
             <trans-unit id="AiSuite.imageWizardSlideOneImagePromptPlaceholder" resname="AiSuite.imageWizardSlideOneImagePromptPlaceholder">
                 <source>Type prompt ...</source>
-            <target>Gebe deine Eingabeaufforderung (Prompt) ein ...</target></trans-unit>
+            <target>Gebe deine Prompt ein ...</target></trans-unit>
             <trans-unit id="AiSuite.imageWizardSlideOneImageAmount" resname="AiSuite.imageWizardSlideOneImageAmount">
                 <source>Amout of images to be generated (maximum is 10)</source>
             <target>Anzahl der zu generierenden Bilder (maximal 10)</target></trans-unit>
@@ -805,17 +805,17 @@
                 <source>Use image</source>
             <target>Verwende das Bild</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessDalle" xml:space="preserve">
-                <source>Image suggestions will be generated. This may take a while. Please wait...</source>
-            <target>Es werden Bildvorschläge generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+                <source>Image suggestions will be generated. This may take a moment. Please wait...</source>
+            <target>Es werden Bildvorschläge generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Pre-selection image options will be generated. This may take a while. Please wait...</source>
-            <target>Es werden Vorauswahl-Bildoptionen generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+                <source>Pre-selection image options will be generated. This may take a moment. Please wait...</source>
+            <target>Es werden Vorauswahl-Bildoptionen generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a while. Please wait...</source>
-            <target>Das ausgewählte Bild wird generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
+            <target>Das ausgewählte Bild wird generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a while. Please wait...</source>
-            <target>Das ausgewählte Bild wird generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
+            <target>Das ausgewählte Bild wird generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
                 <source>Select pre-selection image option</source>
             <target>Wähle ein Bild der Vorauswahl aus</target></trans-unit>
@@ -833,7 +833,7 @@
             <target>Bild und Titel auswählen</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imageSavingProcess" xml:space="preserve">
                 <source>Image is saved. Please wait...</source>
-            <target>Bild wurde gespeichert. Bitte warten...</target></trans-unit>
+            <target>Bild wird gespeichert. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.midjourneyPreSelectionError" xml:space="preserve">
                 <source>Unable to load Midjourney pre-selection image options</source>
             <target>Bildoptionen für die Vorauswahl von Midjourney können nicht geladen werden.</target></trans-unit>
@@ -983,7 +983,7 @@
             <target>Abbrechen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.spinner.cancel" xml:space="preserve">
                 <source>Cancel</source>
-            <target>Stornieren</target></trans-unit>
+            <target>Abbrechen</target></trans-unit>
             <trans-unit id="AiSuite.imageTitleFreeTextPlaceholder" xml:space="preserve">
                 <source>Enter custom image title</source>
             <target>Gebe einen benutzerdefinierten Bildtitel ein</target></trans-unit>
@@ -1048,8 +1048,8 @@
                 <source>Use whole content</source>
             <target>Gesamten Inhalt verwenden</target></trans-unit>
             <trans-unit id="tx_aisuite.module.general.contentGenerationInProcess" xml:space="preserve">
-                <source>Content will be generated. This may take a while. Please wait...</source>
-            <target>Inhalte werden generiert. Dies kann eine Weile dauern. Bitte warten...</target></trans-unit>
+                <source>Content will be generated. This may take a moment. Please wait...</source>
+            <target>Inhalte werden generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.translateRecord" xml:space="preserve">
                 <source>Translate record (1 Credit)</source>
             <target>Datensatz übersetzen (1 Credit)</target></trans-unit>

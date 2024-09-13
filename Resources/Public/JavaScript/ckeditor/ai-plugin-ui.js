@@ -27,11 +27,11 @@ export default class AiPluginUI extends Plugin {
             button.tooltip = true;
             button.withText = true;
 
-            button.on( 'execute', () => {
+            button.on( 'execute', async () => {
                 this.selectedContent = '';
 
-                const modalView = this._createFormView(editor.locale);
-                this.selectedContent = this._getSelectedContent(editor);
+                const modalView = await this._createFormView(editor.locale);
+                this.selectedContent = await this._getSelectedContent(editor);
 
                 this.contextualBalloon.add( {
                     view: modalView,
