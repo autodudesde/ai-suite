@@ -1,0 +1,13 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<label for="tx_aisuite_web_aisuiteaisuite[content][{propertyName}]">
+    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.prompt"/>
+</label><br />
+<f:form.textarea
+    additionalAttributes="{minlength: '10'}"
+    property="{propertyName}"
+    name="tx_aisuite_web_aisuiteaisuite[content][{propertyName}]"
+    class="form-control {propertyName}"
+    value="{value}"
+/>

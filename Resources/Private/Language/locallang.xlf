@@ -793,7 +793,7 @@
                 <source>Prompt is too short</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
-                <source>Please enter your prompt with at least five characters</source>
+                <source>Please enter your prompt with at least ten characters</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.generalImageGenerationSettings" xml:space="preserve">
                 <source>General image generation settings</source>
@@ -1058,6 +1058,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable" xml:space="preserve">
                 <source>No translation libraries available.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.pages.newRootPage" xml:space="preserve">
+                <source>New root page</source>
             </trans-unit>
         </body>
     </file>

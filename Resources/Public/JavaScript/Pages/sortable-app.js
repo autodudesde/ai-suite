@@ -34,7 +34,7 @@ if (dialogSubmitButton !== null && dialogSubmitButton !== undefined){
         e.preventDefault();
         let input = document.querySelector('.sortable-wrap .sortable-input input[type="text"]');
         insertOrUpdateSortableItem(input.value);
-        input.value('');
+        document.querySelector('.sortable-wrap .sortable-input input[type="text"]').value = '';
         dialog.classList.remove('active');
     });
 }

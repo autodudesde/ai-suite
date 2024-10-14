@@ -25,7 +25,7 @@
                     <f:render partial="PageContent/AllProperties" arguments="{_all}" />
                     <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable, showMaxImageHint: showMaxImageHint}" />
-                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
+                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries, additionalImageSettings: additionalImageSettings}" />
                     <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
                     <div class="row">
                         <div class="card card-size-large active mt-3">
@@ -36,10 +36,7 @@
                                 <br />
                                 <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                                 <div class="mt-3">
-                                    <label for="tx_aisuite_web_aisuiteaisuite[content][initialPrompt]">
-                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.prompt"/>
-                                    </label><br />
-                                    <f:form.textarea property="initialPrompt" name="tx_aisuite_web_aisuiteaisuite[content][initialPrompt]" class="form-control initial-prompt" value="{initialPrompt}" />
+                                    <f:render partial="Libs/PromptField" arguments="{propertyName: 'initialPrompt', value: initialPrompt}" />
                                 </div>
                             </div>
                         </div>

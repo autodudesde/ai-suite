@@ -19,7 +19,7 @@
                             name="libraries[imageGenerationLibrary]"
                             value="{library.model_identifier}"
                             {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
-                        {f:if(condition: it.isFirst, then: 'checked="checked"', else: '')}
+                            {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
                         />
                         <label for="image-generation-library-{library.model_identifier}">
                             <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />

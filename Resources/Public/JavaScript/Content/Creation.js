@@ -30,6 +30,10 @@ define([
                 handleCheckboxChange('.request-field-checkbox[value="inline"]', '.image-generation-library');
             });
         });
+        let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
+        if(imageAiModel === 'Midjourney') {
+            document.querySelector('.image-settings-midjourney').style.display = 'block';
+        }
     }
     function hideShowTextLibraries() {
         document.querySelectorAll('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]').forEach(function (checkbox) {

@@ -33,6 +33,7 @@ class Pages extends AbstractEntity
     protected int $permsUser;
     protected int $permsGroup;
     protected int $permsEverybody;
+    protected int $isSiteroot;
 
     public function __construct(
         int $pid,
@@ -50,7 +51,8 @@ class Pages extends AbstractEntity
         int $permsGroupid,
         int $permsUser,
         int $permsGroup,
-        int $permsEverybody
+        int $permsEverybody,
+        int $isSiteroot = 0
     ) {
         $this->pid = $pid;
         $this->title = trim($title);
@@ -68,6 +70,7 @@ class Pages extends AbstractEntity
         $this->permsUser = $permsUser;
         $this->permsGroup = $permsGroup;
         $this->permsEverybody = $permsEverybody;
+        $this->isSiteroot = $isSiteroot;
     }
 
     public static function createEmpty(): self
@@ -88,7 +91,8 @@ class Pages extends AbstractEntity
             0, // permsGroupid
             0, // permsUser
             0, // permsGroup,
-            0 // permsEverybody
+            0, // permsEverybody
+            0, // isSiteroot
         );
     }
     public function getTitle(): string
@@ -256,6 +260,16 @@ class Pages extends AbstractEntity
         return $this;
     }
 
+    public function getIsSiteroot(): int
+    {
+        return $this->isSiteroot;
+    }
+
+    public function setIsSiteroot(int $isSiteroot): void
+    {
+        $this->isSiteroot = $isSiteroot;
+    }
+
     public function toDatabase(): array
     {
         return [
@@ -273,7 +287,9 @@ class Pages extends AbstractEntity
             'perms_userid' => $this->permsUserid,
             'perms_groupid' => $this->permsGroupid,
             'perms_user' => $this->permsUser,
-            'perms_group' => $this->permsGroup
+            'perms_group' => $this->permsGroup,
+            'perms_everybody' => $this->permsEverybody,
+            'is_siteroot' => $this->isSiteroot,
         ];
     }
 }

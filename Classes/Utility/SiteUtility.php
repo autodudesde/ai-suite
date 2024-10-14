@@ -37,6 +37,20 @@ class SiteUtility
         return $availableLanguages;
     }
 
+    public static function getAvailableDefaultLanguages(): array
+    {
+        $availableSites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
+        $availableDefaultLanguages = [];
+        foreach ($availableSites as $site) {
+            foreach ($site->getLanguages() as $language) {
+                if($language->getTypo3Language() === 'default') {
+                    $availableDefaultLanguages[$language->getTwoLetterIsoCode()] = $language->getTitle();
+                }
+            }
+        }
+        return $availableDefaultLanguages;
+    }
+
     /**
      * @throws SiteNotFoundException
      */

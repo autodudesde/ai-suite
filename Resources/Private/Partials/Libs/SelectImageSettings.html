@@ -16,11 +16,11 @@
                             </div>
                         </label><br />
                         <select id="midjourneyVersion" name="midjourneyVersion" class="form-control mb-3" data-prefix="--v">
-                            <option value="6.1">6.1 (Default)</option>
-                            <option value="6.0">6.0</option>
-                            <option value="5.2">5.2</option>
-                            <option value="5.1">5.1</option>
-                            <option value="5.0">5.0</option>
+                            <option value="6.1" {f:if(condition: '{additionalImageSettings.v} == "6.1"', then: 'selected="selected"')}>6.1 (Default)</option>
+                            <option value="6.0" {f:if(condition: '{additionalImageSettings.v} == "6.0"', then: 'selected="selected"')}>6.0</option>
+                            <option value="5.2" {f:if(condition: '{additionalImageSettings.v} == "5.2"', then: 'selected="selected"')}>5.2</option>
+                            <option value="5.1" {f:if(condition: '{additionalImageSettings.v} == "5.1"', then: 'selected="selected"')}>5.1</option>
+                            <option value="5.0" {f:if(condition: '{additionalImageSettings.v} == "5.0"', then: 'selected="selected"')}>5.0</option>
                         </select>
                     </div>
                     <div class="col-md-6 my-1">
@@ -33,16 +33,16 @@
                             </div>
                         </label><br />
                         <select id="midjourneyAspectRatio" name="midjourneyAspectRatio" class="form-control mb-3" data-prefix="--ar">
-                            <option value="1:1">1:1 (Default)</option>
-                            <option value="2:3">2:3</option>
-                            <option value="3:2">3:2</option>
-                            <option value="4:3">4:3</option>
-                            <option value="4:5">4:5</option>
-                            <option value="4:7">4:7</option>
-                            <option value="5:4">5:4</option>
-                            <option value="7:4">7:4</option>
-                            <option value="16:9">16:9</option>
-                            <option value="21:9">21:9</option>
+                            <option value="1:1" {f:if(condition: '{additionalImageSettings.ar} == "1:1"', then: 'selected="selected"')}>1:1 (Default)</option>
+                            <option value="2:3" {f:if(condition: '{additionalImageSettings.ar} == "2:3"', then: 'selected="selected"')}>2:3</option>
+                            <option value="3:2" {f:if(condition: '{additionalImageSettings.ar} == "3:2"', then: 'selected="selected"')}>3:2</option>
+                            <option value="4:3" {f:if(condition: '{additionalImageSettings.ar} == "4:3"', then: 'selected="selected"')}>4:3</option>
+                            <option value="4:5" {f:if(condition: '{additionalImageSettings.ar} == "4:5"', then: 'selected="selected"')}>4:5</option>
+                            <option value="4:7" {f:if(condition: '{additionalImageSettings.ar} == "4:7"', then: 'selected="selected"')}>4:7</option>
+                            <option value="5:4" {f:if(condition: '{additionalImageSettings.ar} == "5:4"', then: 'selected="selected"')}>5:4</option>
+                            <option value="7:4" {f:if(condition: '{additionalImageSettings.ar} == "7:4"', then: 'selected="selected"')}>7:4</option>
+                            <option value="16:9" {f:if(condition: '{additionalImageSettings.ar} == "16:9"', then: 'selected="selected"')}>16:9</option>
+                            <option value="21:9" {f:if(condition: '{additionalImageSettings.ar} == "21:9"', then: 'selected="selected"')}>21:9</option>
                         </select>
                     </div>
                     <div class="col-md-6 my-1">
@@ -54,7 +54,7 @@
                                 </span>
                             </div>
                         </label><br />
-                        <input type="text" class="w-100 px-2 py-1" id="midjourneyNo" name="midjourneyNo" value="text" data-prefix="--no" />
+                        <input type="text" class="w-100 px-2 py-1" id="midjourneyNo" name="midjourneyNo" value="{additionalImageSettings.no}" data-prefix="--no" />
                     </div>
                     <div class="col-md-6 my-1">
                         <label for="midjourneySref">
@@ -65,7 +65,7 @@
                                 </span>
                             </div>
                         </label><br />
-                        <input type="text" class="w-100 px-2 py-1" id="midjourneySref" name="midjourneySref" value="" data-prefix="--sref"/>
+                        <input type="text" class="w-100 px-2 py-1" id="midjourneySref" name="midjourneySref" value="{additionalImageSettings.sref}" data-prefix="--sref"/>
                     </div>
                 </div>
             </div>
