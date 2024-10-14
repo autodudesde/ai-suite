@@ -17,6 +17,7 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
@@ -93,7 +94,7 @@ class ImageController extends ActionController
         }
 
         $params['promptTemplates'] = PromptTemplateUtility::getAllPromptTemplates('imageWizard');
-        $params['imageGenerationLibraries'] = $librariesAnswer->getResponseData()['imageGenerationLibraries'];
+        $params['imageGenerationLibraries'] = LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
         $params['uuid'] = UuidUtility::generateUuid();
         $output = $this->getContentFromTemplate(

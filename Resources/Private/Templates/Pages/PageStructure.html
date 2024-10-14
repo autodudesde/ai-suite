@@ -26,10 +26,7 @@
                         <br />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                         <div class="mt-3">
-                            <label for="plainPrompt">
-                                <f:translate key="tx_aisuite.module.general.prompt"/>
-                            </label><br />
-                            <f:form.textarea property="plainPrompt" name="plainPrompt" class="form-control plainPrompt"/>
+                            <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: ''}" />
                         </div>
                     </div>
                 </div>

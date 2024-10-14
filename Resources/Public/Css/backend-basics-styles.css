@@ -42,6 +42,21 @@ div[data-module-id="aiSuite"] .image-settings label {
     position: relative;
     width: 100%;
 }
+div[data-module-id="aiSuite"] form[name="content"] .form-group label {
+    font-weight: 700;
+}
+div[data-module-id="aiSuite"] form[name="content"] .fields-button {
+    width: 100%;
+}
+div[data-module-id="aiSuite"] form[name="content"] .fields-button:hover {
+    background: rgba(240, 156, 66, 0.8);
+}
+div[data-module-id="aiSuite"] form[name="content"] .fields-button .icon-actions-chevron-up {
+    transform: rotate(0deg);
+}
+div[data-module-id="aiSuite"] form[name="content"] .fields-button.collapsed .icon-actions-chevron-up {
+    transform: rotate(180deg);
+}
 
 div[data-module-id="aiSuite"] .tooltip {
     position: absolute;

@@ -15,6 +15,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
@@ -81,7 +82,7 @@ class CkeditorController extends ActionController
                 [
                     'success' => true,
                     'output' => [
-                        'libraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
+                        'libraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                         'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates('editContent'),
                         'uuid' => UuidUtility::generateUuid(),
                     ],

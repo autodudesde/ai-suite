@@ -37,7 +37,9 @@ class PageStructureFactory
     public function createFromArray(array $data, int $parentPageUid): int
     {
         $newPagesCount = 0;
-
+        if($parentPageUid === -1) {
+            $parentPageUid = 0;
+        }
         foreach ($data as $pageData) {
             $beUserUid = $this->getBackendUser()->user['uid'];
             $beUserGroup = $this->getBackendUser()->firstMainGroup;
@@ -54,7 +56,10 @@ class PageStructureFactory
                 ->setPermsGroup($permissions['perms_group'])
                 ->setPermsEverybody($permissions['perms_everybody'])
                 ->setPid($parentPageUid);
-
+            if($parentPageUid === 0) {
+                $page->setIsSiteroot(1);
+                $page->setHidden(1);
+            }
             $newUid = $this->pagesRepository->addPage($page);
             $this->createSlug($newUid);
             $newPagesCount++;

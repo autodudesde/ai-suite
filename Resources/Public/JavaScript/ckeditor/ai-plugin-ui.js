@@ -12,7 +12,11 @@ export default class AiPluginUI extends Plugin {
     async init() {
         const editor = this.editor;
         this.contextualBalloon = editor.plugins.get( ContextualBalloon );
-        this.languageCode = TYPO3.settings.aiSuite.rteLanguageCode;
+        if(TYPO3.settings.aiSuite) {
+            this.languageCode = TYPO3.settings.aiSuite.rteLanguageCode;
+        } else {
+            this.languageCode = 'en';
+        }
         const prefillContent = await this._fetchRteContent();
         this.libraries = prefillContent['libraries'];
         this.promptTemplates = prefillContent['promptTemplates'];
@@ -107,6 +111,7 @@ export default class AiPluginUI extends Plugin {
             } else {
                 console.error('Error');
             }
+            this.contextualBalloon.remove( modalView );
         });
         return modalView;
     }

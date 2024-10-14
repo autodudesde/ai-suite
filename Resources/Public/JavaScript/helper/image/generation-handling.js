@@ -39,7 +39,7 @@ class GenerationHandling {
             let additionalImageSettings = self.getAdditionalImageSettings(modal, imageAiModel);
             enteredPrompt += additionalImageSettings;
 
-            if (enteredPrompt.length < 5) {
+            if (enteredPrompt.length < 10) {
                 Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
             } else {
                 data.uuid = ev.target.getAttribute('data-uuid');

@@ -15,6 +15,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use TYPO3\CMS\Core\Context\Context;
@@ -77,7 +78,7 @@ class TranslationController extends ActionController
                 [
                     'success' => true,
                     'output' => [
-                        'libraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
+                        'libraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                         'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
                         'uuid' => UuidUtility::generateUuid(),
                     ],

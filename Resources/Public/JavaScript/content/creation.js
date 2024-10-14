@@ -28,6 +28,10 @@ class Creation {
                 handleCheckboxChangeFn('.request-field-checkbox[value="file"]', '.image-generation-library', calculateRequestAmountFn);
             });
         });
+        let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
+        if(imageAiModel === 'Midjourney') {
+            document.querySelector('.image-settings-midjourney').style.display = 'block';
+        }
     }
     hideShowTextLibraries() {
         let handleCheckboxChangeFn = this.handleCheckboxChange;

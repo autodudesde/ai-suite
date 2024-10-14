@@ -20,8 +20,10 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
+use AutoDudes\AiSuite\Utility\SiteUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -97,7 +99,7 @@ class PagesController extends AbstractBackendController
             'input' => PageStructureInput::createEmpty(),
             'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
-            'textGenerationLibraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
+            'textGenerationLibraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates('pageTree'),
         ]);
@@ -107,10 +109,12 @@ class PagesController extends AbstractBackendController
     public function validatePageStructureResultAction(PageStructureInput $input): ResponseInterface
     {
         $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
-
         $site = $this->request->getAttribute('site');
-        $defaultLanguageIsoCode = $site->getDefaultLanguage()->getTwoLetterIsoCode();
-
+        $defaultLanguageIsoCode = $site->getDefaultLanguage()->getLocale()->getLanguageCode();
+        if($defaultLanguageIsoCode === '') {
+            $availableLanguages = SiteUtility::getAvailableDefaultLanguages();
+            $defaultLanguageIsoCode = array_key_first($availableLanguages) ?? 'en';
+        }
         $answer = $this->requestService->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -142,7 +146,7 @@ class PagesController extends AbstractBackendController
             'input' => $input,
             'pagesSelect' => $this->getPagesInWebMount(),
             'sectionActive' => 'pages',
-            'textGenerationLibraries' => json_decode($input->getTextGenerationLibraries(), true),
+            'textGenerationLibraries' => LibraryUtility::prepareLibraries(json_decode($input->getTextGenerationLibraries(), true), $textAi),
         ]);
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/validation.js');
         $this->addFlashMessage(
@@ -168,7 +172,9 @@ class PagesController extends AbstractBackendController
     private function getPagesInWebMount(): array
     {
         $foundPages = $this->pagesRepository->findAiStructurePages('uid');
-        $pagesSelect = [];
+        $pagesSelect = [
+            -1 => LocalizationUtility::translate('aiSuite.module.pages.newRootPage', 'ai_suite')
+        ];
         foreach ($foundPages as $page) {
             $pageInWebMount = $this->getBackendUser()->isInWebMount($page['uid']);
             if($pageInWebMount !== null) {

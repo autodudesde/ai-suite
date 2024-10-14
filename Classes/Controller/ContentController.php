@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\ContentService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
@@ -157,11 +158,15 @@ class ContentController extends AbstractBackendController
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/creation.js');
 
+        $textAi = $request->getQueryParams()['textGenerationLibraryKey'] ?? '';
+        $imageAi = $request->getQueryParams()['imageGenerationLibraryKey'] ?? '';
+        $additionalImageSettings = $request->getQueryParams()['additionalImageSettings'] ?? '';
         $this->moduleTemplate->assignMultiple([
             'content' => $content,
             'actionUri' => $actionUri,
-            'textGenerationLibraries' => $librariesAnswer->getResponseData()['textGenerationLibraries'],
-            'imageGenerationLibraries' => $librariesAnswer->getResponseData()['imageGenerationLibraries'],
+            'textGenerationLibraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'], $textAi),
+            'imageGenerationLibraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'], $imageAi),
+            'additionalImageSettings' => LibraryUtility::prepareAdditionalImageSettings($additionalImageSettings),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates(
                 count($defVals) > 0 ? 'contentElement' : 'newsRecord',
@@ -197,6 +202,8 @@ class ContentController extends AbstractBackendController
         $availableTcaColumns = json_decode($this->request->getParsedBody()['content']['availableTcaColumns'],true) ?? [];
         $defVals = json_decode($this->request->getParsedBody()['defVals'],true) ?? [];
         $additionalImageSettings = $this->request->getParsedBody()['additionalImageSettings'] ?? '';
+        $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
+        $imageAi = !empty($this->request->getParsedBody()['libraries']['imageGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['imageGenerationLibrary'] : '';
 
         $uriParams = [
             'edit' => [
@@ -208,6 +215,9 @@ class ContentController extends AbstractBackendController
             'defVals' => $defVals,
             'initialPrompt' => $content->getInitialPrompt(),
             'selectedTcaColumns' => json_encode($selectedTcaColumns),
+            'textGenerationLibraryKey' => $textAi,
+            'imageGenerationLibraryKey' => $imageAi,
+            'additionalImageSettings' => empty($additionalImageSettings) ? '' : json_encode($additionalImageSettings),
         ];
         if($table === 'tx_news_domain_model_news') {
             $uriParams['recordType'] = '0';
@@ -244,8 +254,6 @@ class ContentController extends AbstractBackendController
             $this->moduleTemplate->assign('error', true);
             return $this->htmlResponse($this->moduleTemplate->render());
         }
-        $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
-        $imageAi = !empty($this->request->getParsedBody()['libraries']['imageGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['imageGenerationLibrary'] : '';
 
         $requestFields = [];
         foreach ($selectedTcaColumns as $type => $fields) {

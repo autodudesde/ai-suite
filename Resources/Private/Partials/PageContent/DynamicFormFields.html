@@ -39,7 +39,6 @@
                     {f:variable(name: 'count', value: 0)}
                     <h3>
                         {data.label}
-                        <core:icon identifier="actions-chevron-up" size="small" />
                     </h3>
                     <f:for each="{data}" key="position" as="childData">
                         <f:if condition="{aiSuite:isArray(data: childData)}">
@@ -54,6 +53,7 @@
                                     aria-controls="fields-{table}-{position}"
                                 >
                                     {data.label} {count +1}
+                                    <core:icon identifier="actions-chevron-up" size="small" />
                                 </button>
                             </h4>
                             <div
