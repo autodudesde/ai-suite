@@ -5,6 +5,7 @@ import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
 
 class MidjourneySlides {
     constructor() {
@@ -22,15 +23,14 @@ class MidjourneySlides {
             MultiStepWizard.blurCancelStep();
             MultiStepWizard.lockNextStep();
             MultiStepWizard.lockPrevStep();
-            slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney'], 677));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney'], 677));
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             modal.find('.spinner-wrapper').css('overflow', 'hidden');
-            Notification.info(TYPO3.lang['AiSuite.notification.generation.start'], TYPO3.lang['AiSuite.notification.generation.start.suggestions'], 8);
             Promise.all([self.generatePreSelection(data), StatusHandling.fetchStatus(data, modal, self)])
                 .then(([res, status]) => {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.midjourneyPreSelectionError']);
-                    slide.html(settings['generatedImages']);
+                    slide.html(settings['generatedData']);
                     self.addPreSelectionEventListeners(modal, data, slide, self);
                 })
                 .catch(error => {
@@ -53,13 +53,13 @@ class MidjourneySlides {
             MultiStepWizard.lockNextStep();
             MultiStepWizard.unlockPrevStep();
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
-            slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
             data = settings['data'];
             Promise.all([self.generateImage(data), StatusHandling.fetchStatus(data, modal, self)])
                 .then(([res, status]) => {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.midjourneySelectionError']);
-                    slide.html(settings['generatedImages']);
+                    slide.html(settings['generatedData']);
                     addSelectionEventListenersFn(modal, data, slide, filelistScope, self);
                 })
                 .catch(error => {
@@ -87,7 +87,7 @@ class MidjourneySlides {
             MultiStepWizard.blurCancelStep();
             MultiStepWizard.lockNextStep();
             MultiStepWizard.unlockPrevStep();
-            slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             modal.find('.spinner-wrapper').css('overflow', 'hidden');
             data = settings['data'];
@@ -125,7 +125,7 @@ class MidjourneySlides {
     backToSlideOneButton(modal, data) {
         let aiSuiteBackToWizardSlideOneBtn = modal.find('.modal-body').find('button#aiSuiteBackToWizardSlideOneBtn');
         aiSuiteBackToWizardSlideOneBtn.on('click', function() {
-            MultiStepWizard.set('generatedImages', '');
+            MultiStepWizard.set('generatedData', '');
             MultiStepWizard.dismiss();
             GenerationHandling.showGeneralImageSettingsModal(data);
         });

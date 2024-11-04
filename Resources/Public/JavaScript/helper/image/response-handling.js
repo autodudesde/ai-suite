@@ -10,8 +10,7 @@ class ResponseHandling {
             if(res.error) {
                 Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
             } else {
-                Notification.success(TYPO3.lang['AiSuite.notification.generation.finish'], TYPO3.lang['AiSuite.notification.generation.finish.suggestions'], 8);
-                MultiStepWizard.set('generatedImages', res.output);
+                MultiStepWizard.set('generatedData', res.output);
             }
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);
@@ -42,7 +41,6 @@ class ResponseHandling {
                         GenerationHandling.showGeneralImageSettingsModal(data, 'ContentElement');
                     });
                 }
-                Notification.success(TYPO3.lang['AiSuite.notification.generation.finish'], TYPO3.lang['AiSuite.notification.generation.finish.suggestions'], 8);
             }
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);

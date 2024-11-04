@@ -2,14 +2,14 @@ import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import Notification from "@typo3/backend/notification.js";
 import ImageManipulation from "@typo3/backend/image-manipulation.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
-import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 
 class SaveHandling {
     backToSlideOneButton(modal) {
         let aiSuiteBackToWizardSlideOneBtn = modal.find('.modal-body').find('button#aiSuiteBackToWizardSlideOneBtn');
         aiSuiteBackToWizardSlideOneBtn.on('click', function() {
-            MultiStepWizard.set('generatedImages', '');
+            MultiStepWizard.set('generatedData', '');
             MultiStepWizard.unlockPrevStep().trigger('click');
         });
     }
@@ -36,7 +36,7 @@ class SaveHandling {
                     imageUrl: imageUrl,
                     imageTitle: imageTitle
                 };
-                slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageSavingProcess']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 705));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 let resFile = await Ajax.sendAjaxRequest('aisuite_image_generation_save', postData);
                 postData = {
@@ -76,7 +76,7 @@ class SaveHandling {
                 let imageTitle = self.getSelectedImageTitle(modal, data, true);
                 let imageName = General.sanitizeFileName(imageTitle);
                 let imageUrl = selectedImageRadioBtn.data('url');
-                slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageSavingProcess']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 705));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 await fetch(imageUrl, {mode: 'cors'})
                     .then(res => res.blob())
@@ -112,7 +112,7 @@ class SaveHandling {
                 }
                 MultiStepWizard.dismiss();
             } else {
-                Notification.warning(TYPO3.lang['aiSuite.module.modal.noImageSelectedTitle'], TYPO3.lang['aiSuite.module.modal.noImageSelectedMessage'], 8);
+                Notification.warning(TYPO3.lang['aiSuite.module.modal.noImageSelectedTitle'], TYPO3.lang['aiSuite.module.modal.noImageSelectedMessage'], 5);
             }
         });
     }

@@ -12,14 +12,10 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Model\Dto\XlfInput;
-use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Exception\EmptyXliffException;
-use AutoDudes\AiSuite\Service\ConstantsService;
-use AutoDudes\AiSuite\Service\SendRequestService;
-use AutoDudes\AiSuite\Utility\ModelUtility;
+use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\XliffUtility;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
@@ -31,43 +27,20 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AgenciesController extends AbstractBackendController
 {
-    protected array $extConf;
-    protected SendRequestService $requestService;
-    protected RequestsRepository $requestsRepository;
-
-    public function __construct(
-        array $extConf,
-        SendRequestService $requestService,
-        RequestsRepository $requestsRepository
-    ) {
-        parent::__construct($extConf);
-        $this->extConf = $extConf;
-        $this->requestService = $requestService;
-        $this->requestsRepository = $requestsRepository;
+    public function __construct()
+    {
+        parent::__construct();
     }
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
-            'sectionActive' => 'agencies',
-        ]);
         return $this->htmlResponse($this->moduleTemplate->render());
     }
 
     public function translateXlfAction(): ResponseInterface
     {
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agencies/creation.js');
-        $librariesAnswer = $this->requestService->sendRequest(
-            new ServerRequest(
-                $this->extConf,
-                'generationLibraries',
-                [
-                    'library_types' => GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,
-                    'target_endpoint' => 'translate',
-                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf,['translate'])
-                ]
-            )
-        );
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,'translate', ['translate']);
         if ($librariesAnswer->getType() === 'Error') {
             $this->addFlashMessage(
                 $librariesAnswer->getResponseData()['message'],
@@ -77,8 +50,7 @@ class AgenciesController extends AbstractBackendController
             return $this->redirect('overview');
         }
         $this->moduleTemplate->assignMultiple([
-            'allLanguagesList' => ConstantsService::LANGUAGES,
-            'sectionActive' => 'agencies',
+            'allLanguagesList' => SiteUtility::getAvailableLanguages(),
             'input' => XlfInput::createEmpty(),
             'translateGenerationLibraries' => $librariesAnswer->getResponseData()['translateGenerationLibraries'],
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable']
@@ -122,7 +94,7 @@ class AgenciesController extends AbstractBackendController
         try {
             $translateAi = !empty($this->request->getParsedBody()['libraries']['translateGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['translateGenerationLibrary'] : '';
             $neededTranslations = XliffUtility::getTranslateValues($input);
-            if(count($neededTranslations) === 0) {
+            if (count($neededTranslations) === 0) {
                 $this->addFlashMessage(
                     LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.message', 'ai_suite'),
                     LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.title', 'ai_suite'),
@@ -130,22 +102,18 @@ class AgenciesController extends AbstractBackendController
                 );
                 return $this->redirect('translateXlf');
             }
-            $answer = $this->requestService->sendRequest(
-                new ServerRequest(
-                    $this->extConf,
-                    'translate',
-                    [
-                        'source_lang' => 'en',
-                        'target_lang' => $input->getDestinationLanguage(),
-                        'translation_content' => $neededTranslations,
-                        'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$translateAi])
-                    ],
-                    '',
-                    '',
-                    [
-                        'translate' => $translateAi,
-                    ]
-                )
+            $answer = $this->requestService->sendDataRequest(
+                'translate',
+                [
+                    'source_lang' => 'en',
+                    'target_lang' => $input->getDestinationLanguage(),
+                    'translation_content' => $neededTranslations,
+                ],
+                '',
+                '',
+                [
+                    'translate' => $translateAi,
+                ]
             );
             if ($answer->getType() === 'Error') {
                 $this->addFlashMessage(
@@ -156,14 +124,10 @@ class AgenciesController extends AbstractBackendController
                 return $this->redirect('translateXlf');
             }
             $translations = $answer->getResponseData()['translations'];
-            if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
-                $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-                BackendUtility::setUpdateSignal('updateTopbar');
-            }
             $input->setTranslations($translations);
             $originalValues = XliffUtility::readXliff($input->getExtensionKey(), $input->getFilename())->getFormatedData();
             foreach ($originalValues as $origKey => $origValue) {
-                if(array_key_exists($origKey, $translations)) {
+                if (array_key_exists($origKey, $translations)) {
                     $originalValues[$origKey]['translated'] = $translations[$origKey];
                 } else {
                     unset($originalValues[$origKey]);
@@ -171,8 +135,7 @@ class AgenciesController extends AbstractBackendController
             }
 
             $this->moduleTemplate->assignMultiple([
-                'allLanguagesList' => ConstantsService::LANGUAGES,
-                'sectionActive' => 'agencies',
+                'allLanguagesList' => SiteUtility::getAvailableLanguages(),
                 'input' => $input,
                 'originalValues' => $originalValues
             ]);
@@ -221,7 +184,7 @@ class AgenciesController extends AbstractBackendController
      */
     public function writeXlfAction(XlfInput $input): ResponseInterface
     {
-        if(XliffUtility::writeXliff($input)) {
+        if (XliffUtility::writeXliff($input)) {
             $this->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.translationGenerationSuccessful.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.translationGenerationSuccessful.title', 'ai_suite'),

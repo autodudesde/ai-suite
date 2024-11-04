@@ -1,0 +1,57 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+
+    <f:asset.css identifier="wizardSlideTwoCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-two.css" />
+    <div id="wizardSlideTwo" class="ai-suite-metadata-generation-wizard">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="text-gradient">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+                    </h2>
+                </div>
+            </div>
+            <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: metadataSuggestions, fieldName: fieldName, table: table, position: position}" />
+        </div>
+        <div class="container">
+            <f:if condition="{additionalFields -> f:count()} > 0">
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h3 class="text-gradient">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metadataAdditionalFields" />
+                        </h3>
+                    </div>
+                    <f:for each="{additionalFields}" key="useForField" as="useForLabel" iteration="it">
+                        <div class="col-12 col-md-6 my-3 position-relative">
+                            <input
+                                type="checkbox"
+                                name="useFor[{useForField}]"
+                                value="{useForField}"
+                                class="mx-1 use-for-selection"
+                                id="useFor-{useForField}"
+                            >
+                            <label class="d-inline-flex justify-content-start align-items-center use-for"
+                                   for="useFor-{useForField}"
+                                   style="font-size: 0.85rem;"
+                            >
+                                {useForLabel}
+                            </label>
+                        </div>
+                    </f:for>
+                </div>
+            </f:if>
+        <div class="row mt-3">
+            <div class="col-6">
+                <button class="mb-3 mt-1 btn btn-default w-100" id="aiSuiteBackToPreviousSlideBtn">
+                    <core:icon identifier="actions-refresh" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                </button>
+            </div>
+            <div class="col-6">
+                <button class="mb-3 mt-1 btn btn-primary w-100" id="aiSuiteSaveMetadataBtn">
+                    <core:icon identifier="actions-check" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                </button>
+            </div>
+        </div>
+    </div>
+</html>

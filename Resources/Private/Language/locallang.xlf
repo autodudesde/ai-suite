@@ -15,12 +15,6 @@
             <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
                 <source>Select prompt template</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
-                <source>Select prompt template</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.languageChooser" resname="tx_aisuite.module.general.languageChooser">
-                <source>Answer in the following language</source>
-            </trans-unit>
             <trans-unit id="tx_aisuite.module.general.spinner.default" resname="tx_aisuite.module.general.spinner.default">
                 <source>Request is being processed...</source>
             </trans-unit>
@@ -31,22 +25,14 @@
                 <source>Try again</source>
             </trans-unit>
 
-
-
             <trans-unit id="tx_aisuite.module.actionmenu.dashboard" resname="tx_aisuite.module.actionmenu.dashboard">
                 <source>Dashboard</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.pages" resname="tx_aisuite.module.actionmenu.pages">
                 <source>Pages</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.content" resname="tx_aisuite.module.actionmenu.content">
-                <source>Content</source>
-            </trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.translate" resname="tx_aisuite.module.actionmenu.translate">
                 <source>Translate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.files" resname="tx_aisuite.module.actionmenu.files">
-                <source>Files</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.agencies" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Agency</source>
@@ -54,16 +40,15 @@
             <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Prompt Manager</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.social" resname="tx_aisuite.module.actionmenu.social">
-                <source>Social Media</source>
-            </trans-unit>
-
 
             <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
                 <source>Available Credits</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.header" resname="tx_aisuite.module.dashboard.header">
-                <source>Welcome to AI Suite Extension</source>
+                <source>AI Suite Dashboard</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.headerSections" resname="tx_aisuite.module.dashboard.headerSections">
+                <source>Available sections</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.createContent.overview.header" resname="tx_aisuite.module.createContent.overview.header">
                 <source>Create content</source>
@@ -73,63 +58,23 @@
                 <source>(Coming soon)</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.title" resname="tx_aisuite.module.dashboard.card.pagesSection.title">
-                <source>Work on pages</source>
+                <source>Manage pages and page trees</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.description" resname="tx_aisuite.module.dashboard.card.pagesSection.description">
-                <source>Fill in page metadata or create complete page tree.</source>
+                <source>Speed up your daily work and get better results from AI by preparing your pages or page trees.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.linklabel" resname="tx_aisuite.module.dashboard.card.pagesSection.linklabel">
-                <source>Pages section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.title" resname="tx_aisuite.module.dashboard.card.contentSection.title">
-                <source>Create or edit content elements</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.description" resname="tx_aisuite.module.dashboard.card.contentSection.description">
-                <source>Create a whole content element with text and picture or edit an existing content element.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentSection.linklabel" resname="tx_aisuite.module.dashboard.card.contentSection.linklabel">
-                <source>Content section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.title" resname="tx_aisuite.module.dashboard.card.filesSection.title">
-                <source>Create files and edit metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.description" resname="tx_aisuite.module.dashboard.card.filesSection.description">
-                <source>Create a new picture or edit metadata like alt tag or title tag for an existing file.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filesSection.linklabel" resname="tx_aisuite.module.dashboard.card.filesSection.linklabel">
-                <source>Files section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.title" resname="tx_aisuite.module.dashboard.card.translateSection.title">
-                <source>Translate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.description" resname="tx_aisuite.module.dashboard.card.translateSection.description">
-                <source>Translate a content element or a whole page with the content inside. Files metadata will be translated too.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateSection.linklabel" resname="tx_aisuite.module.dashboard.card.translateSection.linklabel">
-                <source>Translate section</source>
+                <source>Open pages section</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.title" resname="tx_aisuite.module.dashboard.card.agencySection.title">
                 <source>Agency features</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.description" resname="tx_aisuite.module.dashboard.card.agencySection.description">
-                <source>Do very special stuff like translating a XLF file or import page content from another system.</source>
+                <source>Do very special stuff like translating a XLF file.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.linklabel" resname="tx_aisuite.module.dashboard.card.agencySection.linklabel">
-                <source>Agency section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.title" resname="tx_aisuite.module.dashboard.card.socialSection.title">
-                <source>Social Media</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.description" resname="tx_aisuite.module.dashboard.card.socialSection.description">
-                <source>Create posts or setup a auto scheduling of post for events.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.socialSection.linklabel" resname="tx_aisuite.module.dashboard.card.socialSection.linklabel">
-                <source>Social Media section</source>
+                <source>Open agency section</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.title" resname="tx_aisuite.module.dashboard.card.createPagetree.title">
@@ -140,16 +85,6 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.linklabel" resname="tx_aisuite.module.dashboard.card.createPagetree.linklabel">
                 <source>Create page tree</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.title" resname="tx_aisuite.module.dashboard.card.createPageMetadata.title">
-                <source>Edit page metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.description" resname="tx_aisuite.module.dashboard.card.createPageMetadata.description">
-                <source>Create metadata for existing pages, like SEO description, SEO title or title and description for Open Graph tags.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPageMetadata.linklabel" resname="tx_aisuite.module.dashboard.card.createPageMetadata.linklabel">
-                <source>Edit page metas</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title">
@@ -165,100 +100,6 @@
                 <source>Advanced page tree creation</source>
             </trans-unit>
 
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.title" resname="tx_aisuite.module.dashboard.card.createContentOverview.title">
-                <source>Create content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.subtitle" resname="tx_aisuite.module.dashboard.card.createContentOverview.subtitle">
-                <source>Create content for the current page.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.description" resname="tx_aisuite.module.dashboard.card.createContentOverview.description">
-                <source>Using AI, you can create content for the currently selected page.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentOverview.linklabel" resname="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel">
-                <source>Start content creation</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.title" resname="tx_aisuite.module.dashboard.card.createContentTextpic.title">
-                <source>Create new TextPic CE</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.subtitle" resname="tx_aisuite.module.dashboard.card.createContentTextpic.subtitle">
-                <source>Create content element of type TextPic.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.description" resname="tx_aisuite.module.dashboard.card.createContentTextpic.description">
-                <source>Generate a completely new content for an existing page of type TextPic.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel" resname="tx_aisuite.module.dashboard.card.createContentTextpic.linklabel">
-                <source>Start TextPic creation</source>
-            </trans-unit>
-
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.title" resname="tx_aisuite.module.dashboard.card.createContentImage.title">
-                <source>Create new Image CE</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.subtitle" resname="tx_aisuite.module.dashboard.card.createContentImage.subtitle">
-                <source>Create content element of type Image.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.description" resname="tx_aisuite.module.dashboard.card.createContentImage.description">
-                <source>Generate a completely new content for an existing page of type Image.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentImage.linklabel" resname="tx_aisuite.module.dashboard.card.createContentImage.linklabel">
-                <source>Start Image creation</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.title" resname="tx_aisuite.module.dashboard.card.createContentText.title">
-                <source>Create new Text CE</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.subtitle" resname="tx_aisuite.module.dashboard.card.createContentText.subtitle">
-                <source>Create content element of type Text.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.description" resname="tx_aisuite.module.dashboard.card.createContentText.description">
-                <source>Generate a completely new content for an existing page of type Text.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContentText.linklabel" resname="tx_aisuite.module.dashboard.card.createContentText.linklabel">
-                <source>Start Text creation</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.title" resname="tx_aisuite.module.dashboard.card.refactorContentText.title">
-                <source>Refactor text</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.description" resname="tx_aisuite.module.dashboard.card.refactorContentText.description">
-                <source>E.g. to optimize for SEO, or you need in general a better fitting text for a topic. Here you can refactor that text of content element with help of AI.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.refactorContentText.linklabel" resname="tx_aisuite.module.dashboard.card.refactorContentText.linklabel">
-                <source>Edit text of a CE</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.title" resname="tx_aisuite.module.dashboard.card.addImageToContent.title">
-                <source>Create and add new image to existing content element</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.description" resname="tx_aisuite.module.dashboard.card.addImageToContent.description">
-                <source>Add a new AI generated image to an existing content element.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.addImageToContent.linklabel" resname="tx_aisuite.module.dashboard.card.addImageToContent.linklabel">
-                <source>Add image</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.title" resname="tx_aisuite.module.dashboard.card.contentBlocks.title">
-                <source>Create a content block</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.description" resname="tx_aisuite.module.dashboard.card.contentBlocks.description">
-                <source>Create a content block skeleton with basic fields in it.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.contentBlocks.linklabel" resname="tx_aisuite.module.dashboard.card.contentBlocks.linklabel">
-                <source>Creation content block</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.title" resname="tx_aisuite.module.dashboard.card.pageImport.title">
-                <source>Page content import</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.description" resname="tx_aisuite.module.dashboard.card.pageImport.description">
-                <source>E.g. when you switch from another system to TYPO3, and you have to import / take over existing content.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.pageImport.linklabel" resname="tx_aisuite.module.dashboard.card.pageImport.linklabel">
-                <source>Content import</source>
-            </trans-unit>
-
             <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.title" resname="tx_aisuite.module.dashboard.card.translateXlfFile.title">
                 <source>Translate an extensions XLF file</source>
             </trans-unit>
@@ -267,26 +108,6 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel" resname="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel">
                 <source>Translate XLF file</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.title" resname="tx_aisuite.module.dashboard.card.createScreendesign.title">
-                <source>Create screendesign</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.description" resname="tx_aisuite.module.dashboard.card.createScreendesign.description">
-                <source>When you need ideas for a look and feel of a webpage or simply a campaigns landingpage.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createScreendesign.linklabel" resname="tx_aisuite.module.dashboard.card.createScreendesign.linklabel">
-                <source>Get design suggestion</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.title" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.title">
-                <source>Create SEO redirects</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.description" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.description">
-                <source>When launching a new website, you may need to redirect some old URLs. Crawl the old page (before launch) and get redirect suggestions.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.linklabel" resname="tx_aisuite.module.dashboard.card.createSeoRedirectsAfterLaunch.linklabel">
-                <source>Start with redirects</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.title" resname="tx_aisuite.module.dashboard.card.translatePage.title">
@@ -329,26 +150,6 @@
                 <source>Create image</source>
             </trans-unit>
 
-            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.title" resname="tx_aisuite.module.dashboard.card.createVideo.title">
-                <source>Create a video</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.description" resname="tx_aisuite.module.dashboard.card.createVideo.description">
-                <source>Create a video via Ai support.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createVideo.linklabel" resname="tx_aisuite.module.dashboard.card.createVideo.linklabel">
-                <source>Create video</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.title" resname="tx_aisuite.module.dashboard.card.createFileMetadata.title">
-                <source>Metadata for files</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.description" resname="tx_aisuite.module.dashboard.card.createFileMetadata.description">
-                <source>Create e.g. title and alt for images, needed for SEO or accessibility.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createFileMetadata.linklabel" resname="tx_aisuite.module.dashboard.card.createFileMetadata.linklabel">
-                <source>Create file metadata</source>
-            </trans-unit>
-
             <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.title" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.title">
                 <source>Update prompt templates from server</source>
             </trans-unit>
@@ -365,7 +166,7 @@
                 <source>Manage your custom prompt templates</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.description" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.description">
-                <source>With this action, you can edit, delete and create your own prompt templates.</source>
+                <source>Speed up your daily work and get better results from AI by preparing your prompts efficiently.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel">
                 <source>Manage custom prompt templates</source>
@@ -549,19 +350,6 @@
                 <source>Selected page</source>
             </trans-unit>
 
-            <trans-unit id="tx_aisuite.module.Social.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
-                <source>Social Media interaction</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.module.promptTemplateManager.overview.header" resname="AiSuite.module.promptTemplateManager.overview.header">
-                <source>Prompt Template Manager</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.promptTemplateManager.overview.description" resname="AiSuite.module.promptTemplateManager.overview.description">
-                <source>Speed up your daily work and get better results from AI by preparing your prompts efficiently.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.header" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.header">
-                <source>Manage your custom prompt templates</source>
-            </trans-unit>
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder">
                 <source>Search...</source>
             </trans-unit>
@@ -731,6 +519,12 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.createContent.title" resname="tx_aisuite.module.dashboard.card.createContent.title">
                 <source>Create new content of type </source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.openDocumentation" xml:space="preserve">
+                <source>Open documentation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.manageLicense" xml:space="preserve">
+                <source>Manage license</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.watchIntroductionVideo" xml:space="preserve">
                 <source>Watch introduction video</source>
@@ -1057,10 +851,170 @@
                 <source>Translation is in progress </source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable" xml:space="preserve">
-                <source>No translation libraries available.</source>
+                <source>No AI Suite translation libraries available.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.pages.newRootPage" xml:space="preserve">
                 <source>New root page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.tab.settings" xml:space="preserve">
+                <source>AI Suite Settings</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.aiSuiteApiKey" xml:space="preserve">
+                <source>Group specific AI Suite API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.openAiApiKey" xml:space="preserve">
+                <source>Group specific OpenAI API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.deeplApiKey" xml:space="preserve">
+                <source>Group specific DeepL API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.deeplApiMode" xml:space="preserve">
+                <source>Group uses the free version of DeepL API</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.anthropicApiKey" xml:space="preserve">
+                <source>Group specific Anthropic/Claude API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.googleTranslateApiKey" xml:space="preserve">
+                <source>Group specific GoogleTranslate API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey" xml:space="preserve">
+                <source>Group specific Midjourney API key</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.midjourneyId" xml:space="preserve">
+                <source>Group specific Midjourney ID</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder" xml:space="preserve">
+                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.openTranslatedRecordInEditMode" xml:space="preserve">
+                <source>Open translated record in edit mode</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.headerAiSuiteFeatures" xml:space="preserve">
+                <source>AI Suite Features</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiPlugin" xml:space="preserve">
+                <source>AI Plugin in CKEditor / RTE fields</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiPluginDescription" xml:space="preserve">
+                <source>If active the AI Plugin will be shown within CKEditor / RTE fields.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
+                <source>AI translation options within translation wizard</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
+                <source>If active AI translation options will be added within the translation wizard</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
+                <source>Buttons "Generate image with AI"</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableImageGenerationDescription" xml:space="preserve">
+                <source>If active buttons with title "Generate image with AI" will be added to file fields within content elements and within filelist module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableContentElementGeneration" xml:space="preserve">
+                <source>"AI Suite Content" tab in NewContentElementWizard</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableContentElementGenerationDescription" xml:space="preserve">
+                <source>An additional "AI Suite Content" tab will be added to NewContentElementWizard</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableNewsGeneration" xml:space="preserve">
+                <source>Button "News with AI" (only evaluated if EXT:news is active)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableNewsGenerationDescription" xml:space="preserve">
+                <source>If active a button with title "News with AI" will be added to the list module header bar (only evaluated if EXT:news is active)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enablePagesGeneration" xml:space="preserve">
+                <source>Enable pages section within backend module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enablePagesGenerationDescription" xml:space="preserve">
+                <source>If active the "Pages" button will be shown within the backend module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
+                <source>Show Metadata generation buttons</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableMetadataGenerationDescription" xml:space="preserve">
+                <source>If active the metadata generation buttons will be shown next to the corresponding fields</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.headerAiSuiteModels" xml:space="preserve">
+                <source>AI Suite Models</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelOpenai" xml:space="preserve">
+                <source>OpenAI</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelDescription" xml:space="preserve">
+                <source>Users are allowed to generate content with this AI model.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelAnthropic" xml:space="preserve">
+                <source>Anthropic/Claude</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelDalle" xml:space="preserve">
+                <source>DALL-E</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelMidjourney" xml:space="preserve">
+                <source>Midjourney</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelVision" xml:space="preserve">
+                <source>Vision</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelGoogleTranslate" xml:space="preserve">
+                <source>GoogleTranslate</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
+                <source>DeepL</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metaDataGeneration" xml:space="preserve">
+                <source>Generated metadata suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metaDataGenerationSlideOne" xml:space="preserve">
+                <source>Generate suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metaDataGenerationSlideTwo" xml:space="preserve">
+                <source>Generated suggestions</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metaDataWizardPromptHeader" resname="AiSuite.metaDataWizardPromptHeader">
+                <source>Custom metadata prompt</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metadataWizardSlideOneHeader" resname="AiSuite.metadataWizardSlideOneHeader">
+                <source>Enter metadata generation settings</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metadataWizardSlideOnePrompt" resname="AiSuite.metadataWizardSlideOnePrompt">
+                <source>Metadata prompt</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metadataWizardSlideOneButton" resname="AiSuite.metadataWizardSlideOneButton">
+                <source>Generate metadata suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metaDataGenerationInProcess" resname="aiSuite.module.modal.metaDataGenerationInProcess">
+                <source>Metadata suggestion generation in process</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metaDataError" resname="aiSuite.module.modal.metaDataError">
+                <source>Unable to generate metadata suggestions</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metadataWizardSaveButton" resname="AiSuite.metadataWizardSaveButton">
+                <source>Save metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.metadataAdditionalFields" xml:space="preserve">
+                <source>Additional fields</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.modal.metadata.useFor" xml:space="preserve">
+                <source>Fill field "%s" with selected suggestion</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.generation.newsDetailPlugin.missingSelection" resname="AiSuite.notification.generation.newsDetailPlugin.missingSelection">
+                <source>Missing selection</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo" resname="AiSuite.notification.newsDetailPlugin.suggestions.missingSelectionInfo">
+                <source>Please select a news detail page.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.noLibrariesAvailable" resname="AiSuite.noLibrariesAvailable">
+                <source>No libraries are available. Please contact your system administrator to get access to at least one library.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.feedbackTitle" resname="aiSuite.module.feedbackTitle">
+                <source>What is missing?</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.feedbackDescription" resname="aiSuite.module.feedbackDescription">
+                <source>Tell us what you are still missing or what you would like to have to make your work easier.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.module.feedbackBtn" resname="aiSuite.module.feedbackBtn">
+                <source>Send feedback</source>
             </trans-unit>
         </body>
     </file>

@@ -35,7 +35,7 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
             $sortBy
         );
     }
-    
+
     /**
      * @return int returns the number of affected rows
      */

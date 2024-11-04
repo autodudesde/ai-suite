@@ -30,7 +30,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
 
     public function getRecordLocalizeSummary(ServerRequestInterface $request): ResponseInterface
     {
-        if(ExtensionManagementUtility::isLoaded('container')) {
+        if (ExtensionManagementUtility::isLoaded('container')) {
             $response = parent::getRecordLocalizeSummary($request);
             $payload = json_decode($response->getBody()->getContents(), true);
             $recordLocalizeSummaryModifier = GeneralUtility::makeInstance(\B13\Container\Service\RecordLocalizeSummaryModifier::class);
@@ -122,7 +122,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_COPY_DEEPL
                     ) {
-                        $cmd['localization']['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);;
+                        $cmd['localization']['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);
+                        ;
                         $cmd['localization']['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
                         $cmd['localization']['aiSuite']['destLanguageId'] = $destLanguageId;
                         $cmd['localization']['aiSuite']['uuid'] = $params['uuid'];

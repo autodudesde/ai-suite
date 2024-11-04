@@ -1,8 +1,7 @@
-import Notification from "@typo3/backend/notification.js";
 import Severity from "@typo3/backend/severity.js";
 import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
-import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 
@@ -22,10 +21,9 @@ class DalleContentElement {
             MultiStepWizard.blurCancelStep();
             MultiStepWizard.lockNextStep();
             MultiStepWizard.lockPrevStep();
-            slide.html(GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessDalle']));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessDalle'], 705));
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             modal.find('.spinner-wrapper').css('overflow', 'hidden');
-            Notification.info(TYPO3.lang['AiSuite.notification.generation.start'], TYPO3.lang['AiSuite.notification.generation.start.suggestions'], 8);
             Promise.all([self.generateImage(data), StatusHandling.fetchStatus(data, modal, self)])
                 .then(([res, status]) => {
                     clearInterval(self.intervalId);

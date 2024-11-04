@@ -22,15 +22,4 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
             ]
         ]
     );
-
-    $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['keywords']['config'] = array_merge_recursive(
-        $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['keywords']['config'],
-        [
-            'fieldControl' => [
-                'importControl' => [
-                    'renderType' => 'aiNewsKeywords'
-                ]
-            ]
-        ]
-    );
 }

@@ -24,7 +24,7 @@ class ContentUtility
     ];
     public static function cleanupRequestField(array $requestFields, $table): array
     {
-        if(array_key_exists($table, self::IGNORE_FIELDS_BY_RECORD)) {
+        if (array_key_exists($table, self::IGNORE_FIELDS_BY_RECORD)) {
             $ignoreFields = self::IGNORE_FIELDS_BY_RECORD[$table];
             foreach ($ignoreFields as $ignoreField) {
                 unset($requestFields[$ignoreField]);

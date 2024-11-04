@@ -12,35 +12,17 @@
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
-use AutoDudes\AiSuite\Service\SendRequestService;
-use TYPO3\CMS\Core\Context\Context;
+use AutoDudes\AiSuite\Utility\SiteUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-class StatusController extends ActionController
+class StatusController extends AbstractAjaxController
 {
-    protected array $extConf;
-    protected SendRequestService $requestService;
-    protected Context $context;
-    protected LoggerInterface $logger;
-
-    public function __construct(
-        array $extConf,
-        SendRequestService $requestService,
-        Context $context,
-        LoggerInterface $logger
-    ) {
-        $this->extConf = $extConf;
-        $this->requestService = $requestService;
-        $this->context = $context;
-        $this->logger = $logger;
+    public function __construct()
+    {
+        parent::__construct();
     }
 
     public function getStatusAction(ServerRequestInterface $request): ResponseInterface
@@ -48,27 +30,19 @@ class StatusController extends ActionController
         $response = new Response();
 
         try {
-            $languageId = $this->context->getPropertyFromAspect('language', 'id');
-            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-            $site = $siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId']);
-            $language = $site->getLanguageById($languageId);
-            $langIsoCode = $language->getLocale()->getLanguageCode();
-        } catch(Exception $exception) {
+            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
+        } catch (Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;
         }
 
-        $answer = $this->requestService->sendRequest(
-            new ServerRequest(
-                $this->extConf,
-                'requestStatusUpdate',
-                [
-                    'uuid' => $request->getParsedBody()['uuid']
-                ],
-                '',
-                $langIsoCode,
-                []
-            )
+        $answer = $this->requestService->sendDataRequest(
+            'requestStatusUpdate',
+            [
+                'uuid' => $request->getParsedBody()['uuid']
+            ],
+            '',
+            $langIsoCode,
         );
         if ($answer->getType() === 'Error') {
             $this->logError($answer->getResponseData()['message'], $response, 503);
@@ -83,12 +57,5 @@ class StatusController extends ActionController
             )
         );
         return $response;
-    }
-
-    private function logError(string $errorMessage, Response $response, int $statusCode = 400): void
-    {
-        $this->logger->error($errorMessage);
-        $response->withStatus($statusCode);
-        $response->getBody()->write(json_encode(['success' => false, 'status' => $statusCode,'error' => $errorMessage]));
     }
 }

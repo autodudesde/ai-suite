@@ -9,22 +9,36 @@
         <f:translate key="tx_aisuite.module.dashboard.header"/>
     </h1>
 
-    <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="my-3 px-3 py-2 btn btn-primary">
-        <core:icon identifier="actions-video" />
+    <f:link.external uri="https://www.autodudes.de/documentation/ai-suite/en/introduction" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
+        <core:icon identifier="actions-document-view" />
+        <f:translate key="aiSuite.module.openDocumentation"/>
+    </f:link.external>
+    <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="mx-3 my-2 px-3 py-2 btn btn-primary">
+        <core:icon identifier="actions-file-video" />
         <f:translate key="aiSuite.module.watchIntroductionVideo"/>
+    </f:link.external>
+    <f:link.external uri="https://www.autodudes.de/en/account/login" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
+        <core:icon identifier="actions-key" />
+        <f:translate key="aiSuite.module.manageLicense"/>
     </f:link.external>
 
     <f:if condition="{freeRequests} && {paidRequests}">
-        <p class="request-state py-3">
-            <f:translate key="tx_aisuite.module.dashboard.creditState" />:
-            <span class="badge badge-warning p-2 mx-3">
-            <f:translate key="aiSuite.module.freeCredits"/>: {freeRequests}
-        </span>
+        <h2 class="mb-4">
+            <f:translate key="tx_aisuite.module.dashboard.creditState" />
+        </h2>
+        <p class="request-state">
             <span class="badge badge-warning p-2">
-             <f:translate key="aiSuite.module.paidCredits"/>: {paidRequests}
-        </span>
+                <f:translate key="aiSuite.module.freeCredits"/>: {freeRequests}
+            </span>
+            <span class="badge badge-warning p-2 mx-3">
+                 <f:translate key="aiSuite.module.paidCredits"/>: {paidRequests}
+            </span>
         </p>
     </f:if>
+
+    <h2 class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.headerSections"/>
+    </h2>
 
     <section class="card-container">
 
@@ -37,34 +51,6 @@
         }" />
 
         <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'content-beside-text-img-centered-right',
-            cardname: 'contentSection',
-            controller: 'Content',
-            action: 'overview',
-            status: 'active'
-        }" />
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'apps-filetree-folder-media',
-            cardname: 'filesSection',
-            controller: 'Files',
-            action: 'overview',
-            status: 'active'
-        }" />
-
-        <f:if condition="{languages}">
-            <f:if condition="{languages -> f:count()} > 1">
-                <f:render partial="DashboardCards/DynamicCard" arguments="{
-                    icon: 'install-manage-language',
-                    cardname: 'translateSection',
-                    controller: 'Languages',
-                    action: 'overview',
-                    status: 'active'
-                }" />
-            </f:if>
-        </f:if>
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
             icon: 'actions-rocket',
             cardname: 'agencySection',
             controller: 'Agencies',
@@ -72,17 +58,35 @@
             status: 'active'
         }" />
 
-    </section>
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-message-dots',
+            cardname: 'managePromptTemplates',
+            controller: 'PromptTemplate',
+            action: 'overview',
+            status: 'active'
+        }" />
 
-    <section class="status">
-        <h2>Status:</h2>
-        <h3 class="mt-2">
-            OpenAI API:
-            <span class="badge p-2 mx-3 {openAiState}">
-                <f:translate key="aiSuite.module.openAiStatus.{openAiState}" />
-            </span>
-        </h3>
-        (<f:translate key="aiSuite.module.openAiStatus.detailedInfo" /><a class="text-decoration-underline" target="_blank" href="https://status.openai.com/"><f:translate key="aiSuite.module.openAiStatus.linkTitle" /></a>)
-    </section>
+        <div class="card card-size-medium {status}">
+            <div class="card-header">
+                <div class="card-icon">
+                    <core:icon identifier="actions-lightbulb-on" size="large"/>
+                </div>
+                <div class="card-header-body">
+                    <h3 class="card-title">
+                        <f:translate key="aiSuite.module.feedbackTitle"/>
+                    </h3>
+                    <div class="card-longdesc">
+                        <p>
+                            <f:translate key="aiSuite.module.feedbackDescription"/>
+                        </p>
+                    </div>
+                    <br>
+                    <f:link.external uri="mailto:service@autodudes.de" target="_blank" class="btn btn-secondary">
+                        <f:translate key="aiSuite.module.feedbackBtn"/>
+                    </f:link.external>
+                </div>
+            </div>
+        </div>
 
+    </section>
 </f:section>

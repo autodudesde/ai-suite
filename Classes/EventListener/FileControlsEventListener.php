@@ -2,6 +2,7 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -13,10 +14,11 @@ class FileControlsEventListener
 {
     public function __invoke(CustomFileControlsEvent $event): void
     {
-        if($event->getFieldConfig()['type'] === 'file' &&
+        if ($event->getFieldConfig()['type'] === 'file' &&
             $event->getFieldConfig()['foreign_table'] === 'sys_file_reference' &&
             (in_array('jpeg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])) ||
-            in_array('jpg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])))
+            in_array('jpg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']))) &&
+            BackendUserUtility::checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
             $languageService = $this->getLanguageService();
             $resultArray = $event->getResultArray();
@@ -33,7 +35,7 @@ class FileControlsEventListener
             $objectPrefix = $event->getFormFieldIdentifier() . '-' . $event->getFieldConfig()['foreign_table'];
 
             // check maxitems
-            if(
+            if (
                 (array_key_exists('showNewFileReferenceButton', $event->getFieldConfig()['inline']) && $event->getFieldConfig()['inline']['showNewFileReferenceButton'] === false) ||
                 (array_key_exists('showCreateNewRelationButton', $event->getFieldConfig()['inline']) && $event->getFieldConfig()['inline']['showCreateNewRelationButton'] === false)
             ) {
@@ -41,7 +43,7 @@ class FileControlsEventListener
             }
 
             $pageId = $event->getTableName() === 'pages' ? $event->getDatabaseRow()['uid'] : $event->getDatabaseRow()['pid'];
-            if($pageId <= 0) {
+            if ($pageId <= 0) {
                 $objectPrefixParts = explode('-', $objectPrefix);
                 $pageId = $objectPrefixParts[1];
             }

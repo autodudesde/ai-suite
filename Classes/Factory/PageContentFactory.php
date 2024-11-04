@@ -32,6 +32,7 @@ class PageContentFactory
     protected Filesystem $filesystem;
     protected LinkService $linkService;
     protected array $extConf;
+    protected SettingsFactory $settingsFactory;
     protected LoggerInterface $logger;
 
     public function __construct(
@@ -39,13 +40,14 @@ class PageContentFactory
         StorageRepository $storageRepository,
         Filesystem $filesystem,
         LinkService $linkService,
-        array $extConf
+        SettingsFactory $settingsFactory
     ) {
         $this->dataHandler = $dataHandler;
         $this->storageRepository = $storageRepository;
         $this->filesystem = $filesystem;
         $this->linkService = $linkService;
-        $this->extConf = $extConf;
+        $this->settingsFactory = $settingsFactory;
+        $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
@@ -58,19 +60,18 @@ class PageContentFactory
         array $contentElementTextData,
         array $contentElementImageData,
         array $contentElementIrreFields
-    ): void
-    {
+    ): void {
         $data = [];
         $newStrings = [];
         // content element without text or textarea fields, set inital data
-        if(count($contentElementTextData) === 0) {
-            if(array_key_exists('tt_content', $contentElementImageData)) {
+        if (count($contentElementTextData) === 0) {
+            if (array_key_exists('tt_content', $contentElementImageData)) {
                 $newStrings['tt_content'] = $this->newStringPlaceholder('tt_content');
                 $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content->getColPos();
                 $data['tt_content'][$newStrings['tt_content']]["CType"] = $content->getCType();
                 $data['tt_content'][$newStrings['tt_content']]["pid"] = $content->getPid();
                 $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content->getSysLanguageUid();
-                if($content->getContainerParentUid() !== 0) {
+                if ($content->getContainerParentUid() !== 0) {
                     $data['tt_content'][$newStrings['tt_content']]["tx_container_parent"] = $content->getContainerParentUid();
                 }
             } else {
@@ -83,31 +84,31 @@ class PageContentFactory
         foreach ($contentElementTextData as $table => $fieldsArray) {
             $newStrings[$table] = [];
             foreach ($fieldsArray as $key => $fields) {
-                if($table === 'tt_content') {
+                if ($table === 'tt_content') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
                     $data[$table][$newStrings[$table]]["colPos"] = $content->getColPos();
                     $data[$table][$newStrings[$table]]["CType"] = $content->getCType();
                     $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
-                    if($content->getContainerParentUid() !== 0) {
+                    if ($content->getContainerParentUid() !== 0) {
                         $data[$table][$newStrings[$table]]["tx_container_parent"] = $content->getContainerParentUid();
                     }
-                    foreach($fields as $fieldName => $fieldValue) {
+                    foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
-                } else if ($table === 'tx_news_domain_model_news') {
+                } elseif ($table === 'tx_news_domain_model_news') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
                     $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
                     $data[$table][$newStrings[$table]]["datetime"] = time();
-                    foreach($fields as $fieldName => $fieldValue) {
+                    foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 } else {
                     $newStrings[$table][$key] = $this->newStringPlaceholder($table, $key);
                     $data[$table][$newStrings[$table][$key]]["pid"] = $content->getPid();
                     $data[$table][$newStrings[$table][$key]]["sys_language_uid"] = $content->getSysLanguageUid();
-                    foreach($fields as $fieldName => $fieldValue) {
+                    foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table][$key]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 }
@@ -115,17 +116,17 @@ class PageContentFactory
         }
         // add irre relations
         foreach ($contentElementIrreFields as $table => $parentTable) {
-            if(!array_key_exists($table, $newStrings)) {
+            if (!array_key_exists($table, $newStrings)) {
                 continue;
             }
-            if(is_array($newStrings[$table])) {
+            if (is_array($newStrings[$table])) {
                 $data[$parentTable][$newStrings[$parentTable]][$table] = implode(',', $newStrings[$table]);
             } else {
                 $data[$parentTable][$newStrings[$parentTable]][$table] = $newStrings[$table];
             }
         }
         // add image relations
-        foreach($contentElementImageData as $table => $fieldsArray) {
+        foreach ($contentElementImageData as $table => $fieldsArray) {
             foreach ($fieldsArray as $key => $fields) {
                 foreach ($fields as $fieldName => $fieldData) {
                     // add file to fileadmin
@@ -141,7 +142,7 @@ class PageContentFactory
                         'title' => $fieldData['imageTitle'] ?? '',
                         'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
-                    if($table === 'tt_content' || $table === 'tx_news_domain_model_news') {
+                    if ($table === 'tt_content' || $table === 'tx_news_domain_model_news') {
                         $data[$table][$newStrings[$table]][$fieldName] = $newString;
                     } else {
                         $data[$table][$newStrings[$table][$key]][$fieldName] = $newString;
@@ -156,11 +157,11 @@ class PageContentFactory
         );
         $this->dataHandler->process_datamap();
 
-        if(count($this->dataHandler->errorLog) > 0) {
+        if (count($this->dataHandler->errorLog) > 0) {
             throw new Exception('Error while creating content element with message: '. $this->dataHandler->errorLog[0]);
         }
 
-        if(array_key_exists('tt_content', $data)) {
+        if (array_key_exists('tt_content', $data)) {
             $tempUid = array_key_first($data['tt_content']);
             $uid = $this->dataHandler->substNEWwithIDs[$tempUid];
             $cmd['tt_content'][$uid]['move'] = $content->getUidPid();
@@ -180,7 +181,7 @@ class PageContentFactory
         $storage = $this->storageRepository->getDefaultStorage();
         $defaultFolder = $storage->getDefaultFolder();
 
-        if($this->extConf['mediaStorageFolder'] !== '') {
+        if ($this->extConf['mediaStorageFolder'] !== '') {
             try {
                 $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
             } catch (\Exception $e) {

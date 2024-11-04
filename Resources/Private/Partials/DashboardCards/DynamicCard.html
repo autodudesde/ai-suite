@@ -10,14 +10,12 @@
         </f:if>
         <div class="card-header-body">
             <h3 class="card-title">{title}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.title')}</h3>
-
             <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle')}"/>
             <f:if condition="{subtitle}">
                 <span class="card-subtitle">
                     {subtitle}
                 </span>
             </f:if>
-
             <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description')}"/>
             <f:if condition="{description}">
                 <div class="card-longdesc">
@@ -27,17 +25,11 @@
                 </div>
             </f:if>
             <br>
-            <f:if condition="sortable item">
-                <f:then>
-
-                </f:then>
-                <f:else>
-
-                </f:else>
-            </f:if>
             <f:if condition="{status} == 'active'">
                 <f:then>
-                    <f:link.action controller="{controller}" action="{action}" class="btn btn-secondary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}">{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}</f:link.action>
+                    <f:link.action controller="{controller}" action="{action}" class="btn btn-secondary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}">
+                        {f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}
+                    </f:link.action>
                 </f:then>
                 <f:else if="{status} == 'comming-soon'">
                     <span class="comming-soon">
@@ -45,9 +37,7 @@
                     </span>
                 </f:else>
             </f:if>
-
         </div>
-
     </div>
 </div>
 </html>

@@ -2,12 +2,12 @@
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\ContentUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Backend\Form\Utility\FormEngineUtility;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TranslationService
@@ -55,9 +55,9 @@ class TranslationService
 
         $translateFields = [];
 
-        if($table === 'tt_content') {
+        if ($table === 'tt_content') {
             $itemList = $GLOBALS['TCA'][$table]['types'][$formData['databaseRow']['CType'][0]]['showitem'];
-        } else if($table === 'sys_file_reference') {
+        } elseif ($table === 'sys_file_reference') {
             $itemList = $GLOBALS['TCA'][$table]['types'][2]['showitem'];
         } else {
             $types = $GLOBALS['TCA'][$table]['types'];
@@ -83,19 +83,12 @@ class TranslationService
         ];
     }
 
-    protected function getBackendUserAuthentication(): BackendUserAuthentication
-    {
-        return $GLOBALS['BE_USER'];
-    }
-
     protected function createPaletteContentArray(
         string $paletteName,
         array &$translateFields,
         array $formData,
         string $table
-    ): void
-    {
-        // palette needs a palette name reference, otherwise it does not make sense to try rendering of it
+    ): void {
         if (!empty($paletteName)) {
             $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
             foreach ($fieldsArray as $fieldString) {
@@ -121,12 +114,8 @@ class TranslationService
         $parameterArray = [];
         $parameterArray['fieldConf'] = $formData['processedTca']['columns'][$fieldName];
 
-        // A couple of early returns in case the field should not be rendered
         $fieldIsExcluded = $parameterArray['fieldConf']['exclude'] ?? false;
-        $fieldNotExcludable = $this->getBackendUserAuthentication()->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
-        // $fieldExcludedFromTranslatedRecords = empty($parameterArray['fieldConf']['l10n_display']) && ($parameterArray['fieldConf']['l10n_mode'] ?? '') === 'exclude';
-        // Return if BE-user has no access rights to this field,
-        // if (($fieldIsExcluded && !$fieldNotExcludable) || ($isOverlay && $fieldExcludedFromTranslatedRecords) || $this->inlineFieldShouldBeSkipped()) {
+        $fieldNotExcludable = BackendUserUtility::getBackendUser()->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
         if ($fieldIsExcluded && !$fieldNotExcludable) {
             return;
         }
@@ -138,27 +127,26 @@ class TranslationService
             return;
         }
 
-        // Override fieldConf by fieldTSconfig:
         $parameterArray['fieldConf']['config'] = FormEngineUtility::overrideFieldConf($parameterArray['fieldConf']['config'], $parameterArray['fieldTSConfig']);
 
-        if($parameterArray['fieldConf']['config']['type'] === 'inline') {
+        if ($parameterArray['fieldConf']['config']['type'] === 'inline') {
             return;
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
             $renderType = $parameterArray['fieldConf']['config']['renderType'];
         } else {
-            // Fallback to type if no renderType is given
             $renderType = $parameterArray['fieldConf']['config']['type'];
         }
         if (in_array($renderType, $this->consideredTextRenderTypes)) {
             $fieldValue = $formData['databaseRow'][$fieldName] ?? '';
-            if(!empty($fieldValue)) {
+            if (!empty($fieldValue)) {
                 $translateFields[$fieldName] = $fieldValue;
             }
         }
     }
 
-    protected function getFormData(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table) {
+    protected function getFormData(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table)
+    {
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class);
         $formDataCompilerInput = [
             'request' => $request,
@@ -176,8 +164,7 @@ class TranslationService
         array &$translateFields,
         array $formData,
         string $table
-    ): void
-    {
+    ): void {
         foreach ($fieldsArray as $fieldString) {
             $fieldConfiguration = $this->explodeSingleFieldShowItemConfiguration($fieldString);
             $fieldName = $fieldConfiguration['fieldName'];

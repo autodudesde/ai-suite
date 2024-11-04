@@ -2,7 +2,6 @@ import ContentElement from "@autodudes/ai-suite/helper/content-element.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
-import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 
 class Validation {
     constructor() {
@@ -83,10 +82,10 @@ class Validation {
                     let preselectionContent = '';
                     if(data.table === 'tt_content') {
                         preselectionContent = document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML;
-                        document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney']);
+                        document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 705);
                     } else {
                         preselectionContent = document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML;
-                        document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = GenerationHandling.showSpinner(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney']);
+                        document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 705);
                     }
                     let res = await Ajax.sendAjaxRequest('aisuite_regenerate_images', data);
                     ResponseHandling.handleResponseContentElement(res, data, TYPO3.lang['aiSuite.module.modal.midjourneySelectionError'], preselectionContent);

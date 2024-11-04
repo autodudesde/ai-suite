@@ -11,7 +11,6 @@ use TYPO3\CMS\Backend\Toolbar\RequestAwareToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -45,12 +44,12 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
         try {
             $requestsRepository = GeneralUtility::makeInstance(RequestsRepository::class);
             $requests = $requestsRepository->findFirstEntry();
-            if(count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
+            if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
                 $view->assign('requests', $requests);
             }
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
-            if(str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {
+            if (str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {
                 $view->assign('error', LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'));
             }
         }

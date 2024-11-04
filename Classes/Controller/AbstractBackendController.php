@@ -12,6 +12,7 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
+use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Template\Components\Buttons\AiSuiteLinkButton;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Module\ModuleData;
@@ -19,7 +20,6 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder as BackendUriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -39,25 +39,24 @@ abstract class AbstractBackendController extends ActionController
     protected BackendUriBuilder $backendUriBuilder;
     protected IconFactory $iconFactory;
     protected PageRenderer $pageRenderer;
-
-    protected array $extConf;
+    protected SendRequestService $requestService;
 
     protected LoggerInterface $logger;
 
-    public function __construct(
-        array $extConf
-    ) {
+    public function __construct()
+    {
         $this->moduleTemplateFactory = GeneralUtility::makeInstance(ModuleTemplateFactory::class);
         $this->backendUriBuilder = GeneralUtility::makeInstance(BackendUriBuilder::class);
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $this->pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+        $this->requestService = GeneralUtility::makeInstance(SendRequestService::class);
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
     public function initializeAction(): void
     {
         try {
-            if($this->request->hasArgument('content')) {
+            if ($this->request->hasArgument('content')) {
                 $propertyMappingConfiguration = $this->arguments->getArgument('content')->getPropertyMappingConfiguration();
                 $propertyMappingConfiguration->allowProperties(
                     'contentElementData',
@@ -73,7 +72,6 @@ abstract class AbstractBackendController extends ActionController
             if (!isset($this->settings['timeFormat'])) {
                 $this->settings['timeFormat'] = $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
             }
-            // Static format needed for date picker (flatpickr), see BackendController::generateJavascript() and #91606
             $this->settings['dateTimeFormat'] = 'H:i d-m-Y';
 
             $this->moduleData = $this->request->getAttribute('moduleData');
@@ -107,37 +105,21 @@ abstract class AbstractBackendController extends ActionController
 
         $buttonBar = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar();
 
-        // dashboard button
         $dashboardUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $dashboardButton = $this->buildButton('actions-menu', 'tx_aisuite.module.actionmenu.dashboard', 'btn-md btn-primary rounded', $dashboardUrl);
         $buttonBar->addButton($dashboardButton);
 
-        // pages button
         $uriParameters['action'] = 'overview';
         $uriParameters['controller'] = 'Pages';
         $pagesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $pagesButton = $this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-secondary mx-2 rounded', $pagesUrl);
         $buttonBar->addButton($pagesButton);
 
-        // content button
-        $uriParameters['controller'] = 'Content';
-        $contentUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
-        $contentButton = $this->buildButton('actions-document', 'tx_aisuite.module.actionmenu.content', 'btn-md btn-secondary rounded', $contentUrl);
-        $buttonBar->addButton($contentButton);
-
-        // files button
-        $uriParameters['controller'] = 'Files';
-        $filesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
-        $filesButton = $this->buildButton('apps-clipboard-images', 'tx_aisuite.module.actionmenu.files', 'btn-md btn-default mx-2 rounded', $filesUrl);
-        $buttonBar->addButton($filesButton);
-
-        // agencies button
         $uriParameters['controller'] = 'Agencies';
         $agenciesUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $agenciesButton = $this->buildButton('content-store', 'tx_aisuite.module.actionmenu.agencies', 'btn-md btn-default rounded', $agenciesUrl);
         $buttonBar->addButton($agenciesButton);
 
-        // promtTemplate button
         $uriParameters['controller'] = 'PromptTemplate';
         $promptUrl = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
         $promptButton = $this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default mx-2 rounded', $promptUrl);
@@ -155,11 +137,6 @@ abstract class AbstractBackendController extends ActionController
         $arguments['content'] = $content;
         $newRequest = $this->request->withArguments($arguments);
         $this->request = $newRequest;
-    }
-
-    protected function getBackendUser(): BackendUserAuthentication
-    {
-        return $GLOBALS['BE_USER'];
     }
 
     protected function buildButton(string $iconIdentifier, string $translationKey, string $classes, string $url): AiSuiteLinkButton

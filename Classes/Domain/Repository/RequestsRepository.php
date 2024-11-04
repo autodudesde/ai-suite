@@ -52,9 +52,9 @@ class RequestsRepository extends AbstractPromptTemplateRepository
      */
     public function setRequests(int $freeRequests, int $paidRequests): void
     {
-        if(count($this->findFirstEntry()) > 0 && $freeRequests > -1 && $paidRequests > -1) {
+        if (count($this->findFirstEntry()) > 0 && $freeRequests > -1 && $paidRequests > -1) {
             $this->updateRequests($freeRequests, $paidRequests);
-        } elseif(count($this->findFirstEntry()) > 0 && $freeRequests < 0 && $paidRequests < 0) {
+        } elseif (count($this->findFirstEntry()) > 0 && $freeRequests < 0 && $paidRequests < 0) {
             $this->deleteRequests();
         } else {
             $this->insertRequests($freeRequests, $paidRequests);
@@ -64,7 +64,8 @@ class RequestsRepository extends AbstractPromptTemplateRepository
     /**
      * @throws Exception
      */
-    public function updateRequests(int $freeRequests, int $paidRequests): void {
+    public function updateRequests(int $freeRequests, int $paidRequests): void
+    {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->update($this->table)
@@ -76,7 +77,8 @@ class RequestsRepository extends AbstractPromptTemplateRepository
     /**
      * @throws Exception
      */
-    public function insertRequests(int $freeRequests, int $paidRequests): void {
+    public function insertRequests(int $freeRequests, int $paidRequests): void
+    {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->insert($this->table)
@@ -86,7 +88,8 @@ class RequestsRepository extends AbstractPromptTemplateRepository
             ])
             ->executeStatement();
     }
-    public function deleteRequests(): void {
+    public function deleteRequests(): void
+    {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->delete($this->table)

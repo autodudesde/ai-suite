@@ -2,6 +2,7 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 
 final class ModifyNewContentElementWizardItemsEventListener
@@ -18,26 +19,29 @@ final class ModifyNewContentElementWizardItemsEventListener
     ];
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
     {
+        if (!BackendUserUtility::checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
+            return;
+        }
         $addedAiSuiteWizardItems = [];
-        foreach($event->getWizardItems() as $key => $wizardItem) {
-            if(!str_contains($key, '_')) {
+        foreach ($event->getWizardItems() as $key => $wizardItem) {
+            if (!str_contains($key, '_')) {
                 continue;
             }
             $wizardItemParts = explode('_', $key);
-            if(in_array($wizardItemParts[0], self::exclusionTabList)) {
+            if (in_array($wizardItemParts[0], self::exclusionTabList)) {
                 continue;
             }
             $itemName = '';
             foreach ($wizardItemParts as $partKey => $value) {
-                if($partKey > 0) {
+                if ($partKey > 0) {
                     $itemName .= $value . '_';
                 }
             }
             $itemName = rtrim($itemName, '_');
-            if(in_array($itemName, $addedAiSuiteWizardItems)) {
+            if (in_array($itemName, $addedAiSuiteWizardItems)) {
                 continue;
             }
-            if(count($addedAiSuiteWizardItems) === 0) {
+            if (count($addedAiSuiteWizardItems) === 0) {
                 $event->setWizardItem(
                     'aisuite',
                     [

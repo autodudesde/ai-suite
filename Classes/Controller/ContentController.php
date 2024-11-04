@@ -14,12 +14,10 @@ namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
-use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\ContentService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
-use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Utility\LibraryUtility;
 use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
@@ -31,7 +29,6 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -41,37 +38,20 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class ContentController extends AbstractBackendController
 {
-    protected SendRequestService $requestService;
-
-    protected RequestsRepository $requestsRepository;
     protected ContentService $contentService;
     protected Context $context;
     protected PageContentFactory $pageContentFactory;
 
     public function __construct(
-        array              $extConf,
-        SendRequestService $requestService,
-        RequestsRepository $requestsRepository,
         ContentService     $contentService,
         Context            $context,
         PageContentFactory $pageContentFactory
     ) {
-        parent::__construct($extConf);
-        $this->extConf = $extConf;
-        $this->requestService = $requestService;
-        $this->requestsRepository = $requestsRepository;
+        parent::__construct();
         $this->contentService = $contentService;
         $this->context = $context;
         $this->pageContentFactory = $pageContentFactory;
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
-    }
-
-    public function overviewAction(): ResponseInterface
-    {
-        $this->moduleTemplate->assignMultiple([
-            'sectionActive' => 'content',
-        ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
     }
 
     public function initializeCreateContentAction(): void
@@ -95,30 +75,16 @@ class ContentController extends AbstractBackendController
         $this->moduleTemplate->setModuleId('aiSuite');
 
         $table = array_key_first($request->getQueryParams()['edit']);
-        $librariesAnswer = $this->requestService->sendRequest(
-            new ServerRequest(
-                $this->extConf,
-                'generationLibraries',
-                [
-                    'library_types' => GenerationLibrariesEnumeration::CONTENT,
-                    'target_endpoint' => 'createContentElement',
-                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf,['text', 'image'])
-                ]
-            )
-        );
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
         if ($librariesAnswer->getType() === 'Error') {
-            $this->moduleTemplate->addFlashMessage(
-                $librariesAnswer->getResponseData()['message'],
-                LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR)
-            ;
+            $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
             $this->moduleTemplate->assign('error', true);
             return $this->htmlResponse($this->moduleTemplate->render());
         }
 
         $content = PageContent::createEmpty();
         $defVals = [];
-        if(array_key_exists('defVals', $request->getQueryParams())) {
+        if (array_key_exists('defVals', $request->getQueryParams())) {
             $defVals = $request->getQueryParams()['defVals'];
             $content->setSysLanguageUid((int)$request->getQueryParams()['defVals'][$table]['sys_language_uid']);
             $content->setColPos((int)$request->getQueryParams()['defVals'][$table]['colPos']);
@@ -131,7 +97,7 @@ class ContentController extends AbstractBackendController
             $content->setCType($request->getQueryParams()['recordType'] ?? '');
         }
         $content->setReturnUrl($request->getQueryParams()['returnUrl'] ?? '');
-        if(array_key_exists('edit', $request->getQueryParams()) && array_key_exists($table, $request->getQueryParams()['edit'])) {
+        if (array_key_exists('edit', $request->getQueryParams()) && array_key_exists($table, $request->getQueryParams()['edit'])) {
             $content->setUidPid(key($request->getQueryParams()['edit'][$table]) ?? $request->getQueryParams()['id']);
         } else {
             $content->setUidPid($request->getQueryParams()['id']);
@@ -140,7 +106,7 @@ class ContentController extends AbstractBackendController
         $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content->getCType(), $content->getPid(), $table);
         $content->setAvailableTcaColumns($requestFields);
 
-        if(isset($request->getQueryParams()['selectedTcaColumns'])) {
+        if (isset($request->getQueryParams()['selectedTcaColumns'])) {
             $selectedTcaColumns = json_decode($request->getQueryParams()['selectedTcaColumns'], true);
         } else {
             $selectedTcaColumns = $requestFields;
@@ -186,7 +152,7 @@ class ContentController extends AbstractBackendController
 
     public function initializeRequestContentAction(): void
     {
-        if(!$this->request->hasArgument('content')) {
+        if (!$this->request->hasArgument('content')) {
             $this->request = $this->request->withArgument('content', PageContent::createEmpty());
         }
     }
@@ -199,8 +165,8 @@ class ContentController extends AbstractBackendController
     {
         $table = $this->request->getQueryParams()['table'];
         $selectedTcaColumns = $this->request->getParsedBody()['content']['selectedTcaColumns'] ?? [];
-        $availableTcaColumns = json_decode($this->request->getParsedBody()['content']['availableTcaColumns'],true) ?? [];
-        $defVals = json_decode($this->request->getParsedBody()['defVals'],true) ?? [];
+        $availableTcaColumns = json_decode($this->request->getParsedBody()['content']['availableTcaColumns'], true) ?? [];
+        $defVals = json_decode($this->request->getParsedBody()['defVals'], true) ?? [];
         $additionalImageSettings = $this->request->getParsedBody()['additionalImageSettings'] ?? '';
         $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
         $imageAi = !empty($this->request->getParsedBody()['libraries']['imageGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['imageGenerationLibrary'] : '';
@@ -217,9 +183,9 @@ class ContentController extends AbstractBackendController
             'selectedTcaColumns' => json_encode($selectedTcaColumns),
             'textGenerationLibraryKey' => $textAi,
             'imageGenerationLibraryKey' => $imageAi,
-            'additionalImageSettings' => empty($additionalImageSettings) ? '' : json_encode($additionalImageSettings),
+            'additionalImageSettings' => $additionalImageSettings,
         ];
-        if($table === 'tx_news_domain_model_news') {
+        if ($table === 'tx_news_domain_model_news') {
             $uriParams['recordType'] = '0';
             $uriParams['recordTable'] = 'tx_news_domain_model_news';
             $uriParams['pid'] = $content->getPid();
@@ -229,7 +195,7 @@ class ContentController extends AbstractBackendController
         $content->setRegenerateReturnUrl($regenerateActionUri);
         $this->moduleTemplate->assign('regenerateActionUri', $regenerateActionUri);
 
-        if($content->getPid() === 0 && $content->getUid() == 0 && $content->getUidPid() === 0) {
+        if ($content->getPid() === 0 && $content->getUid() == 0 && $content->getUidPid() === 0) {
             $this->moduleTemplate->assign('error', true);
             $this->moduleTemplate->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.errorMissingArguments.message', 'ai_suite'),
@@ -244,7 +210,7 @@ class ContentController extends AbstractBackendController
             $site = $siteFinder->getSiteByPageId($content->getPid());
             $siteLanguage = $site->getLanguageById($content->getSysLanguageUid());
             $langIsoCode = $siteLanguage->getLocale()->getLanguageCode();
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
                 $exception->getMessage(),
@@ -260,19 +226,19 @@ class ContentController extends AbstractBackendController
             $requestFields[$type] = [
                 'label' => $availableTcaColumns[$type]['label'],
             ];
-            if(array_key_exists('foreignField', $availableTcaColumns[$type])) {
+            if (array_key_exists('foreignField', $availableTcaColumns[$type])) {
                 $requestFields[$type]['foreignField'] = $availableTcaColumns[$type]['foreignField'];
             }
-            if(array_key_exists('text', $fields)) {
+            if (array_key_exists('text', $fields)) {
                 foreach ($fields['text'] as $fieldName => $renderType) {
-                    if($renderType !== '') {
+                    if ($renderType !== '') {
                         $requestFields[$type]['text'][$fieldName] = $availableTcaColumns[$type]['text'][$fieldName];
                     }
                 }
             }
-            if(array_key_exists('image', $fields)) {
+            if (array_key_exists('image', $fields)) {
                 foreach ($fields['image'] as $fieldName => $renderType) {
-                    if($renderType !== '') {
+                    if ($renderType !== '') {
                         $requestFields[$type]['image'][$fieldName] = $availableTcaColumns[$type]['image'][$fieldName];
                     }
                 }
@@ -280,21 +246,17 @@ class ContentController extends AbstractBackendController
         }
         $content->setSelectedTcaColumns($requestFields);
         $models = $this->contentService->checkRequestModels($requestFields, ['text' => $textAi, 'image' => $imageAi]);
-        $answer = $this->requestService->sendRequest(
-            new ServerRequest(
-                $this->extConf,
-                'createContentElement',
-                [
-                    'request_fields' => json_encode($requestFields),
-                    'c_type' => $content->getCType(),
-                    'additional_image_settings' => $additionalImageSettings,
-                    'uuid' => $this->request->getParsedBody()['uuid'] ?? '',
-                    'keys' => ModelUtility::fetchKeysByModel($this->extConf, [$textAi, $imageAi]),
-                ],
-                $content->getInitialPrompt(),
-                strtoupper($langIsoCode),
-                $models
-            )
+        $answer = $this->requestService->sendDataRequest(
+            'createContentElement',
+            [
+                'request_fields' => json_encode($requestFields),
+                'c_type' => $content->getCType(),
+                'additional_image_settings' => $additionalImageSettings,
+                'uuid' => $this->request->getParsedBody()['uuid'] ?? '',
+            ],
+            $content->getInitialPrompt(),
+            strtoupper($langIsoCode),
+            $models
         );
         if ($answer->getType() === 'Error') {
             $this->moduleTemplate->addFlashMessage(
@@ -305,16 +267,12 @@ class ContentController extends AbstractBackendController
             $this->moduleTemplate->assign('error', true);
             return $this->htmlResponse($this->moduleTemplate->render());
         }
-        if(array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
-            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
-            BackendUtility::setUpdateSignal('updateTopbar');
-        }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
         foreach ($contentElementData as $tableName => $fields) {
-            foreach($fields as $key => $field) {
-                if(is_array($field) && array_key_exists('text', $field)) {
+            foreach ($fields as $key => $field) {
+                if (is_array($field) && array_key_exists('text', $field)) {
                     foreach ($field['text'] as $fieldName => $renderType) {
-                        if(array_key_exists('rteConfig', $contentElementData[$tableName][$key]['text'][$fieldName])) {
+                        if (array_key_exists('rteConfig', $contentElementData[$tableName][$key]['text'][$fieldName])) {
                             $rteConfigData = is_array($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'])
                                 ? $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig']
                                 : json_decode($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'], true);
@@ -355,17 +313,17 @@ class ContentController extends AbstractBackendController
             $contentElementImageData = [];
 
             $parsedBody = $this->request->getParsedBody() ?? [];
-            if(array_key_exists('fileData', $parsedBody)) {
-                foreach($parsedBody['fileData']['content']['contentElementData'] as $table => $fieldsArray) {
+            if (array_key_exists('fileData', $parsedBody)) {
+                foreach ($parsedBody['fileData']['content']['contentElementData'] as $table => $fieldsArray) {
                     foreach ($fieldsArray as $key => $fields) {
-                        foreach($fields as $fieldName => $fieldData) {
-                            if(array_key_exists('newImageUrl', $fieldData)) {
+                        foreach ($fields as $fieldName => $fieldData) {
+                            if (array_key_exists('newImageUrl', $fieldData)) {
                                 $contentElementImageData[$table][$key][$fieldName]['newImageUrl'] = $fieldData['newImageUrl'];
                                 $imageTitle = '';
-                                if(!empty($fieldData['imageTitle'])) {
+                                if (!empty($fieldData['imageTitle'])) {
                                     $imageTitle = $fieldData['imageTitle'];
                                 }
-                                if(!empty($fieldData['imageTitleFreeText'])) {
+                                if (!empty($fieldData['imageTitleFreeText'])) {
                                     $imageTitle = $fieldData['imageTitleFreeText'];
                                 }
                                 $contentElementImageData[$table][$key][$fieldName]['imageTitle'] = $imageTitle;
@@ -377,12 +335,12 @@ class ContentController extends AbstractBackendController
 
             $contentElementIrreFields = [];
             foreach ($selectedTcaColumns as $table => $fields) {
-                if(array_key_exists('foreignField', $fields)) {
+                if (array_key_exists('foreignField', $fields)) {
                     $contentElementIrreFields[$table] = $fields['foreignField'];
                 }
             }
             $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(
                 $exception->getMessage(),

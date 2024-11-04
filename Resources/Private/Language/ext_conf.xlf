@@ -12,12 +12,6 @@
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
             </trans-unit>
-            <trans-unit id="useUrlForRequest" resname="useUrlForRequest">
-                <source>Use always URL for metadata requests: With this option you can use the corresponding URL of the page for all metadata analyses. As a result, you have to use fewer tokens to carry out your corresponding analyses. IMPORTANT: The page must be publicly accessible (hidden pages fail and pages in a local environment lead to poor results)</source>
-            </trans-unit>
-            <trans-unit id="singleNewsDisplayPage" resname="singleNewsDisplayPage">
-                <source>Enter the ID of one page that is used as a detail view for news articles of the news extension</source>
-            </trans-unit>
             <trans-unit id="openTranslatedRecordInEditMode" resname="openTranslatedRecordInEditMode">
                 <source>Open translated record in edit mode</source>
             </trans-unit>
