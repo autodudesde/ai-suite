@@ -23,7 +23,6 @@ use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -43,7 +42,7 @@ class PagesController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Pages/Overview'));
     }
 
     /**
@@ -68,7 +67,7 @@ class PagesController extends AbstractBackendController
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates('pageTree'),
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Pages/PageStructure'));
     }
 
     public function validatePageStructureResultAction(PageStructureInput $input): ResponseInterface
@@ -108,7 +107,7 @@ class PagesController extends AbstractBackendController
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite'),
         );
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Pages/ValidatePageStructureResult'));
     }
 
     public function createValidatedPageStructureAction(PageStructureInput $input): ResponseInterface

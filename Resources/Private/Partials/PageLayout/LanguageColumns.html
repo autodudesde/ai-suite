@@ -47,7 +47,7 @@
                             <f:if condition="{allowEditContent} && {languageColumn.context.siteLanguage.languageId} && {languageColumn.translationData.untranslatedRecordUids}">
                                 <a href="#" class="btn btn-default btn-sm t3js-localize-ai-suite disabled"
                                     title="{languageColumn.context.translatePageTitle}"
-                                    data-page="{languageColumn.context.localizedPageRecord.title}"
+                                    data-page="{f:translate(key: 'LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:newPageContent_translate')}"
                                     data-has-elements="{languageColumn.translationData.hasTranslations as integer}"
                                     data-allow-copy="{languageColumn.allowTranslateCopy as integer}"
                                     data-allow-translate="{languageColumn.allowTranslate as integer}"
@@ -58,7 +58,7 @@
                                     data-uuid="{aiSuite:uuid()}"
                                 >
                                     <core:icon identifier="actions-localize" />
-                                    {languageColumn.translatePageTitle}
+                                    <f:translate key="LLL:EXT:backend/Resources/Private/Language/locallang_layout.xlf:newPageContent_translate" />
                                 </a>
                             </f:if>
                         </div>

@@ -1,11 +1,11 @@
 import $ from 'jquery';
 import DocumentService from "@typo3/core/document-service.js";
-import { AjaxResponse } from '@typo3/core/ajax/ajax-response.js';
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import 'lit';
 import { SeverityEnum } from '@typo3/backend/enum/severity.js';
 import Icons from '@typo3/backend/icons.js';
-import Wizard from "@typo3/backend/wizard.js";
+import Modal from "@typo3/backend/modal.js";
+import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import Translation from "@autodudes/ai-suite/helper/translation.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
@@ -25,15 +25,12 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 class AiSuiteLocalization {
     constructor() {
         this.triggerButton = '.t3js-localize-ai-suite';
-        this.localizationMode = null;
-        this.sourceLanguage = null;
-        this.records = [];
         DocumentService.ready().then(() => {
             this.initialize();
         });
         this.intervalId = null;
     }
-    initialize() {
+    async initialize() {
         const self = this;
         $(self.triggerButton).removeClass('disabled');
         $(document).on('click', self.triggerButton, async (e) => {
@@ -51,225 +48,280 @@ class AiSuiteLocalization {
             if (actions.length > 0) {
                 availableLocalizationModes.push('copyWithAI');
             }
-            const slideContent = '<div data-bs-toggle="buttons">' + actions.join('') + '</div>';
-            Wizard.addSlide('localize-choose-action', TYPO3.lang['localize.wizard.header_page']
-                .replace('{0}', $triggerButton.data('page'))
-                .replace('{1}', $triggerButton.data('languageName')), slideContent, SeverityEnum.info, () => {
-                if (availableLocalizationModes.length === 1) {
-                    // In case only one mode is available, select the mode and continue
-                    this.localizationMode = availableLocalizationModes[0];
-                    Wizard.unlockNextStep().trigger('click');
-                }
-            });
-            Wizard.addSlide('localize-choose-language', TYPO3.lang['localize.view.chooseLanguage'], '', SeverityEnum.info, ($slide) => {
-                Icons.getIcon('spinner-circle-dark', Icons.sizes.large).then((markup) => {
-                    $slide.html('<div class="text-center">' + markup + '</div>');
-                    this.loadAvailableLanguages(parseInt($triggerButton.data('pageId'), 10), parseInt($triggerButton.data('languageId'), 10)).then(async (response) => {
-                        const result = await response.resolve();
-                        if (result.length === 1) {
-                            // We only have one result, auto select the record and continue
-                            this.sourceLanguage = result[0].uid;
-                            Wizard.unlockNextStep().trigger('click');
-                            return;
+            if ($triggerButton.data('allowTranslate') === 0 && $triggerButton.data('allowCopy') === 0 && actions.length === 0) {
+                Modal.confirm(
+                    TYPO3.lang['window.localization.mixed_mode.title'],
+                    TYPO3.lang['window.localization.mixed_mode.message'],
+                    SeverityEnum.warning,
+                    [
+                        {
+                            text: TYPO3?.lang?.['button.ok'] || 'OK',
+                            btnClass: 'btn-warning',
+                            name: 'ok',
+                            trigger: (e, modal) => modal.hideModal()
                         }
-                        Wizard.getComponent().on('click', '.t3js-language-option', (optionEvt) => {
-                            const $me = $(optionEvt.currentTarget);
-                            const $radio = $me.prev();
-                            this.sourceLanguage = $radio.val();
-                            Wizard.unlockNextStep();
-                        });
-                        const $languageButtons = $('<div />', {class: 'row'});
-                        for (const languageObject of result) {
-                            const id = 'language' + languageObject.uid;
-                            const $input = $('<input />', {
-                                type: 'radio',
-                                name: 'language',
-                                id: id,
-                                value: languageObject.uid,
-                                style: 'display: none;',
-                                class: 'btn-check',
-                            });
-                            const $label = $('<label />', {
-                                class: 'btn btn-default d-block t3js-language-option option',
-                                for: id,
-                            })
-                                .text(' ' + languageObject.title)
-                                .prepend(languageObject.flagIcon);
-                            $languageButtons.append($('<div />', {class: 'col-sm-4'}).append($input).append($label));
+                    ]
+                );
+                return;
+            }
+            const availableLanguages = await (await this.loadAvailableLanguages(
+                parseInt($triggerButton.data('pageId'), 10),
+                parseInt($triggerButton.data('languageId'), 10),
+            )).resolve();
+
+            if (availableLocalizationModes.length === 1) {
+                MultiStepWizard.set('localizationMode', availableLocalizationModes[0]);
+            } else {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.dataset.bsToggle = 'buttons';
+                buttonContainer.append(...actions.map((actionMarkup) => document.createRange().createContextualFragment(actionMarkup)));
+
+                MultiStepWizard.addSlide(
+                    'localize-choose-action',
+                    TYPO3.lang['localize.wizard.header_page']
+                        .replace('{0}', $triggerButton.data('page'))
+                        .replace('{1}', $triggerButton.data('languageName')),
+                    buttonContainer,
+                    SeverityEnum.notice,
+                    TYPO3.lang['localize.wizard.step.selectMode'],
+                    ($slide, settings) => {
+                        if (settings.localizationMode !== undefined) {
+                            MultiStepWizard.unlockNextStep();
                         }
-                        $slide.empty().append($languageButtons);
+                    }
+                );
+            }
+            if (availableLanguages.length === 1) {
+                MultiStepWizard.set('sourceLanguage', availableLanguages[0].uid);
+            } else {
+                MultiStepWizard.addSlide(
+                    'localize-choose-language',
+                    TYPO3.lang['localize.view.chooseLanguage'],
+                    '', SeverityEnum.notice,
+                    TYPO3.lang["localize.wizard.step.chooseLanguage"],
+                    async ($slide, settings) => {
+                    if (settings.sourceLanguage !== undefined) {
+                        MultiStepWizard.unlockNextStep();
+                    }
+                    $slide.html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
+
+                    MultiStepWizard.getComponent().on('change', '.t3js-language-option', (optionEvt) => {
+                        MultiStepWizard.set('sourceLanguage', $(optionEvt.currentTarget).val());
+                        MultiStepWizard.unlockNextStep();
                     });
+                    const $languageButtons = $('<div />', { class: 'row' });
+
+                    for (const languageObject of availableLanguages) {
+                        const id = 'language' + languageObject.uid;
+                        const $input = $('<input />', {
+                            type: 'radio',
+                            name: 'language',
+                            id: id,
+                            value: languageObject.uid,
+                            class: 'btn-check t3js-language-option'
+                        });
+                        const $label = $('<label />', {
+                            class: 'btn btn-default btn-block',
+                            'for': id
+                        })
+                            .text(' ' + languageObject.title)
+                            .prepend(languageObject.flagIcon);
+
+                        $languageButtons.append(
+                            $('<div />', { class: 'col-sm-4' })
+                                .append($input)
+                                .append($label),
+                        );
+                    }
+                    $slide.empty().append($languageButtons);
                 });
-            });
-            Wizard.addSlide('localize-summary', TYPO3.lang['localize.view.summary'], '', SeverityEnum.info, ($slide) => {
-                Icons.getIcon('spinner-circle-dark', Icons.sizes.large).then((markup) => {
-                    $slide.html('<div class="text-center">' + markup + '</div>');
-                });
-                this.getSummary(parseInt($triggerButton.data('pageId'), 10), parseInt($triggerButton.data('languageId'), 10)).then(async (response) => {
-                    const result = await response.resolve();
+            }
+            MultiStepWizard.addSlide(
+                'localize-summary',
+                TYPO3.lang['localize.view.summary'],
+                '', SeverityEnum.notice,
+                TYPO3.lang["localize.wizard.step.selectRecords"],
+                async ($slide, settings) => {
+                $slide.empty().html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
+
+                    const result = await (await this.getSummary(
+                        parseInt($triggerButton.data('pageId'), 10),
+                        parseInt($triggerButton.data('languageId'), 10),
+                        settings.sourceLanguage
+                    )).resolve();
+
                     $slide.empty();
-                    this.records = [];
+
+                    MultiStepWizard.set('records', []);
+
                     const columns = result.columns.columns;
                     const columnList = result.columns.columnList;
+
                     columnList.forEach((colPos) => {
                         if (typeof result.records[colPos] === 'undefined') {
                             return;
                         }
+
                         const column = columns[colPos];
-                        const $row = $('<div />', {class: 'row'});
+                        const rowElement = document.createElement('div');
+                        rowElement.classList.add('row', 'gy-2')
+
                         result.records[colPos].forEach((record) => {
                             const label = ' (' + record.uid + ') ' + record.title;
-                            this.records.push(record.uid);
-                            $row.append($('<div />', {class: 'col-sm-6'}).append($('<div />', {class: 'input-group'}).append($('<span />', {class: 'input-group-addon'}).append($('<input />', {
-                                type: 'checkbox',
-                                class: 't3js-localization-toggle-record',
-                                id: 'record-uid-' + record.uid,
-                                checked: 'checked',
-                                'data-uid': record.uid,
-                                'aria-label': label,
-                            })), $('<label />', {
-                                class: 'form-control',
-                                for: 'record-uid-' + record.uid,
-                            })
-                                .text(label)
-                                .prepend(record.icon))));
+                            settings.records.push(record.uid);
+
+                            const columnElement = document.createElement('div');
+                            columnElement.classList.add('col-sm-6');
+
+                            const inputGroupElement = document.createElement('div');
+                            inputGroupElement.classList.add('input-group');
+
+                            const inputGroupTextElement = document.createElement('span');
+                            inputGroupTextElement.classList.add('input-group-text');
+
+                            const checkboxContainerElement = document.createElement('span');
+                            checkboxContainerElement.classList.add('form-check', 'form-check-type-toggle');
+
+                            const checkboxInputElement = document.createElement('input');
+                            checkboxInputElement.type = 'checkbox';
+                            checkboxInputElement.id = 'record-uid-' + record.uid;
+                            checkboxInputElement.classList.add('form-check-input', 't3js-localization-toggle-record');
+                            checkboxInputElement.checked = true;
+                            checkboxInputElement.dataset.uid = record.uid.toString();
+                            checkboxInputElement.ariaLabel = label;
+
+                            const labelElement = document.createElement('label');
+                            labelElement.classList.add('form-control');
+                            labelElement.htmlFor = 'record-uid-' + record.uid;
+                            labelElement.innerHTML = record.icon;
+                            labelElement.appendChild(document.createTextNode(label));
+
+                            checkboxContainerElement.appendChild(checkboxInputElement);
+                            inputGroupTextElement.appendChild(checkboxContainerElement);
+                            inputGroupElement.appendChild(inputGroupTextElement);
+                            inputGroupElement.appendChild(labelElement);
+                            columnElement.appendChild(inputGroupElement);
+
+                            rowElement.appendChild(columnElement);
                         });
-                        $slide.append($('<fieldset />', {
-                            class: 'localization-fieldset',
-                        }).append($('<label />')
-                            .text(column)
-                            .prepend($('<input />', {
-                                class: 't3js-localization-toggle-column',
-                                type: 'checkbox',
-                                checked: 'checked',
-                            })), $row));
+
+                        const fieldsetElement = document.createElement('fieldset');
+                        fieldsetElement.classList.add('localization-fieldset');
+
+                        const fieldsetCheckboxContaineElement = document.createElement('div');
+                        fieldsetCheckboxContaineElement.classList.add('form-check', 'form-check-type-toggle');
+
+                        const fieldsetCheckboxInputElement = document.createElement('input');
+                        fieldsetCheckboxInputElement.classList.add('form-check-input', 't3js-localization-toggle-column');
+                        fieldsetCheckboxInputElement.id = 'records-column-' + colPos;
+                        fieldsetCheckboxInputElement.type = 'checkbox';
+                        fieldsetCheckboxInputElement.checked = true;
+
+                        const fieldsetCheckboxInputLabel = document.createElement('label');
+                        fieldsetCheckboxInputLabel.classList.add('form-check-label');
+                        fieldsetCheckboxInputLabel.htmlFor = 'records-column-' + colPos;
+                        fieldsetCheckboxInputLabel.textContent = column;
+
+                        fieldsetCheckboxContaineElement.appendChild(fieldsetCheckboxInputElement);
+                        fieldsetCheckboxContaineElement.appendChild(fieldsetCheckboxInputLabel);
+                        fieldsetElement.appendChild(fieldsetCheckboxContaineElement);
+                        fieldsetElement.appendChild(rowElement);
+
+                        $slide.append(fieldsetElement);
                     });
-                    Wizard.unlockNextStep();
-                    Wizard.getComponent()
-                        .on('change', '.t3js-localization-toggle-record', (cmpEvt) => {
-                            const $me = $(cmpEvt.currentTarget);
-                            const uid = $me.data('uid');
-                            const $parent = $me.closest('fieldset');
-                            const $columnCheckbox = $parent.find('.t3js-localization-toggle-column');
-                            if ($me.is(':checked')) {
-                                this.records.push(uid);
-                            } else {
-                                const index = this.records.indexOf(uid);
-                                if (index > -1) {
-                                    this.records.splice(index, 1);
-                                }
+
+                    MultiStepWizard.unlockNextStep();
+
+                    MultiStepWizard.getComponent().on('change', '.t3js-localization-toggle-record', (cmpEvt) => {
+                        const $me = $(cmpEvt.currentTarget);
+                        const uid = $me.data('uid');
+                        const $parent = $me.closest('fieldset');
+                        const $columnCheckbox = $parent.find('.t3js-localization-toggle-column');
+
+                        if ($me.is(':checked')) {
+                            settings.records.push(uid);
+                        } else {
+                            const index = settings.records.indexOf(uid);
+                            if (index > -1) {
+                                settings.records.splice(index, 1);
                             }
-                            const $allChildren = $parent.find('.t3js-localization-toggle-record');
-                            const $checkedChildren = $parent.find('.t3js-localization-toggle-record:checked');
-                            $columnCheckbox.prop('checked', $checkedChildren.length > 0);
-                            $columnCheckbox.prop('indeterminate', $checkedChildren.length > 0 && $checkedChildren.length < $allChildren.length);
-                            if (this.records.length > 0) {
-                                Wizard.unlockNextStep();
-                            } else {
-                                Wizard.lockNextStep();
-                            }
-                        })
-                        .on('change', '.t3js-localization-toggle-column', (toggleEvt) => {
-                            const $me = $(toggleEvt.currentTarget);
-                            const $children = $me.closest('fieldset').find('.t3js-localization-toggle-record');
-                            $children.prop('checked', $me.is(':checked'));
-                            $children.trigger('change');
-                        });
+                        }
+
+                        const $allChildren = $parent.find('.t3js-localization-toggle-record');
+                        const $checkedChildren = $parent.find('.t3js-localization-toggle-record:checked');
+
+                        $columnCheckbox.prop('checked', $checkedChildren.length > 0);
+                        $columnCheckbox.prop('__indeterminate', $checkedChildren.length > 0 && $checkedChildren.length < $allChildren.length);
+
+                        if (settings.records.length > 0) {
+                            MultiStepWizard.unlockNextStep();
+                        } else {
+                            MultiStepWizard.lockNextStep();
+                        }
+                    }).on('change', '.t3js-localization-toggle-column', (toggleEvt) => {
+                        const $me = $(toggleEvt.currentTarget);
+                        const $children = $me.closest('fieldset').find('.t3js-localization-toggle-record');
+
+                        $children.prop('checked', $me.is(':checked'));
+                        $children.trigger('change');
+                    });
+
                 });
-            });
-            Wizard.addFinalProcessingSlide(($slide) => {
+            MultiStepWizard.addFinalProcessingSlide(async ($slide, settings) => {
                 $slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.translationInProcess']));
-                let modal = Wizard.setup.$carousel.closest('.modal');
+                let modal = MultiStepWizard.setup.$carousel.closest('.modal');
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 const postData = {
                     'pageId': $triggerButton.data('pageId'),
                     'uuid': $triggerButton.data('uuid')
                 }
                 StatusHandling.fetchStatus(postData, modal, self)
-                this.localizeRecords(parseInt($triggerButton.data('pageId'), 10), parseInt($triggerButton.data('languageId'), 10), this.records, $triggerButton.data('uuid')).then(() => {
-                    clearInterval(this.intervalId);
-                    Wizard.dismiss();
-                    document.location.reload();
-                });
+                await this.localizeRecords(
+                    parseInt($triggerButton.data('pageId'), 10),
+                    parseInt($triggerButton.data('languageId'), 10),
+                    settings.sourceLanguage,
+                    settings.localizationMode,
+                    settings.records,
+                    $triggerButton.data('uuid')
+                );
+                MultiStepWizard.dismiss();
+                document.location.reload();
             }).then(() => {
-                Wizard.show();
-                Wizard.getComponent().on('click', '.t3js-localization-option', (optionEvt) => {
-                    const $me = $(optionEvt.currentTarget);
-                    const $radio = $me.find('input[type="radio"]');
-                    if ($me.data('helptext')) {
-                        const $container = $(optionEvt.delegateTarget);
-                        $container.find('.t3js-localization-option').removeClass('active');
-                        $container.find('.t3js-helptext').addClass('text-body-secondary');
-                        $me.addClass('active');
-                        $container.find($me.data('helptext')).removeClass('text-body-secondary');
-                    }
-                    this.loadAvailableLanguages(parseInt($triggerButton.data('pageId'), 10), parseInt($triggerButton.data('languageId'), 10)).then(async (response) => {
-                        const result = await response.resolve();
-                        if (result.length === 1) {
-                            this.sourceLanguage = result[0].uid;
-                        } else {
-                            // This seems pretty ugly solution to find the right language uid but its done the same way in the core... line 211-213
-                            // If we have more then 1 language we need to find the first radio button and check its value to get the source language
-                            this.sourceLanguage = $radio.prev().val();
-                        }
-                    });
-                    this.localizationMode = $radio.val().toString();
-                    Wizard.unlockNextStep();
+                MultiStepWizard.show();
+
+                MultiStepWizard.getComponent().on('change', '.t3js-localization-option', (optionEvt) => {
+                    MultiStepWizard.set('localizationMode', $(optionEvt.currentTarget).val());
+                    MultiStepWizard.unlockNextStep();
                 });
             });
         });
     }
-    /**
-     * Load available languages from page
-     *
-     * @param {number} pageId
-     * @param {number} languageId
-     * @returns {Promise<AjaxResponse>}
-     */
+
     loadAvailableLanguages(pageId, languageId) {
-        return new AjaxRequest(TYPO3.settings.ajaxUrls.page_languages)
-            .withQueryArguments({
+        return new AjaxRequest(TYPO3.settings.ajaxUrls.page_languages).withQueryArguments({
             pageId: pageId,
             languageId: languageId,
         })
             .get();
     }
-    /**
-     * Get summary for record processing
-     *
-     * @param {number} pageId
-     * @param {number} languageId
-     * @returns {Promise<AjaxResponse>}
-     */
-    getSummary(pageId, languageId) {
-        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize_summary)
-            .withQueryArguments({
+
+    getSummary(pageId, languageId, sourceLanguage) {
+        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize_summary).withQueryArguments({
             pageId: pageId,
             destLanguageId: languageId,
-            languageId: this.sourceLanguage,
-        })
-            .get();
+            languageId: sourceLanguage,
+        }).get();
     }
-    /**
-     * Localize records
-     *
-     * @param {number} pageId
-     * @param {number} languageId
-     * @param {Array<number>} uidList
-     * @param {string} uuid
-     * @returns {Promise<AjaxResponse>}
-     */
-    localizeRecords(pageId, languageId, uidList, uuid) {
-        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize)
-            .withQueryArguments({
+
+    localizeRecords(pageId, languageId, sourceLanguage, localizationMode, uidList, uuid) {
+        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize).withQueryArguments({
             pageId: pageId,
-            srcLanguageId: this.sourceLanguage,
+            srcLanguageId: sourceLanguage,
             destLanguageId: languageId,
-            action: this.localizationMode,
+            action: localizationMode,
             uidList: uidList,
             uuid: uuid
-        })
-            .get();
+        }).get();
     }
 
     async checkLocalizationPermissions() {

@@ -12,7 +12,6 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
 use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
@@ -34,7 +33,7 @@ class PromptTemplateController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('PromptTemplate/Overview'));
     }
 
     /**
@@ -67,7 +66,7 @@ class PromptTemplateController extends AbstractBackendController
             'search' => $search,
             'pid' => $this->request->getQueryParams()['id'] ?? $rootPageId
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('PromptTemplate/ManageCustomPromptTemplates'));
     }
 
     public function updateServerPromptTemplatesAction(): ResponseInterface

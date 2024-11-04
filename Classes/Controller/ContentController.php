@@ -13,18 +13,15 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\ContentService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\ModelUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
@@ -147,7 +144,7 @@ class ContentController extends AbstractBackendController
             'contentTypeTitle' => $content->getCType() === '0' ? 'news' : $content->getCType()
         ]);
 
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Content/CreateContent'));
     }
 
     public function initializeRequestContentAction(): void
@@ -202,7 +199,7 @@ class ContentController extends AbstractBackendController
                 LocalizationUtility::translate('aiSuite.module.errorMissingArguments.title', 'ai_suite'),
                 ContextualFeedbackSeverity::ERROR
             );
-            return $this->htmlResponse($this->moduleTemplate->render());
+            return $this->htmlResponse($this->moduleTemplate->render('Content/RequestContent'));
         }
 
         try {
@@ -218,7 +215,7 @@ class ContentController extends AbstractBackendController
                 ContextualFeedbackSeverity::ERROR
             );
             $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            return $this->htmlResponse($this->moduleTemplate->render('Content/RequestContent'));
         }
 
         $requestFields = [];
@@ -265,7 +262,7 @@ class ContentController extends AbstractBackendController
                 ContextualFeedbackSeverity::ERROR
             );
             $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            return $this->htmlResponse($this->moduleTemplate->render('Content/RequestContent'));
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
         foreach ($contentElementData as $tableName => $fields) {
@@ -302,7 +299,7 @@ class ContentController extends AbstractBackendController
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
             LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite')
         );
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Content/RequestContent'));
     }
 
     public function createPageContentAction(PageContent $content): ResponseInterface
@@ -348,7 +345,7 @@ class ContentController extends AbstractBackendController
                 ContextualFeedbackSeverity::ERROR
             );
             $this->moduleTemplate->assign('errorActionUri', $content->getRegenerateReturnUrl());
-            return $this->htmlResponse($this->moduleTemplate->render());
+            return $this->htmlResponse($this->moduleTemplate->render('Content/CreatePageContent'));
         }
         return $this->redirectToUri($content->getReturnUrl());
     }

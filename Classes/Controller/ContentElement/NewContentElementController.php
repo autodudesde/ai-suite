@@ -54,7 +54,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                 ];
 
                 // Get default values for the wizard item
-                $defVals = (array)($wizardItem['tt_content_defValues'] ?? []);
+                $defVals = (array)($wizardItem['defaultValues'] ?? []);
                 if (!$positionSelection) {
                     // In case no position has to be selected, we can just add the target
                     if (($wizardItem['saveAndClose'] ?? false)) {
@@ -121,6 +121,13 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                     $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
                 }
                 $categories[$key]['items'][] = $item;
+            }
+        }
+
+        // Unset empty categories
+        foreach ($categories as $key => $category) {
+            if ($category['items'] === []) {
+                unset($categories[$key]);
             }
         }
 

@@ -1,6 +1,6 @@
 <html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
-    <f:asset.css identifier="wizardSlideTwoCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css" />
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
     <div id="wizardSlideTwo" class="ai-suite-image-generation-wizard">
         <f:if condition="{imageAiModel} == 'DALL-E'">
             <f:then>

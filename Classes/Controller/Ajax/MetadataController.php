@@ -99,7 +99,7 @@ class MetadataController extends AbstractAjaxController
             $request,
             'WizardSlideOne',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Metadata/',
-            'Metadata',
+            'EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-one.css',
             $params
         );
         $response->getBody()->write(
@@ -158,7 +158,7 @@ class MetadataController extends AbstractAjaxController
             $request,
             'WizardSlideTwo',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Metadata/',
-            'Metadata',
+            'EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(

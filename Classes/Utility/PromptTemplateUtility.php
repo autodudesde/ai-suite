@@ -18,9 +18,6 @@ use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
 use AutoDudes\AiSuite\Domain\Repository\ServerPromptTemplateRepository;
 use Doctrine\DBAL\Exception;
-use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PromptTemplateUtility

@@ -20,8 +20,8 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder as BackendUriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -143,7 +143,7 @@ abstract class AbstractBackendController extends ActionController
     {
         $button = GeneralUtility::makeInstance(AiSuiteLinkButton::class);
         return $button
-            ->setIcon($this->iconFactory->getIcon($iconIdentifier, Icon::SIZE_SMALL))
+            ->setIcon($this->iconFactory->getIcon($iconIdentifier, IconSize::SMALL))
             ->setTitle(LocalizationUtility::translate($translationKey, 'ai_suite'))
             ->setShowLabelText(true)
             ->setClasses($classes)

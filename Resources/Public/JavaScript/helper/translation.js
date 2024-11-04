@@ -29,16 +29,15 @@ class Translation {
                         actions.push(`
                         <div class="row align-items-center mb-4">
                             <div class="col-sm-3">
-                              <label class="btn btn-default d-block t3js-localization-option" data-helptext=".t3js-helptext-copy" ` + disabled + `>
+                              <input type="radio" class="btn-check t3js-localization-option" name="mode" id="mode_translate_` + library.model_identifier + `" value="` + actionPrefix + library.model_identifier + `">
+                              <label class="btn btn-default btn-block-vertical" for="mode_translate_` + library.model_identifier + `" data-action="` + actionPrefix + library.model_identifier + `">
                                ` + libraryIcon + `
-                                <input type="radio" name="mode" id="mode_translate_` + library.model_identifier + `" value="` + actionPrefix + library.model_identifier + `" style="display: none">
-                                <br>
                                 ` + library.name + `
                                 ` + onlyPaid + `
                               </label>
                             </div>
                             <div class="col-sm-9">
-                                ` + library.info + `
+                                <p class="text-body-secondary">` + library.info + `</p>
                             </div>
                           </div>
                     `);
@@ -56,39 +55,37 @@ class Translation {
         }
         if (allowTranslate) {
             const localizeIconMarkup = await Icons.getIcon('actions-localize', Icons.sizes.large);
-            actions.push('<div class="row">' +
-                '<div class="col-sm-3">' +
-                '<label class="btn btn-default d-block t3js-localization-option" data-helptext=".t3js-helptext-translate">' +
-                localizeIconMarkup +
-                '<input type="radio" name="mode" id="mode_translate" value="localize" style="display: none">' +
-                '<br>' +
-                TYPO3.lang['localize.wizard.button.translate'] +
-                '</label>' +
-                '</div>' +
-                '<div class="col-sm-9">' +
-                '<p class="t3js-helptext t3js-helptext-translate text-body-secondary">' +
-                TYPO3.lang['localize.educate.translate'] +
-                '</p>' +
-                '</div>' +
-                '</div>');
+            actions.push(
+                '<div class="row">'
+                + '<div class="col-sm-3">'
+                + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_translate" value="localize">'
+                + '<label class="btn btn-default btn-block-vertical" for="mode_translate" data-action="localize">'
+                + localizeIconMarkup
+                + TYPO3.lang['localize.wizard.button.translate']
+                + '</label>'
+                + '</div>'
+                + '<div class="col-sm-9">'
+                + '<p class="text-body-secondary">' + TYPO3.lang['localize.educate.translate'] + '</p>'
+                + '</div>'
+                + '</div>',
+            );
         }
         if (allowCopy) {
             const copyIconMarkup = await Icons.getIcon('actions-edit-copy', Icons.sizes.large);
-            actions.push('<div class="row">' +
-                '<div class="col-sm-3">' +
-                '<label class="btn btn-default d-block t3js-localization-option" data-helptext=".t3js-helptext-copy">' +
-                copyIconMarkup +
-                '<input type="radio" name="mode" id="mode_copy" value="copyFromLanguage" style="display: none">' +
-                '<br>' +
-                TYPO3.lang['localize.wizard.button.copy'] +
-                '</label>' +
-                '</div>' +
-                '<div class="col-sm-9">' +
-                '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' +
-                TYPO3.lang['localize.educate.copy'] +
-                '</p>' +
-                '</div>' +
-                '</div>');
+            actions.push(
+                '<div class="row">'
+                + '<div class="col-sm-3">'
+                + '<input class="btn-check t3js-localization-option" type="radio" name="mode" id="mode_copy" value="copyFromLanguage">'
+                + '<label class="btn btn-default btn-block-vertical" for="mode_copy" data-action="copy">'
+                + copyIconMarkup
+                + TYPO3.lang['localize.wizard.button.copy']
+                + '</label>'
+                + '</div>'
+                + '<div class="col-sm-9">'
+                + '<p class="t3js-helptext t3js-helptext-copy text-body-secondary">' + TYPO3.lang['localize.educate.copy'] + '</p>'
+                + '</div>'
+                + '</div>',
+            );
         }
         return actions;
     }

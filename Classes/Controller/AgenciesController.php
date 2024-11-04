@@ -19,7 +19,6 @@ use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\XliffUtility;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Exception;
@@ -34,7 +33,7 @@ class AgenciesController extends AbstractBackendController
 
     public function overviewAction(): ResponseInterface
     {
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Agencies/Overview'));
     }
 
     public function translateXlfAction(): ResponseInterface
@@ -55,7 +54,7 @@ class AgenciesController extends AbstractBackendController
             'translateGenerationLibraries' => $librariesAnswer->getResponseData()['translateGenerationLibraries'],
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable']
         ]);
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('Agencies/TranslateXlf'));
     }
 
     public function validateXlfResultAction(XlfInput $input): ResponseInterface
@@ -143,7 +142,7 @@ class AgenciesController extends AbstractBackendController
                 LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
                 LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite'),
             );
-            return $this->htmlResponse($this->moduleTemplate->render());
+            return $this->htmlResponse($this->moduleTemplate->render('Agencies/ValidateXlfResult'));
         } catch (UnknownPackageException $exception) {
             $this->logger->error($exception->getMessage());
             $this->addFlashMessage(

@@ -15,7 +15,6 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 use AutoDudes\AiSuite\Domain\Model\Pages;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 

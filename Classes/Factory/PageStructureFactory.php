@@ -16,7 +16,6 @@ use AutoDudes\AiSuite\Domain\Model\Pages;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

@@ -6,8 +6,6 @@ namespace AutoDudes\AiSuite\Controller\RecordList;
 
 use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\TranslationUtility;
-use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordList
 {

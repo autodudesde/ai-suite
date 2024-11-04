@@ -66,7 +66,7 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideOne',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'Image',
+            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-one.css',
             $params
         );
         return new HtmlResponse($output);
@@ -117,7 +117,7 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideTwo',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'Image',
+            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(
@@ -177,7 +177,7 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideThree',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'Image',
+            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(
@@ -192,8 +192,7 @@ class ImageController extends AbstractAjaxController
     }
 
     /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function regenerateImageAction(ServerRequestInterface $request): ResponseInterface
     {
@@ -239,7 +238,7 @@ class ImageController extends AbstractAjaxController
             $request,
             'RegenerateImage',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'Image',
+            '',
             $params
         );
         $response->getBody()->write(

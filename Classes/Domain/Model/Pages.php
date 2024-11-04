@@ -16,7 +16,6 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Pages extends AbstractEntity
 {
-    protected $pid;
     protected string $title;
     protected int $doktype;
     protected int $hidden;
@@ -36,7 +35,7 @@ class Pages extends AbstractEntity
     protected int $isSiteroot;
 
     public function __construct(
-        int $pid,
+        ?int $pid,
         string $title,
         int $doktype,
         int $hidden,

@@ -8,13 +8,18 @@ use AutoDudes\AiSuite\Utility\UuidUtility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
-use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+#[AsEventListener(
+    identifier: 'ai-suite/modify-button-bar-event-listener',
+    event: ModifyButtonBarEvent::class,
+)]
 class ModifyButtonBarEventListener
 {
     protected IconFactory $iconFactory;
@@ -34,7 +39,7 @@ class ModifyButtonBarEventListener
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
             $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image-filelist.js');
-            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', Icon::SIZE_SMALL);
+            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', IconSize::SMALL);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setClasses('btn btn-default t3js-ai-suite-image-generation-filelist-add-btn')
@@ -52,7 +57,7 @@ class ModifyButtonBarEventListener
             $languageService = $this->getLanguageService();
             $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateNewsWithAiButton'));
             $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-            $buttonIcon = $iconFactory->getIcon('content-news', Icon::SIZE_SMALL);
+            $buttonIcon = $iconFactory->getIcon('content-news', IconSize::SMALL);
             $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
             $uri = (string)$uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                 'edit' => [

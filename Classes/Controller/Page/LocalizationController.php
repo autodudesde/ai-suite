@@ -74,7 +74,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
 
         $this->process($params);
 
-        return (new JsonResponse())->setPayload([]);
+        return new JsonResponse([]);
     }
 
     /**
@@ -108,10 +108,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_LOCALIZE_DEEPL
                     ) {
-                        $cmd['localization']['aiSuite']['translateAi'] = str_replace('localize', '', $params['action']);
-                        $cmd['localization']['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
-                        $cmd['localization']['aiSuite']['destLanguageId'] = $destLanguageId;
-                        $cmd['localization']['aiSuite']['uuid'] = $params['uuid'];
+                        $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('localize', '', $params['action']);
+                        $cmd['localization'][0]['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
+                        $cmd['localization'][0]['aiSuite']['destLanguageId'] = $destLanguageId;
+                        $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                     }
                 } else {
                     $cmd['tt_content'][$currentUid] = [
@@ -122,11 +122,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_COPY_DEEPL
                     ) {
-                        $cmd['localization']['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);
-                        ;
-                        $cmd['localization']['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
-                        $cmd['localization']['aiSuite']['destLanguageId'] = $destLanguageId;
-                        $cmd['localization']['aiSuite']['uuid'] = $params['uuid'];
+                        $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);;
+                        $cmd['localization'][0]['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
+                        $cmd['localization'][0]['aiSuite']['destLanguageId'] = $destLanguageId;
+                        $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                     }
                 }
             }

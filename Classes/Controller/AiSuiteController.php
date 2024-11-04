@@ -76,6 +76,6 @@ class AiSuiteController extends AbstractBackendController
             );
         }
 
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->htmlResponse($this->moduleTemplate->render('AiSuite/Dashboard'));
     }
 }

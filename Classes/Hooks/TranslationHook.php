@@ -16,14 +16,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TranslationHook
 {
-    public function processCmdmap_afterFinish(DataHandler $dataHandler): void
-    {
-        if (array_key_exists('localization', $dataHandler->cmdmap) && array_key_exists('aiSuite', $dataHandler->cmdmap['localization'])) {
-            $srcLanguageId = (int)$dataHandler->cmdmap['localization']['aiSuite']['srcLanguageId'];
+
+    public function processCmdmap_afterFinish(DataHandler $dataHandler): void {
+        if (isset($dataHandler->cmdmap['localization'][0]['aiSuite'])) {
+            $srcLanguageId = (int)$dataHandler->cmdmap['localization'][0]['aiSuite']['srcLanguageId'];
             $srcLangIsoCode = SiteUtility::getIsoCodeByLanguageId($srcLanguageId);
-            $destLanguageId = (int)$dataHandler->cmdmap['localization']['aiSuite']['destLanguageId'];
+            $destLanguageId = (int)$dataHandler->cmdmap['localization'][0]['aiSuite']['destLanguageId'];
             $destLangIsoCode = SiteUtility::getIsoCodeByLanguageId($destLanguageId);
-            $translateAi = $dataHandler->cmdmap['localization']['aiSuite']['translateAi'];
+            $translateAi = $dataHandler->cmdmap['localization'][0]['aiSuite']['translateAi'];
 
             $translationService = GeneralUtility::makeInstance(TranslationService::class);
             $request = $GLOBALS['TYPO3_REQUEST'];
@@ -46,7 +46,7 @@ class TranslationHook
                     'translate_fields_count' => $elementsCount,
                     'source_lang' => $srcLangIsoCode,
                     'target_lang' => $destLangIsoCode,
-                    'uuid' => $dataHandler->cmdmap['localization']['aiSuite']['uuid'] ?? '',
+                    'uuid' => $dataHandler->cmdmap['localization'][0]['aiSuite']['uuid'] ?? '',
                 ],
                 '',
                strtoupper($destLangIsoCode),

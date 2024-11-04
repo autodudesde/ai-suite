@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
 
+#[AsEventListener(
+    identifier: 'ai-suite/file-controls-event-listener',
+    event: BeforePrepareConfigurationForEditorEvent::class,
+)]
 class BeforePrepareConfigurationForEditorEventListener
 {
     /**

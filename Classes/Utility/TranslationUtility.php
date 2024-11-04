@@ -19,8 +19,8 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -70,20 +70,20 @@ class TranslationUtility
             $params['redirect'] = $returnUrl;
         }
         $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
-        $params['cmd']['localization']['aiSuite']['srcLanguageId'] = $site->getDefaultLanguage()->getLanguageId();
-        $params['cmd']['localization']['aiSuite']['destLanguageId'] = $lUid_OnPage;
-        $params['cmd']['localization']['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
-        $params['cmd']['localization']['aiSuite']['uuid'] = $uuid;
+        $params['cmd']['localization'][0]['aiSuite']['srcLanguageId'] = $site->getDefaultLanguage()->getLanguageId();
+        $params['cmd']['localization'][0]['aiSuite']['destLanguageId'] = $lUid_OnPage;
+        $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
+        $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
         $href = (string)$uriBuilder->buildUriFromRoute('tce_db', $params);
         $title = LocalizationUtility::translate('aiSuite.translateRecord', 'ai_suite');
 
         if ($flagIcon) {
             $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-            $icon = $iconFactory->getIcon($flagIcon, Icon::SIZE_SMALL, 'tx-aisuite-localization');
+            $icon = $iconFactory->getIcon($flagIcon, IconSize::SMALL, 'tx-aisuite-localization');
             $lC = $icon->render();
         } else {
             $lC = GeneralUtility::makeInstance(IconFactory::class)
-                ->getIcon('tx-aisuite-localization', Icon::SIZE_SMALL)
+                ->getIcon('tx-aisuite-localization', IconSize::SMALL)
                 ->render();
         }
 
