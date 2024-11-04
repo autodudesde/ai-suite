@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\RecordList;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\TranslationUtility;
 
 class DatabaseRecordList extends \TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList
@@ -17,7 +18,7 @@ class DatabaseRecordList extends \TYPO3\CMS\Recordlist\RecordList\DatabaseRecord
     public function makeLocalizationPanel($table, $row, array $translations): string
     {
         $out = parent::makeLocalizationPanel($table, $row, $translations);
-        if ($out) {
+        if ($out && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_translation')) {
             $pageId = (int)($table === 'pages' ? $row['uid'] : $row['pid']);
             $possibleTranslations = $this->possibleTranslations;
             if ($table === 'pages') {

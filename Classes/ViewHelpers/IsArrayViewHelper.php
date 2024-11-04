@@ -19,8 +19,7 @@ final class IsArrayViewHelper extends AbstractViewHelper
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ): bool
-    {
+    ): bool {
         return is_array($arguments['data']);
     }
 }

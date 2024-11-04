@@ -30,8 +30,8 @@ define([
                 handleCheckboxChange('.request-field-checkbox[value="inline"]', '.image-generation-library');
             });
         });
-        let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
-        if(imageAiModel === 'Midjourney') {
+        let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked');
+        if(imageAiModel && imageAiModel.value === 'Midjourney') {
             document.querySelector('.image-settings-midjourney').style.display = 'block';
         }
     }
@@ -152,7 +152,9 @@ define([
                 let prefix = settingsElement.getAttribute('data-prefix');
                 let value = settingsElement.value;
                 if(prefix === '--no' && value.trim() !== '') {
-                    value = value.replace(' ', ', ');
+                    value = value.replace(', ', ',');
+                    value = value.replace('  ', ' ');
+                    value = value.replace(' ', ',');
                 }
                 value = value.trim();
                 if(value !== '') {

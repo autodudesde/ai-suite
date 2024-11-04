@@ -12,10 +12,9 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
-use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -25,30 +24,16 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PromptTemplateController extends AbstractBackendController
 {
-    protected array $extConf;
-    protected SendRequestService $requestService;
     protected CustomPromptTemplateRepository $customPromptTemplateRepository;
-    protected PromptTemplateUtility $promptTemplateUtility;
 
-    public function __construct(
-        array                 $extConf,
-        SendRequestService    $requestService,
-        CustomPromptTemplateRepository $customPromptTemplateRepository,
-        PromptTemplateUtility $promptTemplateUtility
-    )
+    public function __construct(CustomPromptTemplateRepository $customPromptTemplateRepository)
     {
-        parent::__construct($extConf);
-        $this->extConf = $extConf;
-        $this->requestService = $requestService;
+        parent::__construct();
         $this->customPromptTemplateRepository = $customPromptTemplateRepository;
-        $this->promptTemplateUtility = $promptTemplateUtility;
     }
 
     public function overviewAction(): ResponseInterface
     {
-        $this->view->assignMultiple([
-            'sectionActive' => 'promptTemplate',
-        ]);
         $this->moduleTemplate->setContent($this->view->render());
         return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
@@ -60,28 +45,25 @@ class PromptTemplateController extends AbstractBackendController
     {
         $rootPageId = $this->request->getAttribute('site')->getRootPageId();
         $sites = $this->request->getAttribute('site');
-        $allowedMounts = PromptTemplateUtility::getSearchableWebmounts($rootPageId, 10);
+        $allowedMounts = BackendUserUtility::getSearchableWebmounts($rootPageId, 10);
         $search = '';
-        if($this->request->hasArgument('input')) {
+        if ($this->request->hasArgument('input')) {
             $input = $this->request->getArgument('input');
             $search = $input['search'] ?? '';
         }
         $customPromptTemplates = $this->customPromptTemplateRepository->findByAllowedMounts($allowedMounts, $search);
         foreach ($customPromptTemplates as $key => $customPromptTemplate) {
-            if($sites instanceof NullSite) {
+            if ($sites instanceof NullSite) {
                 $customPromptTemplates[$key]['flag'] = '';
-            }
-            else {
-                if($customPromptTemplate['sys_language_uid'] === -1) {
+            } else {
+                if ($customPromptTemplate['sys_language_uid'] === -1) {
                     $customPromptTemplates[$key]['flag'] = 'flags-multiple';
-                }
-                else {
+                } else {
                     $customPromptTemplates[$key]['flag'] = $sites->getLanguageById($customPromptTemplate['sys_language_uid'])->getFlagIdentifier() ?? '';
                 }
             }
         }
         $this->view->assignMultiple([
-            'sectionActive' => 'promptTemplate',
             'customPromptTemplates' => $customPromptTemplates,
             'search' => $search,
             'pid' => $this->request->getQueryParams()['id'] ?? $rootPageId
@@ -92,14 +74,9 @@ class PromptTemplateController extends AbstractBackendController
 
     public function updateServerPromptTemplatesAction(): ResponseInterface
     {
-        $answer = $this->requestService->sendRequest(
-            new ServerRequest(
-                $this->extConf,
-                'promptTemplates'
-            )
-        );
+        $answer = $this->requestService->sendDataRequest('promptTemplates');
 
-        if ($this->promptTemplateUtility->fetchPromptTemplates($answer)) {
+        if (PromptTemplateUtility::fetchPromptTemplates($answer)) {
             $this->addFlashMessage(
                 LocalizationUtility::translate('aiSuite.module.updatePromptTemplatesSuccess', 'ai_suite')
             );

@@ -7,7 +7,7 @@ class ModelUtility
     public static function fetchKeysByModelType(array $extConf, array $modelTypes): array
     {
         $modelKeys = [];
-        foreach($modelTypes as $modelType) {
+        foreach ($modelTypes as $modelType) {
             $modelTypeUpper = str_replace('-', '', strtoupper($modelType));
             $models = constant("\AutoDudes\AiSuite\Enumeration\ModelTypeEnumeration::$modelTypeUpper");
             $modelsArr = explode(',', $models);

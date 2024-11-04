@@ -19,8 +19,7 @@ final class UuidViewHelper extends AbstractViewHelper
         array $arguments,
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
-    ): string
-    {
+    ): string {
         return UuidUtility::generateUuid();
     }
 }

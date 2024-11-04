@@ -19,13 +19,19 @@ class LibraryUtility
     public static function prepareLibraries(array $libraries, string $selectedLibraryKey = ''): array
     {
         foreach ($libraries as $key => $library) {
-            if($library['model_identifier'] === $selectedLibraryKey) {
+            if(!BackendUserUtility::isAdmin() &&
+                !BackendUserUtility::checkPermissions('tx_aisuite_models:' . $library['model_identifier'])
+            ) {
+                unset($libraries[$key]);
+                continue;
+            }
+            if ($library['model_identifier'] === $selectedLibraryKey) {
                 $libraries[$key]['checked'] = true;
             } else {
                 $libraries[$key]['checked'] = false;
             }
         }
-        if(empty($selectedLibraryKey)) {
+        if (empty($selectedLibraryKey) && count($libraries) > 0) {
             $firstKey = array_key_first($libraries);
             $libraries[$firstKey]['checked'] = true;
         }
@@ -39,11 +45,11 @@ class LibraryUtility
         $returnArray = [];
         $activeKey = '';
         foreach ($additionalImageSettingsArray as $value) {
-            if(str_contains($value, '--')) {
+            if (str_contains($value, '--')) {
                 $returnArray[substr($value, 2)] = '';
                 $activeKey = substr($value, 2);
             }
-            if($activeKey !== '' && !str_contains($value, '--')) {
+            if ($activeKey !== '' && !str_contains($value, '--')) {
                 $returnArray[$activeKey] .= $value;
             }
         }

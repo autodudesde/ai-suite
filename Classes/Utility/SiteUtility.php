@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Utility;
 
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -43,7 +44,7 @@ class SiteUtility
         $availableDefaultLanguages = [];
         foreach ($availableSites as $site) {
             foreach ($site->getLanguages() as $language) {
-                if($language->getTypo3Language() === 'default') {
+                if ($language->getTypo3Language() === 'default') {
                     $availableDefaultLanguages[$language->getTwoLetterIsoCode()] = $language->getTitle();
                 }
             }
@@ -59,7 +60,7 @@ class SiteUtility
         $availableSites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
         foreach ($availableSites as $site) {
             foreach ($site->getLanguages() as $language) {
-                if($language->getLanguageId() === $languageId) {
+                if ($language->getLanguageId() === $languageId) {
                     return $language->getTwoLetterIsoCode();
                 }
             }
@@ -75,5 +76,21 @@ class SiteUtility
             $availableRootPages[] = $site->getRootPageId();
         }
         return $availableRootPages;
+    }
+
+    /**
+     * @throws SiteNotFoundException
+     */
+    public static function getLangIsoCode(int $pageId): string {
+        $languageId = self::getLanguageId();
+        $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
+        $site = $siteFinder->getSiteByPageId($pageId);
+        $language = $site->getLanguageById($languageId);
+        return $language->getTwoLetterIsoCode() ?? 'en';
+    }
+
+    public static function getLanguageId() {
+        $context = GeneralUtility::makeInstance(Context::class);
+        return $context->getPropertyFromAspect('language', 'id');
     }
 }

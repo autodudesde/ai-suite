@@ -31,12 +31,12 @@ class RequestsToolbarItem implements ToolbarItemInterface
         try {
             $requestsRepository = GeneralUtility::makeInstance(RequestsRepository::class);
             $requests = $requestsRepository->findFirstEntry();
-            if(count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
+            if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
                 $view->assign('requests', $requests);
             }
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
-            if(str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {
+            if (str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {
                 $view->assign('error', LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'));
             }
         }

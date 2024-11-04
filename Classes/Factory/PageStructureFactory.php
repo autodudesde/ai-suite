@@ -14,6 +14,7 @@ namespace AutoDudes\AiSuite\Factory;
 
 use AutoDudes\AiSuite\Domain\Model\Pages;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
@@ -37,12 +38,12 @@ class PageStructureFactory
     public function createFromArray(array $data, int $parentPageUid): int
     {
         $newPagesCount = 0;
-        if($parentPageUid === -1) {
+        if ($parentPageUid === -1) {
             $parentPageUid = 0;
         }
         foreach ($data as $pageData) {
-            $beUserUid = $this->getBackendUser()->user['uid'];
-            $beUserGroup = $this->getBackendUser()->firstMainGroup;
+            $beUserUid = BackendUserUtility::getBackendUser()->user['uid'];
+            $beUserGroup = BackendUserUtility::getBackendUser()->firstMainGroup;
             $permissions = $this->pagePermissionAssembler->applyDefaults([], $parentPageUid, $beUserUid, $beUserGroup);
             $page = Pages::createEmpty();
             $page
@@ -56,7 +57,7 @@ class PageStructureFactory
                 ->setPermsGroup($permissions['perms_group'])
                 ->setPermsEverybody($permissions['perms_everybody'])
                 ->setPid($parentPageUid);
-            if($parentPageUid === 0) {
+            if ($parentPageUid === 0) {
                 $page->setIsSiteroot(1);
                 $page->setHidden(1);
             }
@@ -83,10 +84,5 @@ class PageStructureFactory
         $originalRecord = BackendUtility::getRecord('pages', $uid);
         $slug = $slugHelper->generate($originalRecord, $originalRecord['pid']);
         $this->pagesRepository->updateQuery('uid', $uid, 'slug', $slug);
-    }
-
-    protected function getBackendUser(): BackendUserAuthentication
-    {
-        return $GLOBALS['BE_USER'];
     }
 }

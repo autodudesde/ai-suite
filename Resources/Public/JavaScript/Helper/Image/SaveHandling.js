@@ -4,6 +4,7 @@ define([
     "TYPO3/CMS/Backend/ImageManipulation",
     "TYPO3/CMS/AiSuite/Helper/General",
     "TYPO3/CMS/AiSuite/Helper/Ajax",
+    "TYPO3/CMS/AiSuite/Helper/Generation",
     "require",
 ], function(
     MultiStepWizard,
@@ -11,12 +12,13 @@ define([
     ImageManipulation,
     General,
     Ajax,
+    Generation,
     require
 ) {
     function backToSlideOneButton(modal) {
         let aiSuiteBackToWizardSlideOneBtn = modal.find('.modal-body').find('button#aiSuiteBackToWizardSlideOneBtn');
         aiSuiteBackToWizardSlideOneBtn.on('click', function() {
-            MultiStepWizard.set('generatedImages', '');
+            MultiStepWizard.set('generatedData', '');
             MultiStepWizard.unlockPrevStep().trigger('click');
         });
     }
@@ -31,7 +33,7 @@ define([
             });
         });
     }
-    function saveGeneratedImageButton(modal, data, slide, showSpinner) {
+    function saveGeneratedImageButton(modal, data, slide) {
         let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
             let selectedImageRadioBtn = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][newImageUrl]"]:checked');
@@ -42,7 +44,7 @@ define([
                     imageUrl: imageUrl,
                     imageTitle: imageTitle
                 };
-                slide.html(showSpinner(TYPO3.lang['aiSuite.module.modal.imageSavingProcess']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 695));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 let resFile = await Ajax.sendAjaxRequest('aisuite_image_generation_save', postData);
                 postData = {
@@ -73,7 +75,7 @@ define([
             }
         });
     }
-    function saveGeneratedImageFileListButton(modal, data, slide, showSpinner) {
+    function saveGeneratedImageFileListButton(modal, data, slide) {
         let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
             let selectedImageRadioBtn = modal.find('.modal-body').find('input.image-selection:checked');
@@ -81,7 +83,7 @@ define([
                 let imageTitle = getSelectedImageTitle(modal, data, true);
                 let imageName = General.sanitizeFileName(imageTitle);
                 let imageUrl = selectedImageRadioBtn.data('url');
-                slide.html(showSpinner(TYPO3.lang['aiSuite.module.modal.imageSavingProcess']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 695));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 await fetch(imageUrl, {mode: 'cors'})
                     .then(res => res.blob())
@@ -116,7 +118,7 @@ define([
                 }
                 MultiStepWizard.dismiss();
             } else {
-                Notification.warning(TYPO3.lang['aiSuite.module.modal.noImageSelectedTitle'], TYPO3.lang['aiSuite.module.modal.noImageSelectedMessage'], 8);
+                Notification.warning(TYPO3.lang['aiSuite.module.modal.noImageSelectedTitle'], TYPO3.lang['aiSuite.module.modal.noImageSelectedMessage'], 5);
             }
         });
     }

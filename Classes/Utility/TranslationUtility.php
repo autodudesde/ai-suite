@@ -57,7 +57,7 @@ class TranslationUtility
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
         $openTranslatedRecordInEditMode = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite', 'openTranslatedRecordInEditMode');
-        if($openTranslatedRecordInEditMode) {
+        if ($openTranslatedRecordInEditMode) {
             $redirectUrl = (string)$uriBuilder->buildUriFromRoute(
                 'record_edit',
                 [

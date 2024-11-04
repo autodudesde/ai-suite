@@ -17,11 +17,9 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
-use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\Locales;
@@ -270,7 +268,7 @@ class RichTextElementService
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
         if (empty($configuration['language'])) {
-            $userLang = (string)($this->getBackendUser()->user['lang'] ?: 'en');
+            $userLang = (string)(BackendUserUtility::getBackendUser()->user['lang'] ?: 'en');
             $configuration['language'] = $userLang === 'default' ? 'en' : $userLang;
         }
         $configuration['contentsLanguage'] = $this->getLanguageIsoCodeOfContent();
@@ -356,10 +354,5 @@ class RichTextElementService
     protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
-    }
-
-    protected function getBackendUser(): BackendUserAuthentication
-    {
-        return $GLOBALS['BE_USER'];
     }
 }

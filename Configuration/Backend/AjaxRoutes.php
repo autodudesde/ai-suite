@@ -49,6 +49,14 @@ return [
         'path' => '/generate/sys-file-title',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::generateTitleAction'
     ],
+    'aisuite_metadata_generation_slide_one' => [
+        'path' => '/generate/ai-metadata-slide-one',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::getMetadataWizardSlideOneAction'
+    ],
+    'aisuite_metadata_generation_slide_two' => [
+        'path' => '/generate/ai-metadata-slide-two',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MetadataController::class . '::getMetadataWizardSlideTwoAction'
+    ],
     'aisuite_image_generation_slide_one' => [
         'path' => '/generate/ai-image-slide-one',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\ImageController::class . '::getImageWizardSlideOneAction'
@@ -85,4 +93,8 @@ return [
         'path' => '/generate/translation-libraries',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::librariesAction'
     ],
+    'aisuite_localization_permissions' => [
+        'path' => '/generate/translation-permissions',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::checkLocalizationPermissionsAction'
+    ]
 ];

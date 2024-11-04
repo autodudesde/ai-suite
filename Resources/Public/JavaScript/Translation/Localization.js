@@ -23,8 +23,9 @@ define([
     "TYPO3/CMS/Core/Ajax/AjaxRequest",
     "TYPO3/CMS/AiSuite/Helper/Translation",
     "TYPO3/CMS/AiSuite/Helper/Image/StatusHandling",
+    "TYPO3/CMS/AiSuite/Helper/Generation",
     "bootstrap",
-], function ($, AjaxDataHandler, Wizard, Icons, Severity, AjaxRequest, Translation, StatusHandling) {
+], function ($, AjaxDataHandler, Wizard, Icons, Severity, AjaxRequest, Translation, StatusHandling, Generation) {
     "use strict"
 
     /**
@@ -76,7 +77,8 @@ define([
         $(document).on('click', Localization.identifier.triggerButton, async function (e) {
             e.preventDefault();
             const $triggerButton = $(e.currentTarget);
-            const actions = await Translation.addAvailableLibraries($triggerButton.data('allowTranslate'), $triggerButton.data('allowCopy'));
+            const permissions = await Localization.checkLocalizationPermissions();
+            const actions = await Translation.addAvailableLibraries(permissions, $triggerButton.data('allowTranslate'), $triggerButton.data('allowCopy'));
             const availableLocalizationModes = [];
             if ($triggerButton.data('allowTranslate')) {
                 availableLocalizationModes.push('localize');
@@ -213,7 +215,7 @@ define([
                 });
             });
             Wizard.addFinalProcessingSlide(($slide) => {
-                $slide.html(Localization.showSpinner(TYPO3.lang['aiSuite.module.modal.translationInProcess']));
+                $slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.translationInProcess']));
                 let modal = Wizard.setup.$carousel.closest('.modal');
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
                 const postData = {
@@ -308,9 +310,18 @@ define([
                 })
                 .get();
         }
-        // TODO: summarize in General class
-        Localization.showSpinner = function(message, height = 400) {
-            return '<style>.modal-body{padding: 0;}.modal-body:after{display: none;}.modal-multi-step-wizard .modal-body .carousel-inner {margin: 0 0 0 -5px;}.spinner-wrapper{width:600px;height:' + height +'px;position:relative;overflow:hidden;}.spinner-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;justify-content:center;align-content:center;flex-wrap:wrap;background-color:#00000000;color:#fff;font-weight:700;transition:background-color .9s ease-in-out}.spinner-overlay.darken{background-color:rgba(0,0,0,.75)}.spinner,.spinner:after,.spinner:before{text-align:center;opacity:0;width:35px;aspect-ratio:1;box-shadow:0 0 0 3px inset #fff;position:relative;animation:1.5s .5s infinite;animation-name:l7-1,l7-2}.spinner:after,.spinner:before{content:"";position:absolute;left:calc(100% + 5px);animation-delay:1s,0s}.spinner:after{left:-40px;animation-delay:0s,1s}@keyframes l7-1{0%,100%,55%{border-top-left-radius:0;border-bottom-right-radius:0}20%,30%{border-top-left-radius:50%;border-bottom-right-radius:50%}}@keyframes l7-2{0%,100%,55%{border-bottom-left-radius:0;border-top-right-radius:0}20%,30%{border-bottom-left-radius:50%;border-top-right-radius:50%}}.spinner-overlay.darken .spinner,.spinner-overlay.darken .spinner:after,.spinner-overlay.darken .spinner:before{opacity:1}.spinner-overlay.darken .message{position:absolute;top:56%;font-size:.9rem}.spinner-overlay.darken .status{position:absolute;top:62%;font-size:.9rem}</style><div class="spinner-wrapper"><div class="spinner-overlay active darken"><div class="spinner"></div><p class="message">'+message+'</p><p class="status"></p></div></div>'
+
+        Localization.checkLocalizationPermissions = function() {
+            return new AjaxRequest(TYPO3.settings.ajaxUrls.aisuite_localization_permissions)
+                .get()
+                .then(async (response) => {
+                    const resolved = await response.resolve();
+                    const responseBody = JSON.parse(resolved);
+                    if (responseBody.output) {
+                        return responseBody.output.permissions.enable_translation;
+                    }
+                    return false;
+                });
         }
     }
 

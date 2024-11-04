@@ -1,0 +1,133 @@
+:root {
+    /* radios + checkboxes */
+    --checkbox-radio-size: 18px;
+    --checkbox-radio-gap: 10px; /* gap between button and label */
+    --checkbox-radio-border-width: 1px;
+    --checkbox-radio-line-height: 1.4;
+
+    /* radios */
+    --radio-marker-size: 8px;
+
+    /* checkboxes */
+    --checkbox-marker-size: 12px;
+    --checkbox-radius: 4px;
+}
+
+.ai-suite-metadata-generation-wizard #aiSuiteBackToPreviousSlideBtn,
+.ai-suite-metadata-generation-wizard #aiSuiteSaveMetadataBtn {
+    font-size: 0.875rem;
+}
+
+/*
+Metadata suggestions
+ */
+.ai-suite-metadata-generation-wizard .metadata-suggestions label {
+    width: 100%;
+    height: 100%;
+    min-height: 50px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+.ai-suite-metadata-generation-wizard .metadata-suggestions input[type=checkbox]:checked + label {
+    border: 1px solid #F09C42 !important;
+    background-color: rgba(240, 156, 66, 0.4) !important;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] {
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    margin-top: calc((1em * var(--checkbox-radio-line-height) - var(--checkbox-radio-size)) / 2);
+    opacity: 0;
+    height: var(--checkbox-radio-size);
+    width: 100%;
+    z-index: -1;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label {
+    display: inline-block;
+    line-height: var(--checkbox-radio-line-height);
+    user-select: none;
+    cursor: pointer;
+    padding-left: 35px;
+}
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label.use-for {
+    padding-left: 15px;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label::before {
+    content: '';
+    box-sizing: border-box;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    top: -0.1em;
+    margin-left: -15px;
+    flex-shrink: 0;
+    width: var(--checkbox-radio-size);
+    height: var(--checkbox-radio-size);
+    background-color: white;
+    border-width: var(--checkbox-radio-border-width);
+    border-color: rgba(240, 156, 66, 0.65);
+    border-style: solid;
+    box-shadow: 0 0.9px 1.25px hsla(0, 0%, 0%, 0.025),0 3px 5px hsla(0, 0%, 0%, 0.05),0 12px 20px hsla(0, 0%, 0%, 0.09);
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: var(--checkbox-radio-gap);
+    transition: transform .2s, border .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:not(:checked):not(:focus) + label:hover::before {
+    border-color: #A2A2A9;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label::before {
+    border-radius: var(--checkbox-radius);
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked + label::before {
+    background-color: #F09C42;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-color: #F09C42;
+    transition: transform .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:active + label::before {
+    transform: scale(0.8);
+    transition: transform .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked:active + label::before {
+    transform: none;
+    transition: none;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked + label::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='1 6.5 4 9.5 11 2.5' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: var(--checkbox-marker-size);
+}
+
+.progress-bar {
+    background: #F09C42;
+}
+.text-gradient {
+    font-weight: 700;
+    display: inline-block;
+    -webkit-text-fill-color: transparent;
+    background: #F09C42;
+    -webkit-background-clip: text;
+}
+.module-body {
+    overflow-x: hidden;
+}
+.modal-footer .btn-notice {
+    display: none;
+}
+
+/** preselection */
+.ai-suite-metadata-generation-wizard .btn.btn-primary {
+    background: #F09C42;
+    color: white;
+    border: none;
+}

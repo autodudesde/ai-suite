@@ -2,6 +2,7 @@
 
 namespace AutoDudes\AiSuite\Hooks;
 
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -19,7 +20,7 @@ class ModifyButtonBarHook
     {
         $request = $GLOBALS['TYPO3_REQUEST'];
         $buttons = $params['buttons'];
-        if ($request->getUri()->getPath() === '/typo3/module/file/FilelistList') {
+        if ($request->getUri()->getPath() === '/typo3/module/file/FilelistList' && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_image_generation')) {
             $languageService = $this->getLanguageService();
             $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
@@ -40,7 +41,7 @@ class ModifyButtonBarHook
                 ->setIcon($buttonIcon);
             return $buttons;
         }
-        if ($request->getUri()->getPath() === '/typo3/module/web/list' && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams())) {
+        if ($request->getUri()->getPath() === '/typo3/module/web/list' && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams()) && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_news_generation')) {
             $languageService = $this->getLanguageService();
             $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateNewsWithAiButton'));
             $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
@@ -65,13 +66,13 @@ class ModifyButtonBarHook
                 ->setHref($uri)
                 ->setIcon($buttonIcon);
         }
-        if($request->getUri()->getPath() === '/typo3/module/web/layout') {
+        if ($request->getUri()->getPath() === '/typo3/module/web/layout') {
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
             $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Translation/Localization');
         }
-        if($request->getUri()->getPath() === '/typo3/module/web/list' || $request->getUri()->getPath() === '/typo3/record/edit') {
+        if ($request->getUri()->getPath() === '/typo3/module/web/list' || $request->getUri()->getPath() === '/typo3/record/edit' && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_translation')) {
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
             $pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');

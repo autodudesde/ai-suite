@@ -84,7 +84,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                             'redirect' => $this->R_URI,
                         ]);
                     } else {
-                        if(strpos($wizardKey, "aisuite_") === 0) {
+                        if (strpos($wizardKey, "aisuite_") === 0) {
                             $viewVariables['target'] = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                                 'edit' => [
                                     'tt_content' => [

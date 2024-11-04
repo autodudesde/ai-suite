@@ -50,7 +50,7 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
             ->where(
                 $queryBuilder->expr()->in('pid', $allowedMounts)
             );
-        if($search !== '') {
+        if ($search !== '') {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->or(
                     $queryBuilder->expr()->like('name', $queryBuilder->createNamedParameter('%' . $search . '%')),
@@ -99,13 +99,14 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
         $this->handleWithDataHandler([], $cmd);
     }
 
-    protected function handleWithDataHandler($data, $cmd): void {
+    protected function handleWithDataHandler($data, $cmd): void
+    {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, $cmd);
-        if(count($data) > 0) {
+        if (count($data) > 0) {
             $dataHandler->process_datamap();
         }
-        if(count($cmd) > 0) {
+        if (count($cmd) > 0) {
             $dataHandler->process_cmdmap();
         }
     }

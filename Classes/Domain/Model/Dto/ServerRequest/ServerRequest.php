@@ -57,7 +57,8 @@ class ServerRequest
     /**
      * @throws Exception
      */
-    public function getGeneralFormData(): array {
+    public function getGeneralFormData(): array
+    {
         return [
             'prompt' => $this->prompt,
             'language' => $this->language,

@@ -1,0 +1,28 @@
+
+<div class="row metadata-suggestions mt-2">
+    <h3 class="text-gradient">
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataSuggestionsHeader" />
+    </h3>
+    <f:for each="{metadataSuggestions}" as="suggestion" iteration="it">
+        <div class="col-12 col-md-6 my-3 position-relative">
+            <input
+                type="checkbox"
+                name="metaData[{table}][{it.cycle}][{fieldName}]]"
+                value="{suggestion}"
+                data-metadata="{suggestion}"
+                class="mx-1 metadata-selection"
+                id="{table}-{it.cycle}-{fieldName}-metadata-{it.cycle}"
+                data-selection-group="{table}-{fieldName}-metadata"
+            >
+            <label class="d-inline-flex justify-content-start align-items-center ce-metadata-selection"
+                   data-selection-group="{table}-{fieldName}-metadata"
+                   data-selection-id="{table}-{fieldName}-metadata-{it.cycle}"
+                   for="{table}-{it.cycle}-{fieldName}-metadata-{it.cycle}"
+                   style="font-size: 0.85rem;"
+            >
+                {suggestion}
+            </label>
+        </div>
+    </f:for>
+</div>
+

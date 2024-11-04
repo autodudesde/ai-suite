@@ -4,10 +4,6 @@ aiSuiteApiKey =
 aiSuiteServer = https://api.autodudes.de/
 # cat=Media; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mediaStorageFolder
 mediaStorageFolder =
-#cat=Metadata; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:singleNewsDisplayPage
-singleNewsDisplayPage = 1
-# cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:useUrlForRequest
-useUrlForRequest = 0
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openTranslatedRecordInEditMode
 openTranslatedRecordInEditMode = 1
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey

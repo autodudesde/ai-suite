@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "11.2.2",
+    "version": "11.3.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -33,7 +33,8 @@
         "typo3/cms-backend": "^11.5",
         "typo3/cms-filelist": "^11.5",
         "typo3/cms-fluid": "^11.5",
-        "typo3/cms-seo": "^11.5"
+        "typo3/cms-seo": "^11.5",
+        "typo3/cms-setup": "^11.5"
     },
     "suggest": {
         "b13/container": "*"

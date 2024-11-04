@@ -52,12 +52,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410677] = [
     'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoMetaDescription::class
 ];
 
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410678] = [
-    'nodeName' => 'aiSeoKeywords',
-    'priority' => 30,
-    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoKeywords::class
-];
-
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410679] = [
     'nodeName' => 'aiSeoPageTitle',
     'priority' => 30,
@@ -111,11 +105,5 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
         'nodeName' => 'aiNewsAlternativeTitle',
         'priority' => 30,
         'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsAlternativeTitle::class
-    ];
-
-    $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410686] = [
-        'nodeName' => 'aiNewsKeywords',
-        'priority' => 30,
-        'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsKeywords::class
     ];
 }

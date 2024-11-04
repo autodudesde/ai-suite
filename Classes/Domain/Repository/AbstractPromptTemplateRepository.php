@@ -49,7 +49,7 @@ class AbstractPromptTemplateRepository extends Repository
     {
         $connection = $this->connectionPool->getConnectionForTable($this->table);
         $queryBuilder = $connection->createQueryBuilder();
-        if($type !== '') {
+        if ($type !== '') {
             $queryBuilder->select('name', 'prompt')
                 ->from($this->table)
                 ->where(
