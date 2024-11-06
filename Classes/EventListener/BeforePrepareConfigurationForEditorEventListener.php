@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
+use Throwable;
 
 #[AsEventListener(
     identifier: 'ai-suite/file-controls-event-listener',
@@ -26,7 +27,11 @@ class BeforePrepareConfigurationForEditorEventListener
         if (BackendUserUtility::checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
             $sysLanguageUid = $event->getData()['databaseRow']['sys_language_uid'];
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($event->getData()['effectivePid']);
-            $siteLanguage = $site->getLanguageById((int)$sysLanguageUid);
+            try {
+                $siteLanguage = $site->getLanguageById((int)$sysLanguageUid);
+            } catch (Throwable $e) {
+                return;
+            }
             $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
             $pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $siteLanguage->getLocale()->getLanguageCode());
 
