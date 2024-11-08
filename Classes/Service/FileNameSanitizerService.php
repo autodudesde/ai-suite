@@ -9,10 +9,7 @@ class FileNameSanitizerService
     public static function sanitize(string $fileName): string
     {
         $fileName = strtolower($fileName);
-        $tempArr = explode(".", $fileName);
-        $fileEnding = '.' . $tempArr[count($tempArr) - 1];
 
-        $fileName = str_replace($fileEnding, '', $fileName);
         $fileName = str_replace("_", "-", $fileName);
         $fileName = str_replace("_", "-", $fileName);
         $fileName = str_replace(" ", "-", $fileName);
@@ -44,10 +41,6 @@ class FileNameSanitizerService
         }
 
         $fileName = preg_replace('/_+/', '_', $fileName);
-        $fileName = preg_replace('/-+/', '-', $fileName);
-
-        $fileName .= $fileEnding;
-
-        return $fileName;
+        return preg_replace('/-+/', '-', $fileName);
     }
 }

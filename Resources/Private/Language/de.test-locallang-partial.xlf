@@ -5,6 +5,7 @@
             <trans-unit id="mlang_tabs_tab">
                 <source>AI Suite</source>
             <target>AI-Suite</target></trans-unit>
+
             <trans-unit id="tx_aisuite.module.general.prompt" resname="tx_aisuite.module.general.prompt">
                 <source>Input statement for the AI (prompt)</source>
             <target>Eingabeanweisung für die KI (Eingabeaufforderung)</target></trans-unit>
@@ -14,6 +15,23 @@
             <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
                 <source>Select prompt template</source>
             <target>Wählen Sie eine Eingabeaufforderungsvorlage aus</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
+                <source>Select prompt template</source>
+            <target>Wählen Sie eine Eingabeaufforderungsvorlage aus</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.languageChooser" resname="tx_aisuite.module.general.languageChooser">
+                <source>Answer in the following language</source>
+            <target>I am a sample text</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.default" resname="tx_aisuite.module.general.spinner.default">
+                <source>Request is being processed...</source>
+            <target>I am a sample text</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.contentCreation" resname="tx_aisuite.module.general.spinner.contentCreation">
+                <source>Content is being generated, this may take a moment...</source>
+            <target>I am a sample text</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.error.try_again" resname="tx_aisuite.module.error.try_again">
+                <source>Try again</source>
+            <target>I am a sample text</target></trans-unit>
+
+
         </body>
     </file>
 </xliff>

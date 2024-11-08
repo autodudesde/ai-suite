@@ -200,7 +200,6 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
 							data-file-context-config="' . htmlspecialchars($this->inlineData['config'][$objectPrefix]['context']['config']) . '"
 							data-file-context-hmac="' . htmlspecialchars($this->inlineData['config'][$objectPrefix]['context']['hmac']) . '"
 							data-ai-suite-image-generation-media-allowed="' . htmlspecialchars($allowed) . '"
-							data-target-folder="' . htmlspecialchars($folder->getCombinedIdentifier()) . '"
 							data-table="' . htmlspecialchars($this->data['tableName']) . '"
 							data-record-uid="' . htmlspecialchars($this->data['databaseRow']['uid']) . '"
 							data-fieldname="' . $this->data['fieldName'] . '"

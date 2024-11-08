@@ -49,15 +49,11 @@ class AiSuiteController extends AbstractBackendController
             );
         }
         $answer = $this->requestService->sendDataRequest('getRequestsState');
+        $freeRequests = -1;
+        $paidRequests = -1;
         if ($answer->getType() === 'RequestsState') {
             $freeRequests = $answer->getResponseData()['free_requests'] ?? -1;
             $paidRequests = $answer->getResponseData()['paid_requests'] ?? -1;
-            if (array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
-                $this->view->assignMultiple([
-                    'freeRequests' => $answer->getResponseData()['free_requests'],
-                    'paidRequests' => $answer->getResponseData()['paid_requests']
-                ]);
-            }
             try {
                 $this->requestsRepository->setRequests($freeRequests, $paidRequests);
             } catch (\Exception $e) {
@@ -75,7 +71,10 @@ class AiSuiteController extends AbstractBackendController
                 AbstractMessage::WARNING
             );
         }
-
+        $this->view->assignMultiple([
+            'freeRequests' => $freeRequests,
+            'paidRequests' => $paidRequests
+        ]);
         $this->moduleTemplate->setContent($this->view->render());
         return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
