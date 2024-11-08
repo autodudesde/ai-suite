@@ -6,7 +6,8 @@ TYPO3 AI Suite
 
 - Install the extension via composer or via TER
 - Go to www.autodudes.de and get an API key
-- Add the API key to the extension settings
+- Add the API key to the extension settings left side in backend admin tools -> settings
+- Update database in backend admin tools -> maintenance -> analyze database structure 
 - Enjoy AI powered content suggestions
 
 
