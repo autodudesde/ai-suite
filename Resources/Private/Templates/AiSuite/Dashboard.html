@@ -22,7 +22,7 @@
         <f:translate key="aiSuite.module.manageLicense"/>
     </f:link.external>
 
-    <f:if condition="{freeRequests} && {paidRequests}">
+    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0">
         <h2 class="mb-4">
             <f:translate key="tx_aisuite.module.dashboard.creditState" />
         </h2>

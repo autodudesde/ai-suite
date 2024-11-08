@@ -1012,9 +1012,14 @@
             <trans-unit id="aiSuite.module.feedbackDescription" resname="aiSuite.module.feedbackDescription">
                 <source>Tell us what you are still missing or what you would like to have to make your work easier.</source>
             </trans-unit>
-
             <trans-unit id="aiSuite.module.feedbackBtn" resname="aiSuite.module.feedbackBtn">
                 <source>Send feedback</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.addImage.noFileMountsAvailable" resname="aiSuite.addImage.noFileMountsAvailable">
+                <source>No file mounts available for current user</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.addImage.noFolderAvailable" resname="aiSuite.addImage.noFolderAvailable">
+                <source>No folder available for current user</source>
             </trans-unit>
         </body>
     </file>

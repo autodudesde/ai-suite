@@ -903,49 +903,49 @@
             <target>KI-Übersetzungsoptionen im Übersetzungsassistenten</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
                 <source>If active AI translation options will be added within the translation wizard</source>
-            <target>Wenn aktive KI-Übersetzungsoptionen im Übersetzungsassistenten hinzugefügt werden</target></trans-unit>
+            <target>Wenn aktiv, werden KI-Übersetzungsoptionen im Übersetzungsassistenten hinzugefügt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
                 <source>Buttons "Generate image with AI"</source>
-            <target>Schaltflächen „Bild mit KI generieren“</target></trans-unit>
+            <target>Buttons „Bild mit KI generieren“</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableImageGenerationDescription" xml:space="preserve">
                 <source>If active buttons with title "Generate image with AI" will be added to file fields within content elements and within filelist module</source>
-            <target>Wenn aktiv, werden Schaltflächen mit dem Titel „Bild mit KI generieren“ zu Dateifeldern in Inhaltselementen und im Dateilistenmodul hinzugefügt</target></trans-unit>
+            <target>Wenn aktiv, werden Buttons mit dem Titel „Bild mit KI generieren“ zu Dateifeldern in Inhaltselementen und im Dateilistenmodul hinzugefügt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableContentElementGeneration" xml:space="preserve">
                 <source>"AI Suite Content" tab in NewContentElementWizard</source>
             <target>Tab „AI Suite Content“ im NewContentElementWizard</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableContentElementGenerationDescription" xml:space="preserve">
                 <source>An additional "AI Suite Content" tab will be added to NewContentElementWizard</source>
-            <target>Eine zusätzliche Registerkarte „AI Suite Content“ wird zu NewContentElementWizard hinzugefügt</target></trans-unit>
+            <target>Ein zusätzlicher Tab „AI Suite Content“ wird zu NewContentElementWizard hinzugefügt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableNewsGeneration" xml:space="preserve">
                 <source>Button "News with AI" (only evaluated if EXT:news is active)</source>
             <target>Button „News mit KI“ (wird nur ausgewertet wenn EXT:news aktiv ist)</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableNewsGenerationDescription" xml:space="preserve">
                 <source>If active a button with title "News with AI" will be added to the list module header bar (only evaluated if EXT:news is active)</source>
-            <target>Wenn aktiv, wird eine Schaltfläche mit dem Titel „News mit KI“ zur Kopfzeile des Listenmoduls hinzugefügt (wird nur ausgewertet, wenn EXT:news aktiv ist).</target></trans-unit>
+            <target>Wenn aktiv, wird der Button mit dem Titel „News mit KI“ zur Kopfzeile des Listenmoduls hinzugefügt (wird nur geprüft, wenn EXT:news aktiv ist).</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enablePagesGeneration" xml:space="preserve">
                 <source>Enable pages section within backend module</source>
             <target>Aktiviere den Seitenabschnitt im Backend-Modul</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enablePagesGenerationDescription" xml:space="preserve">
                 <source>If active the "Pages" button will be shown within the backend module</source>
-            <target>Wenn aktiv, wird die Schaltfläche "Seiten" im Backend-Modul angezeigt</target></trans-unit>
+            <target>Wenn aktiv, wird der Button "Seiten" im Backend-Modul angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
                 <source>Show Metadata generation buttons</source>
-            <target>Schaltflächen zur Metadatengenerierung anzeigen</target></trans-unit>
+            <target>Buttons zur Metadatengenerierung anzeigen</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGenerationDescription" xml:space="preserve">
                 <source>If active the metadata generation buttons will be shown next to the corresponding fields</source>
-            <target>Wenn aktiv, werden die Schaltflächen zur Metadatengenerierung neben den entsprechenden Feldern angezeigt</target></trans-unit>
+            <target>Wenn aktiv, werden die Buttons zur Metadatengenerierung neben den entsprechenden Feldern angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.headerAiSuiteModels" xml:space="preserve">
                 <source>AI Suite Models</source>
-            <target>AI Suite-Modelle</target></trans-unit>
+            <target>AI Suite-Models</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelOpenai" xml:space="preserve">
                 <source>OpenAI</source>
             <target>OpenAI</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDescription" xml:space="preserve">
                 <source>Users are allowed to generate content with this AI model.</source>
-            <target>Benutzer dürfen mit diesem KI-Modell Inhalte erstellen.</target></trans-unit>
+            <target>Benutzer dürfen mit diesem KI-Model Inhalte erstellen.</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelAnthropic" xml:space="preserve">
                 <source>Anthropic/Claude</source>
-            <target>Anthropisch/Claude</target></trans-unit>
+            <target>Anthropic/Claude</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDalle" xml:space="preserve">
                 <source>DALL-E</source>
             <target>DALL-E</target></trans-unit>
@@ -957,7 +957,7 @@
             <target>Vision</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelGoogleTranslate" xml:space="preserve">
                 <source>GoogleTranslate</source>
-            <target>Google Übersetzer</target></trans-unit>
+            <target>GoogleTranslate</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
                 <source>DeepL</source>
             <target>DeepL</target></trans-unit>
@@ -972,13 +972,13 @@
             <target>Generierte Vorschläge</target></trans-unit>
             <trans-unit id="AiSuite.metaDataWizardPromptHeader" resname="AiSuite.metaDataWizardPromptHeader">
                 <source>Custom metadata prompt</source>
-            <target>Benutzerdefinierte Metadateneingabeaufforderung</target></trans-unit>
+            <target>Benutzerdefinierter Metadaten-Prompt</target></trans-unit>
             <trans-unit id="AiSuite.metadataWizardSlideOneHeader" resname="AiSuite.metadataWizardSlideOneHeader">
                 <source>Enter metadata generation settings</source>
             <target>Gebe die Einstellungen für die Metadatengenerierung ein</target></trans-unit>
             <trans-unit id="AiSuite.metadataWizardSlideOnePrompt" resname="AiSuite.metadataWizardSlideOnePrompt">
                 <source>Metadata prompt</source>
-            <target>Metadaten-Eingabeaufforderung</target></trans-unit>
+            <target>Metadaten-Prompt</target></trans-unit>
             <trans-unit id="AiSuite.metadataWizardSlideOneButton" resname="AiSuite.metadataWizardSlideOneButton">
                 <source>Generate metadata suggestions</source>
             <target>Metadatenvorschläge generieren</target></trans-unit>
@@ -1012,10 +1012,15 @@
             <trans-unit id="aiSuite.module.feedbackDescription" resname="aiSuite.module.feedbackDescription">
                 <source>Tell us what you are still missing or what you would like to have to make your work easier.</source>
             <target>Sag uns, was dir noch fehlt oder was du dir zur Arbeitserleichterung wünschst.</target></trans-unit>
-
             <trans-unit id="aiSuite.module.feedbackBtn" resname="aiSuite.module.feedbackBtn">
                 <source>Send feedback</source>
             <target>Feedback senden</target></trans-unit>
+            <trans-unit id="aiSuite.addImage.noFileMountsAvailable" resname="aiSuite.addImage.noFileMountsAvailable">
+                <source>No file mounts available for current user</source>
+            <target>Für den aktuellen Benutzer sind keine FileMounts verfügbar</target></trans-unit>
+            <trans-unit id="aiSuite.addImage.noFolderAvailable" resname="aiSuite.addImage.noFolderAvailable">
+                <source>No folder available for current user</source>
+            <target>Für den aktuellen Benutzer ist kein Ordner verfügbar</target></trans-unit>
         </body>
     </file>
 </xliff>
