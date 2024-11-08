@@ -234,10 +234,10 @@ div[data-module-id="aiSuite"] .badge-warning {
     width: 100%;
     height: 100%;
     padding: 0.75rem 0.5rem 0.75rem 2.25rem !important;
-    background-color: #fefefe !important;
     border: 1px solid #bbb !important;
     border-radius: 0.125rem !important;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
+    background-color: var(--typo3-card-bg) !important;
 }
 
 .image-settings .image-settings-midjourney {
@@ -246,7 +246,7 @@ div[data-module-id="aiSuite"] .badge-warning {
 
 .text-generation-library label:hover,
 .image-generation-library label:hover {
-    background-color: #f9f9f9 !important;
+    background-color: var(--typo3-card-bg) !important;
 }
 
 .text-generation-library label .request-amount,

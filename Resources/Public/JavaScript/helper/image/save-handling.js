@@ -78,18 +78,26 @@ class SaveHandling {
                 let imageUrl = selectedImageRadioBtn.data('url');
                 slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 705));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
-                await fetch(imageUrl, {mode: 'cors'})
-                    .then(res => res.blob())
-                    .then(blob => {
-                        imageName += '.' + blob.type.split('/')[1];
-                    });
+                try {
+                    await fetch(imageUrl, {mode: 'cors'})
+                        .then(res => res.blob())
+                        .then(blob => {
+                            imageName += '.' + blob.type.split('/')[1];
+                        });
+                } catch (e) {
+                    const fileExtension = imageUrl.split('.').pop();
+                    imageName += '.' + fileExtension;
+                }
                 let postData = {
                     'fileName': imageName,
                     'fileTarget': data.targetFolder
                 };
                 let existFileRes = await Ajax.sendAjaxRequest('file_exists', postData, true);
                 if(General.isUsable(existFileRes) && General.isUsable(existFileRes.id)) {
-                    imageName = Date.now() + '_' + imageName;
+                    const fileExtension = imageName.split('.').pop();
+                    imageName = imageName.replace('.' + fileExtension, '');
+                    imageName = imageName + '-' + Date.now();
+                    imageName += '.' + fileExtension;
                 }
 
                 postData = {

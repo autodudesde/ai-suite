@@ -24,12 +24,12 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "13.0.0",
+    "version": "13.0.1",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "typo3/cms-backend": "^13.4",
         "typo3/cms-filelist": "^13.4",
         "typo3/cms-fluid": "^13.4",

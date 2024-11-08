@@ -14,6 +14,7 @@ namespace AutoDudes\AiSuite\Factory;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
 use AutoDudes\AiSuite\Service\FileNameSanitizerService;
+use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Core\Environment;
@@ -24,6 +25,7 @@ use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PageContentFactory
 {
@@ -175,12 +177,32 @@ class PageContentFactory
      */
     public function addImage(string $imageUrl, string $imageTitle): int
     {
-        $title = empty($imageTitle) ? 'ai-generated-image-' . time() . '.jpg' : $imageTitle . '.jpg';
-        $fileName = FileNameSanitizerService::sanitize($title);
+        $fileExtension = !empty(pathinfo($imageUrl, PATHINFO_EXTENSION)) ? pathinfo($imageUrl, PATHINFO_EXTENSION) : 'png';
+        $title = empty($imageTitle) ? 'ai-generated-image-' . time() : $imageTitle;
 
-        $storage = $this->storageRepository->getDefaultStorage();
-        $defaultFolder = $storage->getDefaultFolder();
-
+        $backendUser = BackendUserUtility::getBackendUser();
+        $defaultFolder = null;
+        if(BackendUserUtility::isAdmin()) {
+            $storage = $this->storageRepository->getDefaultStorage();
+            $defaultFolder = $storage->getDefaultFolder();
+        } else {
+            $availableFileMounts = $backendUser->getFileMountRecords();
+            if (count($availableFileMounts) === 0) {
+                throw new InsufficientFolderAccessPermissionsException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.addImage.noFileMountsAvailable'));
+            }
+            foreach ($availableFileMounts as $fileMount) {
+                $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['identifier']);
+                foreach ($storage->getFileMounts() as $storageFileMount) {
+                    if ($storageFileMount['identifier'] === $fileMount['identifier']) {
+                        $defaultFolder = $storageFileMount['folder'];
+                        break;
+                    }
+                }
+            }
+            if ($defaultFolder === null) {
+                throw new InsufficientFolderAccessPermissionsException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.addImage.noFolderAvailable'));
+            }
+        }
         if ($this->extConf['mediaStorageFolder'] !== '') {
             try {
                 $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
@@ -196,12 +218,14 @@ class PageContentFactory
 
         $destinationPath = Environment::getPublicPath() . $aiImagesFolder->getPublicUrl();
 
+        $title = FileNameSanitizerService::sanitize($title);
+        $targetFile = $this->filesystem->exists($destinationPath . $title . '.' . $fileExtension) ? $title . '-' . time() . '.' . $fileExtension : $title . '.' . $fileExtension;
+
         $this->filesystem->copy(
             $imageUrl,
-            $destinationPath . $fileName
+            $destinationPath . $targetFile
         );
-
-        $newFile = $aiImagesFolder->getFile($fileName);
+        $newFile = $aiImagesFolder->getFile($targetFile);
         return $newFile->getUid();
     }
 
