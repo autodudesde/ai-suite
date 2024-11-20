@@ -34,7 +34,7 @@
         "typo3/cms-filelist": "^13.4",
         "typo3/cms-fluid": "^13.4",
         "typo3/cms-seo": "^13.4",
-        "typo3/cms-rte-ckeditor": "13.4"
+        "typo3/cms-rte-ckeditor": "^13.4"
     },
     "suggest": {
         "b13/container": "*"
