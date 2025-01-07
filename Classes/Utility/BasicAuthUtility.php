@@ -23,7 +23,7 @@ class BasicAuthUtility
         $auth = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite', 'basicauth');
 
         if ((bool)$auth['enable']) {
-            return rawurlencode(['user'])
+            return rawurlencode($auth['user'])
                 . ':'
                 . rawurlencode($auth['pass'])
                 . '@';

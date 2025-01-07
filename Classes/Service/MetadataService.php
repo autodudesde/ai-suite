@@ -7,6 +7,7 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
+use AutoDudes\AiSuite\Utility\BasicAuthUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
@@ -146,14 +147,15 @@ class MetadataService
             throw new UnableToLinkToPageException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.unableToLinkToPage', null, [$pageId, $pageLanguage]));
         }
         $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
-        $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
+        $basicAuth = BasicAuthUtility::getBasicAuth();
+        $uri = $previewUri->getScheme() . '://' . $basicAuth . $previewUri->getHost() . $port . $previewUri->getPath();
         if ($previewUri->getScheme() === '' || $previewUri->getHost() === '') {
             $request = $GLOBALS['TYPO3_REQUEST'];
             $previewUri = $previewUri->withScheme($request->getUri()->getScheme());
             $previewUri = $previewUri->withHost($request->getUri()->getHost());
             $previewUri = $previewUri->withPort($request->getUri()->getPort());
             $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
-            $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
+            $uri = $previewUri->getScheme() . '://' . $basicAuth . $previewUri->getHost() . $port . $previewUri->getPath();
         }
         if (count($additionalQueryParameters) > 0) {
             return $uri . '?' . $previewUri->getQuery();
