@@ -2,7 +2,7 @@
     <div class="card card-size-large active mb-0">
         <div class="card-header">
             <h3 class="text-gradient">
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.textGenerationLibrary" />
+                <f:translate key="AiSuite.textGenerationLibrary" extensionName="ai_suite"/>
             </h3>
             <f:if condition="{textGenerationLibraries -> f:count()} > 0">
                 <f:then>
@@ -26,7 +26,7 @@
                 <f:else>
                     <div class="col-12 my-3">
                         <div class="alert alert-warning" role="alert">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.noLibrariesAvailable" />
+                            <f:translate key="AiSuite.noLibrariesAvailable" extensionName="ai_suite"/>
                         </div>
                     </div>
                 </f:else>

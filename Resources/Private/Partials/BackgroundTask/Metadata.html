@@ -1,0 +1,27 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+    <div class="accordion accordion-background-tasks" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
+        <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
+            <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
+                <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask}" />
+            </div>
+        </f:for>
+        <div id="noBackgroundTasks" class="alert alert-info" style="display: none;">
+            <div class="media">
+                <div class="media-left">
+                        <span class="icon-emphasized">
+                           <core:icon identifier="actions-info" size="small" />
+                        </span>
+                </div>
+                <div class="media-body">
+                    <div class="alert-title">Info</div>
+                    <p class="alert-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" /></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>
+

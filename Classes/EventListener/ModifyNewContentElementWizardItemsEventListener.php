@@ -2,7 +2,7 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 
 final class ModifyNewContentElementWizardItemsEventListener
@@ -17,9 +17,17 @@ final class ModifyNewContentElementWizardItemsEventListener
         'social',
         'form',
     ];
+
+    private BackendUserService $backendUserService;
+
+    public function __construct(BackendUserService $backendUserService)
+    {
+        $this->backendUserService = $backendUserService;
+    }
+
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
     {
-        if (!BackendUserUtility::checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
+        if (!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
             return;
         }
         $addedAiSuiteWizardItems = [];

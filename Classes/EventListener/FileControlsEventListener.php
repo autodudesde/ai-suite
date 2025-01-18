@@ -2,31 +2,41 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 
 class FileControlsEventListener
 {
+    protected PageRenderer $pageRenderer;
+    protected IconFactory $iconFactory;
+    protected BackendUserService $backendUserService;
+    public function __construct(
+        PageRenderer $pageRenderer,
+        IconFactory $iconFactory,
+        BackendUserService $backendUserService
+    ) {
+        $this->pageRenderer = $pageRenderer;
+        $this->iconFactory = $iconFactory;
+        $this->backendUserService = $backendUserService;
+    }
+
     public function __invoke(CustomFileControlsEvent $event): void
     {
         if ($event->getFieldConfig()['type'] === 'file' &&
             $event->getFieldConfig()['foreign_table'] === 'sys_file_reference' &&
             (in_array('jpeg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])) ||
             in_array('jpg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']))) &&
-            BackendUserUtility::checkPermissions('tx_aisuite_features:enable_image_generation')
+            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
             $languageService = $this->getLanguageService();
             $resultArray = $event->getResultArray();
-            $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-            $pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image.js');
+            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image.js');
 
-            $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-            $buttonIcon = $iconFactory->getIcon('apps-clipboard-images', Icon::SIZE_SMALL)->render();
+            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', 'small')->render();
 
             $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
             $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));

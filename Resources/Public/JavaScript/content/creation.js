@@ -11,7 +11,7 @@ class Creation {
         this.hideShowTextLibraries();
         this.addAdditionalImageGenerationSettingsHandling();
         this.addFormSubmitEventListener();
-        PromptTemplate.loadPromptTemplates('content[initialPrompt]');
+        PromptTemplate.loadPromptTemplates('initialPrompt');
         this.calculateRequestAmount();
         this.handleModelChange();
         Generation.cancelGeneration();
@@ -87,7 +87,7 @@ class Creation {
                     const atLeastOneChecked = Array.from(fileCheckboxes).some(function (checkbox) {
                         return checkbox.checked;
                     });
-                    let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="content[initialPrompt]"]').value
+                    let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="initialPrompt"]').value
                     if (enteredPrompt.length < 5) {
                         Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
                     }

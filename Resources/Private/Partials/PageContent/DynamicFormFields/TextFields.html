@@ -6,7 +6,7 @@
                     <label for="{fieldName}">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
                     </label><br />
-                    <f:form.textfield property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                    <input type="text" name="contentElementData[{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
                 </div>
             </f:case>
             <f:case value="text">
@@ -16,17 +16,28 @@
                     </label><br />
                     <f:if condition="{fieldData.rteConfig}">
                         <f:then>
-                            <f:form.hidden property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="rte-content form-control"/>
+                            <input type="hidden" name="contentElementData[{table}][{position}][{fieldName}]" value="{fieldData.content}" class="rte-content form-control"/>
                             <div
-                                data-field-identifier="content[contentElementData][{table}][{position}][{fieldName}]"
+                                data-field-identifier="contentElementData[{table}][{position}][{fieldName}]"
                                 class="rte-textarea"
                             >
-                                <typo3-rte-ckeditor-ckeditor5 {fieldData.rteConfig -> f:format.raw()}>
-                                </typo3-rte-ckeditor-ckeditor5>
+                                <f:if condition="{fieldData.rteConfig.typo3PatchVersion} >= 23">
+                                    <f:then>
+                                        <typo3-rte-ckeditor-ckeditor5 {fieldData.rteConfig.ckeditorAttributes -> f:format.raw()}>
+                                            <textarea {fieldData.rteConfig.textareaAttributes -> f:format.raw()}>
+                                                <f:format.htmlspecialchars>{fieldData.content}</f:format.htmlspecialchars>
+                                            </textarea>
+                                        </typo3-rte-ckeditor-ckeditor5>
+                                    </f:then>
+                                    <f:else>
+                                        <typo3-rte-ckeditor-ckeditor5 {fieldData.rteConfig.ckeditorAttributes -> f:format.raw()}>
+                                        </typo3-rte-ckeditor-ckeditor5>
+                                    </f:else>
+                                </f:if>
                             </div>
                         </f:then>
                         <f:else>
-                            <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                            <textarea name="contentElementData[{table}][{position}][{fieldName}]" class="form-control">{fieldData.content}</textarea>
                         </f:else>
                     </f:if>
                 </div>
@@ -36,7 +47,7 @@
                     <label for="{fieldName}">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
                     </label><br />
-                    <f:form.textarea property="contentElementData.{table}.{position}.{fieldName}" name="content[contentElementData][{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
+                    <textarea name="contentElementData[{table}][{position}][{fieldName}]" class="form-control">{fieldData.content}</textarea>
                 </div>
             </f:defaultCase>
         </f:switch>

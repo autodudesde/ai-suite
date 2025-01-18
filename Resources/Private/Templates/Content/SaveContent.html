@@ -1,0 +1,14 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+    <p>
+        <f:translate key="aiSuite.module.errorDuringResponse" extensionName="ai_suite"/>
+    </p>
+    <form action="{errorReturnUrl}}">
+        <div class="form-group">
+            <input type="submit" value="{f:translate(key: 'tx_aisuite.module.error.try_again', extensionName: 'ai_suite')}" class="btn btn-secondary" />
+        </div>
+    </form>
+</f:section>

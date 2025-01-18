@@ -1,0 +1,32 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1 class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.card.massActionSection.title" extensionName="ai_suite"/>
+    </h1>
+
+    <section class="card-container">
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-duplicate',
+            cardname: 'massActionPages',
+            controller: 'MassAction',
+            route: 'ai_suite_massaction_pages_prepare',
+            params: {id: pid},
+            status: 'active'
+        }" />
+
+        <f:render partial="DashboardCards/DynamicCard" arguments="{
+            icon: 'actions-duplicate',
+            cardname: 'massActionFileReferences',
+            controller: 'MassAction',
+            route: 'ai_suite_massaction_filereferences_prepare',
+            params: {id: pid},
+            status: 'active'
+        }" />
+    </section>
+</f:section>

@@ -12,35 +12,30 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-class RequestsRepository extends AbstractPromptTemplateRepository
+class RequestsRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = 'tx_aisuite_domain_model_requests';
     protected string $sortBy = 'uid';
 
-    public function __construct(
-        ConnectionPool $connectionPool,
-        string $table = 'tx_aisuite_domain_model_requests',
-        string $sortBy = 'uid'
-    ) {
-        parent::__construct(
-            $connectionPool,
-            $table,
-            $sortBy
-        );
+    public function __construct(ConnectionPool $connectionPool) {
+        $this->connectionPool = $connectionPool;
     }
 
     /**
-     * @throws \Doctrine\DBAL\Driver\Exception|Exception
+     * @throws DriverException
+     * @throws DBALException
      */
     public function findFirstEntry(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $result = $queryBuilder
-            ->select('free_requests', 'paid_requests')
+            ->select('free_requests', 'paid_requests', 'abo_requests', 'model_type')
             ->from($this->table)
             ->executeQuery()
             ->fetchAllAssociative();
@@ -48,46 +43,54 @@ class RequestsRepository extends AbstractPromptTemplateRepository
     }
 
     /**
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws DriverException|DBALException
      */
-    public function setRequests(int $freeRequests, int $paidRequests): void
+    public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType): void
     {
         if (count($this->findFirstEntry()) > 0 && $freeRequests > -1 && $paidRequests > -1) {
-            $this->updateRequests($freeRequests, $paidRequests);
+            $this->updateRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
         } elseif (count($this->findFirstEntry()) > 0 && $freeRequests < 0 && $paidRequests < 0) {
             $this->deleteRequests();
         } else {
-            $this->insertRequests($freeRequests, $paidRequests);
+            $this->insertRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
         }
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|DBALException
      */
-    public function updateRequests(int $freeRequests, int $paidRequests): void
+    public function updateRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->update($this->table)
             ->set('free_requests', $freeRequests)
             ->set('paid_requests', $paidRequests)
+            ->set('abo_requests', $aboRequests)
+            ->set('model_type', $modelType)
             ->executeStatement();
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|DBALException
      */
-    public function insertRequests(int $freeRequests, int $paidRequests): void
+    public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->insert($this->table)
             ->values([
                 'free_requests' => $freeRequests,
-                'paid_requests' => $paidRequests
+                'paid_requests' => $paidRequests,
+                'abo_requests' => $aboRequests,
+                'model_type' => $modelType
             ])
             ->executeStatement();
     }
+
+    /**
+     * @throws DBALException
+     */
     public function deleteRequests(): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();

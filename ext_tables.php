@@ -1,6 +1,12 @@
 <?php
 defined('TYPO3') or die();
 
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
+    'ai_suite',
+    'setup',
+    '@import "EXT:ai_suite/Configuration/TypoScript/setup.typoscript"'
+);
+
 $lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = [
@@ -40,6 +46,16 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             $lll . 'aiSuite.customPermOptions.enableMetadataGeneration',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableMetadataGenerationDescription',
+        ],
+        'enable_massaction_generation' => [
+            $lll . 'aiSuite.customPermOptions.enableMassActionGeneration',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableMassActionGenerationDescription',
+        ],
+        'enable_background_task_handling' => [
+            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandling',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription',
         ],
     ],
 ];

@@ -12,18 +12,9 @@ declare(strict_types=1);
  *
  ***/
 
-use AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener;
-use AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener;
-use AutoDudes\AiSuite\EventListener\FileControlsEventListener;
-use AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener;
-use AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener;
 use Symfony\Component\Filesystem\Filesystem;
-use TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent;
-use AutoDudes\AiSuite\Controller\Ajax\MetadataController;
-use AutoDudes\AiSuite\Controller\Ajax\ImageController;
 
 return function (ContainerConfigurator $configurator, ContainerBuilder $containerBuilder) {
     $services = $configurator->services();
@@ -39,42 +30,49 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
 
     $services->set(Filesystem::class);
 
-    $services->set(MetadataController::class)
-        ->public();
-    $services->set(ImageController::class)
+    $services->set(\AutoDudes\AiSuite\Providers\PagesContextMenuProvider::class)
+        ->public()
+        ->tag('backend.contextmenu.itemprovider', [
+            'identifier' => 'aiSuitePagesContextMenuProvider',
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class)
+        ->decorate(\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+
+    $services->set(\AutoDudes\AiSuite\Hooks\TranslationHook::class)
         ->public();
 
-    $services->set(FileControlsEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\FileControlsEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Form\\Event\\CustomFileControlsEvent',
         ]);
 
-    $services->set(ModifyNewContentElementWizardItemsEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\ModifyNewContentElementWizardItemsEvent',
         ]);
 
-    $services->set(AfterTcaCompilationEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
         ]);
 
-    $services->set('AfterFormEnginePageInitializedEventListener', AfterFormEnginePageInitializedEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener::class)
         ->tag('event.listener', [
-            'method' => 'onPagePropertiesLoad',
-            'event' => AfterFormEnginePageInitializedEvent::class,
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent::class,
         ]);
 
-    $services->set(ModifyButtonBarEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
         ]);
 
-    $services->set(BeforePrepareConfigurationForEditorEventListener::class)
+    $services->set(\AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\RteCKEditor\\Form\\Element\\Event\\BeforePrepareConfigurationForEditorEvent',

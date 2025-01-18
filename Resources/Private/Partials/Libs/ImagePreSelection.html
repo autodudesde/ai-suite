@@ -1,7 +1,7 @@
 
 <div class="row image-preselection mt-2">
     <h3 class="text-gradient">
-        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.generatedPreselectionImageOptions" />
+        <f:translate key="aiSuite.module.modal.generatedPreselectionImageOptions" extensionName="ai_suite"/>
     </h3>
     <f:for each="{imageSuggestions}" as="preSelection" iteration="it">
         <div class="col-12 my-3">
@@ -21,7 +21,7 @@
                             data-prompt="{preSelection.prompt}"
                             data-uuid="{uuid}"
                         >
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.preselectionUseImage" /> {it.cycle} ({component.label})
+                            <f:translate key="aiSuite.module.modal.preselectionUseImage" extensionName="ai_suite"/> {it.cycle} ({component.label})
                         </button>
                     </f:if>
                 </f:for>

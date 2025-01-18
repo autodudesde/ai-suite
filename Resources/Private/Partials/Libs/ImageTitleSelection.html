@@ -1,13 +1,13 @@
 
 <div class="row image-title-suggestions mt-2">
     <h3 class="text-gradient">
-        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleSuggestionsHeader" />
+        <f:translate key="AiSuite.imageTitleSuggestionsHeader" extensionName="ai_suite"/>
     </h3>
     <f:for each="{imageTitleSuggestions}" as="suggestion" iteration="it">
         <div class="col-12 col-md-6 my-3 position-relative">
             <input
                 type="checkbox"
-                name="fileData[content][contentElementData][{table}][{position}][{fieldName}][imageTitle]"
+                name="fileData[contentElementData][{table}][{position}][{fieldName}][imageTitle]"
                 value="{suggestion}"
                 data-image-title="{suggestion}"
                 class="mx-1 image-title-selection"
@@ -27,7 +27,7 @@
     <div class="col-12 col-md-6 my-3 position-relative image-title-wrapper">
         <input
             type="text"
-            name="fileData[content][contentElementData][{table}][{position}][{fieldName}][imageTitleFreeText]"
+            name="fileData[contentElementData][{table}][{position}][{fieldName}][imageTitleFreeText]"
             value=""
             placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleFreeTextPlaceholder')}"
             class="image-title-free-text-input"

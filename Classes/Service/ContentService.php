@@ -2,8 +2,6 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\ContentUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
@@ -53,6 +51,24 @@ class ContentService
         'file'
     ];
 
+    protected array $ignoreFieldsByRecord = [
+        'tx_news_domain_model_news' => [
+            'tx_news_domain_model_link',
+            'tt_content',
+        ]
+    ];
+
+    public function cleanupRequestField(array $requestFields, $table): array
+    {
+        if (array_key_exists($table, $this->ignoreFieldsByRecord)) {
+            $ignoreFields = $this->ignoreFieldsByRecord[$table];
+            foreach ($ignoreFields as $ignoreField) {
+                unset($requestFields[$ignoreField]);
+            }
+        }
+        return $requestFields;
+    }
+
     public function fetchRequestFields(ServerRequestInterface $request, array $defaultValues, string $cType, int $pid, $table): array
     {
         $formData = $this->getFormData($request, $defaultValues, $pid, $table);
@@ -66,7 +82,7 @@ class ContentService
         $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
         $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
-        return ContentUtility::cleanupRequestField($requestFields, $table);
+        return $this->cleanupRequestField($requestFields, $table);
     }
 
     protected function explodeSingleFieldShowItemConfiguration($field): array
@@ -117,7 +133,7 @@ class ContentService
         $parameterArray['fieldConf'] = $formData['processedTca']['columns'][$fieldName];
 
         $fieldIsExcluded = $parameterArray['fieldConf']['exclude'] ?? false;
-        $fieldNotExcludable = BackendUserUtility::getBackendUser()->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
+        $fieldNotExcludable = $GLOBALS['BE_USER']->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
         if ($fieldIsExcluded && !$fieldNotExcludable) {
             return;
         }

@@ -2,12 +2,6 @@
       data-namespace-typo3-fluid="true">
 
 <label for="{propertyName}">
-    <f:translate key="tx_aisuite.module.general.prompt"/>
+    <f:translate key="tx_aisuite.module.general.prompt" extensionName="ai_suite"/>
 </label><br />
-<f:form.textarea
-    additionalAttributes="{minlength: '10'}"
-    property="{propertyName}"
-    name="{propertyName}"
-    class="form-control {propertyName}"
-    value="{value}"
-/>
+<textarea minlength="10" name="{propertyName}" class="form-control {propertyName}">{value}</textarea>

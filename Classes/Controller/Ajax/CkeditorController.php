@@ -13,19 +13,43 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
+#[AsController]
 class CkeditorController extends AbstractAjaxController
 {
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        LoggerInterface $logger,
+    ) {
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $logger
+        );
     }
 
     public function librariesAction(ServerRequestInterface $request): ResponseInterface
@@ -34,12 +58,12 @@ class CkeditorController extends AbstractAjaxController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::RTE_CONTENT, 'editContent', ['text']);
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'));
+            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             $response->getBody()->write(
                 json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">' . LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite') . '</div>'
+                        'output' => '<div class="alert alert-danger" role="alert">' . $this->translationService->translate('aiSuite.module.errorFetchingLibraries.title') . '</div>'
                     ]
                 )
             );
@@ -51,9 +75,9 @@ class CkeditorController extends AbstractAjaxController
                 [
                     'success' => true,
                     'output' => [
-                        'libraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
-                        'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates('editContent'),
-                        'uuid' => UuidUtility::generateUuid(),
+                        'libraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
+                        'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates('editContent'),
+                        'uuid' => $this->uuidService->generateUuid(),
                     ],
                 ]
             )

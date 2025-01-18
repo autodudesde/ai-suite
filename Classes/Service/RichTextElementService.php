@@ -17,14 +17,14 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\Locales;
-use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\AfterGetExternalPluginsEvent;
@@ -36,30 +36,53 @@ use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditor
  * Render rich text editor in FormEngine
  * @internal This is a specific Backend FormEngine implementation and is not considered part of the Public TYPO3 API.
  */
-class RichTextElementService
+class RichTextElementService implements SingletonInterface
 {
+    protected PageRenderer $pageRenderer;
+
     protected EventDispatcherInterface $eventDispatcher;
 
-    protected array $data;
+    protected Locales $locales;
+
+    protected UriBuilder $uriBuilder;
+
+    protected BackendUserService $backendUserService;
+
+    protected Typo3Version $typo3Version;
 
     protected array $rteConfiguration = [];
 
-    public function __construct(array $data, EventDispatcherInterface $eventDispatcher = null)
-    {
-        $this->data = $data;
-        $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::makeInstance(EventDispatcherInterface::class);
+    protected int $typo3PatchVersion;
+
+    public function __construct(
+        PageRenderer $pageRenderer,
+        EventDispatcherInterface $eventDispatcher,
+        Locales $locales,
+        UriBuilder $uriBuilder,
+        BackendUserService $backendUserService,
+        Typo3Version $typo3Version
+    ) {
+        $this->pageRenderer = $pageRenderer;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->locales = $locales;
+        $this->uriBuilder = $uriBuilder;
+        $this->backendUserService = $backendUserService;
+
+        $this->typo3Version = $typo3Version;
+        $versionParts = explode('.', $this->typo3Version->getVersion());
+        $this->typo3PatchVersion = (int)$versionParts[2];
     }
 
-    public function fetchRteConfig(string $value = ''): string
+    public function fetchRteConfig(array $data, string $value = ''): array
     {
-        $parameterArray = $this->data['parameterArray'];
+        $parameterArray = $data['parameterArray'];
         $config = $parameterArray['fieldConf']['config'];
 
-        $itemFormElementName = 'data[' . $this->data['tableName'] . ']['. $this->data['databaseRow']['uid'] . '][' . $this->data['fieldName'] . ']';
+        $itemFormElementName = 'data[' . $data['tableName'] . ']['. $data['databaseRow']['uid'] . '][' . $data['fieldName'] . ']';
         $fieldId = $this->sanitizeFieldId($itemFormElementName);
 
         $this->rteConfiguration = $config['richtextConfiguration']['editor'] ?? [];
-        $ckeditorConfiguration = $this->resolveCkEditorConfiguration();
+        $ckeditorConfiguration = $this->resolveCkEditorConfiguration($data);
 
         $ckeditorAttributes = GeneralUtility::implodeAttributes([
             'id' => $fieldId . 'ckeditor5',
@@ -71,56 +94,80 @@ class RichTextElementService
                 'validationRules' => $this->getValidationDataAsJsonString($config),
             ], false),
         ], true);
+        $returnValue = [
+            'ckeditorAttributes' => $ckeditorAttributes,
+            'typo3PatchVersion' => $this->typo3PatchVersion,
+        ];
 
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->loadJavaScriptModule('@typo3/rte-ckeditor/ckeditor5.js');
+        if($this->typo3PatchVersion >= 23) {
+            $ckeditorAttributes = GeneralUtility::implodeAttributes([
+                'id' => $fieldId . 'ckeditor5',
+                'options' => GeneralUtility::jsonEncodeForHtmlAttribute($ckeditorConfiguration, false),
+            ], true);
+
+            $textareaAttributes = GeneralUtility::implodeAttributes([
+                'slot' => 'textarea',
+                'id' => $fieldId,
+                'name' => $itemFormElementName,
+                'rows' => '18',
+                'class' => 'form-control',
+                'data-formengine-validation-rules' => $this->getValidationDataAsJsonString($config),
+            ], true);
+            $returnValue = [
+                'ckeditorAttributes' => $ckeditorAttributes,
+                'textareaAttributes' => $textareaAttributes,
+                'typo3PatchVersion' => $this->typo3PatchVersion,
+            ];
+        }
+
+
+        $this->pageRenderer->loadJavaScriptModule('@typo3/rte-ckeditor/ckeditor5.js');
 
         $uiLanguage = $ckeditorConfiguration['language']['ui'];
         if ($this->translationExists($uiLanguage)) {
-            $pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $uiLanguage . '.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $uiLanguage . '.js');
         }
 
         $contentLanguage = $ckeditorConfiguration['language']['content'];
         if ($this->translationExists($contentLanguage)) {
-            $pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $contentLanguage . '.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $contentLanguage . '.js');
         }
-        $pageRenderer->addCssFile('EXT:rte_ckeditor/Resources/Public/Css/editor.css');
+        $this->pageRenderer->addCssFile('EXT:rte_ckeditor/Resources/Public/Css/editor.css');
 
-        return $ckeditorAttributes;
+        return $returnValue;
     }
 
     /**
      * Determine the contents language iso code
      */
-    protected function getLanguageIsoCodeOfContent(): string
+    protected function getLanguageIsoCodeOfContent(array $data): string
     {
-        $currentLanguageUid = ($this->data['databaseRow']['sys_language_uid'] ?? 0);
+        $currentLanguageUid = ($data['databaseRow']['sys_language_uid'] ?? 0);
         if (is_array($currentLanguageUid)) {
             $currentLanguageUid = $currentLanguageUid[0];
         }
         $contentLanguageUid = (int)max($currentLanguageUid, 0);
         if ($contentLanguageUid) {
             // the language rows might not be fully initialized, so we fall back to en-US in this case
-            $contentLanguage = $this->data['systemLanguageRows'][$currentLanguageUid]['iso'] ?? 'en-US';
+            $contentLanguage = $data['systemLanguageRows'][$currentLanguageUid]['iso'] ?? 'en-US';
         } else {
             $contentLanguage = $this->rteConfiguration['config']['defaultContentLanguage'] ?? 'en-US';
         }
         $languageCodeParts = explode('_', $contentLanguage);
         $contentLanguage = strtolower($languageCodeParts[0]) . (!empty($languageCodeParts[1]) ? '_' . strtoupper($languageCodeParts[1]) : '');
         // Find the configured language in the list of localization locales
-        $locales = GeneralUtility::makeInstance(Locales::class);
         // If not found, default to 'en'
-        if ($contentLanguage === 'default' || !$locales->isValidLanguageKey($contentLanguage)) {
+        if ($contentLanguage === 'default' || !$this->locales->isValidLanguageKey($contentLanguage)) {
             $contentLanguage = 'en';
         }
         return $contentLanguage;
     }
 
-    protected function resolveCkEditorConfiguration(): array
+    protected function resolveCkEditorConfiguration(array $data): array
     {
-        $configuration = $this->prepareConfigurationForEditor();
+        $configuration = $this->prepareConfigurationForEditor($data);
 
-        foreach ($this->getExtraPlugins() as $extraPluginName => $extraPluginConfig) {
+        foreach ($this->getExtraPlugins($data) as $extraPluginName => $extraPluginConfig) {
             $configName = $extraPluginConfig['configName'] ?? $extraPluginName;
             if (!empty($extraPluginConfig['config']) && is_array($extraPluginConfig['config'])) {
                 if (empty($configuration[$configName])) {
@@ -130,8 +177,8 @@ class RichTextElementService
                 }
             }
         }
-        if (isset($this->data['parameterArray']['fieldConf']['config']['placeholder'])) {
-            $configuration['placeholder'] = (string)$this->data['parameterArray']['fieldConf']['config']['placeholder'];
+        if (isset($data['parameterArray']['fieldConf']['config']['placeholder'])) {
+            $configuration['placeholder'] = (string)$data['parameterArray']['fieldConf']['config']['placeholder'];
         }
         return $configuration;
     }
@@ -139,26 +186,25 @@ class RichTextElementService
     /**
      * Get configuration of external/additional plugins
      */
-    protected function getExtraPlugins(): array
+    protected function getExtraPlugins(array $data): array
     {
         $externalPlugins = $this->rteConfiguration['externalPlugins'] ?? [];
         $externalPlugins = $this->eventDispatcher
-            ->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $this->data))
+            ->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $data))
             ->getConfiguration();
 
         $urlParameters = [
             'P' => [
-                'table'      => $this->data['tableName'],
-                'uid'        => $this->data['databaseRow']['uid'],
-                'fieldName'  => $this->data['fieldName'],
-                'recordType' => $this->data['recordTypeValue'],
-                'pid'        => $this->data['effectivePid'],
-                'richtextConfigurationName' => $this->data['parameterArray']['fieldConf']['config']['richtextConfigurationName'],
+                'table'      => $data['tableName'],
+                'uid'        => $data['databaseRow']['uid'],
+                'fieldName'  => $data['fieldName'],
+                'recordType' => $data['recordTypeValue'],
+                'pid'        => $data['effectivePid'],
+                'richtextConfigurationName' => $data['parameterArray']['fieldConf']['config']['richtextConfigurationName'],
             ],
         ];
 
         $pluginConfiguration = [];
-        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         foreach ($externalPlugins as $pluginName => $configuration) {
             $pluginConfiguration[$pluginName] = [
                 'configName' => $configuration['configName'] ?? $pluginName,
@@ -168,14 +214,14 @@ class RichTextElementService
             unset($configuration['resource']);
 
             if ($configuration['route'] ?? null) {
-                $configuration['routeUrl'] = (string)$uriBuilder->buildUriFromRoute($configuration['route'], $urlParameters);
+                $configuration['routeUrl'] = (string)$this->uriBuilder->buildUriFromRoute($configuration['route'], $urlParameters);
             }
 
             $pluginConfiguration[$pluginName]['config'] = $configuration;
         }
 
         $pluginConfiguration = $this->eventDispatcher
-            ->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $this->data))
+            ->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data))
             ->getConfiguration();
         return $pluginConfiguration;
     }
@@ -224,7 +270,7 @@ class RichTextElementService
      *
      * @return array the configuration
      */
-    protected function prepareConfigurationForEditor(): array
+    protected function prepareConfigurationForEditor(array $data): array
     {
         // Ensure custom config is empty so nothing additional is loaded
         // Of course this can be overridden by the editor configuration below
@@ -232,7 +278,7 @@ class RichTextElementService
             'customConfig' => '',
         ];
 
-        if ($this->data['parameterArray']['fieldConf']['config']['readOnly'] ?? false) {
+        if ($data['parameterArray']['fieldConf']['config']['readOnly'] ?? false) {
             $configuration['readOnly'] = true;
         }
 
@@ -241,21 +287,21 @@ class RichTextElementService
         }
 
         $configuration = $this->eventDispatcher
-            ->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $this->data))
+            ->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $data))
             ->getConfiguration();
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
         if (empty($configuration['language']) ||
             (is_array($configuration['language']) && empty($configuration['language']['ui']))
         ) {
-            $userLang = (string)(BackendUserUtility::getBackendUser()->user['lang'] ?: 'en');
+            $userLang = (string)($this->backendUserService->getBackendUser()->user['lang'] ?: 'en');
             $configuration['language']['ui'] = $userLang === 'default' ? 'en' : $userLang;
         } elseif (!is_array($configuration['language'])) {
             $configuration['language'] = [
                 'ui' => $configuration['language'],
             ];
         }
-        $configuration['language']['content'] = $this->getLanguageIsoCodeOfContent();
+        $configuration['language']['content'] = $this->getLanguageIsoCodeOfContent($data);
 
         // Replace all label references
         $configuration = $this->replaceLanguageFileReferences($configuration);
@@ -281,7 +327,7 @@ class RichTextElementService
         }
 
         $configuration = $this->eventDispatcher
-            ->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $this->data))
+            ->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data))
             ->getConfiguration();
 
         return $configuration;

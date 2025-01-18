@@ -1,48 +1,47 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      data-namespace-typo3-fluid="true">
-      {namespace core=TYPO3\CMS\Core\ViewHelpers}
-      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      data-namespace-typo3-fluid="true"
+>
 
 <f:layout name="Module"/>
 
 <f:section name="Content">
 
-    <f:flashMessages />
-
     <f:if condition="{error}">
         <f:then>
             <p>
-                <f:translate key="aiSuite.module.errorDuringResponse"/>
+                <f:translate key="aiSuite.module.errorDuringResponse" extensionName="ai_suite"/>
             </p>
             <a href="{regenerateActionUri}" class="btn btn-secondary mt-1">
                 <core:icon identifier="actions-refresh" size="small" />
-                <f:translate key="tx_aisuite.module.error.try_again"/>
+                <f:translate key="tx_aisuite.module.error.try_again" extensionName="ai_suite"/>
             </a>
         </f:then>
         <f:else>
             <section class="container">
                 <h2 class="text-gradient">
-                    <f:translate key="tx_aisuite.module.PageContent.validate.headline"/>
+                    <f:translate key="tx_aisuite.module.PageContent.validate.headline" extensionName="ai_suite"/>
                 </h2>
                 <p>
-                    <f:translate key="tx_aisuite.module.PageContent.validate.explanation"/>
+                    <f:translate key="tx_aisuite.module.PageContent.validate.explanation" extensionName="ai_suite"/>
                 </p>
-                <f:form actionUri="{actionUri}" name="content" object="{content}" enctype="multipart/form-data">
-                    <f:form.hidden property="selectedTcaColumns" name="selectedTcaColumns" value="{content.selectedTcaColumns -> f:format.json()}" class="form-control" />
+                <form method="POST" action="{f:be.uri(route: 'ai_suite_content_save', parameters: '{id: content.pid}')}" name="requestContent" enctype="multipart/form-data">
+                    <input type="hidden" name="content" value="{content -> f:format.json()}" class="form-control" />
+                    <input type="hidden" name="selectedTcaColumns" value="{selectedTcaColumns -> f:format.json()}" class="form-control" />
                     <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
 
                     <div class="form-group button-bar">
                         <button type="submit" class="btn btn-primary">
                             <core:icon identifier="actions-page-new" size="small"/>
-                            {f:translate(key: 'tx_aisuite.module.PageContent.validate.addContent')}
+                            <f:translate key="tx_aisuite.module.PageContent.validate.addContent" extensionName="ai_suite"/>
                         </button>
                         <a href="{regenerateActionUri}" class="btn btn-secondary mx-3">
                             <core:icon identifier="actions-refresh" size="small" />
-                            <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContent"/>
+                            <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContent" extensionName="ai_suite"/>
                         </a>
                     </div>
-                </f:form>
-                <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.default')}" />
+                </form>
+                <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.default', extensionName: 'ai_suite')}" />
                 <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
             </section>
         </f:else>

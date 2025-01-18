@@ -9,31 +9,30 @@
 
     <section class="container">
         <h2 class="text-gradient">
-            <f:translate key="AiSuite.module.Agencies.translateXlf.header"/>
+            <f:translate key="AiSuite.module.Agencies.translateXlf.header" extensionName="ai_suite"/>
         </h2>
 
-        <f:form action="validateXlfResult" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
-            <f:render partial="Agencies/AllProperties" arguments="{_all}" />
+        <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_validate_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
             <f:render partial="Libs/SelectTranslateGenerationLibrary" arguments="{translateGenerationLibraries: translateGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
             <div class="row prompt-settings">
                 <div class="card card-size-large active">
                     <div class="card-header">
                         <h3 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.translateXlfHeader" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.translateXlfHeader" extensionName="ai_suite"/>
                         </h3>
                         <br />
                         <div class="form-group">
                             <label for="extensionKey">
-                                <f:translate key="AiSuite.module.Agencies.translateXlf.insertExtKey"/>
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.insertExtKey" extensionName="ai_suite"/>
                             </label><br />
-                            <f:form.textfield property="extensionKey" name="extensionKey" class="form-control" required="required" id="translateXlf-insertExtKey"/>
+                            <input type="text" name="extensionKey" class="form-control" required="required" id="translateXlf-insertExtKey"/>
                         </div>
 
                         <div class="form-group">
                             <label for="filename">
-                                <f:translate key="AiSuite.module.Agencies.translateXlf.fileName"/>
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.fileName" extensionName="ai_suite"/>
                             </label><br />
-                            <f:form.textfield property="filename" name="filename" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.fileNamePlaceholder')}" required="required" id="translateXlf-fileName"/>
+                            <input type="text" name="filename" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.fileNamePlaceholder', extensionName: 'ai_suite')}" required="required" id="translateXlf-fileName"/>
                         </div>
 
                         <f:render partial="Libs/SearchableDropdown" arguments="{
@@ -43,28 +42,28 @@
                         }" />
                         <div class="form-group">
                             <label>
-                                <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.label"/>
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.label" extensionName="ai_suite"/>
                             </label><br />
-                            <f:form.select property="translationMode" class="form-control mb-4">
-                                <f:form.select.option value="all">
-                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.optionAll"/>
-                                </f:form.select.option>
-                                <f:form.select.option value="missingProperties">
-                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly"/>
-                                </f:form.select.option>
-                            </f:form.select>
+                            <select name="translationMode" class="form-control mb-4">
+                                <option value="all">
+                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.optionAll" extensionName="ai_suite"/>
+                                </option>
+                                <option value="missingProperties">
+                                    <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly" extensionName="ai_suite"/>
+                                </option>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="p-0">
                     <button type="submit" class="btn btn-primary">
                         <core:icon identifier="actions-translate" size="small"/>
-                        <f:translate key="AiSuite.module.Agencies.translateXlf.submit"/>
+                        <f:translate key="AiSuite.module.Agencies.translateXlf.submit" extensionName="ai_suite"/>
                     </button>
                 </div>
             </div>
-        </f:form>
-        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
+        </form>
+        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation', 'extensionName: 'ai_suite')}" />
         <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
     </section>
 

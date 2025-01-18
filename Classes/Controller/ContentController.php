@@ -12,213 +12,232 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
-use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\ContentService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\ModelUtility;
-use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\ExtbaseRequestParameters;
-use TYPO3\CMS\Extbase\Mvc\Request;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
+#[AsController]
 class ContentController extends AbstractBackendController
 {
+    protected UuidService $uuidService;
     protected ContentService $contentService;
+    protected RichTextElementService $richTextElementService;
     protected Context $context;
     protected PageContentFactory $pageContentFactory;
+    protected LoggerInterface $logger;
 
     public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory,
+        IconFactory $iconFactory,
+        UriBuilder $uriBuilder,
+        PageRenderer $pageRenderer,
+        FlashMessageService $flashMessageService,
+        SendRequestService $requestService,
+        BackendUserService $backendUserService,
+        LibraryService $libraryService,
+        PromptTemplateService $promptTemplateService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        UuidService $uuidService,
         ContentService     $contentService,
+        RichTextElementService $richTextElementService,
         Context            $context,
-        PageContentFactory $pageContentFactory
+        PageContentFactory $pageContentFactory,
+        LoggerInterface    $logger
     ) {
-        parent::__construct();
+        parent::__construct(
+            $moduleTemplateFactory,
+            $iconFactory,
+            $uriBuilder,
+            $pageRenderer,
+            $flashMessageService,
+            $requestService,
+            $backendUserService,
+            $libraryService,
+            $promptTemplateService,
+            $siteService,
+            $translationService
+        );
+        $this->uuidService = $uuidService;
         $this->contentService = $contentService;
+        $this->richTextElementService = $richTextElementService;
         $this->context = $context;
         $this->pageContentFactory = $pageContentFactory;
+        $this->logger = $logger;
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
     }
 
-    public function initializeCreateContentAction(): void
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        $this->request = $this->request->withArgument('request', $this->request);
+        try {
+            $this->initialize($request);
+            $identifier = $request->getAttribute('route')->getOption('_identifier');
+            switch ($identifier) {
+                case 'ai_suite_content_request':
+                    return $this->requestContentAction($request);
+                case 'ai_suite_content_save':
+                    return $this->saveContentAction($request);
+                default:
+                    return $this->createContentAction($request);
+            }
+        } catch (AiSuiteException $e) {
+            if(!empty($e->getReturnUrl())) {
+                return new RedirectResponse($e->getReturnUrl());
+            }
+            $this->view->assign('error', true);
+            $this->view->addFlashMessage(
+                !empty($e->getMessage()) ? $e->getMessage() : $this->translationService->translate('' . $e->getMessageKey()),
+                $this->translationService->translate('' . $e->getTitleKey()),
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->view->renderResponse($e->getTemplate());
+        } catch (\Throwable $e) {
+            $this->view->assign('error', true);
+            $this->logger->error($e->getMessage());
+            $this->view->addFlashMessage(
+                $e->getMessage(),
+                $this->translationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->view->renderResponse('Content/CreateContent');
+        }
     }
 
-    /**
-     * @throws \Doctrine\DBAL\Exception
-     */
     public function createContentAction(ServerRequestInterface $request): ResponseInterface
     {
-        $this->moduleData = $request->getAttribute('moduleData');
-        $request = $request->withAttribute('extbase', new ExtbaseRequestParameters(ContentController::class));
-        $extbaseRequest = new Request($request);
-        $extbaseRequest = $extbaseRequest->withControllerName('Content');
-        $extbaseRequest = $extbaseRequest->withControllerActionName('createContent');
-        $extbaseRequest = $extbaseRequest->withControllerExtensionName('AiSuite');
-        $this->moduleTemplate = $this->moduleTemplateFactory->create($extbaseRequest);
-        $this->moduleTemplate->setTitle('AI Suite');
-        $this->moduleTemplate->setModuleId('aiSuite');
-
-        $table = array_key_first($request->getQueryParams()['edit']);
+        $params = $request->getQueryParams();
+        $table = array_key_first($params['edit']);
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
-        if ($librariesAnswer->getType() === 'Error') {
-            $this->moduleTemplate->addFlashMessage($librariesAnswer->getResponseData()['message'], LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'), AbstractMessage::ERROR);
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
-        }
-
-        $content = PageContent::createEmpty();
         $defVals = [];
-        if (array_key_exists('defVals', $request->getQueryParams())) {
-            $defVals = $request->getQueryParams()['defVals'];
-            $content->setSysLanguageUid((int)$request->getQueryParams()['defVals'][$table]['sys_language_uid']);
-            $content->setColPos((int)$request->getQueryParams()['defVals'][$table]['colPos']);
-            $content->setPid((int)$request->getQueryParams()['defVals'][$table]['pid']);
-            $content->setCType($request->getQueryParams()['defVals'][$table]['CType'] ?? 'text');
-            $txContainerParent = isset($request->getQueryParams()['defVals'][$table]['tx_container_parent']) ? (int)$request->getQueryParams()['defVals'][$table]['tx_container_parent'] : 0;
-            $content->setContainerParentUid($txContainerParent);
+        if (array_key_exists('defVals', $params)) {
+            $defVals = $params['defVals'];
+            $content = [
+                'sysLanguageUid' => (int)$defVals[$table]['sys_language_uid'],
+                'colPos' => (int)$defVals[$table]['colPos'],
+                'pid' => (int)$defVals[$table]['pid'],
+                'CType' => $defVals[$table]['CType'] ?? 'text'
+            ];
+            $content['containerParentUid'] = isset($params['defVals'][$table]['tx_container_parent']) ? (int)$params['defVals'][$table]['tx_container_parent'] : 0;
         } else {
-            $content->setPid((int)$request->getQueryParams()['pid']);
-            $content->setCType($request->getQueryParams()['recordType'] ?? '');
+            $content['pid'] = (int)$params['pid'];
+            $content['CType'] = $params['recordType'] ?? '';
+            $content['sysLanguageUid'] = !empty($params['sysLanguageUid']) ? (int)$params['sysLanguageUid'] : 0;
         }
-        $content->setReturnUrl($request->getQueryParams()['returnUrl'] ?? '');
-        if (array_key_exists('edit', $request->getQueryParams()) && array_key_exists($table, $request->getQueryParams()['edit'])) {
-            $content->setUidPid(key($request->getQueryParams()['edit'][$table]) ?? $request->getQueryParams()['id']);
+        $content['returnUrl'] = $params['returnUrl'] ?? '';
+        if (array_key_exists('edit', $params) && array_key_exists($table, $params['edit'])) {
+            $content['uidPid'] = key($params['edit'][$table]) ?? $params['id'];
         } else {
-            $content->setUidPid($request->getQueryParams()['id']);
-        }
-
-        $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content->getCType(), $content->getPid(), $table);
-        $content->setAvailableTcaColumns($requestFields);
-
-        if (isset($request->getQueryParams()['selectedTcaColumns'])) {
-            $selectedTcaColumns = json_decode($request->getQueryParams()['selectedTcaColumns'], true);
-        } else {
-            $selectedTcaColumns = $requestFields;
+            $content['uidPid'] = $params['id'];
         }
 
-        $moduleName = 'web_aisuite';
-        $uriParameters = [
-            'id' => $content->getPid(),
-            'action' => 'requestContent',
-            'controller' => 'Content',
-            'table' => $table,
-        ];
-        $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
+        $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content['CType'], $content['pid'], $table);
+        $selectedTcaColumns = isset($params['selectedTcaColumns']) ? json_decode($params['selectedTcaColumns'], true) : $requestFields;
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/creation.js');
 
-        $textAi = $request->getQueryParams()['textGenerationLibraryKey'] ?? '';
-        $imageAi = $request->getQueryParams()['imageGenerationLibraryKey'] ?? '';
-        $additionalImageSettings = $request->getQueryParams()['additionalImageSettings'] ?? '';
-        $this->moduleTemplate->assignMultiple([
+        $this->view->assignMultiple([
             'content' => $content,
-            'actionUri' => $actionUri,
-            'textGenerationLibraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'], $textAi),
-            'imageGenerationLibraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'], $imageAi),
-            'additionalImageSettings' => LibraryUtility::prepareAdditionalImageSettings($additionalImageSettings),
+            'table' => $table,
+            'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'], $params['textGenerationLibraryKey'] ?? ''),
+            'imageGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'], $params['imageGenerationLibraryKey'] ?? ''),
+            'additionalImageSettings' => $this->libraryService->prepareAdditionalImageSettings($params['additionalImageSettings'] ?? ''),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
-            'promptTemplates' => PromptTemplateUtility::getAllPromptTemplates(
+            'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates(
                 count($defVals) > 0 ? 'contentElement' : 'newsRecord',
-                count($defVals) > 0 ? $request->getQueryParams()['defVals'][$table]['CType'] : '',
-                $content->getSysLanguageUid()
+                count($defVals) > 0 ? $params['defVals'][$table]['CType'] : '',
+                $content['sysLanguageUid']
             ),
-            'initialPrompt' => $request->getQueryParams()['initialPrompt'] ?? '',
+            'initialPrompt' => $params['initialPrompt'] ?? '',
+            'availableTcaColumns' => $requestFields,
             'selectedTcaColumns' => $selectedTcaColumns,
             'defVals' => $defVals,
             'showMaxImageHint' => true,
-            'uuid' => UuidUtility::generateUuid(),
-            'contentTypeTitle' => $content->getCType() === '0' ? 'news' : $content->getCType()
+            'uuid' => $this->uuidService->generateUuid(),
+            'contentTypeTitle' => $content['CType'] === '0' ? 'news' : $content['CType']
         ]);
-
-        return $this->htmlResponse($this->moduleTemplate->render());
-    }
-
-    public function initializeRequestContentAction(): void
-    {
-        if (!$this->request->hasArgument('content')) {
-            $this->request = $this->request->withArgument('content', PageContent::createEmpty());
-        }
+        return $this->view->renderResponse('Content/CreateContent');
     }
 
     /**
      * @throws AspectNotFoundException
      * @throws SiteNotFoundException
+     * @throws RouteNotFoundException
+     * @throws AiSuiteException
      */
-    public function requestContentAction(PageContent $content): ResponseInterface
+    public function requestContentAction(ServerRequestInterface $request): ResponseInterface
     {
-        $table = $this->request->getQueryParams()['table'];
-        $selectedTcaColumns = $this->request->getParsedBody()['content']['selectedTcaColumns'] ?? [];
-        $availableTcaColumns = json_decode($this->request->getParsedBody()['content']['availableTcaColumns'], true) ?? [];
-        $defVals = json_decode($this->request->getParsedBody()['defVals'], true) ?? [];
-        $additionalImageSettings = $this->request->getParsedBody()['additionalImageSettings'] ?? '';
-        $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
-        $imageAi = !empty($this->request->getParsedBody()['libraries']['imageGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['imageGenerationLibrary'] : '';
+        $parsedBody = $request->getParsedBody();
+        $content = json_decode($parsedBody['content'], true) ?? [];
+        $selectedTcaColumns = $parsedBody['selectedTcaColumns'] ?? [];
+        $availableTcaColumns = json_decode($parsedBody['availableTcaColumns'], true) ?? [];
+        $defVals = json_decode($parsedBody['defVals'], true) ?? [];
+        $textAi = !empty($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
+        $imageAi = !empty($parsedBody['libraries']['imageGenerationLibrary']) ? $parsedBody['libraries']['imageGenerationLibrary'] : '';
 
         $uriParams = [
             'edit' => [
-                $table => [
-                    $content->getUidPid() => 'new',
+                $request->getQueryParams()['table'] => [
+                    $content['uidPid'] => 'new',
                 ],
             ],
-            'returnUrl' => $content->getReturnUrl(),
+            'returnUrl' => $content['returnUrl'],
             'defVals' => $defVals,
-            'initialPrompt' => $content->getInitialPrompt(),
+            'initialPrompt' => $parsedBody['initialPrompt'],
             'selectedTcaColumns' => json_encode($selectedTcaColumns),
             'textGenerationLibraryKey' => $textAi,
             'imageGenerationLibraryKey' => $imageAi,
-            'additionalImageSettings' => $additionalImageSettings,
+            'additionalImageSettings' => $parsedBody['additionalImageSettings'] ?? '',
         ];
-        if ($table === 'tx_news_domain_model_news') {
+        if ($request->getQueryParams()['table'] === 'tx_news_domain_model_news') {
             $uriParams['recordType'] = '0';
             $uriParams['recordTable'] = 'tx_news_domain_model_news';
-            $uriParams['pid'] = $content->getPid();
+            $uriParams['pid'] = $content['pid'];
         }
 
-        $regenerateActionUri = (string)$this->backendUriBuilder->buildUriFromRoute('ai_suite_record_edit', $uriParams);
-        $content->setRegenerateReturnUrl($regenerateActionUri);
-        $this->moduleTemplate->assign('regenerateActionUri', $regenerateActionUri);
-
-        if ($content->getPid() === 0 && $content->getUid() == 0 && $content->getUidPid() === 0) {
-            $this->moduleTemplate->assign('error', true);
-            $this->moduleTemplate->addFlashMessage(
-                LocalizationUtility::translate('aiSuite.module.errorMissingArguments.message', 'ai_suite'),
-                LocalizationUtility::translate('aiSuite.module.errorMissingArguments.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
-            );
-            return $this->htmlResponse($this->moduleTemplate->render());
-        }
+        $regenerateActionUri = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', $uriParams);
+        $content['regenerateReturnUrl'] = $regenerateActionUri;
+        $this->view->assign('regenerateActionUri', $regenerateActionUri);
 
         try {
-            $siteFinder = GeneralUtility::makeInstance(SiteFinder::class);
-            $site = $siteFinder->getSiteByPageId($content->getPid());
-            $siteLanguage = $site->getLanguageById($content->getSysLanguageUid());
+            $site = $this->siteService->getSiteByPageId($content['pid']);
+            $siteLanguage = $site->getLanguageById($content['sysLanguageUid']);
             $langIsoCode = $siteLanguage->getLocale()->getLanguageCode();
         } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
+            $this->view->addFlashMessage(
                 $exception->getMessage(),
-                LocalizationUtility::translate('aiSuite.module.cannotSendRequest.title', 'ai_suite'),
+                $this->translationService->translate('aiSuite.module.cannotSendRequest.title'),
                 ContextualFeedbackSeverity::ERROR
             );
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            $this->view->assign('error', true);
+            return $this->view->renderResponse('Content/RequestContent');
         }
 
         $requestFields = [];
@@ -244,28 +263,21 @@ class ContentController extends AbstractBackendController
                 }
             }
         }
-        $content->setSelectedTcaColumns($requestFields);
         $models = $this->contentService->checkRequestModels($requestFields, ['text' => $textAi, 'image' => $imageAi]);
         $answer = $this->requestService->sendDataRequest(
             'createContentElement',
             [
                 'request_fields' => json_encode($requestFields),
-                'c_type' => $content->getCType(),
-                'additional_image_settings' => $additionalImageSettings,
-                'uuid' => $this->request->getParsedBody()['uuid'] ?? '',
+                'c_type' => $content['CType'],
+                'additional_image_settings' => $parsedBody['additionalImageSettings'] ?? '',
+                'uuid' => $parsedBody['uuid'] ?? '',
             ],
-            $content->getInitialPrompt(),
+            $parsedBody['initialPrompt'],
             strtoupper($langIsoCode),
             $models
         );
         if ($answer->getType() === 'Error') {
-            $this->moduleTemplate->addFlashMessage(
-                $answer->getResponseData()['message'],
-                LocalizationUtility::translate('aiSuite.module.errorValidContentElementResponse.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
-            );
-            $this->moduleTemplate->assign('error', true);
-            return $this->htmlResponse($this->moduleTemplate->render());
+            throw new AiSuiteException('Content/RequestContent', '', 'aiSuite.module.errorValidContentElementResponse.title', $answer->getResponseData()['message']);
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
         foreach ($contentElementData as $tableName => $fields) {
@@ -276,80 +288,61 @@ class ContentController extends AbstractBackendController
                             $rteConfigData = is_array($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'])
                                 ? $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig']
                                 : json_decode($contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'], true);
-                            $richTextElementService = GeneralUtility::makeInstance(RichTextElementService::class, $rteConfigData);
-                            $value = $contentElementData[$tableName][$key]['text'][$fieldName]['content'] ?? '';
-                            $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'] = $richTextElementService->fetchRteConfig($value);
+                            $contentElementData[$tableName][$key]['text'][$fieldName]['rteConfig'] = $this->richTextElementService->fetchRteConfig($rteConfigData);
                         }
                     }
                 }
             }
         }
-        $content->setContentElementData($contentElementData);
-        $this->moduleTemplate->assign('content', $content);
-        $this->moduleTemplate->assign('initialImageAi', $imageAi);
-        $this->moduleTemplate->assign('uuid', UuidUtility::generateUuid());
-
+        $this->view->assignMultiple([
+            'content' => $content,
+            'contentElementData' => $contentElementData,
+            'selectedTcaColumns' => $requestFields,
+            'initialImageAi' => $imageAi,
+            'uuid' => $this->uuidService->generateUuid(),
+        ]);
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/validation.js');
-        $moduleName = 'web_aisuite';
-        $uriParameters = [
-            'id' => $content->getPid(),
-            'action' => 'createPageContent',
-            'controller' => 'Content'
-        ];
-        $actionUri = (string)$this->backendUriBuilder->buildUriFromRoute($moduleName, $uriParameters);
-        $this->moduleTemplate->assign('actionUri', $actionUri);
-        $this->moduleTemplate->addFlashMessage(
-            LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
-            LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite')
+        $this->view->addFlashMessage(
+            $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.message'),
+            $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.title')
         );
-        return $this->htmlResponse($this->moduleTemplate->render());
+        return $this->view->renderResponse('Content/RequestContent');
     }
 
-    public function createPageContentAction(PageContent $content): ResponseInterface
+    /**
+     * @throws AiSuiteException
+     * @throws InsufficientFolderAccessPermissionsException
+     */
+    public function saveContentAction(ServerRequestInterface $request): ResponseInterface
     {
-        try {
-            $selectedTcaColumns = json_decode($this->request->getParsedBody()['content']['selectedTcaColumns'], true) ?? [];
-            $contentElementTextData = $this->request->getParsedBody()['content']['contentElementData'] ?? [];
-            $contentElementImageData = [];
+        $parsedBody = $request->getParsedBody();
+        $content = json_decode($parsedBody['content'], true) ?? [];
+        $selectedTcaColumns = json_decode($parsedBody['selectedTcaColumns'], true) ?? [];
+        $contentElementTextData = $parsedBody['contentElementData'] ?? [];
+        $contentElementImageData = [];
 
-            $parsedBody = $this->request->getParsedBody() ?? [];
-            if (array_key_exists('fileData', $parsedBody)) {
-                foreach ($parsedBody['fileData']['content']['contentElementData'] as $table => $fieldsArray) {
-                    foreach ($fieldsArray as $key => $fields) {
-                        foreach ($fields as $fieldName => $fieldData) {
-                            if (array_key_exists('newImageUrl', $fieldData)) {
-                                $contentElementImageData[$table][$key][$fieldName]['newImageUrl'] = $fieldData['newImageUrl'];
-                                $imageTitle = '';
-                                if (!empty($fieldData['imageTitle'])) {
-                                    $imageTitle = $fieldData['imageTitle'];
-                                }
-                                if (!empty($fieldData['imageTitleFreeText'])) {
-                                    $imageTitle = $fieldData['imageTitleFreeText'];
-                                }
-                                $contentElementImageData[$table][$key][$fieldName]['imageTitle'] = $imageTitle;
-                            }
+        if (array_key_exists('fileData', $parsedBody)) {
+            foreach ($parsedBody['fileData']['contentElementData'] as $table => $fieldsArray) {
+                foreach ($fieldsArray as $key => $fields) {
+                    foreach ($fields as $fieldName => $fieldData) {
+                        if (array_key_exists('newImageUrl', $fieldData)) {
+                            $contentElementImageData[$table][$key][$fieldName]['newImageUrl'] = $fieldData['newImageUrl'];
+                            $imageTitle = !empty($fieldData['imageTitle']) ? $fieldData['imageTitle'] : '';
+                            $imageTitle = !empty($fieldData['imageTitleFreeText']) ? $fieldData['imageTitleFreeText'] : $imageTitle;
+                            $contentElementImageData[$table][$key][$fieldName]['imageTitle'] = $imageTitle;
                         }
                     }
                 }
             }
-
-            $contentElementIrreFields = [];
-            foreach ($selectedTcaColumns as $table => $fields) {
-                if (array_key_exists('foreignField', $fields)) {
-                    $contentElementIrreFields[$table] = $fields['foreignField'];
-                }
-            }
-            $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
-        } catch (Exception $exception) {
-            $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
-                $exception->getMessage(),
-                LocalizationUtility::translate('aiSuite.module.errorPageContentNotCreated.title', 'ai_suite'),
-                ContextualFeedbackSeverity::ERROR
-            );
-            $this->moduleTemplate->assign('errorActionUri', $content->getRegenerateReturnUrl());
-            return $this->htmlResponse($this->moduleTemplate->render());
         }
-        return $this->redirectToUri($content->getReturnUrl());
+
+        $contentElementIrreFields = [];
+        foreach ($selectedTcaColumns as $table => $fields) {
+            if (array_key_exists('foreignField', $fields)) {
+                $contentElementIrreFields[$table] = $fields['foreignField'];
+            }
+        }
+        $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
+        return new RedirectResponse($content['returnUrl']);
     }
 }

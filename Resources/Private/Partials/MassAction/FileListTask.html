@@ -1,0 +1,106 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<div class="list-group nested-sortable">
+
+    <div class="ai-suite mt-4" id="massActionFilesPrepareExecute">
+        <hr />
+        <h2 class="my-4">
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.foundFilesAndMetadata" extensionName="ai_suite" />
+        </h2>
+        <f:if condition="{files -> f:count()} > 0">
+            <f:then>
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <p class="my-4 position-relative">
+                    <label for="toggleFileSelection">
+                        <input type="checkbox" id="toggleFileSelection" value="1" />
+                        <span class="px-4">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
+                        </span>
+                    </label>
+                </p>
+                <div id="sortable-files" class="sortable-wrap">
+                    <f:for each="{files}" as="file">
+                        <div class="list-group-item nested">
+                            <div class="d-flex w-100">
+                                <div class="preview-image">
+                                    <label for="file-selection[{file.uid}]">
+                                        <f:image src="{file.uid}" width="100px"  />
+                                    </label>
+                                </div>
+                                <div class="file-meta-content">
+
+                                    <f:variable name="taskStatus">{aiSuite:inArray(needle: file.uid, haystack: alreadyPendingFiles)}</f:variable>
+                                    <div class="file-meta-content-info badge badge-info"
+                                         data-table="sys_file_metadata"
+                                         data-uid="{file.uid}"
+                                    >
+                                        <core:icon identifier="actions-document-info" size="small" /> Info
+                                    </div>
+                                    <p class="title">
+                                        <label for="file-selection[{file.uid}]">
+                                            <f:if condition="{taskStatus} != ''">
+                                                <f:then>
+                                                    <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                                                </f:then>
+                                                <f:else>
+                                                    <input
+                                                        type="checkbox"
+                                                        name="file-selection[{file.uid}]"
+                                                        id="file-selection[{file.uid}]"
+                                                        value="{file.uid}"
+                                                        data-sys-file-uid="{file.uid_local}"
+                                                    >
+                                                </f:else>
+                                            </f:if>
+                                            <span class="px-4">{file.name}</span>
+                                        </label>
+                                    </p>
+
+                                    <f:comment><!--<![CDATA[
+                    <input type="text" class="w-100 file-metadata-field" value="{file.columnValue}" />
+
+                    ]]>--></f:comment>
+                                    <f:if condition="{taskStatus} === ''">
+                                        <div class="filelist-input title">
+                                            <label>Title</label>
+                                            <input class="w-100 file-metadata-field" name="files[{file.uid}][title]" value="{file.title}" />
+                                        </div>
+                                        <div class="filelist-input alternative">
+                                            <label>Alternative Text</label>
+                                            <input class="w-100 file-metadata-field" name="files[{file.uid}][alternative]" value="{file.alternative}" />
+                                        </div>
+                                    </f:if>
+                                    <f:comment><!--<![CDATA[
+                        <div class="filelist-input copyright">
+                            <label>Copyright</label>
+                            <input class="w-100 file-metadata-field" property="files[{file.uid}][copyright]" value="{file.alternative}" />
+                        </div>
+                    ]]>--></f:comment>
+                                </div>
+                            </div>
+                        </div>
+                    </f:for>
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="filesExecuteFormSubmitBtn">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.executeBtn" extensionName="ai_suite" />
+                    </button>
+                    <button class="btn btn-primary mt-4 mx-2" type="submit" id="filesSaveMetadataSubmitBtn">
+                        <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.saveMetadataBtn" extensionName="ai_suite" /></f:format.raw>
+                    </button>
+                </div>
+                <p class="calculated-requests"></p>
+            </f:then>
+            <f:else>
+                <p>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.noFilesFound" extensionName="ai_suite" />
+                </p>
+            </f:else>
+        </f:if>
+    </div>
+</div>
+</html>

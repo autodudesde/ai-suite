@@ -22,18 +22,18 @@ class ResponseHandling {
             if(res.error) {
                 Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
                 if(data.table === 'tt_content') {
-                    document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
                 } else {
-                    document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
                 }
             } else {
                 let regenerateButton;
                 if(data.table === 'tt_content') {
-                    document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = res.output;
-                    regenerateButton = document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = res.output;
+                    regenerateButton = document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
                 } else {
                     document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = res.output;
-                    regenerateButton = document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
+                    regenerateButton = document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
                 }
                 if (regenerateButton !== null) {
                     regenerateButton.addEventListener('click', function(ev) {
@@ -45,9 +45,9 @@ class ResponseHandling {
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);
             if(data.table === 'tt_content') {
-                document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             } else {
-                document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             }
         }
         MultiStepWizard.dismiss();

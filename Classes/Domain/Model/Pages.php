@@ -12,11 +12,9 @@
 
 namespace AutoDudes\AiSuite\Domain\Model;
 
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-
-class Pages extends AbstractEntity
+class Pages
 {
-    protected $pid;
+    protected int $pid;
     protected string $title;
     protected int $doktype;
     protected int $hidden;
@@ -36,7 +34,7 @@ class Pages extends AbstractEntity
     protected int $isSiteroot;
 
     public function __construct(
-        int $pid,
+        ?int $pid,
         string $title,
         int $doktype,
         int $hidden,
@@ -95,6 +93,18 @@ class Pages extends AbstractEntity
             0, // isSiteroot
         );
     }
+
+    public function getPid(): int
+    {
+        return $this->pid;
+    }
+
+    public function setPid(int $pid): self
+    {
+        $this->pid = $pid;
+        return $this;
+    }
+
     public function getTitle(): string
     {
         return $this->title;
@@ -282,7 +292,6 @@ class Pages extends AbstractEntity
             'seo_title' => $this->seoTitle,
             'description' => $this->description,
             'slug' => $this->slug,
-            // 'tx_ai_suite_topiclist' => $this->txAiSuiteTopiclist,
             'tstamp' => $this->tstamp,
             'perms_userid' => $this->permsUserid,
             'perms_groupid' => $this->permsGroupid,

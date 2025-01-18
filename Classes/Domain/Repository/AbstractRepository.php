@@ -12,13 +12,13 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class AbstractRepository extends Repository
+class AbstractRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = '';
@@ -29,7 +29,6 @@ class AbstractRepository extends Repository
         string $table = '',
         string $sortBy = ''
     ) {
-        parent::__construct();
         $this->connectionPool = $connectionPool;
         $this->table = $table;
         $this->sortBy = $sortBy;
@@ -37,10 +36,12 @@ class AbstractRepository extends Repository
 
     /**
      * @throws Exception
+     * @throws DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     protected function selectQuery(string $column, string $value): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
@@ -68,10 +69,5 @@ class AbstractRepository extends Repository
                 [$updateColumn => $updateValue],
                 [$whereColumn => $whereValue]
             );
-    }
-
-    public function persistAll(): void
-    {
-        $this->persistenceManager->persistAll();
     }
 }

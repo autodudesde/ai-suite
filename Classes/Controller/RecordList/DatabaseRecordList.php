@@ -4,13 +4,42 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\RecordList;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\TranslationUtility;
-use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
+use TYPO3\CMS\Backend\Module\ModuleProvider;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 
 class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordList
 {
+    protected BackendUserService $backendUserService;
+    protected TranslationService $translationService;
+
+    public function __construct(
+        IconFactory $iconFactory,
+        UriBuilder $uriBuilder,
+        TranslationConfigurationProvider $translateTools,
+        EventDispatcherInterface $eventDispatcher,
+        BackendViewFactory $backendViewFactory,
+        ModuleProvider $moduleProvider,
+        BackendUserService $backendUserService,
+        TranslationService $translationService
+    ) {
+        parent::__construct(
+            $iconFactory,
+            $uriBuilder,
+            $translateTools,
+            $eventDispatcher,
+            $backendViewFactory,
+            $moduleProvider
+        );
+        $this->backendUserService = $backendUserService;
+        $this->translationService = $translationService;
+    }
+
     /**
      * Creates the localization panel
      *
@@ -19,8 +48,9 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
      */
     public function makeLocalizationPanel($table, $row, array $translations): string
     {
+
         $out = parent::makeLocalizationPanel($table, $row, $translations);
-        if ($out && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_translation')) {
+        if ($out && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')) {
             $pageId = (int)($table === 'pages' ? $row['uid'] : $row['pid']);
             $possibleTranslations = $this->possibleTranslations;
             if ($table === 'pages') {
@@ -33,9 +63,9 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
                     && !$this->isRecordDeletePlaceholder($row)
                     && !isset($translations[$lUid_OnPage])
                     && $this->getBackendUserAuthentication()->checkLanguageAccess($lUid_OnPage)
-                    && TranslationUtility::isTranslatable($pageId, $lUid_OnPage)
+                    && $this->translationService->isTranslatable($pageId, $lUid_OnPage)
                 ) {
-                    $out .= TranslationUtility::buildTranslateButton(
+                    $out .= $this->translationService->buildTranslateButton(
                         $table,
                         $row['uid'],
                         $lUid_OnPage,

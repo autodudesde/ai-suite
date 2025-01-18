@@ -13,10 +13,10 @@ class Generation {
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
                     let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="'+promptInputName+'"]').value
-                    if (enteredPrompt.length < 5) {
+                    if (enteredPrompt.length < 10) {
                         Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
                     }
-                    if(enteredPrompt.length > 4) {
+                    if(enteredPrompt.length > 9) {
                         self.showSpinner();
                         form.submit();
                     }
@@ -30,6 +30,11 @@ class Generation {
         setTimeout(() => {
             document.querySelector('div[data-module-id="aiSuite"] .spinner-overlay').classList.add('darken');
         }, 100);
+    }
+
+    hideSpinner() {
+        document.querySelector('div[data-module-id="aiSuite"] .spinner-overlay').classList.remove('active');
+        document.querySelector('div[data-module-id="aiSuite"] .spinner-overlay').classList.remove('darken');
     }
 
     showSpinnerModal(message, height = 400) {
