@@ -2,12 +2,19 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\ContentUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Backend\Form\Utility\FormEngineUtility;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TranslationService
@@ -49,6 +56,38 @@ class TranslationService
         'text',
     ];
 
+    protected ContentService $contentService;
+
+    protected UriBuilder $uriBuilder;
+
+    protected UuidService $uuidService;
+
+    protected SiteFinder $siteFinder;
+
+    protected ExtensionConfiguration $extensionConfiguration;
+
+    protected IconFactory $iconFactory;
+
+    protected SiteService $siteService;
+
+    public function __construct(
+        ContentService $contentService,
+        UriBuilder $uriBuilder,
+        UuidService $uuidService,
+        SiteFinder $siteFinder,
+        ExtensionConfiguration $extensionConfiguration,
+        IconFactory $iconFactory,
+        SiteService $siteService
+    ) {
+        $this->contentService = $contentService;
+        $this->uriBuilder = $uriBuilder;
+        $this->uuidService = $uuidService;
+        $this->siteFinder = $siteFinder;
+        $this->extensionConfiguration = $extensionConfiguration;
+        $this->iconFactory = $iconFactory;
+        $this->siteService = $siteService;
+    }
+
     public function fetchTranslationtFields(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table): array
     {
         $formData = $this->getFormData($request, $defaultValues, $ceSrcLangUid, $table);
@@ -67,7 +106,7 @@ class TranslationService
 
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
         $this->iterateOverFieldsArray($fieldsArray, $translateFields, $formData, $table);
-        return ContentUtility::cleanupRequestField($translateFields, $table);
+        return $this->contentService->cleanupRequestField($translateFields, $table);
     }
 
     protected function explodeSingleFieldShowItemConfiguration($field): array
@@ -115,7 +154,7 @@ class TranslationService
         $parameterArray['fieldConf'] = $formData['processedTca']['columns'][$fieldName];
 
         $fieldIsExcluded = $parameterArray['fieldConf']['exclude'] ?? false;
-        $fieldNotExcludable = BackendUserUtility::getBackendUser()->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
+        $fieldNotExcludable = $GLOBALS['BE_USER']->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
         if ($fieldIsExcluded && !$fieldNotExcludable) {
             return;
         }
@@ -177,5 +216,86 @@ class TranslationService
                 $this->checkSingleField($formData, $fieldName, $translateFields);
             }
         }
+    }
+
+    public function isTranslatable(int $pageId, int $languageId): bool
+    {
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+            $sourceLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId());
+            $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId);
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @throws ExtensionConfigurationPathDoesNotExistException
+     * @throws ExtensionConfigurationExtensionNotConfiguredException
+     * @throws RouteNotFoundException
+     * @throws SiteNotFoundException
+     */
+    public function buildTranslateButton(
+        $table,
+        $id,
+        $lUid_OnPage,
+        $returnUrl,
+        $pageId,
+        $flagIcon = ''
+    ): string {
+        $params = [];
+        $uuid = $this->uuidService->generateUuid();
+        $site = $this->siteFinder->getSiteByPageId($pageId);
+        $openTranslatedRecordInEditMode = $this->extensionConfiguration->get('ai_suite', 'openTranslatedRecordInEditMode');
+        if ($openTranslatedRecordInEditMode) {
+            $redirectUrl = (string)$this->uriBuilder->buildUriFromRoute(
+                'record_edit',
+                [
+                    'justLocalized' => $table . ':' . $id . ':' . $lUid_OnPage,
+                    'returnUrl' => $returnUrl,
+                ]
+            );
+            $params['redirect'] = $redirectUrl;
+        } else {
+            $params['redirect'] = $returnUrl;
+        }
+        $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
+        $params['cmd']['localization'][0]['aiSuite']['srcLanguageId'] = $site->getDefaultLanguage()->getLanguageId();
+        $params['cmd']['localization'][0]['aiSuite']['destLanguageId'] = $lUid_OnPage;
+        $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
+        $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
+        $href = (string)$this->uriBuilder->buildUriFromRoute('tce_db', $params);
+        $title = $this->translate('aiSuite.translateRecord');
+
+        if ($flagIcon) {
+            $icon = $this->iconFactory->getIcon($flagIcon, 'small', 'tx-aisuite-localization');
+            $lC = $icon->render();
+        } else {
+            $lC = $this->iconFactory
+                ->getIcon('tx-aisuite-localization', 'small')
+                ->render();
+        }
+
+        return '<a href="#"'
+            . '" class="btn btn-default t3js-action-localize ai-suite-record-localization"'
+            . 'data-href="' . htmlspecialchars($href) . '"'
+            . 'data-page-id="' . $pageId . '"'
+            . 'data-uuid="' . $uuid . '"'
+            . ' title="' . $title . '">'
+            . $lC . '</a> ';
+    }
+    public function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
+    }
+
+    public function translate(string $xlfKey, array $arguments = []): string
+    {
+        $xlfPrefix = '';
+        if(!str_starts_with($xlfKey, 'LLL:')) {
+            $xlfPrefix = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
+        }
+        return sprintf($this->getLanguageService()->sL($xlfPrefix . $xlfKey), ...$arguments);
     }
 }

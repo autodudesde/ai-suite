@@ -24,17 +24,17 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "13.0.2",
+    "version": "13.1.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
     "require": {
         "php": "^8.2",
-        "typo3/cms-backend": "^13.4",
-        "typo3/cms-filelist": "^13.4",
-        "typo3/cms-fluid": "^13.4",
-        "typo3/cms-seo": "^13.4",
-        "typo3/cms-rte-ckeditor": "^13.4"
+        "typo3/cms-backend": "^13.4.1",
+        "typo3/cms-filelist": "^13.4.1",
+        "typo3/cms-fluid": "^13.4.1",
+        "typo3/cms-rte-ckeditor": "^13.4.1",
+        "typo3/cms-seo": "^13.4.1"
     },
     "suggest": {
         "b13/container": "*"
@@ -69,10 +69,10 @@
         "friendsofphp/php-cs-fixer": "^3.52",
         "helhum/typo3-console": "^8.2",
         "phpstan/phpstan": "^1.10",
-        "typo3/cms-beuser": "^13.4",
-        "typo3/cms-lowlevel": "^13.4",
-        "typo3/cms-tstemplate": "^13.4",
-        "typo3/cms-install": "^13.4",
+        "typo3/cms-beuser": "^13.4.1",
+        "typo3/cms-lowlevel": "^13.4.1",
+        "typo3/cms-tstemplate": "^13.4.1",
+        "typo3/cms-install": "^13.4.1",
         "typo3/coding-standards": "^0.8"
     },
     "minimum-stability": "dev",

@@ -2,9 +2,8 @@
       xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-<f:render partial="PageContent/AllProperties" arguments="{_all}" />
 <div class="row">
-    <f:for each="{content.contentElementData}" key="table" as="data">
+    <f:for each="{contentElementData}" key="table" as="data">
         <div class="col-12 mb-3" id="{table}">
             <f:if condition="{table} == 'tt_content'">
                 <f:then>

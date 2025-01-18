@@ -32,9 +32,6 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
         );
     }
 
-    /**
-     * @return int returns the number of affected rows
-     */
     public function truncateTable(): int
     {
         return $this->connectionPool->getConnectionForTable($this->table)->truncate($this->table);

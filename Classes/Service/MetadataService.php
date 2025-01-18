@@ -4,39 +4,48 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
-use AutoDudes\AiSuite\Utility\SiteUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Resource\FileRepository;
 use TYPO3\CMS\Core\Routing\UnableToLinkToPageException;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class MetadataService
 {
+    protected PagesRepository $pagesRepository;
     protected PageRepository $pageRepository;
     protected RequestFactory $requestFactory;
     protected RequestsRepository $requestsRepository;
     protected FileRepository $fileRepository;
+    protected BackendUserService $backendUserService;
+    protected TranslationService $translationService;
+    protected SiteService $siteService;
 
     public function __construct(
+        PagesRepository $pagesRepository,
         PageRepository $pageRepository,
         RequestFactory $requestFactory,
         RequestsRepository $requestsRepository,
-        FileRepository $fileRepository
+        FileRepository $fileRepository,
+        BackendUserService $backendUserService,
+        TranslationService $translationService,
+        SiteService $siteService
     ) {
+        $this->pagesRepository = $pagesRepository;
         $this->pageRepository = $pageRepository;
         $this->requestFactory = $requestFactory;
         $this->requestsRepository = $requestsRepository;
         $this->fileRepository = $fileRepository;
+        $this->backendUserService = $backendUserService;
+        $this->translationService = $translationService;
+        $this->siteService = $siteService;
     }
 
     /**
@@ -47,17 +56,15 @@ class MetadataService
      */
     public function fetchContent(ServerRequestInterface $request): string
     {
-        $languageId = SiteUtility::getLanguageId();
         if ($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
             return $this->fetchContentOfNewsArticle(
                 (int)$request->getParsedBody()['id'],
-                (int)$request->getParsedBody()['newsDetailPlugin'],
-                $languageId
+                (int)$request->getParsedBody()['newsDetailPlugin']
             );
         } elseif ($request->getParsedBody()['table'] === 'sys_file_metadata') {
             return $this->getFileContent((int)$request->getParsedBody()['sysFileId']);
         } else {
-            $previewUrl = $this->getPreviewUrl((int)$request->getParsedBody()['pageId'], $languageId);
+            $previewUrl = $this->getPreviewUrl((int)$request->getParsedBody()['pageId']);
             return $this->fetchContentFromUrl($previewUrl);
         }
     }
@@ -77,14 +84,14 @@ class MetadataService
      * @throws UnableToFetchNewsRecordException
      * @throws UnableToLinkToPageException
      */
-    protected function fetchContentOfNewsArticle(int $newsId, int $newsDetailPluginId, int $pageLanaguage): string
+    protected function fetchContentOfNewsArticle(int $newsId, int $newsDetailPluginId): string
     {
         $additionalQueryParameters = [
             'tx_news_pi1[action]' => 'detail',
             'tx_news_pi1[controller]' => 'News',
             'tx_news_pi1[news]' => $newsId
         ];
-        $previewUrl = $this->getPreviewUrl($newsDetailPluginId, $pageLanaguage, $additionalQueryParameters);
+        $previewUrl = $this->getPreviewUrl($newsDetailPluginId, $additionalQueryParameters);
         return $this->fetchContentFromUrl($previewUrl);
     }
 
@@ -106,11 +113,17 @@ class MetadataService
      */
     public function getContentFromPreviewUrl(string $previewUrl): string
     {
-        $response = $this->requestFactory->request($previewUrl);
+        $options = [];
+        if (array_key_exists('be_typo_user', $_COOKIE)) {
+            $options = [
+                'headers' => ['Cookie' => 'be_typo_user=' . $_COOKIE['be_typo_user']],
+            ];
+        }
+        $response = $this->requestFactory->request($previewUrl, 'GET', $options);
         $fetchedContent = $response->getBody()->getContents();
 
         if (empty($fetchedContent)) {
-            throw new FetchedContentFailedException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.fetchContentFailed'));
+            throw new FetchedContentFailedException($this->translationService->translate('AiSuite.fetchContentFailed'));
         }
         return $fetchedContent;
     }
@@ -119,13 +132,13 @@ class MetadataService
      * @throws UnableToLinkToPageException
      * @throws UnableToFetchNewsRecordException
      */
-    public function getPreviewUrl(int $pageId, int $pageLanguage, array $additionalQueryParameters = []): string
+    public function getPreviewUrl(int $pageId, array $additionalQueryParameters = []): string
     {
         $page = $this->pageRepository->getPage($pageId);
         if ($page['is_siteroot'] === 1 && $page['l10n_parent'] > 0) {
             $pageId = $page['l10n_parent'];
         }
-        $additionalGetVars = '_language='.$pageLanguage;
+        $additionalGetVars = '_language=' . $page['sys_language_uid'];
         foreach ($additionalQueryParameters as $key => $value) {
             if (!empty($additionalGetVars)) {
                 $additionalGetVars .= '&';
@@ -135,50 +148,61 @@ class MetadataService
 
         $previewUriBuilder = PreviewUriBuilder::create($pageId);
         $previewUri = $previewUriBuilder
-            ->withLanguage($pageLanguage)
+            ->withLanguage($page['sys_language_uid'])
             ->withAdditionalQueryParameters($additionalGetVars)
             ->buildUri();
 
         if ($previewUri === null) {
             if (array_key_exists('tx_news_pi1[news]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[action]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[controller]', $additionalQueryParameters)) {
-                throw new UnableToFetchNewsRecordException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.unableToFetchNewsRecord', null, [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
+                throw new UnableToFetchNewsRecordException($this->translationService->translate('AiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
             }
-            throw new UnableToLinkToPageException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.unableToLinkToPage', null, [$pageId, $pageLanguage]));
+            throw new UnableToLinkToPageException($this->translationService->translate('AiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
         }
-        $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
-        $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
-        if ($previewUri->getScheme() === '' || $previewUri->getHost() === '') {
-            $request = $GLOBALS['TYPO3_REQUEST'];
-            $previewUri = $previewUri->withScheme($request->getUri()->getScheme());
-            $previewUri = $previewUri->withHost($request->getUri()->getHost());
-            $previewUri = $previewUri->withPort($request->getUri()->getPort());
-            $port = $previewUri->getPort() ? ':' . $previewUri->getPort() : '';
-            $uri = $previewUri->getScheme() . '://' . $previewUri->getHost() . $port . $previewUri->getPath();
-        }
-        if (count($additionalQueryParameters) > 0) {
-            return $uri . '?' . $previewUri->getQuery();
-        } else {
-            return $uri;
-        }
+        return $this->siteService->buildAbsoluteUri($previewUri);
     }
 
-    public function getAvailableNewsDetailPlugins(array $pids, int $languageId): array
+    public function fetchAccessablePages(): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
-        return $queryBuilder->select('tt_content.pid', 'p.title')
-            ->from('tt_content')
-            ->leftJoin(
-                'tt_content',
-                'pages',
-                'p',
-                $queryBuilder->expr()->eq('p.uid', $queryBuilder->quoteIdentifier('tt_content.pid'))
-            )
-            ->where(
-                $queryBuilder->expr()->in('tt_content.pid', $pids),
-                $queryBuilder->expr()->eq('tt_content.sys_language_uid', $languageId),
-                $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail'))
-            )
-            ->execute()
-            ->fetchAllAssociative();
+        if($this->backendUserService->getBackendUser()->isAdmin()) {
+            $foundPages = $this->pagesRepository->findAvailablePages();
+        } else {
+            $foundPages = [];
+            $uniquePageUids = [];
+            $availableFileMounts = $this->backendUserService->getBackendUser()->getWebMounts();
+            foreach($availableFileMounts as $mountPageUid) {
+                $uniquePageUids = array_unique(array_merge($uniquePageUids, $this->backendUserService->getSearchableWebmounts($mountPageUid)));
+            }
+            if(count($uniquePageUids) > 0) {
+                $foundPages = $this->pagesRepository->findAvailablePages($uniquePageUids);
+            }
+        }
+        return $this->backendUserService->getPagesInWebMountAndWithEditAccess($foundPages);
+    }
+
+    public function getMetadataColumns(): array
+    {
+        $metadataColumns = [
+            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description'
+        ];
+        return $this->getAvailableColumns($metadataColumns, 'pages');
+    }
+
+    public function getFileMetadataColumns(): array
+    {
+        $metadataColumns = [
+            'title', 'alternative'
+        ];
+        return $this->getAvailableColumns($metadataColumns, 'sys_file_reference');
+    }
+
+    private function getAvailableColumns(array $columns, string $xlfPrefix): array
+    {
+        $availableColumns = [];
+        foreach ($columns as $columnName) {
+            if ($this->backendUserService->getBackendUser()->check('non_exclude_fields', $xlfPrefix . ':' . $columnName)) {
+                $availableColumns[$columnName] = $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.' . $xlfPrefix . '.' . $columnName);
+            }
+        }
+        return $availableColumns;
     }
 }

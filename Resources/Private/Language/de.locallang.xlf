@@ -40,6 +40,12 @@
             <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Prompt Manager</source>
             <target>Prompt-Manager</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.massAction" resname="tx_aisuite.module.actionmenu.massAction">
+                <source>Mass actions</source>
+            <target>Massen-Aktionen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.backgroundTask" resname="tx_aisuite.module.actionmenu.backgroundTask">
+                <source>Background tasks</source>
+            <target>Hintergrundaufgaben</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
                 <source>Available Credits</source>
@@ -119,6 +125,60 @@
             <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.linklabel" resname="tx_aisuite.module.dashboard.card.translatePage.linklabel">
                 <source>Translate Page</source>
             <target>Seite übersetzen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.title" resname="tx_aisuite.module.dashboard.card.massActionSection.title">
+                <source>Mass actions</source>
+            <target>Massen-Aktionen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.description" resname="tx_aisuite.module.dashboard.card.massActionSection.description">
+                <source>Handle stuff via mass actions at once.</source>
+            <target>Erledige Dinge sofort über Massen-Aktionen.</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" resname="tx_aisuite.module.dashboard.card.backgroundTaskSection.title">
+                <source>Background tasks</source>
+            <target>Hintergrundaufgaben</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.title" resname="tx_aisuite.module.dashboard.card.massActionPages.title">
+                <source>Mass actions for page metas</source>
+            <target>Massen-Aktionen für Seiten-Metadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.description" resname="tx_aisuite.module.dashboard.card.massActionPages.description">
+                <source>Edit or update multiple page meta properties and subpages at once.</source>
+            <target>Bearbeite oder aktualisiere mehrere Seiten-Metadaten und Unterseiten gleichzeitig.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.linklabel" resname="tx_aisuite.module.dashboard.card.massActionPages.linklabel">
+                <source>Edit pages metas</source>
+            <target>Seiten-Metadaten bearbeiten</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.title" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.title">
+                <source>Mass actions for file relation metas</source>
+            <target>Massen-Aktionen für Metadaten von File-Referenzen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.description" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.description">
+                <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
+            <target>Bearbeite oder aktualisiere die Metadaten mehrerer File-Referenzen auf einer Seite und Unterseiten gleichzeitig.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel">
+                <source>Edit file relation metas</source>
+            <target>Metadaten von File-Referenzen bearbeiten</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.title">
+                <source>Mass actions for file metas</source>
+            <target>Massen-Aktionen für File-Metadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.description">
+                <source>Edit or update the meta properties of multiple files at once.</source>
+            <target>Bearbeite oder aktualisiere die Metaeigenschaften mehrerer Files gleichzeitig.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.linklabel">
+                <source>Edit file metas</source>
+            <target>File-Metadaten bearbeiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.massActionFilelist.allColumns">
+                <source>All cloumns</source>
+            <target>Alle Felder</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
+                <source>Mass actions for translations</source>
+            <target>Massen-Aktionen für Übersetzungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.description" resname="tx_aisuite.module.dashboard.card.massActionTranslations.description">
+                <source>Edit or update multiple translations at once.</source>
+            <target>Bearbeite oder aktualisiere mehrere Übersetzungen gleichzeitig.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel" resname="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel">
+                <source>Start translation mass action</source>
+            <target>Massen-Aktion zur Übersetzung starten</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.title" resname="tx_aisuite.module.dashboard.card.translateContentElement.title">
                 <source>Translate a content element</source>
@@ -220,6 +280,43 @@
                 <source>Delete</source>
             <target>Löschen</target></trans-unit>
 
+
+            <trans-unit id="tx_aisuite.module.preparePages.title" resname="tx_aisuite.module.preparePages.title">
+                <source>Select pages and field</source>
+            <target>Seiten und Feld auswählen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.pageChooser" resname="tx_aisuite.module.preparePages.pageChooser">
+                <source>Select the page you want to start from:</source>
+            <target>Wähle die Seite aus, auf der du beginnen möchtest:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.pageSelected" resname="tx_aisuite.module.preparePages.pageSelected">
+                <source>Selected page:</source>
+            <target>Ausgewählte Seite:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.pageType" resname="tx_aisuite.module.preparePages.pageType">
+                <source>Select page type:</source>
+            <target>Seitentyp auswählen:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.allPageTypes" resname="tx_aisuite.module.preparePages.allPageTypes">
+                <source>All</source>
+            <target>Alle</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.depth" resname="tx_aisuite.module.preparePages.depth">
+                <source>Select levels of subpages:</source>
+            <target>Wähle die Ebenen der Unterseiten aus:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.column" resname="tx_aisuite.module.preparePages.column">
+                <source>Select field:</source>
+            <target>Feld auswählen:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.sysLanguages" resname="tx_aisuite.module.preparePages.sysLanguages">
+                <source>Select language:</source>
+            <target>Sprache auswählen:</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.showOnlyEmpty" resname="tx_aisuite.module.preparePages.showOnlyEmpty">
+                <source>Show only empty fields</source>
+            <target>Nur leere Felder anzeigen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.preparePages.showPrepareResults" resname="tx_aisuite.module.preparePages.showPrepareResults">
+                <source>Show results</source>
+            <target>Ergebnisse anzeigen</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.noPagesFound" resname="AiSuite.module.massAction.noPagesFound">
+                <source>No pages available for your selection.</source>
+            <target>Für deine Auswahl sind keine Seiten verfügbar.</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.noFileReferencesFound" resname="AiSuite.module.massAction.noFileReferencesFound">
+                <source>No file references available for your selection.</source>
+            <target>Für deine Auswahl sind keine Datei-Referenzen verfügbar.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
             <target>Seitenstruktur generieren</target></trans-unit>
@@ -538,6 +635,9 @@
             <trans-unit id="aiSuite.module.paidCredits" xml:space="preserve">
                 <source>Paid Credits</source>
             <target>Paid Credits</target></trans-unit>
+            <trans-unit id="aiSuite.module.aboCredits" xml:space="preserve">
+                <source>Limit</source>
+            <target>Limit</target></trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
             <target>Bei der Beantwortung ist ein Fehler aufgetreten. Bitte versuche es erneut und überprüfe deine Einstellungen/Eingaben.</target></trans-unit>
@@ -928,6 +1028,18 @@
             <trans-unit id="aiSuite.customPermOptions.enablePagesGenerationDescription" xml:space="preserve">
                 <source>If active the "Pages" button will be shown within the backend module</source>
             <target>Wenn aktiv, wird der Button "Seiten" im Backend-Modul angezeigt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableMassActionGeneration" xml:space="preserve">
+                <source>Enable mass actions section within backend module</source>
+            <target>Abschnitt „Massen-Aktionen“ im Backend-Modul aktivieren</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableMassActionGenerationDescription" xml:space="preserve">
+                <source>If active the "Mass actions" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird die Schaltfläche "Massenaktionen" im Backend-Modul angezeigt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandling" xml:space="preserve">
+                <source>Enable background tasks section within backend module</source>
+            <target>Abschnitt „Hintergrundaufgaben“ im Backend-Modul aktivieren</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription" xml:space="preserve">
+                <source>If active the "Background tasks" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird die Schaltfläche "Hintergrundaufgaben" im Backend-Modul angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
                 <source>Show Metadata generation buttons</source>
             <target>Buttons zur Metadatengenerierung anzeigen</target></trans-unit>
@@ -1021,6 +1133,150 @@
             <trans-unit id="aiSuite.addImage.noFolderAvailable" resname="aiSuite.addImage.noFolderAvailable">
                 <source>No folder available for current user</source>
             <target>Für den aktuellen Benutzer ist kein Ordner verfügbar</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.missingSelection" resname="AiSuite.notification.generation.massAction.missingSelection">
+                <source>Missing selection</source>
+            <target>Fehlende Auswahl</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.missingStartFromPid" resname="AiSuite.notification.generation.massAction.missingStartFromPid">
+                <source>Please select a page where to start from.</source>
+            <target>Bitte wähle eine Seite aus, auf der du beginnen möchtest.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.massActionPages" resname="tx_aisuite.module.general.spinner.massActionPages">
+                <source>Processing data for mass action. This may take a moment. Please wait...</source>
+            <target>Daten für Massen-Aktion werden verarbeitet. Dies kann einen Moment dauern. Bitte warten …</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.foundPagesAndMetadata" resname="AiSuite.module.massAction.foundPagesAndMetadata">
+                <source>Found pages with associated metadata</source>
+            <target>Gefundene Seiten mit zugehörigen Metadaten</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.foundFilesAndMetadata" resname="AiSuite.module.massAction.foundFilesAndMetadata">
+                <source>Found files with associated metadata</source>
+            <target>Gefundene Dateien mit zugehörigen Metadaten</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.toggleAll" resname="AiSuite.module.massAction.toggleAll">
+                <source>Check / uncheck all</source>
+            <target>Alle auswählen/abwählen</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.executeBtn" resname="AiSuite.module.massAction.executeBtn">
+                <source>Generate metadata with AI</source>
+            <target>Metadaten mit KI generieren</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.saveMetadataBtn" resname="AiSuite.module.massAction.saveMetadataBtn">
+                <source><![CDATA[Update selected metadata <strong>(no credits needed)</strong>]]></source>
+            <target> Ausgewählte Metadaten aktualisieren &lt;strong&gt;(keine Credits erforderlich)&lt;/strong&gt;</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.missingPages" resname="AiSuite.notification.generation.massAction.missingPages">
+                <source>Please select at least one page.</source>
+            <target>Bitte wähle mindestens eine Seite aus.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.missingFiles" resname="AiSuite.notification.generation.massAction.missingFiles">
+                <source>Please select at least one file.</source>
+            <target>Bitte wähle mindestens eine Datei aus.</target></trans-unit>
+            <trans-unit id="AiSuite.massAction.processing" resname="AiSuite.massAction.processing">
+                <source>Already handled %s: </source>
+            <target>%s bereits bearbeitet:</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
+                <source>Mass action successfully created</source>
+            <target>Massen-Aktion erfolgreich erstellt</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
+                <source>Metadata fields successfully updated</source>
+            <target>Metadatenfelder erfolgreich aktualisiert</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.errorFetchingTasks" resname="AiSuite.backgroundTasks.errorFetchingTasks">
+                <source>Error while fetching background tasks</source>
+            <target>Fehler beim Abrufen von Hintergrundaufgaben</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.noTasksInfo" resname="AiSuite.backgroundTasks.noTasksInfo">
+                <source>No background tasks available.</source>
+            <target>Keine Hintergrundaufgaben verfügbar.</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteModalTitle" resname="AiSuite.backgroundTasks.deleteModalTitle">
+                <source>Do you want to continue?</source>
+            <target>Möchtest du fortfahren?</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteModalText" resname="AiSuite.backgroundTasks.deleteModalText">
+                <source>Delete entry</source>
+            <target>Eintrag löschen</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deleteError" resname="AiSuite.notification.deleteError">
+                <source>Entry could not be removed.</source>
+            <target>Eintrag konnte nicht entfernt werden.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deleteSuccessTitle" resname="AiSuite.notification.deleteSuccessTitle">
+                <source>Delete</source>
+            <target>Löschen</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteAbort" resname="AiSuite.backgroundTasks.deleteAbort">
+                <source>Abort</source>
+            <target>Abbrechen</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deleteSuccess" resname="AiSuite.notification.deleteSuccess">
+                <source>Successfully deleted</source>
+            <target>Erfolgreich gelöscht</target></trans-unit>
+            <trans-unit id="AiSuite.notification.saveSuccess" resname="AiSuite.notification.saveSuccess">
+                <source>Successfully saved</source>
+            <target>Erfolgreich gespeichert</target></trans-unit>
+            <trans-unit id="AiSuite.notification.saveError" resname="AiSuite.notification.saveError">
+                <source>Entry could not be saved.</source>
+            <target>Eintrag konnte nicht gespeichert werden.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.errorSavingTask" resname="AiSuite.notification.errorSavingTask">
+                <source>Error while saving background task data</source>
+            <target>Fehler beim Speichern der Hintergrundaufgaben</target></trans-unit>
+            <trans-unit id="AiSuite.notification.errorDeletingTask" resname="AiSuite.notification.errorDeletingTask">
+                <source>Error while deleting background task data</source>
+            <target>Fehler beim Löschen der Hintergrundaufgaben</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.failedPages" resname="AiSuite.notification.generation.failedPages">
+                <source>Content of the following pages could not be fetched: </source>
+            <target>Der Inhalt folgender Seiten konnte nicht abgerufen werden:</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.pageUpdateError" resname="AiSuite.notification.generation.pageUpdateError">
+                <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
+            <target>Unerwarteter Fehler beim Speichern der ausgewählten Seitenmetadaten. Weitere Informationen finden du in den Log-Dateien.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.fileReferencesUpdateError" resname="AiSuite.notification.generation.fileReferencesUpdateError">
+                <source>Unexpected error while saving selected file reference metadata. Please check your logs for further information.</source>
+            <target>Unerwarteter Fehler beim Speichern der ausgewählten Dateiverweismetadaten. Weitere Informationen finden du in den Log-Dateien.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.fileReferencesUpdateError.noFileSelected">
+                <source>No file references selected.</source>
+            <target>Keine Datei-Referenzen ausgewählt.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.failedFileReferences" resname="AiSuite.notification.generation.failedFileReferences">
+                <source>Image data of the following files could not be fetched: </source>
+            <target>Bilddaten folgender Dateien konnten nicht abgerufen werden:</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.errorPagesPrepareExecuteAction" resname="AiSuite.backgroundTasks.errorPagesPrepareExecuteAction">
+                <source>Error while preparing pages</source>
+            <target>Fehler beim Vorbereiten der Seiten</target></trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.errorFileReferencesPrepareExecuteAction" resname="AiSuite.backgroundTasks.errorFilesPrepareExecuteAction">
+                <source>Error while preparing files</source>
+            <target>Fehler beim Vorbereiten der Dateien</target></trans-unit>
+            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.page" resname="tx_aisuite.backgroundTaskSection.filter.page">
+                <source>Page metadata background tasks</source>
+            <target>Hintergrundaufgaben für Seitenmetadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadata" resname="tx_aisuite.backgroundTaskSection.filter.fileMetadata">
+                <source>File metadata background tasks</source>
+            <target>Hintergrundaufgaben für Dateimetadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileReference" resname="tx_aisuite.backgroundTaskSection.filter.fileReference">
+                <source>File reference metdata background tasks</source>
+            <target>Hintergrundaufgaben für Dateireferenzmetadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.massActionSection.filter.depth.onlyThisPage" resname="tx_aisuite.massActionSection.filter.depth.onlyThisPage">
+                <source>0 (only this page)</source>
+            <target>0 (nur diese Seite)</target></trans-unit>
+            <trans-unit id="aiSuite.module.customPromptTemplateStorageTitle" resname="aiSuite.module.customPromptTemplateStorageTitle">
+                <source>Page could not be used to store custom prompt templates</source>
+            <target>Die Seite konnte nicht zum Speichern benutzerdefinierter Prompt-Vorlagen verwendet werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.customPromptTemplateStorageMessage" resname="aiSuite.module.customPromptTemplateStorageMessage">
+                <source>Please select a page where custom prompt templates could be stored.</source>
+            <target>Bitte wähle eine Seite aus, auf der benutzerdefinierte Prompt-Vorlagen gespeichert werden können.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound">
+                <source>No records available.</source>
+            <target>Keine Datensätze verfügbar.</target></trans-unit>
+            <trans-unit id="aiSuite.error.default.title" resname="aiSuite.error.default.title">
+                <source>An unexpected error occurred</source>
+            <target>Ein unerwarteter Fehler ist aufgetreten</target></trans-unit>
+            <trans-unit id="massActionSection.pages.seo_title" resname="massActionSection.pages.seo_title">
+                <source>Title for search engines</source>
+            <target>Titel für Suchmaschinen</target></trans-unit>
+            <trans-unit id="massActionSection.pages.description" resname="massActionSection.pages.description">
+                <source>Description for search engines</source>
+            <target>Beschreibung für Suchmaschinen</target></trans-unit>
+            <trans-unit id="massActionSection.pages.og_title" resname="massActionSection.pages.og_title">
+                <source>Open Graph Title</source>
+            <target>Open Graph Titel</target></trans-unit>
+            <trans-unit id="massActionSection.pages.og_description" resname="massActionSection.pages.og_description">
+                <source>Open Graph Description</source>
+            <target>Open Graph Beschreibung</target></trans-unit>
+            <trans-unit id="massActionSection.pages.twitter_title" resname="massActionSection.pages.twitter_title">
+                <source>X / Twitter Title</source>
+            <target>X / Twitter-Titel</target></trans-unit>
+            <trans-unit id="massActionSection.pages.twitter_description" resname="massActionSection.pages.twitter_description">
+                <source>X / Twitter Description</source>
+            <target>X / Twitter Beschreibung</target></trans-unit>
+            <trans-unit id="massActionSection.sys_file_reference.title" resname="massActionSection.sys_file_reference.title">
+                <source>Image title</source>
+            <target>Bildtitel</target></trans-unit>
+            <trans-unit id="massActionSection.sys_file_reference.alternative" resname="massActionSection.sys_file_reference.alternative">
+                <source>Image alternative text</source>
+            <target>Alternativtext für Bilder</target></trans-unit>
         </body>
     </file>
 </xliff>

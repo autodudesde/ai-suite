@@ -1,0 +1,46 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+>
+<div class="list-group nested-sortable">
+    <f:for each="{tasks}" as="task">
+        <div class="list-group-item nested">
+            <div class="d-flex w-100">
+                <div class="preview-image">
+                    <f:image src="{task.uid}" treatIdAsReference="1" />
+                </div>
+                <div class="file-reference-meta-content">
+                    <f:variable name="taskStatus">{aiSuite:inArray(needle: task.uid, haystack: alreadyPendingFileReferences)}</f:variable>
+                    <div class="file-reference-meta-content-info badge badge-info"
+                         data-table="{task.tablenames}"
+                         data-uid="{task.uid_foreign}"
+                    >
+                        <core:icon identifier="actions-document-info" size="small" /> Info
+                    </div>
+                    <p class="title">
+                        <f:if condition="{taskStatus} != ''">
+                            <f:then>
+                                <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                            </f:then>
+                            <f:else>
+                                <input
+                                    type="checkbox"
+                                    name="file-reference-selection"
+                                    value="{task.uid}"
+                                    data-sys-file-uid="{task.uid_local}"
+                                >
+                            </f:else>
+                        </f:if>
+                        <span class="px-4">{task.fileName}</span>
+                    </p>
+                    <label>
+                        <strong>{columnName} ({column})</strong>
+                        <input type="text" class="w-100 file-reference-metadata-field" value="{task.columnValue}" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </f:for>
+</div>
+</html>

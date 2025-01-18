@@ -58,7 +58,6 @@ export default class ModalView extends View {
             promtTemplateDisplay = 'none';
             this.dropdown = '';
         }
-        // TODO: change icon
         this.saveButtonView = this._createButton(TYPO3.lang['tx_aisuite.module.PageContent.submit'], icons.pencil, 'ck-button-save');
         this.spinner = new SpinnerView(editorLocale, TYPO3.lang['tx_aisuite.module.general.contentGenerationInProcess']);
 

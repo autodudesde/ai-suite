@@ -1,0 +1,62 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
+
+    <h1 class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.title" extensionName="ai_suite"/>
+    </h1>
+    <p class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.description" extensionName="ai_suite"/>
+    </p>
+    <p class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.description" extensionName="ai_suite"/>
+        {directory}
+    </p>
+
+    <form id="ai-suite-filelist-files" enctype="multipart/form-data">
+        <section>
+            <h2 class="mb-4">
+                <f:translate key="tx_aisuite.module.prepareFiles.title" extensionName="ai_suite"/>
+            </h2>
+            <input type="hidden" name="options[directory]" id="directory" value="{directory}" />
+            <input type="hidden" name="options[parentUuid]" id="parentUuid" value="{parentUuid}" />
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label>
+                                    <f:translate key="tx_aisuite.module.preparePages.column"/ extensionName="ai_suite">
+                                </label>
+                                <br />
+                                <select class="form-select" id="column" name="options[column]">
+                                    <f:for as="colum" each="{columns}" key="key">
+                                        <option value="{key}">{colum}</option>
+                                    </f:for>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="options[sysLanguage]" id="sysLanguage" value="0" />
+
+                    <div class="col-md-4 d-flex align-items-center pt-3">
+                        <div class="form-group">
+                            <label class="position-relative">
+                                <input type="checkbox" id="showOnlyEmpty" value="1" name="options[showOnlyEmpty]" />
+                                <span class="px-4">
+                                    <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+        </section>
+        <section id="resultsToExecute" class="mt-3">
+            <f:render partial="MassAction/FileListTask" arguments="{_all}"/>
+        </section>
+    </form>
+    <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.massActionPages', extensionName:'ai_suite')}" />
+    <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+</f:section>

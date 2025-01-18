@@ -105,4 +105,48 @@ return [
         'path' => '/generate/ckeditor-request',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::requestAction'
     ],
+    'aisuite_massaction_pages_prepare' => [
+        'path' => '/mass-action/pages-prepare',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesPrepareExecuteAction'
+    ],
+    'aisuite_massaction_pages_execute' => [
+        'path' => '/mass-action/pages-execute',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesExecuteAction'
+    ],
+    'aisuite_massaction_pages_update' => [
+        'path' => '/mass-action/pages-update',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesUpdateAction'
+    ],
+    'aisuite_massaction_filereferences_prepare' => [
+        'path' => '/mass-action/file-references-prepare',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::fileReferencesPrepareExecuteAction'
+    ],
+    'aisuite_massaction_filereferences_execute' => [
+        'path' => '/mass-action/file-references-execute',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::fileReferencesExecuteAction'
+    ],
+    'aisuite_massaction_filereferences_update' => [
+        'path' => '/mass-action/file-references-update',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::fileReferencesUpdateAction'
+    ],
+    'aisuite_massaction_filelist_files_execute' => [
+        'path' => '/mass-action/filelist-files-execute',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesExecuteAction'
+    ],
+    'aisuite_massaction_filelist_files_update' => [
+        'path' => '/mass-action/filelist-files-update',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesUpdateAction'
+    ],
+    'aisuite_massaction_filelist_files_update_view' => [
+        'path' => '/mass-action/filelist-files-update-view',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesUpdateViewAction'
+    ],
+    'aisuite_background_task_delete' => [
+        'path' => '/background-task/delete',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::deleteAction'
+    ],
+    'aisuite_background_task_save' => [
+        'path' => '/background-task/save',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::saveAction'
+    ],
 ];

@@ -12,17 +12,46 @@
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
-use AutoDudes\AiSuite\Utility\SiteUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
+#[AsController]
 class StatusController extends AbstractAjaxController
 {
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        ViewFactoryInterface $viewFactory,
+        LoggerInterface $logger,
+    ) {
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $viewFactory,
+            $logger
+        );
     }
 
     public function getStatusAction(ServerRequestInterface $request): ResponseInterface
@@ -30,7 +59,7 @@ class StatusController extends AbstractAjaxController
         $response = new Response();
 
         try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
+            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
         } catch (Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;

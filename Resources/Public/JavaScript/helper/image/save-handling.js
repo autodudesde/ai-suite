@@ -28,7 +28,7 @@ class SaveHandling {
         let self = this;
         let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
-            let selectedImageRadioBtn = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][newImageUrl]"]:checked');
+            let selectedImageRadioBtn = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][newImageUrl]"]:checked');
             if(selectedImageRadioBtn.length > 0) {
                 let imageTitle = self.getSelectedImageTitle(modal, data);
                 let imageUrl = selectedImageRadioBtn.data('url');
@@ -125,8 +125,8 @@ class SaveHandling {
         });
     }
     getSelectedImageTitle(modal, data, fromFileList = false) {
-        let selectedImageTitleRadioBtn = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitle]"]:checked');
-        let selectedImageTitleInputFreeText = modal.find('.modal-body').find('input[name="fileData[content][contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitleFreeText]"]').val();
+        let selectedImageTitleRadioBtn = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitle]"]:checked');
+        let selectedImageTitleInputFreeText = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitleFreeText]"]').val();
         if(fromFileList) {
             selectedImageTitleRadioBtn = modal.find('.modal-body').find('input.image-title-selection:checked');
             selectedImageTitleInputFreeText = modal.find('.modal-body').find('input.image-title-free-text-input').val();

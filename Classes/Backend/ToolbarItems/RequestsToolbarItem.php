@@ -5,27 +5,34 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Backend\ToolbarItems;
 
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
+use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Toolbar\RequestAwareToolbarItemInterface;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
-use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarItemInterface
 {
     protected LoggerInterface $logger;
     private ServerRequestInterface $request;
 
+    protected TranslationService $translationService;
+
+    protected RequestsRepository $requestsRepository;
+
     protected BackendViewFactory $backendViewFactory;
 
     public function __construct(
-        BackendViewFactory $backendViewFactory
+        TranslationService $translationService,
+        BackendViewFactory $backendViewFactory,
+        RequestsRepository $requestsRepository,
+        LoggerInterface $logger
     ) {
+        $this->translationService = $translationService;
         $this->backendViewFactory = $backendViewFactory;
-        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->requestsRepository = $requestsRepository;
+        $this->logger = $logger;
     }
 
     public function setRequest(ServerRequestInterface $request): void
@@ -42,15 +49,18 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
     {
         $view = $this->backendViewFactory->create($this->request, ['ai_suite']);
         try {
-            $requestsRepository = GeneralUtility::makeInstance(RequestsRepository::class);
-            $requests = $requestsRepository->findFirstEntry();
-            if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0) {
+            $requests = $this->requestsRepository->findFirstEntry();
+            if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0 && $requests['abo_requests'] >= 0) {
+                if(!empty($requests['model_type'])) {
+                    $requests['abo_requests'] = (int)$requests['model_type'] - $requests['abo_requests'] . ' / ' . $requests['model_type'];
+                }
                 $view->assign('requests', $requests);
             }
+            throw new \Exception('No requests found');
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             if (str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {
-                $view->assign('error', LocalizationUtility::translate('aiSuite.error_no_credits_table', 'ai_suite'));
+                $view->assign('error', $this->translationService->translate('aiSuite.error_no_credits_table'));
             }
         }
         return $view->render('ToolbarItems/RequestsToolbarItem');

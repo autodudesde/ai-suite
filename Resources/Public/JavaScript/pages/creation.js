@@ -4,8 +4,8 @@ import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 class Creation {
     constructor() {
         Generation.cancelGeneration();
-        Generation.addFormSubmitEventListener('input[plainPrompt]');
-        PromptTemplate.loadPromptTemplates('input[plainPrompt]');
+        Generation.addFormSubmitEventListener('plainPrompt');
+        PromptTemplate.loadPromptTemplates('plainPrompt');
     }
 }
 export default new Creation();

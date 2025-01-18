@@ -14,13 +14,21 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
 use AutoDudes\AiSuite\Utility\SiteUtility;
 use AutoDudes\AiSuite\Utility\UuidUtility;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception;
@@ -30,8 +38,9 @@ use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
+#[AsController]
 class ImageController extends AbstractAjaxController
 {
     protected PageContentFactory $pageContentFactory;
@@ -39,11 +48,30 @@ class ImageController extends AbstractAjaxController
     protected Filesystem $filesystem;
 
     public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        ViewFactoryInterface $viewFactory,
+        LoggerInterface $logger,
         PageContentFactory $pageContentFactory,
         ResourceFactory $fileFactory,
         Filesystem $filesystem
     ) {
-        parent::__construct();
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $viewFactory,
+            $logger
+        );
         $this->pageContentFactory = $pageContentFactory;
         $this->fileFactory = $fileFactory;
         $this->filesystem = $filesystem;
@@ -54,14 +82,14 @@ class ImageController extends AbstractAjaxController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::IMAGE, 'createImage', ['image']);
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'));
+            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             return new HtmlResponse($librariesAnswer->getResponseData()['message']);
         }
 
-        $params['promptTemplates'] = PromptTemplateUtility::getAllPromptTemplates('imageWizard');
-        $params['imageGenerationLibraries'] = LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
+        $params['promptTemplates'] = $this->promptTemplateService->getAllPromptTemplates('imageWizard');
+        $params['imageGenerationLibraries'] = $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
-        $params['uuid'] = UuidUtility::generateUuid();
+        $params['uuid'] = $this->uuidService->generateUuid();
         $output = $this->getContentFromTemplate(
             $request,
             'WizardSlideOne',
@@ -72,16 +100,12 @@ class ImageController extends AbstractAjaxController
         return new HtmlResponse($output);
     }
 
-    /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
-     */
     public function getImageWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
 
         try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
+            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
         } catch (Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;
@@ -129,19 +153,14 @@ class ImageController extends AbstractAjaxController
             )
         );
         return $response;
-
     }
 
-    /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
-     */
     public function getImageWizardSlideThreeAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
 
         try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
+            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
         } catch (Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;
@@ -191,15 +210,12 @@ class ImageController extends AbstractAjaxController
         return $response;
     }
 
-    /**
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
     public function regenerateImageAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
 
         try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
+            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
         } catch (Exception $exception) {
             $this->logError($exception->getMessage(), $response, 503);
             return $response;

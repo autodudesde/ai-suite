@@ -1,12 +1,12 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
     <f:if condition="{sortableList}">
-        <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/Pages/sortable.css" />
+        <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
         <f:asset.script identifier="backend-aisuite-sortable-lib" src="EXT:ai_suite/Resources/Public/JavaScript/pages/sortable.js" />
         <f:asset.script identifier="backend-aisuite-sortable-script" src="EXT:ai_suite/Resources/Public/JavaScript/pages/sortable-app.js" />
 
         <p class="text-right">
             <button class="toggleButtonVisible btn btn-secondary">
-                <f:translate key="aiSuite.module.hideShowButtons"/>
+                <f:translate key="aiSuite.module.hideShowButtons" extensionName="ai_suite"/>
             </button>
         </p>
         <div id="sortable-pages" class="sortable-wrap">
@@ -16,14 +16,14 @@
                     <span class="close">X</span>
                     <input type="hidden" name="position">
                     <span class="insert-title">
-                        <f:translate key="tx_aisuite.module.pageStructure.sortable-input.title"/>
+                        <f:translate key="tx_aisuite.module.pageStructure.sortable-input.title" extensionName="ai_suite"/>
                     </span>
                     <br />
                     <input type="text" id="pageStructure-sortable-input">
                     <br />
                     <br />
                     <button class="submit btn btn-default">
-                        <f:translate key="tx_aisuite.module.pageStructure.sortable-input.submit"/>
+                        <f:translate key="tx_aisuite.module.pageStructure.sortable-input.submit" extensionName="ai_suite"/>
                     </button>
                 </div>
             </div>

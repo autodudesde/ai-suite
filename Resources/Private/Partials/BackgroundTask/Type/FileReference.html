@@ -1,0 +1,78 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<h2 class="accordion-header mb-0">
+    <button class="accordion-button collapsed w-100 text-start position-relative" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{backgroundTask.uuid}" aria-expanded="false" aria-controls="accordion{backgroundTask.uuid}">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="badge badge-{backgroundTask.status}">{backgroundTask.status}</span>
+                    <f:image src="{backgroundTask.fileUid}" />
+                <span class="title">{backgroundTask.fileName}</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="badge badge-info mx-2">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" />
+                </span>
+                <span class="delete-accordion-item" data-uuid="{backgroundTask.uuid}"><core:icon identifier="actions-delete" size="medium" /></span>
+                <f:if condition="{backgroundTask.status} == failed">
+                    <div class="tooltip">
+                        <core:icon identifier="actions-exclamation-triangle" size="medium" />
+                        <span class="tooltiptext p-3">{backgroundTask.error}</span>
+                    </div>
+                </f:if>
+                <f:if condition="{backgroundTask.status} == 'finished'">
+                    <span class="open-accordion-item"><core:icon identifier="actions-chevron-down" size="medium" /></span>
+                </f:if>
+            </div>
+        </div>
+    </button>
+</h2>
+<f:if condition="{backgroundTask.status} == 'finished'">
+    <div id="accordion{backgroundTask.uuid}" class="accordion-collapse collapse" data-bs-parent="#accordionBackgroundTasks{type}">
+        <div class="accordion-body p-3 position-relative">
+            <div class="preview-image-wrapper">
+                <f:image src="{backgroundTask.fileUid}" />
+                <div>
+                    <div class="file-reference-meta-content-info badge badge-info"
+                         data-table="{backgroundTask.table_name}"
+                         data-uid="{backgroundTask.table_uid}"
+                    >
+                        <core:icon identifier="actions-document-info" size="small" /> Info
+                    </div>
+                    <h3 class="mb-2">
+                        <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" />"</strong> ({backgroundTask.column}):
+                    </h3>
+                    <input
+                        type="text"
+                        class="w-100 mb-4 p-2 metadata-value"
+                        data-sys-file-reference-uid="{backgroundTask.table_uid}"
+                        data-column="{backgroundTask.column}"
+                        data-uuid="{backgroundTask.uuid}"
+                        value="{backgroundTask.columnValue}"
+                    />
+                </div>
+            </div>
+            <div class="ai-suite-metadata-generation-wizard">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="text-gradient">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+                        </h2>
+                    </div>
+                </div>
+                <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: backgroundTask.metadataSuggestions, fieldName: backgroundTask.column, table: 'pages', position: it.index}" />
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <button class="mb-3 mt-1 btn btn-primary w-100 save-accordion-item" data-uuid="{backgroundTask.uuid}">
+                            <core:icon identifier="actions-check" size="small" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:if>

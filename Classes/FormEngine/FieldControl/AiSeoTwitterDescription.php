@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\FormEngine\FieldControl;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AiSeoTwitterDescription extends AbstractNode
 {
     public function render(): array
     {
-        if(!BackendUserUtility::checkPermissions('tx_aisuite_features:enable_metadata_generation')) {
+        if(!$GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_metadata_generation')) {
             return [];
         }
         return [
             'iconIdentifier' => 'actions-document-synchronize',
-            'title' => LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.generation.twitterDescriptionSuggestions'),
+            'title' => $GLOBALS['LANG']->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.generation.twitterDescriptionSuggestions'),
             'linkAttributes' => [
                 'id' => 'twitter_description_generation',
                 'class' => 'ai-suite-suggestions-generation-btn',

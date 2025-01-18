@@ -4,17 +4,17 @@
         <f:asset.script identifier="backend-aisuite-searchableDropdown-script" src="EXT:ai_suite/Resources/Public/JavaScript/pages/searchable-dropdown.js" />
         <div class="form-group">
             <div class="searchable dropdown">
-                <f:form.hidden property="{propertyName}" class="searchableInputProperty" />
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-initial-text="{f:translate(key: translateKeyButton)}">
-                    {f:translate(key: translateKeyButton)}
+                <input type="hidden" name="{propertyName}" class="searchableInputProperty" value="{selected}" />
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-initial-text="{f:translate(key: translateKeyButton, extensionName: 'ai_suite')}">
+                    <f:translate key="{translateKeyButton}" extensionName="ai_suite"/>
                 </button>
                 <ul class="dropdown-menu">
                     <li class="searchbox">
-                        <input type="text" placeholder="{f:translate(key: 'AiSuite.module.misc.searchableDropdown.search')}" class="form-control searchableInput" />
+                        <input type="text" placeholder="{f:translate(key: 'AiSuite.module.misc.searchableDropdown.search', extensionName: 'ai_suite')}" class="form-control searchableInput" />
                     </li>
                     <f:for each="{searchableList}" key="optionKey" as="optionLabel">
                         <li>
-                            <a class="dropdown-item" data-value="{optionKey}" href="#{optionKey}">{optionLabel}</a>
+                            <a class="dropdown-item" data-value="{optionKey}" href="#{optionKey}">{optionLabel} (PID: {optionKey})</a>
                         </li>
                     </f:for>
                 </ul>
@@ -22,6 +22,6 @@
         </div>
     </f:then>
     <f:else>
-        <f:translate key="aiSuite.module.noSearchableList"/>
+        <f:translate key="aiSuite.module.noSearchableList" extensionName="ai_suite"/>
     </f:else>
 </f:if>

@@ -7,10 +7,10 @@
 
 <f:section name="Content">
     <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.title"/>
+        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.title" extensionName="ai_suite"/>
     </h1>
     <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.description"/>
+        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.description" extensionName="ai_suite"/>
     </p>
 
     <section class="card-container">
@@ -19,7 +19,7 @@
             icon: 'actions-translate',
             cardname: 'translateXlfFile',
             controller: 'Agencies',
-            action: 'translateXlf',
+            route: 'ai_suite_agencies_translate_xlf',
             status: 'active'
         }" />
 

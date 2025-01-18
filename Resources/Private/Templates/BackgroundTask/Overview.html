@@ -1,0 +1,34 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <f:if condition="{backgroundTasks}">
+        <f:then>
+            <section>
+                <h1 class="mb-4">
+                    <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
+                </h1>
+                <div class="filter my-3">
+                    <select id="backgroundTaskFilter" class="form-select">
+                        <option value="Page">
+                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.page" extensionName="ai_suite"/>
+                        </option>
+                        <option value="FileReference">
+                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileReference" extensionName="ai_suite"/>
+                        </option>
+                        <option value="FileMetadata">
+                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileMetadata" extensionName="ai_suite"/>
+                        </option>
+                    </select>
+                </div>
+                <div id="backgroundTaskWrapper">
+                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.page, type: 'Page'}" />
+                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileReference, type: 'FileReference'}" />
+                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileMetadata, type: 'FileMetadata'}" />
+                </div>
+            </section>
+        </f:then>
+    </f:if>
+</f:section>

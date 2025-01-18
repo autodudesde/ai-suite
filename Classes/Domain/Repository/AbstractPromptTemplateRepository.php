@@ -12,12 +12,9 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class AbstractPromptTemplateRepository extends Repository
+class AbstractPromptTemplateRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = '';
@@ -28,17 +25,9 @@ class AbstractPromptTemplateRepository extends Repository
         string $table = '',
         string $sortBy = ''
     ) {
-        parent::__construct();
         $this->connectionPool = $connectionPool;
         $this->table = $table;
         $this->sortBy = $sortBy;
-    }
-
-    public function initializeObject(): void
-    {
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(false);
-        $this->setDefaultQuerySettings($querySettings);
     }
 
     /**

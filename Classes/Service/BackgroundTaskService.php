@@ -1,0 +1,108 @@
+<?php
+
+namespace AutoDudes\AiSuite\Service;
+
+use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
+use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use Doctrine\DBAL\DBALException;
+
+class BackgroundTaskService
+{
+    protected BackendUserService $backendUserService;
+    protected BackgroundTaskRepository $backgroundTaskRepository;
+    protected PagesRepository $pagesRepository;
+
+    public function __construct(
+        BackendUserService $backendUserService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        PagesRepository $pagesRepository
+    ) {
+        $this->backendUserService = $backendUserService;
+        $this->backgroundTaskRepository = $backgroundTaskRepository;
+        $this->pagesRepository = $pagesRepository;
+    }
+
+    public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
+    {
+        $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
+
+        foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
+            if(!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+                continue;
+            }
+            $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+            $uuidStatus[$foundBackgroundTask['uuid']] =  [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status']
+            ];
+        }
+
+        $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
+
+        foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
+            $filePermissions = false;
+            if(!$this->backendUserService->getBackendUser()->isAdmin()) {
+                foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
+                    if($fileMount['uid'] === $foundBackgroundTask['storage']) {
+                        $filePermissions = true;
+                    }
+                }
+            } else {
+                $filePermissions = true;
+            }
+            if($filePermissions) {
+                $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                $uuidStatus[$foundBackgroundTask['uuid']] =  [
+                    'uuid' => $foundBackgroundTask['uuid'],
+                    'status' => $foundBackgroundTask['status']
+                ];
+            }
+        }
+
+        $foundBackgroundTasksFileMetadata = $this->backgroundTaskRepository->findAllFileMetadataBackgroundTasks();
+
+        foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
+            $filePermissions = false;
+            if(!$this->backendUserService->getBackendUser()->isAdmin()) {
+                foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
+                    if($fileMount['uid'] === $foundBackgroundTask['storage']) {
+                        $filePermissions = true;
+                    }
+                }
+            } else {
+                $filePermissions = true;
+            }
+            if($filePermissions) {
+                $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                $uuidStatus[$foundBackgroundTask['uuid']] =  [
+                    'uuid' => $foundBackgroundTask['uuid'],
+                    'status' => $foundBackgroundTask['status']
+                ];
+            }
+        }
+    }
+
+    /**
+     * @throws DBALException
+     */
+    public function mergeBackgroundTasksAndUpdateStatus(array &$backgroundTasks, array $fetchedStatusData): void
+    {
+        foreach($backgroundTasks as $scope => $tasks) {
+            $backgroundTasks[$scope] = array_map(function ($task) use ($fetchedStatusData) {
+                $task['status'] = isset($fetchedStatusData[$task['uuid']]) > 0 ? $fetchedStatusData[$task['uuid']]['status'] : $task['status'];
+                $answer = isset($fetchedStatusData[$task['uuid']]) ? json_decode($fetchedStatusData[$task['uuid']]['answer'], true) : json_decode($task['answer'], true);
+                if(isset($answer['type']) && $answer['type'] === 'Metadata') {
+                    $task['metadataSuggestions'] = $answer['body']['metadataResult'];
+                }
+                if(isset($answer['type']) && $answer['type'] === 'Error') {
+                    $task['error'] = $answer['body']['message'];
+                }
+                unset($task['answer']);
+                return $task;
+            }, $backgroundTasks[$scope]);
+        }
+        $this->backgroundTaskRepository->updateStatus($fetchedStatusData);
+    }
+}

@@ -30,8 +30,15 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
 
     $services->set(Filesystem::class);
 
-    $services->set(\AutoDudes\AiSuite\Controller\Ajax\MetadataController::class)
-        ->public();
-    $services->set(\AutoDudes\AiSuite\Controller\Ajax\ImageController::class)
+    $services->set(\AutoDudes\AiSuite\Providers\PagesContextMenuProvider::class)
+        ->public()
+        ->tag('backend.contextmenu.itemprovider', [
+            'identifier' => 'aiSuitePagesContextMenuProvider',
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class)
+        ->decorate(\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+
+    $services->set(\AutoDudes\AiSuite\Hooks\TranslationHook::class)
         ->public();
 };

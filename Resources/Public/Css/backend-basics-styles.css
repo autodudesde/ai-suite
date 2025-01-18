@@ -649,3 +649,247 @@ div[data-module-id="aiSuite"] .status .badge.critical {
 .ai-suite-record-localization span {
     pointer-events: none;
 }
+
+
+/*
+Metadata suggestions
+ */
+.ai-suite-metadata-generation-wizard .metadata-suggestions label {
+    width: 100%;
+    height: 100%;
+    min-height: 50px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+.ai-suite-metadata-generation-wizard .metadata-suggestions input[type=checkbox]:checked + label {
+    border: 1px solid #F09C42 !important;
+    background-color: rgba(240, 156, 66, 0.4) !important;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] {
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    margin-top: calc((1em * var(--checkbox-radio-line-height) - var(--checkbox-radio-size)) / 2);
+    opacity: 0;
+    height: var(--checkbox-radio-size);
+    width: 100%;
+    z-index: -1;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label {
+    display: inline-block;
+    line-height: var(--checkbox-radio-line-height);
+    user-select: none;
+    cursor: pointer;
+    padding-left: 35px;
+}
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label.use-for {
+    padding-left: 15px;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label::before {
+    content: '';
+    box-sizing: border-box;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    top: -0.1em;
+    margin-left: -15px;
+    flex-shrink: 0;
+    width: var(--checkbox-radio-size);
+    height: var(--checkbox-radio-size);
+    background-color: white;
+    border-width: var(--checkbox-radio-border-width);
+    border-color: rgba(240, 156, 66, 0.65);
+    border-style: solid;
+    box-shadow: 0 0.9px 1.25px hsla(0, 0%, 0%, 0.025),0 3px 5px hsla(0, 0%, 0%, 0.05),0 12px 20px hsla(0, 0%, 0%, 0.09);
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: var(--checkbox-radio-gap);
+    transition: transform .2s, border .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:not(:checked):not(:focus) + label:hover::before {
+    border-color: #A2A2A9;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"] + label::before {
+    border-radius: var(--checkbox-radius);
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked + label::before {
+    background-color: #F09C42;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    border-color: #F09C42;
+    transition: transform .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:active + label::before {
+    transform: scale(0.8);
+    transition: transform .2s;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked:active + label::before {
+    transform: none;
+    transition: none;
+}
+
+.ai-suite-metadata-generation-wizard input[type="checkbox"]:checked + label::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='1 6.5 4 9.5 11 2.5' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
+    background-size: var(--checkbox-marker-size);
+}
+
+/**
+Mass actions
+ */
+div[data-module-id="aiSuite"] #resultsToExecute {
+    overflow-x: hidden;
+}
+
+#showOnlyEmpty,
+#togglePageSelection,
+#toggleFileSelection,
+#toggleFileReferenceSelection,
+#sortable-pages .title input[type="checkbox"],
+#sortable-file-references .title input[type="checkbox"],
+#sortable-files .title input[type="checkbox"] {
+    opacity: 1;
+    width: 17px;
+    height: 17px;
+}
+#sortable-files .preview-image,
+#sortable-file-references .preview-image {
+    width: 10%;
+    display: flex;
+    align-items: center;
+}
+#sortable-files .preview-image img,
+#sortable-file-references .preview-image img {
+    width: 100%;
+    height: auto;
+}
+#sortable-files .file-meta-content,
+#sortable-file-references .file-reference-meta-content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding-left: 1rem;
+    width: 90%;
+}
+#sortable-files .file-meta-content .filelist-input {
+    margin-bottom: 5px;
+}
+#sortable-pages .page-meta-content-info,
+#sortable-files .file-meta-content-info,
+#sortable-file-references .file-reference-meta-content-info {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+#sortable-pages .page-meta-content-info span,
+#sortable-pages .page-meta-content-info svg,
+#sortable-files .file-meta-content-info span,
+#sortable-files .file-meta-content-info svg,
+#sortable-file-references .file-reference-meta-content-info span,
+#sortable-file-references .file-reference-meta-content-info svg {
+    pointer-events: none;
+}
+
+/**
+Background task accordion
+ */
+#backgroundTaskWrapper .page-meta-content-info,
+#backgroundTaskWrapper .file-meta-content-info,
+#backgroundTaskWrapper .file-reference-meta-content-info {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+
+#backgroundTaskWrapper .accordion-background-tasks .badge-finished,
+#resultsToExecute .badge-finished {
+    background-color: #28a745;
+    color: white;
+}
+#backgroundTaskWrapper .accordion-background-tasks .badge-pending,
+#resultsToExecute .badge-pending {
+    background-color: #17a2b8;
+    color: white;
+}
+#backgroundTaskWrapper .accordion-background-tasks .badge-failed,
+#resultsToExecute .badge-failed {
+    background-color: #dc3545;
+    color: white;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header button {
+    background: initial;
+    border: 1px solid #F09C42;
+    color: initial;
+    padding: 0.75rem;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header button .title {
+    font-size: 0.9rem;
+    padding-left: 1rem;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header img {
+    height: 40px;
+    width: auto;
+    padding-left: 1rem;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header .delete-accordion-item span {
+    pointer-events: none;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header .tooltip svg {
+    color: #dc3545;
+}
+html[data-color-scheme="dark"] #backgroundTaskWrapper .accordion-background-tasks .accordion-header .tooltiptext {
+    position: absolute;
+    right: 35px;
+    top: 0;
+    font-size: 0.8rem;
+    border: 1px solid #dc3545;
+}
+html[data-color-scheme="auto"] #backgroundTaskWrapper .accordion-background-tasks .accordion-header .tooltiptext {
+    position: absolute;
+    right: 35px;
+    top: 0;
+    font-size: 0.8rem;
+    color: #000;
+    background: #fff;
+    border: 1px solid #dc3545;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body {
+    border-left: 1px solid #F09C42;
+    border-right: 1px solid #F09C42;
+    border-bottom: 1px solid #F09C42;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body h3 {
+    font-size: 0.85rem;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body button {
+    font-size: 0.9rem;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body .preview-image-wrapper {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body .preview-image-wrapper img {
+    width: auto;
+    height: auto;
+    max-height: 200px;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-body .preview-image-wrapper div:not(.file-reference-meta-content-info):not(.file-meta-content-info) {
+    width: 100%;
+    padding-left: 1rem;
+}

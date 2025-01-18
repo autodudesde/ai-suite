@@ -2,7 +2,7 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
@@ -10,11 +10,17 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
     identifier: 'ai-suite/modify-new-content-element-wizard-items-event-listener',
     event: ModifyNewContentElementWizardItemsEvent::class,
 )]
-final class ModifyNewContentElementWizardItemsEventListener
+class ModifyNewContentElementWizardItemsEventListener
 {
+    private BackendUserService $backendUserService;
+    public function __construct(BackendUserService $backendUserService)
+    {
+        $this->backendUserService = $backendUserService;
+    }
+
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
     {
-        if (!BackendUserUtility::checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
+        if (!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
             return;
         }
         $addedAiSuiteWizardItems = [];

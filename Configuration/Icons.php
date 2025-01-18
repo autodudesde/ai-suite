@@ -29,4 +29,8 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
     ],
+    'tx-aisuite-extension' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+    ],
 ];
