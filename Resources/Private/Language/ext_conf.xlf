@@ -39,6 +39,15 @@
             <trans-unit id="midjourneyId" resname="midjourneyId">
                 <source>Enter your Midjourney ID</source>
             </trans-unit>
+            <trans-unit id="basicauthenable" resname="basicauthenable">
+                <source>Enable Basic Authentication</source>
+            </trans-unit>
+            <trans-unit id="basicauthuser" resname="basicauthuser">
+                <source>Username</source>
+            </trans-unit>
+            <trans-unit id="basicauthpass" resname="basicauthpass">
+                <source>Password</source>
+            </trans-unit>
 		</body>
 	</file>
 </xliff>
