@@ -172,7 +172,7 @@
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
                 <source>WorkflowManager for translations</source>
-            <targetWorkflowManager für Übersetzungen</target></trans-unit>
+            <target>WorkflowManager für Übersetzungen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.description" resname="tx_aisuite.module.dashboard.card.massActionTranslations.description">
                 <source>Edit or update multiple translations at once.</source>
             <target>Bearbeite oder aktualisiere mehrere Übersetzungen gleichzeitig.</target></trans-unit>
