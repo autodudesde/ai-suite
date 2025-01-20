@@ -40,7 +40,7 @@ class SysFileMetadataRepository extends AbstractRepository
             ->select('*')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->in('uid', $uids),
+                $queryBuilder->expr()->in('file', $uids),
                 $queryBuilder->expr()->eq('sys_language_uid', $langUid)
             );
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
