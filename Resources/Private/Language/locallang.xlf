@@ -41,10 +41,10 @@
                 <source>Prompt Manager</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.massAction" resname="tx_aisuite.module.actionmenu.massAction">
-                <source>Mass actions</source>
+                <source>WorkflowManager</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.backgroundTask" resname="tx_aisuite.module.actionmenu.backgroundTask">
-                <source>Background tasks</source>
+                <source>TaskEngine</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
@@ -127,18 +127,18 @@
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.title" resname="tx_aisuite.module.dashboard.card.massActionSection.title">
-                <source>Mass actions</source>
+                <source>WorkflowManager</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.description" resname="tx_aisuite.module.dashboard.card.massActionSection.description">
-                <source>Handle stuff via mass actions at once.</source>
+                <source>Handle stuff via WorkflowManager at once.</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" resname="tx_aisuite.module.dashboard.card.backgroundTaskSection.title">
-                <source>Background tasks</source>
+                <source>TaskEngine</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.title" resname="tx_aisuite.module.dashboard.card.massActionPages.title">
-                <source>Mass actions for page metas</source>
+                <source>WorkflowManager for page metas</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.description" resname="tx_aisuite.module.dashboard.card.massActionPages.description">
                 <source>Edit or update multiple page meta properties and subpages at once.</source>
@@ -148,7 +148,7 @@
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.title" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.title">
-                <source>Mass actions for file relation metas</source>
+                <source>WorkflowManager for file relation metas</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.description" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.description">
                 <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
@@ -158,7 +158,7 @@
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.title">
-                <source>Mass actions for file metas</source>
+                <source>WorkflowManager for file metas</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.description">
                 <source>Edit or update the meta properties of multiple files at once.</source>
@@ -171,13 +171,13 @@
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
-                <source>Mass actions for translations</source>
+                <source>WorkflowManager for translations</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.description" resname="tx_aisuite.module.dashboard.card.massActionTranslations.description">
                 <source>Edit or update multiple translations at once.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel" resname="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel">
-                <source>Start translation mass action</source>
+                <source>Start translation WorkflowManager</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.title" resname="tx_aisuite.module.dashboard.card.translateContentElement.title">
@@ -1029,16 +1029,16 @@
                 <source>If active the "Pages" button will be shown within the backend module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMassActionGeneration" xml:space="preserve">
-                <source>Enable mass actions section within backend module</source>
+                <source>Enable WorkflowManager section within backend module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMassActionGenerationDescription" xml:space="preserve">
-                <source>If active the "Mass actions" button will be shown within the backend module</source>
+                <source>If active the "WorkflowManager" button will be shown within the backend module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandling" xml:space="preserve">
-                <source>Enable background tasks section within backend module</source>
+                <source>Enable TaskEngine section within backend module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription" xml:space="preserve">
-                <source>If active the "Background tasks" button will be shown within the backend module</source>
+                <source>If active the "TaskEngine" button will be shown within the backend module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
                 <source>Show Metadata generation buttons</source>
@@ -1140,7 +1140,7 @@
                 <source>Please select a page where to start from.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.general.spinner.massActionPages" resname="tx_aisuite.module.general.spinner.massActionPages">
-                <source>Processing data for mass action. This may take a moment. Please wait...</source>
+                <source>Processing data for WorkflowManager. This may take a moment. Please wait...</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.massAction.foundPagesAndMetadata" resname="AiSuite.module.massAction.foundPagesAndMetadata">
                 <source>Found pages with associated metadata</source>
@@ -1167,16 +1167,16 @@
                 <source>Already handled %s: </source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
-                <source>Mass action successfully created</source>
+                <source>WorkflowManager task successfully created</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
                 <source>Metadata fields successfully updated</source>
             </trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.errorFetchingTasks" resname="AiSuite.backgroundTasks.errorFetchingTasks">
-                <source>Error while fetching background tasks</source>
+                <source>Error while fetching TaskEngine tasks</source>
             </trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.noTasksInfo" resname="AiSuite.backgroundTasks.noTasksInfo">
-                <source>No background tasks available.</source>
+                <source>No TaskEngine tasks available.</source>
             </trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.deleteModalTitle" resname="AiSuite.backgroundTasks.deleteModalTitle">
                 <source>Do you want to continue?</source>
@@ -1206,7 +1206,7 @@
                 <source>Error while saving background task data</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.errorDeletingTask" resname="AiSuite.notification.errorDeletingTask">
-                <source>Error while deleting background task data</source>
+                <source>Error while deleting TaskEngine task data</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedPages" resname="AiSuite.notification.generation.failedPages">
                 <source>Content of the following pages could not be fetched: </source>
@@ -1230,13 +1230,13 @@
                 <source>Error while preparing files</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.page" resname="tx_aisuite.backgroundTaskSection.filter.page">
-                <source>Page metadata background tasks</source>
+                <source>Page metadata TaskEngine</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadata" resname="tx_aisuite.backgroundTaskSection.filter.fileMetadata">
-                <source>File metadata background tasks</source>
+                <source>File metadata TaskEngine</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileReference" resname="tx_aisuite.backgroundTaskSection.filter.fileReference">
-                <source>File reference metdata background tasks</source>
+                <source>File reference metdata TaskEngine</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.massActionSection.filter.depth.onlyThisPage" resname="tx_aisuite.massActionSection.filter.depth.onlyThisPage">
                 <source>0 (only this page)</source>

@@ -41,11 +41,11 @@
                 <source>Prompt Manager</source>
             <target>Prompt-Manager</target></trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.massAction" resname="tx_aisuite.module.actionmenu.massAction">
-                <source>Mass actions</source>
-            <target>Massen-Aktionen</target></trans-unit>
+                <source>WorkflowManager</source>
+            <target>WorkflowManager</target></trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.backgroundTask" resname="tx_aisuite.module.actionmenu.backgroundTask">
-                <source>Background tasks</source>
-            <target>Hintergrundaufgaben</target></trans-unit>
+                <source>TaskEngine</source>
+            <target>TaskEngine</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
                 <source>Available Credits</source>
@@ -127,19 +127,19 @@
             <target>Seite übersetzen</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.title" resname="tx_aisuite.module.dashboard.card.massActionSection.title">
-                <source>Mass actions</source>
-            <target>Massen-Aktionen</target></trans-unit>
+                <source>WorkflowManager</source>
+            <target>WorkflowManager</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.description" resname="tx_aisuite.module.dashboard.card.massActionSection.description">
-                <source>Handle stuff via mass actions at once.</source>
-            <target>Erledige Dinge sofort über Massen-Aktionen.</target></trans-unit>
+                <source>Handle stuff via WorkflowManager at once.</source>
+            <target>Erledige Dinge sofort über den WorkflowManager.</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" resname="tx_aisuite.module.dashboard.card.backgroundTaskSection.title">
-                <source>Background tasks</source>
-            <target>Hintergrundaufgaben</target></trans-unit>
+                <source>TaskEngine</source>
+            <target>TaskEngine</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.title" resname="tx_aisuite.module.dashboard.card.massActionPages.title">
-                <source>Mass actions for page metas</source>
-            <target>Massen-Aktionen für Seiten-Metadaten</target></trans-unit>
+                <source>WorkflowManager for page metas</source>
+            <target>WorkflowManager für Seiten-Metadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.description" resname="tx_aisuite.module.dashboard.card.massActionPages.description">
                 <source>Edit or update multiple page meta properties and subpages at once.</source>
             <target>Bearbeite oder aktualisiere mehrere Seiten-Metadaten und Unterseiten gleichzeitig.</target></trans-unit>
@@ -148,37 +148,37 @@
             <target>Seiten-Metadaten bearbeiten</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.title" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.title">
-                <source>Mass actions for file relation metas</source>
-            <target>Massen-Aktionen für Metadaten von File-Referenzen</target></trans-unit>
+                <source>WorkflowManager for file relation metas</source>
+            <target>WorkflowManager für Metadaten von Datei-Referenzen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.description" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.description">
                 <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
-            <target>Bearbeite oder aktualisiere die Metadaten mehrerer File-Referenzen auf einer Seite und Unterseiten gleichzeitig.</target></trans-unit>
+            <target>Bearbeite oder aktualisiere die Metadaten mehrerer Datei-Referenzen auf einer Seite und Unterseiten gleichzeitig.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel">
                 <source>Edit file relation metas</source>
-            <target>Metadaten von File-Referenzen bearbeiten</target></trans-unit>
+            <target>Metadaten von Datei-Referenzen bearbeiten</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.title">
-                <source>Mass actions for file metas</source>
-            <target>Massen-Aktionen für File-Metadaten</target></trans-unit>
+                <source>WorkflowManager for file metas</source>
+            <target>WorkflowManager für Datei-Metadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.description">
                 <source>Edit or update the meta properties of multiple files at once.</source>
-            <target>Bearbeite oder aktualisiere die Metaeigenschaften mehrerer Files gleichzeitig.</target></trans-unit>
+            <target>Bearbeite oder aktualisiere die Metaeigenschaften mehrerer Dateien gleichzeitig.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.linklabel">
                 <source>Edit file metas</source>
-            <target>File-Metadaten bearbeiten</target></trans-unit>
+            <target>Datei-Metadaten bearbeiten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.massActionFilelist.allColumns">
                 <source>All cloumns</source>
             <target>Alle Felder</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
-                <source>Mass actions for translations</source>
-            <target>Massen-Aktionen für Übersetzungen</target></trans-unit>
+                <source>WorkflowManager for translations</source>
+            <targetWorkflowManager für Übersetzungen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.description" resname="tx_aisuite.module.dashboard.card.massActionTranslations.description">
                 <source>Edit or update multiple translations at once.</source>
             <target>Bearbeite oder aktualisiere mehrere Übersetzungen gleichzeitig.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel" resname="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel">
-                <source>Start translation mass action</source>
-            <target>Massen-Aktion zur Übersetzung starten</target></trans-unit>
+                <source>Start translation WorkflowManager</source>
+            <target>WorkflowManager Aufgabe zur Übersetzung starten</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.title" resname="tx_aisuite.module.dashboard.card.translateContentElement.title">
                 <source>Translate a content element</source>
@@ -1029,17 +1029,17 @@
                 <source>If active the "Pages" button will be shown within the backend module</source>
             <target>Wenn aktiv, wird der Button "Seiten" im Backend-Modul angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMassActionGeneration" xml:space="preserve">
-                <source>Enable mass actions section within backend module</source>
-            <target>Abschnitt „Massen-Aktionen“ im Backend-Modul aktivieren</target></trans-unit>
+                <source>Enable WorkflowManager section within backend module</source>
+            <target>Abschnitt „WorkflowManager“ im Backend-Modul aktivieren</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMassActionGenerationDescription" xml:space="preserve">
-                <source>If active the "Mass actions" button will be shown within the backend module</source>
-            <target>Wenn aktiv, wird die Schaltfläche "Massenaktionen" im Backend-Modul angezeigt</target></trans-unit>
+                <source>If active the "WorkflowManager" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird die Schaltfläche "WorkflowManager" im Backend-Modul angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandling" xml:space="preserve">
-                <source>Enable background tasks section within backend module</source>
-            <target>Abschnitt „Hintergrundaufgaben“ im Backend-Modul aktivieren</target></trans-unit>
+                <source>Enable TaskEngine section within backend module</source>
+            <target>Abschnitt „TaskEngine“ im Backend-Modul aktivieren</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription" xml:space="preserve">
-                <source>If active the "Background tasks" button will be shown within the backend module</source>
-            <target>Wenn aktiv, wird die Schaltfläche "Hintergrundaufgaben" im Backend-Modul angezeigt</target></trans-unit>
+                <source>If active the "TaskEngine" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird die Schaltfläche "TaskEngine" im Backend-Modul angezeigt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
                 <source>Show Metadata generation buttons</source>
             <target>Buttons zur Metadatengenerierung anzeigen</target></trans-unit>
@@ -1140,8 +1140,8 @@
                 <source>Please select a page where to start from.</source>
             <target>Bitte wähle eine Seite aus, auf der du beginnen möchtest.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.general.spinner.massActionPages" resname="tx_aisuite.module.general.spinner.massActionPages">
-                <source>Processing data for mass action. This may take a moment. Please wait...</source>
-            <target>Daten für Massen-Aktion werden verarbeitet. Dies kann einen Moment dauern. Bitte warten …</target></trans-unit>
+                <source>Processing data for WorkflowManager. This may take a moment. Please wait...</source>
+            <target>Daten werden im WorkflowManager verarbeitet. Dies kann einen Moment dauern. Bitte warten …</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.foundPagesAndMetadata" resname="AiSuite.module.massAction.foundPagesAndMetadata">
                 <source>Found pages with associated metadata</source>
             <target>Gefundene Seiten mit zugehörigen Metadaten</target></trans-unit>
@@ -1167,16 +1167,16 @@
                 <source>Already handled %s: </source>
             <target>%s bereits bearbeitet:</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
-                <source>Mass action successfully created</source>
-            <target>Massen-Aktion erfolgreich erstellt</target></trans-unit>
+                <source>WorkflowManager action successfully created</source>
+            <target>WorkflowManager Aufgabe erfolgreich erstellt</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
                 <source>Metadata fields successfully updated</source>
             <target>Metadatenfelder erfolgreich aktualisiert</target></trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.errorFetchingTasks" resname="AiSuite.backgroundTasks.errorFetchingTasks">
-                <source>Error while fetching background tasks</source>
-            <target>Fehler beim Abrufen von Hintergrundaufgaben</target></trans-unit>
+                <source>Error while fetching TaskEngine tasks</source>
+            <target>Fehler beim Abrufen von TaskEngine Aufgaben</target></trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.noTasksInfo" resname="AiSuite.backgroundTasks.noTasksInfo">
-                <source>No background tasks available.</source>
+                <source>No TaskEngine tasks available.</source>
             <target>Keine Hintergrundaufgaben verfügbar.</target></trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.deleteModalTitle" resname="AiSuite.backgroundTasks.deleteModalTitle">
                 <source>Do you want to continue?</source>
@@ -1203,11 +1203,11 @@
                 <source>Entry could not be saved.</source>
             <target>Eintrag konnte nicht gespeichert werden.</target></trans-unit>
             <trans-unit id="AiSuite.notification.errorSavingTask" resname="AiSuite.notification.errorSavingTask">
-                <source>Error while saving background task data</source>
-            <target>Fehler beim Speichern der Hintergrundaufgaben</target></trans-unit>
+                <source>Error while saving TaskEngine task data</source>
+            <target>Fehler beim Speichern der TaskEngine Aufgaben</target></trans-unit>
             <trans-unit id="AiSuite.notification.errorDeletingTask" resname="AiSuite.notification.errorDeletingTask">
-                <source>Error while deleting background task data</source>
-            <target>Fehler beim Löschen der Hintergrundaufgaben</target></trans-unit>
+                <source>Error while deletingTaskEngine data</source>
+            <target>Fehler beim Löschen der TaskEngine Aufgaben</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedPages" resname="AiSuite.notification.generation.failedPages">
                 <source>Content of the following pages could not be fetched: </source>
             <target>Der Inhalt folgender Seiten konnte nicht abgerufen werden:</target></trans-unit>
@@ -1230,14 +1230,14 @@
                 <source>Error while preparing files</source>
             <target>Fehler beim Vorbereiten der Dateien</target></trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.page" resname="tx_aisuite.backgroundTaskSection.filter.page">
-                <source>Page metadata background tasks</source>
-            <target>Hintergrundaufgaben für Seitenmetadaten</target></trans-unit>
+                <source>Page metadata TaskEngine</source>
+            <target>TaskEngine für Seitenmetadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadata" resname="tx_aisuite.backgroundTaskSection.filter.fileMetadata">
-                <source>File metadata background tasks</source>
-            <target>Hintergrundaufgaben für Dateimetadaten</target></trans-unit>
+                <source>File metadata TaskEngine</source>
+            <target>TaskEngine für Dateimetadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileReference" resname="tx_aisuite.backgroundTaskSection.filter.fileReference">
-                <source>File reference metdata background tasks</source>
-            <target>Hintergrundaufgaben für Dateireferenzmetadaten</target></trans-unit>
+                <source>File reference metdata TaskEngine</source>
+            <target>TaskEngine für Dateireferenz-Metadaten</target></trans-unit>
             <trans-unit id="tx_aisuite.massActionSection.filter.depth.onlyThisPage" resname="tx_aisuite.massActionSection.filter.depth.onlyThisPage">
                 <source>0 (only this page)</source>
             <target>0 (nur diese Seite)</target></trans-unit>
