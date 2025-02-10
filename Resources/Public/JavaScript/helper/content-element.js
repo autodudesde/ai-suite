@@ -31,6 +31,7 @@ class ContentElement {
                 ev.preventDefault();
                 let data = {
                     pageId: ev.target.getAttribute('data-page-id'),
+                    languageId: ev.target.getAttribute('data-language-id'),
                     table: ev.target.getAttribute('data-table'),
                     position: ev.target.getAttribute('data-position'),
                     fieldName: ev.target.getAttribute('data-fieldname'),

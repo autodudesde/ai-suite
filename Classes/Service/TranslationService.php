@@ -70,6 +70,8 @@ class TranslationService
 
     protected SiteService $siteService;
 
+    protected FlexFormTranslationService $flexFormTranslationService;
+
     public function __construct(
         ContentService $contentService,
         UriBuilder $uriBuilder,
@@ -77,7 +79,8 @@ class TranslationService
         SiteFinder $siteFinder,
         ExtensionConfiguration $extensionConfiguration,
         IconFactory $iconFactory,
-        SiteService $siteService
+        SiteService $siteService,
+        FlexFormTranslationService $flexFormTranslationService
     ) {
         $this->contentService = $contentService;
         $this->uriBuilder = $uriBuilder;
@@ -86,6 +89,7 @@ class TranslationService
         $this->extensionConfiguration = $extensionConfiguration;
         $this->iconFactory = $iconFactory;
         $this->siteService = $siteService;
+        $this->flexFormTranslationService = $flexFormTranslationService;
     }
 
     public function fetchTranslationtFields(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table): array
@@ -198,6 +202,10 @@ class TranslationService
         return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
     }
 
+    /**
+     * @throws ExtensionConfigurationPathDoesNotExistException
+     * @throws ExtensionConfigurationExtensionNotConfiguredException
+     */
     protected function iterateOverFieldsArray(
         array $fieldsArray,
         array &$translateFields,
@@ -209,6 +217,8 @@ class TranslationService
             $fieldName = $fieldConfiguration['fieldName'];
             if ($fieldName === '--palette--') {
                 $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $translateFields, $formData, $table);
+            } elseif ($fieldName === 'pi_flexform' && $this->extensionConfiguration->get('ai_suite', 'translateFlexFormFields')) {
+                $this->flexFormTranslationService->convertFlexFormToTranslateFields($formData, $translateFields);
             } else {
                 if (!is_array($formData['processedTca']['columns'][$fieldName] ?? null)) {
                     continue;
@@ -222,8 +232,8 @@ class TranslationService
     {
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
-            $sourceLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId());
-            $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId);
+            $sourceLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId(), $pageId);
+            $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId, $pageId);
         } catch (\Exception $e) {
             return false;
         }
@@ -261,8 +271,8 @@ class TranslationService
             $params['redirect'] = $returnUrl;
         }
         $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
-        $params['cmd']['localization'][0]['aiSuite']['srcLanguageId'] = $site->getDefaultLanguage()->getLanguageId();
-        $params['cmd']['localization'][0]['aiSuite']['destLanguageId'] = $lUid_OnPage;
+        $params['cmd']['localization'][0]['aiSuite']['srcLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId(), $pageId);
+        $params['cmd']['localization'][0]['aiSuite']['destLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($lUid_OnPage, $pageId);
         $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
         $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
         $href = (string)$this->uriBuilder->buildUriFromRoute('tce_db', $params);

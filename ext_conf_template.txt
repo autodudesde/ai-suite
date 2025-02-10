@@ -6,6 +6,8 @@ aiSuiteServer = https://api.autodudes.de/
 mediaStorageFolder =
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openTranslatedRecordInEditMode
 openTranslatedRecordInEditMode = 1
+# cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
+translateFlexFormFields = 1
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
 openAiApiKey =
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:anthropicApiKey

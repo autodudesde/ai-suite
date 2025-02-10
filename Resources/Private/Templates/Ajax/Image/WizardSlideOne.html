@@ -31,6 +31,9 @@
                         </div>
                     </div>
                     <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
+                    <div id="languageSelection" class="my-3">
+                        <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'langIsoCode', selected: ''}" />
+                    </div>
                     <div class="card-footer px-0">
                         <button type="button" class="btn btn-primary"
                                 data-uuid="{uuid}"

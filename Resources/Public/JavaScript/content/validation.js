@@ -74,6 +74,7 @@ class Validation {
                         imagePrompt: ev.target.getAttribute('data-prompt'),
                         imageAiModel: 'Midjourney',
                         pageId: ev.target.getAttribute('data-page-id'),
+                        languageId: ev.target.getAttribute('data-language-id'),
                         table: ev.target.getAttribute('data-table'),
                         fieldName: ev.target.getAttribute('data-fieldname'),
                         position: ev.target.getAttribute('data-position'),

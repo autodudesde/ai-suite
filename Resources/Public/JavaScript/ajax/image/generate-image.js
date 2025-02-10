@@ -15,6 +15,7 @@ class GenerateImage {
                         fileContextHmac: ev.target.getAttribute('data-file-context-hmac'),
                         table: ev.target.getAttribute('data-table'),
                         pageId: ev.target.getAttribute('data-page-id'),
+                        languageId: ev.target.getAttribute('data-language-id'),
                         position: ev.target.getAttribute('data-position'),
                         fieldName: ev.target.getAttribute('data-fieldname'),
                         imagePrompt: '',

@@ -106,10 +106,11 @@ class PagesRepository extends AbstractRepository
             $queryBuilder->select(...$fields)
                 ->from($this->table);
         }
-        if((int)$massActionData['sysLanguage'] > 0) {
+        $languageParts = explode('__', $massActionData['sysLanguage']);
+        if(isset($languageParts[1]) && (int)$languageParts[1] > 0) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->in('l10n_parent', $queryBuilder->createNamedParameter($foundPageUids, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter((int)$massActionData['sysLanguage'], Connection::PARAM_INT))
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter((int)$languageParts[1], Connection::PARAM_INT))
 
             );
         } else {

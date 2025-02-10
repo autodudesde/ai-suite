@@ -38,14 +38,12 @@ class BeforePrepareConfigurationForEditorEventListener
     public function __invoke(BeforePrepareConfigurationForEditorEvent $event): void
     {
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
-            $sysLanguageUid = $event->getData()['databaseRow']['sys_language_uid'];
-            $site = $this->siteService->getSiteByPageId($event->getData()['effectivePid']);
             try {
-                $siteLanguage = $site->getLanguageById((int)$sysLanguageUid);
+                $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
             } catch (Throwable $e) {
                 return;
             }
-            $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $siteLanguage->getLocale()->getLanguageCode());
+            $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
 
             $configuration = $event->getConfiguration();
             $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/ai-plugin.js';

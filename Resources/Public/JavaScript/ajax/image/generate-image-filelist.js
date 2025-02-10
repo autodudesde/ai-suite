@@ -14,7 +14,7 @@ class GenerateImage {
                     imagePrompt: '',
                     imageAiModel: '',
                     uuid: ev.target.getAttribute('data-uuid'),
-                    pageId: ev.target.getAttribute('data-page-id')
+                    langIsoCode: '',
                 };
                 GenerationHandling.showGeneralImageSettingsModal(data, 'FileList');
             });

@@ -22,7 +22,7 @@
         <f:translate key="aiSuite.module.manageLicense" extensionName="ai_suite"/>
     </f:link.external>
 
-    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0">
+    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0 && {aboRequests} >= 0">
         <h2 class="mb-4">
             <f:translate key="tx_aisuite.module.dashboard.creditState" extensionName="ai_suite"/>
         </h2>
@@ -33,9 +33,11 @@
             <span class="badge badge-warning p-2 mx-3">
                  <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests}
             </span>
-            <span class="badge badge-warning p-2">
-                 <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
-            </span>
+            <f:if condition="{modelType} != ''">
+                <span class="badge badge-warning p-2">
+                     <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
+                </span>
+            </f:if>
         </p>
     </f:if>
 

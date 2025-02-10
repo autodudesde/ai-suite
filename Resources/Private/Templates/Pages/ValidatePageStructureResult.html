@@ -18,6 +18,9 @@
                 <div class="mt-2 p-0">
                     <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
                 </div>
+                <div class="language-selection mb-3">
+                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
+                </div>
                 <input type="hidden" name="selectedPageTreeContent" value="" />
                 <div class="form-group">
                     <span class="btn btn-primary submit-page-structure">
@@ -54,6 +57,9 @@
                     </div>
                 </div>
                 <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                <div class="language-selection row mb-3">
+                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
+                </div>
                 <div class="p-0">
                     <button type="submit" class="btn btn-primary">
                         <core:icon identifier="actions-file-add" size="small"/>

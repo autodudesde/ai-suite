@@ -167,8 +167,11 @@
                 <source>Edit file metas</source>
             <target>Datei-Metadaten bearbeiten</target></trans-unit>
             <trans-unit id="tx_aisuite.module.massActionFilelist.allColumns">
-                <source>All cloumns</source>
+                <source>All columns</source>
             <target>Alle Felder</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.massActionFilelist.selectedDirectory">
+                <source>Selected directory</source>
+            <target>Ausgewähltes Verzeichnis</target></trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
                 <source>WorkflowManager for translations</source>
@@ -566,8 +569,8 @@
                 <source>Remove suggestions</source>
             <target>Vorschläge entfernen</target></trans-unit>
             <trans-unit id="AiSuite.fetchContentFailed" resname="AiSuite.fetchContentFailed">
-                <source>Page content could not be loaded.</source>
-            <target>Seiteninhalt konnte nicht geladen werden.</target></trans-unit>
+                <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
+            <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target></trans-unit>
             <trans-unit id="AiSuite.apiNotReachable" resname="AiSuite.apiNotReachable">
                 <source>Unfortunately, the OpenAI API is currently not available. Please try again later.</source>
             <target>Leider ist die OpenAI API derzeit nicht verfügbar. Bitte versuche es später noch einmal.</target></trans-unit>
@@ -636,8 +639,8 @@
                 <source>Paid Credits</source>
             <target>Paid Credits</target></trans-unit>
             <trans-unit id="aiSuite.module.aboCredits" xml:space="preserve">
-                <source>Limit</source>
-            <target>Limit</target></trans-unit>
+                <source>Plan</source>
+            <target>Plan</target></trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
             <target>Bei der Beantwortung ist ein Fehler aufgetreten. Bitte versuche es erneut und überprüfe deine Einstellungen/Eingaben.</target></trans-unit>
@@ -1098,8 +1101,8 @@
                 <source>Metadata suggestion generation in process</source>
             <target>Generierung von Metadatenvorschlägen im Gange</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataError" resname="aiSuite.module.modal.metaDataError">
-                <source>Unable to generate metadata suggestions</source>
-            <target>Es können keine Metadatenvorschläge generiert werden</target></trans-unit>
+                <source>Unable to generate metadata suggestions. If HTTP basic auth is active, please activate it within the extension settings and enter the credentials there.</source>
+            <target>Es können keine Metadatenvorschläge generiert werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target></trans-unit>
             <trans-unit id="AiSuite.metadataWizardSaveButton" resname="AiSuite.metadataWizardSaveButton">
                 <source>Save metadata</source>
             <target>Metadaten speichern</target></trans-unit>
@@ -1277,6 +1280,12 @@
             <trans-unit id="massActionSection.sys_file_reference.alternative" resname="massActionSection.sys_file_reference.alternative">
                 <source>Image alternative text</source>
             <target>Alternativtext für Bilder</target></trans-unit>
+            <trans-unit id="translation.failed" resname="translation.failed">
+                <source>Translation failed for one or more elements.</source>
+            <target>Die Übersetzung ist bei einem oder mehreren Elementen fehlgeschlagen.</target></trans-unit>
+            <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
+                <source>Select (target) language:</source>
+            <target>Wähle die (Ziel-) Sprache aus:</target></trans-unit>
         </body>
     </file>
 </xliff>

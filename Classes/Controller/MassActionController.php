@@ -101,7 +101,7 @@ class MassActionController extends AbstractBackendController
     {
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/pages-prepare.js');
-        $availableLanguages = $this->siteService->getAvailableLanguageIds();
+        $availableLanguages = $this->siteService->getAvailableLanguages(true);
         ksort($availableLanguages);
         $params = $this->request->getQueryParams();
         $accessablePages = $this->metadataService->fetchAccessablePages();
@@ -137,7 +137,7 @@ class MassActionController extends AbstractBackendController
     {
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/file-references-prepare.js');
-        $availableLanguages = $this->siteService->getAvailableLanguageIds();
+        $availableLanguages = $this->siteService->getAvailableLanguages(true);
         ksort($availableLanguages);
         $params = $this->request->getQueryParams();
 

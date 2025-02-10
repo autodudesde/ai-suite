@@ -17,7 +17,7 @@ class AiSuiteException extends \Exception
         string $message = "",
         string $returnUrl = "",
         int $code = 0,
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         $this->template = $template;
         $this->messageKey = $messageKey;

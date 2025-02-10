@@ -33,18 +33,28 @@ class SysFileMetadataRepository extends AbstractRepository
     /**
      * @throws Exception
      */
-    public function findByLangUidAndFileIdList(array $uids, string $indexColumn = 'uid', int $langUid = 0): array
+    public function findByLangUidAndFileIdList(array $uids, string $column, string $indexColumn = 'uid', int $langUid = 0, bool $showOnlyEmpty = false): array
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $constraints = [
+            $queryBuilder->expr()->in('file', $uids),
+            $queryBuilder->expr()->eq('sys_language_uid', $langUid)
+        ];
+        if($showOnlyEmpty) {
+            if($column === 'title') {
+                $constraints[] = $queryBuilder->expr()->isNull('title');
+            } elseif ($column === 'alternative') {
+                $constraints[] = $queryBuilder->expr()->isNull('alternative');
+            } else {
+                $constraints[] = $queryBuilder->expr()->isNull('title');
+                $constraints[] = $queryBuilder->expr()->isNull('alternative');
+            }
+        }
         $queryBuilder
             ->select('*')
             ->from($this->table)
-            ->where(
-                $queryBuilder->expr()->in('file', $uids),
-                $queryBuilder->expr()->eq('sys_language_uid', $langUid)
-            );
+            ->where(...$constraints);
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
-        // set the file uid or what is needed as key
         return array_column($metadataList, null, $indexColumn);
     }
 
@@ -58,7 +68,6 @@ class SysFileMetadataRepository extends AbstractRepository
                 $queryBuilder->expr()->in('uid', $uids)
             );
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
-        // set the file uid or what is needed as key
         return array_column($metadataList, null, $indexColumn);
     }
 }

@@ -21,14 +21,16 @@ class GenerateSuggestions {
                 let fieldName = this.getAttribute('data-field-name');
                 let fieldLabel = this.getAttribute('data-field-label');
                 let id = parseInt(this.getAttribute('data-id'));
-                let pageId = parseInt(this.getAttribute('data-page-id'));
-                let languageId = parseInt(this.getAttribute('data-language-id'));
+                let pageId = parseInt(this.getAttribute('data-page-id')) ?? 0;
+                let langIsoCode = this.getAttribute('data-lang-iso-code') ?? '';
+                let languageId = parseInt(this.getAttribute('data-language-id')) ?? 0;
                 let table = this.getAttribute('data-table');
                 let sysFileId = this.getAttribute('data-sys-file-id');
                 let postData = {
                     id: id,
                     pageId: pageId,
                     languageId: languageId,
+                    langIsoCode: langIsoCode,
                     table: table,
                     fieldName: fieldName,
                     fieldLabel: fieldLabel,
@@ -60,6 +62,7 @@ class GenerateSuggestions {
             aiSuiteGenerateButton.on('click', async function (ev) {
                 let textAiModel = modal.find('.modal-body input[name="libraries[textGenerationLibrary]"]:checked').val() ?? '';
                 let newsDetailPlugin = modal.find('.modal-body select#newsDetailPlugin');
+                let sysLanguageSelection = modal.find('.modal-body #languageSelection select');
                 if(modal.find('.modal-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
                     Notification.warning(TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelection'], TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
@@ -67,6 +70,9 @@ class GenerateSuggestions {
                 postData.uuid = ev.target.getAttribute('data-uuid');
                 postData.textAiModel = textAiModel;
                 postData.newsDetailPlugin = newsDetailPlugin.val();
+                if(sysLanguageSelection.length > 0) {
+                    postData.langIsoCode = sysLanguageSelection.val();
+                }
                 settings['postData'] = postData;
                 MultiStepWizard.unlockNextStep().trigger('click');
             });

@@ -71,8 +71,7 @@ class ModifyButtonBarEventListener
                 ->setClasses('btn btn-default t3js-ai-suite-image-generation-filelist-add-btn')
                 ->setDataAttributes([
                     'target-folder' => $request->getQueryParams()['id'] ?? '1:/',
-                    'uuid' => $this->uuidService->generateUuid(),
-                    'page-id' => $this->siteService->getAvailableRootPages()[0], // needed for status updates
+                    'uuid' => $this->uuidService->generateUuid()
                 ])
                 ->setTitle($buttonText)
                 ->setShowLabelText(true)

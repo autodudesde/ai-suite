@@ -19,6 +19,7 @@ class GenerationHandling {
                             currentModal.querySelector('#wizardSlideOne textarea#imageGenerationPrompt').value = event.target.value;
                         });
                     }
+                    currentModal.querySelector('.modal-body #languageSelection').style.display = 'none';
                     this.addGenerateImageButton(currentModal, data, scope);
                 }
             },
@@ -55,6 +56,7 @@ class GenerationHandling {
                         MidjourneyContentElement.addImageGenerationWizard(data);
                     }
                 } else if(scope === 'FileList') {
+                    data.langIsoCode = modal.querySelector('.modal-body #languageSelection select').value ?? '';
                     if (data.imageAiModel === 'DALL-E') {
                         const DalleFileList = (await import('./wizards/dalle.js')).default
                         DalleFileList.addImageGenerationWizard(data, true);

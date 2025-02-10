@@ -58,10 +58,10 @@ class FileMetadata
         $this->userCanDelete = $userCanDelete;
     }
 
-    public static function createFromFileObject(File $file, array $metadata = null): self
+    public static function createFromFileObject(File $file, array $metadata = []): self
     {
         $fileMeta = new self();
-        $meta = ($metadata ?? $file->getMetaData());
+        $meta = count($metadata) > 0 ? $metadata : $file->getMetaData();
         $fileMeta->uid = $file->getUid();
         $fileMeta->identifier = $file->getIdentifier();
         $fileMeta->title = ($meta['title'] ?? '');

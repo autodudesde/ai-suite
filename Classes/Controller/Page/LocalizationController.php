@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\Page;
 
+use AutoDudes\AiSuite\Service\SiteService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -108,9 +109,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_LOCALIZE_DEEPL
                     ) {
+                        $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('localize', '', $params['action']);
-                        $cmd['localization'][0]['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
-                        $cmd['localization'][0]['aiSuite']['destLanguageId'] = $destLanguageId;
+                        $cmd['localization'][0]['aiSuite']['srcLangIsoCode'] = $siteService->getIsoCodeByLanguageId((int)$params['srcLanguageId'], (int)$params['pageId']);
+                        $cmd['localization'][0]['aiSuite']['destLangIsoCode'] = $siteService->getIsoCodeByLanguageId($destLanguageId, (int)$params['pageId']);
                         $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                     }
                 } else {
@@ -122,9 +124,10 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_COPY_DEEPL
                     ) {
+                        $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);;
-                        $cmd['localization'][0]['aiSuite']['srcLanguageId'] = $params['srcLanguageId'];
-                        $cmd['localization'][0]['aiSuite']['destLanguageId'] = $destLanguageId;
+                        $cmd['localization'][0]['aiSuite']['srcLangIsoCode'] = $siteService->getIsoCodeByLanguageId($params['srcLanguageId'], $params['pageId']);
+                        $cmd['localization'][0]['aiSuite']['destLangIsoCode'] = $siteService->getIsoCodeByLanguageId($destLanguageId, $params['pageId']);
                         $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                     }
                 }

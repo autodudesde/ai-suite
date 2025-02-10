@@ -57,6 +57,7 @@ class FileControlsEventListener
             }
 
             $pageId = $event->getTableName() === 'pages' ? $event->getDatabaseRow()['uid'] : $event->getDatabaseRow()['pid'];
+            $languageId = $event->getDatabaseRow()['sys_language_uid'] ?? 'en';
             if ($pageId <= 0) {
                 $objectPrefixParts = explode('-', $objectPrefix);
                 $pageId = $objectPrefixParts[1];
@@ -69,6 +70,7 @@ class FileControlsEventListener
                         data-file-context-hmac="' . htmlspecialchars($resultArray['inlineData']['config'][$objectPrefix]['context']['hmac']) . '"
                         data-table="' . $event->getTableName() . '"
                         data-page-id="' . $pageId . '"
+                        data-language-id="' . $languageId . '"
                         data-position="0"
                         data-fieldname="' . $event->getFieldName() . '"
                         title="' . $buttonText . '"

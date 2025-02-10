@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "13.1.2",
+    "version": "13.2.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -62,7 +62,7 @@
         }
     },
     "require-dev": {
-        "contentblocks/content-blocks": "^1.0",
+        "friendsoftypo3/content-blocks": "^1.0",
         "bk2k/bootstrap-package": "^15.0",
         "georgringer/news": "^12.0",
         "b13/container": "^3.0",

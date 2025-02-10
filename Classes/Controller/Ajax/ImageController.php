@@ -21,18 +21,13 @@ use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\SiteUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
@@ -90,6 +85,7 @@ class ImageController extends AbstractAjaxController
         $params['imageGenerationLibraries'] = $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
         $params['uuid'] = $this->uuidService->generateUuid();
+        $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         $output = $this->getContentFromTemplate(
             $request,
             'WizardSlideOne',
@@ -103,14 +99,12 @@ class ImageController extends AbstractAjaxController
     public function getImageWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(isset($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -134,7 +128,6 @@ class ImageController extends AbstractAjaxController
             'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
             'table' => $request->getParsedBody()['table'] ?? '',
             'position' => $request->getParsedBody()['position'] ?? '',
-            'pageId' => $request->getParsedBody()['pageId'],
             'uuid' => $request->getParsedBody()['uuid']
         ];
         $output = $this->getContentFromTemplate(
@@ -158,14 +151,12 @@ class ImageController extends AbstractAjaxController
     public function getImageWizardSlideThreeAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(isset($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -213,14 +204,12 @@ class ImageController extends AbstractAjaxController
     public function regenerateImageAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(isset($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -245,6 +234,7 @@ class ImageController extends AbstractAjaxController
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'],
             'table' => $request->getParsedBody()['table'],
             'pageId' => $request->getParsedBody()['pageId'],
+            'languageId' => $parsedBody['languageId'],
             'fieldName' => $request->getParsedBody()['fieldName'],
             'position' => $request->getParsedBody()['position'],
             'uuid' => $request->getParsedBody()['uuid']

@@ -108,6 +108,7 @@ class PagesController extends AbstractBackendController
                 'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                 'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
                 'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates('pageTree'),
+                'sysLanguages' => $this->siteService->getAvailableLanguages(),
             ]);
         } catch (\Throwable $e) {
             $this->view->assign('error', true);
@@ -125,18 +126,18 @@ class PagesController extends AbstractBackendController
     {
         try {
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/validation.js');
-            $textAi = !empty($this->request->getParsedBody()['libraries']['textGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['textGenerationLibrary'] : '';
-            $site = $this->request->getAttribute('site');
-            $defaultLanguageIsoCode = $site->getDefaultLanguage()->getLocale()->getLanguageCode();
-            if ($defaultLanguageIsoCode === '') {
-                $availableLanguages = $this->siteService->getAvailableDefaultLanguages();
-                $defaultLanguageIsoCode = array_key_first($availableLanguages) ?? 'en';
+            $parsedBody = $this->request->getParsedBody();
+            $textAi = isset($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
+            if((int)$parsedBody['startStructureFromPid'] === -1) {
+                $langIsoCode = $parsedBody['sysLanguage'];
+            } else {
+                $langIsoCode = $this->siteService->getIsoCodeByLanguageId(0, (int)$parsedBody['startStructureFromPid']);
             }
             $answer = $this->requestService->sendDataRequest(
                 'pageTree',
                 [],
                 $this->request->getParsedBody()['plainPrompt'] ?? '',
-                $defaultLanguageIsoCode,
+                $langIsoCode,
                 [
                     'text' => $textAi,
                 ],
@@ -156,6 +157,8 @@ class PagesController extends AbstractBackendController
                 'selectedPid' => $this->request->getParsedBody()['startStructureFromPid'] ?? 0,
                 'pagesSelect' => $this->getPagesInWebMount(),
                 'textGenerationLibraries' => $this->libraryService->prepareLibraries(json_decode($this->request->getParsedBody()['textGenerationLibraries'], true), $textAi),
+                'sysLanguages' => $this->siteService->getAvailableLanguages(),
+                'selectedSysLanguage' => $langIsoCode,
             ]);
             $this->view->addFlashMessage(
                 $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.message'),

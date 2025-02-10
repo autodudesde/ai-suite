@@ -14,7 +14,6 @@ use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
-use B13\Container\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -22,6 +21,7 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
 #[AsController]
@@ -29,6 +29,7 @@ class MetadataController extends AbstractAjaxController
 {
     protected MetadataService $metadataService;
     protected PagesRepository $pagesRepository;
+    protected SiteFinder $siteFinder;
 
     protected array $metadataAdditionalFields = [];
 
@@ -43,8 +44,9 @@ class MetadataController extends AbstractAjaxController
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
         MetadataService $metadataService,
-        PagesRepository $pagesRepository)
-    {
+        PagesRepository $pagesRepository,
+        SiteFinder $siteFinder
+    ){
         parent::__construct(
             $backendUserService,
             $requestService,
@@ -58,6 +60,7 @@ class MetadataController extends AbstractAjaxController
         );
         $this->metadataService = $metadataService;
         $this->pagesRepository = $pagesRepository;
+        $this->siteFinder = $siteFinder;
         $this->metadataAdditionalFields = [
             'seo_title' => [
                 'og_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Title']),
@@ -108,9 +111,12 @@ class MetadataController extends AbstractAjaxController
             return $response;
         }
         if($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
-            $rootPageId = $request->getAttribute('site')->getRootPageId();
+            $rootPageId = $this->siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId'])->getRootPageId();
             $searchableWebMounts = $this->backendUserService->getSearchableWebmounts($rootPageId, 10);
             $params['availableNewsDetailPlugins'] = $this->pagesRepository->getAvailableNewsDetailPlugins($searchableWebMounts, (int)$request->getParsedBody()['languageId']);
+        }
+        if($request->getParsedBody()['table'] === 'sys_file_metadata') {
+            $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         }
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         if($request->getParsedBody()['table'] !== 'sys_file_metadata') {
@@ -151,13 +157,6 @@ class MetadataController extends AbstractAjaxController
     {
         $response = new Response();
 
-        try {
-            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
-        }
-
         $answer = $this->requestService->sendDataRequest(
             'createMetadata',
             [
@@ -166,7 +165,7 @@ class MetadataController extends AbstractAjaxController
                 'request_content' => $this->metadataService->fetchContent($request)
             ],
             '',
-            $langIsoCode,
+            $request->getParsedBody()['langIsoCode'],
             [
                 'text' => $request->getParsedBody()['textAiModel'],
             ]
