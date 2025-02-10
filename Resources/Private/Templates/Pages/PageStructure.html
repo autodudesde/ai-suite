@@ -16,7 +16,6 @@
 
             <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
             <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-
             <div class="row prompt-settings mt-3">
                 <div class="card card-size-large active">
                     <div class="card-header">
@@ -31,6 +30,9 @@
                     </div>
                 </div>
                 <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                <div class="language-selection row mb-3">
+                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
+                </div>
                 <div class="p-0">
                     <button type="submit" class="btn btn-primary">
                         <core:icon identifier="actions-file-add" size="small"/>

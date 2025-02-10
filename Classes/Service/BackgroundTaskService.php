@@ -5,21 +5,29 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use Doctrine\DBAL\DBALException;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Site\SiteFinder;
 
 class BackgroundTaskService
 {
     protected BackendUserService $backendUserService;
     protected BackgroundTaskRepository $backgroundTaskRepository;
     protected PagesRepository $pagesRepository;
+    protected SiteFinder $siteFinder;
+    protected PageRepository $pageRepository;
 
     public function __construct(
         BackendUserService $backendUserService,
         BackgroundTaskRepository $backgroundTaskRepository,
-        PagesRepository $pagesRepository
+        PagesRepository $pagesRepository,
+        SiteFinder $siteFinder,
+        PageRepository $pageRepository
     ) {
         $this->backendUserService = $backendUserService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
         $this->pagesRepository = $pagesRepository;
+        $this->siteFinder = $siteFinder;
+        $this->pageRepository = $pageRepository;
     }
 
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
@@ -29,6 +37,21 @@ class BackgroundTaskService
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
             if(!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
                 continue;
+            }
+            try {
+                if ($foundBackgroundTask['sys_language_uid'] === -1) {
+                    $foundBackgroundTask['flag'] = 'flags-multiple';
+                } else {
+                    $page = $this->pageRepository->getPage($foundBackgroundTask['table_uid']);
+                    $pageId = $foundBackgroundTask['table_uid'];
+                    if ($page['is_siteroot'] === 1 && $page['l10n_parent'] > 0) {
+                        $pageId = $page['l10n_parent'];
+                    }
+                    $site = $this->siteFinder->getSiteByPageId($pageId);
+                    $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier() ?? '';
+                }
+            } catch (\Exception $e) {
+                $foundBackgroundTask['flag'] = '';
             }
             $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
             $uuidStatus[$foundBackgroundTask['uuid']] =  [
@@ -52,6 +75,21 @@ class BackgroundTaskService
             }
             if($filePermissions) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                try {
+                    if ($foundBackgroundTask['sys_language_uid'] === -1) {
+                        $foundBackgroundTask['flag'] = 'flags-multiple';
+                    } else {
+                        $page = $this->pageRepository->getPage($foundBackgroundTask['pageId']);
+                        $pageId = $foundBackgroundTask['pageId'];
+                        if ($page['is_siteroot'] === 1 && $page['l10n_parent'] > 0) {
+                            $pageId = $page['l10n_parent'];
+                        }
+                        $site = $this->siteFinder->getSiteByPageId($pageId);
+                        $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier() ?? '';
+                    }
+                } catch (\Exception $e) {
+                    $foundBackgroundTask['flag'] = '';
+                }
                 $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],

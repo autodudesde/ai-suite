@@ -11,7 +11,10 @@
                 <span class="badge badge-{backgroundTask.status}">{backgroundTask.status}</span>
                 <span class="title">{backgroundTask.title} (PID: {backgroundTask.table_uid})</span>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mx-4">
+                <f:if condition="{backgroundTask.flag} != ''">
+                    <span class="flag"><core:icon identifier="{backgroundTask.flag}" size="small" /></span>
+                </f:if>
                 <span class="badge badge-info mx-2">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{backgroundTask.column}" />
                 </span>

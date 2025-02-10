@@ -6,6 +6,7 @@ class Creation {
         Generation.cancelGeneration();
         Generation.addFormSubmitEventListener('plainPrompt');
         PromptTemplate.loadPromptTemplates('plainPrompt');
+        Generation.languageSelectionEventListener();
     }
 }
 export default new Creation();

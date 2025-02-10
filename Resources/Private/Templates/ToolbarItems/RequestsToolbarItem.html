@@ -25,9 +25,11 @@
                 <span>
                     Paid: {f:if(condition: requests, then: '{requests.paid_requests}', else: '-')}
                 </span>
-                <span class="mx-2">
-                    Limit: {f:if(condition: requests, then: '{requests.abo_requests}', else: '-')}
-                </span>
+                <f:if condition="{requests.abo_requests}">
+                    <span class="mx-2">
+                        Plan: {f:if(condition: requests, then: '{requests.abo_requests}', else: '-')}
+                    </span>
+                </f:if>
             </div>
         </f:then>
         <f:else if="{error}">

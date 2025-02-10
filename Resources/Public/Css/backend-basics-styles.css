@@ -60,16 +60,16 @@ div[data-module-id="aiSuite"] form[name="content"] .fields-button.collapsed .ico
 
 div[data-module-id="aiSuite"] .tooltip {
     position: absolute;
-    right: 0;
+    right: 22px;
     display: inline-block;
     opacity: 1;
     width: 16px;
     height: 16px;
-    background: black;
+    background: transparent;
     color: white;
     text-align: center;
     border-radius: 10px;
-    top: 4px;
+    top: 13px;
     font-size: 12px;
 }
 
@@ -797,7 +797,8 @@ div[data-module-id="aiSuite"] #resultsToExecute {
 #sortable-files .file-meta-content-info span,
 #sortable-files .file-meta-content-info svg,
 #sortable-file-references .file-reference-meta-content-info span,
-#sortable-file-references .file-reference-meta-content-info svg {
+#sortable-file-references .file-reference-meta-content-info svg,
+#resultsToExecute button strong {
     pointer-events: none;
 }
 
@@ -846,6 +847,11 @@ Background task accordion
     width: auto;
     padding-left: 1rem;
 }
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header .icon-markup img {
+    height: 16px;
+    width: 16px;
+    padding-left: 0;
+}
 #backgroundTaskWrapper .accordion-background-tasks .accordion-header .delete-accordion-item span {
     pointer-events: none;
 }
@@ -892,4 +898,8 @@ html[data-color-scheme="auto"] #backgroundTaskWrapper .accordion-background-task
 #backgroundTaskWrapper .accordion-background-tasks .accordion-body .preview-image-wrapper div:not(.file-reference-meta-content-info):not(.file-meta-content-info) {
     width: 100%;
     padding-left: 1rem;
+}
+
+div[data-module-id="aiSuite"] .form-select:focus {
+    outline: none;
 }

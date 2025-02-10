@@ -12,6 +12,7 @@ class Validation {
         this.addEventListenerGeneratePageStructure();
         Generation.addFormSubmitEventListener('plainPrompt');
         PromptTemplate.loadPromptTemplates('plainPrompt');
+        Generation.languageSelectionEventListener();
     }
 
     addEventListenerGeneratePageStructure() {

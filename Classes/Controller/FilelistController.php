@@ -78,6 +78,6 @@ final class FilelistController extends AbstractBackendController
         $viewProperties = $this->massActionService->filelistFileDirectorySupport($this->request->getQueryParams(), $librariesAnswer);
         $this->view->assignMultiple($viewProperties);
 
-        return $this->view->renderResponse('MassAction/FilelistDir');
+        return $this->view->renderResponse('MassAction/FilesPrepare');
     }
 }

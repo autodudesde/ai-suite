@@ -12,7 +12,10 @@
                     <f:image src="{backgroundTask.fileUid}" />
                 <span class="title">{backgroundTask.fileName}</span>
             </div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mx-4">
+                <f:if condition="{backgroundTask.flag} != ''">
+                    <span class="flag"><core:icon identifier="{backgroundTask.flag}" size="small" /></span>
+                </f:if>
                 <span class="badge badge-info mx-2">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" />
                 </span>

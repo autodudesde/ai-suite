@@ -15,101 +15,49 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use Psr\Http\Message\UriInterface;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SiteService implements SingletonInterface
 {
-    protected Context $context;
     protected SiteFinder $siteFinder;
     protected BasicAuthService $basicAuthService;
 
-    public function __construct(SiteFinder $siteFinder = null, Context $context = null)
+    public function __construct(?SiteFinder $siteFinder = null, ?BasicAuthService $basicAuthService = null)
     {
         $this->siteFinder = $siteFinder ?? GeneralUtility::makeInstance(SiteFinder::class);
-        $this->context = $context ?? GeneralUtility::makeInstance(Context::class);
-        $this->basicAuthService = GeneralUtility::makeInstance(BasicAuthService::class);
+        $this->basicAuthService = $basicAuthService ?? GeneralUtility::makeInstance(BasicAuthService::class);
     }
 
-    public function getAvailableLanguages(): array
+    public function getAvailableLanguages(bool $includeLanguageIds = false): array
     {
         $availableLanguages = [];
         foreach ($this->siteFinder->getAllSites() as $site) {
             foreach ($site->getLanguages() as $language) {
-                $availableLanguages[$language->getLocale()->getLanguageCode()] = $language->getTitle();
+                if($includeLanguageIds) {
+                    $availableLanguages[$language->getLocale()->getLanguageCode() . '__' . $language->getLanguageId()] = $language->getTitle();
+                } else {
+                    $availableLanguages[$language->getLocale()->getLanguageCode()] = $language->getTitle();
+                }
             }
         }
         return $availableLanguages;
     }
 
-    public function getAvailableLanguageIds(): array
-    {
-        $availableLanguages = [];
-        foreach ($this->siteFinder->getAllSites() as $site) {
-            foreach ($site->getLanguages() as $language) {
-                $availableLanguages[$language->getLanguageId()] = $language->getTitle();
-            }
-        }
-        return $availableLanguages;
-    }
-
-    public function getAvailableDefaultLanguages(): array
-    {
-        $availableDefaultLanguages = [];
-        foreach ($this->siteFinder->getAllSites() as $site) {
-            foreach ($site->getLanguages() as $language) {
-                if ($language->getTypo3Language() === 'default') {
-                    $availableDefaultLanguages[$language->getLocale()->getLanguageCode()] = $language->getTitle();
-                }
-            }
-        }
-        return $availableDefaultLanguages;
-    }
-
     /**
      * @throws SiteNotFoundException
      */
-    public function getIsoCodeByLanguageId(int $languageId): string
+    public function getIsoCodeByLanguageId(int $languageId, int $pageUid): string
     {
-        foreach ($this->siteFinder->getAllSites() as $site) {
-            foreach ($site->getLanguages() as $language) {
-                if ($language->getLanguageId() === $languageId) {
-                    return $language->getLocale()->getLanguageCode();
-                }
+        $site = $this->siteFinder->getSiteByPageId($pageUid);
+        foreach ($site->getLanguages() as $language) {
+            if ($language->getLanguageId() === $languageId) {
+                return $language->getLocale()->getLanguageCode();
             }
         }
-        throw new SiteNotFoundException('No site found for language id ' . $languageId);
-    }
-
-    public function getAvailableRootPages(): array
-    {
-        $availableRootPages = [];
-        foreach ($this->siteFinder->getAllSites() as $site) {
-            $availableRootPages[] = $site->getRootPageId();
-        }
-        return $availableRootPages;
-    }
-
-    /**
-     * @throws SiteNotFoundException
-     */
-    public function getLangIsoCode(int $pageId): string {
-        $languageId = self::getLanguageId();
-        $site = $this->siteFinder->getSiteByPageId($pageId);
-        $language = $site->getLanguageById($languageId);
-        return $language->getLocale()->getLanguageCode() ?? 'en';
-    }
-
-    public function getLanguageId() {
-        return $this->context->getPropertyFromAspect('language', 'id');
-    }
-
-    public function getSiteByPageId(int $pageId): ?Site {
-        return $this->siteFinder->getSiteByPageId($pageId);
+        throw new SiteNotFoundException('No site found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716622);
     }
 
     public function buildAbsoluteUri(UriInterface $uri): string {

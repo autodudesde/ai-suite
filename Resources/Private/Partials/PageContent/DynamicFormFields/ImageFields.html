@@ -26,7 +26,7 @@
                                 <f:render partial="Libs/ImageTitleSelection" arguments="{imageTitleSuggestions: fieldData.imageTitles, fieldName: fieldName, table: table, position: position}" />
                             </f:then>
                             <f:else>
-                                <f:render partial="Libs/ImagePreSelection" arguments="{imageSuggestions: fieldData, fieldName: fieldName, table: table, itemLabel: itemLabel, position: position, pageId: pageId, uuid: uuid}" />
+                                <f:render partial="Libs/ImagePreSelection" arguments="{imageSuggestions: fieldData, fieldName: fieldName, table: table, itemLabel: itemLabel, position: position, pageId: pageId, uuid: uuid, sysLanguageUid: sysLanguageUid}" />
                             </f:else>
                         </f:if>
                     </div>
@@ -36,6 +36,7 @@
                         class="mb-3 mt-1 btn btn-default create-content-update-image"
                         data-table="{table}"
                         data-page-id="{pageId}"
+                        data-language-id="{sysLanguageUid}"
                         data-position="{position}"
                         data-fieldname="{fieldName}"
                     >

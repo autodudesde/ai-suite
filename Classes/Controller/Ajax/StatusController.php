@@ -23,7 +23,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
@@ -56,11 +55,11 @@ class StatusController extends AbstractAjaxController
     {
         $response = new Response();
 
-        try {
-            $langIsoCode = $this->siteService->getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $backendUser = $this->backendUserService->getBackendUser();
+        if($backendUser->user['lang'] === 'default') {
+            $langIsoCode = 'en';
+        } else {
+            $langIsoCode = $backendUser->user['lang'];
         }
 
         $answer = $this->requestService->sendDataRequest(

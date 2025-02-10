@@ -66,7 +66,7 @@ class MassActionService implements SingletonInterface
             return $library['name'] === 'Vision';
         });
 
-        $availableLanguages = $this->siteService->getAvailableLanguageIds();
+        $availableLanguages = $this->siteService->getAvailableLanguages(true);
         ksort($availableLanguages);
 
         $pendingFileMetadata = [];
@@ -84,7 +84,17 @@ class MassActionService implements SingletonInterface
                         $fileUids[] = $file->getUid();
                     }
                 }
-                $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList($fileUids, 'file');
+
+                $languageParts = isset($params['options']['sysLanguage']) ? explode('__', $params['options']['sysLanguage']) : [];
+                $column = $params['options']['column'] ?? 'all';
+                $languageId = isset($languageParts[1]) ? (int)$languageParts[1] : 0;
+                $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
+                    $fileUids,
+                    $column,
+                    'file',
+                    $languageId,
+                    isset($params['options']['showOnlyEmpty'])
+                );
                 $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($fileUids, 'sys_file_metadata');
                 $pendingFileMetadata = array_reduce($pendingFileMetadata, function ($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'];

@@ -15,11 +15,11 @@ class BackgroundTask
         protected string $tableName,
         protected string $idColumn,
         protected int $tableUid,
+        protected int $sysLanguageUid,
         protected string $status = 'pending',
         protected string $slug = '',
         protected int $crdate = 0 // time() is not allowed here
-    )
-    {
+    ) {
         if ($this->crdate === 0) {
             $this->crdate = time();
         }
@@ -38,7 +38,8 @@ class BackgroundTask
             'crdate',
             'table_name',
             'id_column',
-            'table_uid'
+            'table_uid',
+            'sys_language_uid',
         ];
     }
 
@@ -56,6 +57,7 @@ class BackgroundTask
             Connection::PARAM_STR,
             Connection::PARAM_STR,
             Connection::PARAM_STR,
+            Connection::PARAM_INT,
         ];
     }
 
@@ -73,7 +75,7 @@ class BackgroundTask
             $this->tableName,
             $this->idColumn,
             $this->tableUid,
+            $this->sysLanguageUid,
         ];
     }
-
 }

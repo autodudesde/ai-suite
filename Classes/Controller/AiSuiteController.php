@@ -117,7 +117,8 @@ class AiSuiteController extends AbstractBackendController
             $this->view->assignMultiple([
                 'freeRequests' => $freeRequests,
                 'paidRequests' => $paidRequests,
-                'aboRequests' => (int)$modelType - $aboRequests . ' / ' . $modelType
+                'aboRequests' => (int)$modelType - $aboRequests . ' / ' . $modelType,
+                'modelType' => $modelType
             ]);
         }  catch (\Throwable $e) {
             $this->logger->error($e->getMessage());

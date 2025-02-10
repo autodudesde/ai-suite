@@ -73,7 +73,7 @@ class BackgroundTaskRepository
     public function findAllFileReferenceBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage', 'sfr.title', 'sfr.alternative')
+        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage', 'sfr.title', 'sfr.alternative', 'sfr.sys_language_uid', 'tt.pid AS pageId')
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -86,6 +86,12 @@ class BackgroundTaskRepository
                 'sys_file',
                 'sf',
                 $queryBuilder->expr()->eq('sf.uid', $queryBuilder->quoteIdentifier('sfr.uid_local'))
+            )
+            ->leftJoin(
+                'sfr',
+                'tt_content',
+                'tt',
+                $queryBuilder->expr()->eq('tt.uid', $queryBuilder->quoteIdentifier('sfr.uid_foreign'))
             )
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('fileReference')),

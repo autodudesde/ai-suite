@@ -53,10 +53,11 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
             if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0 && $requests['abo_requests'] >= 0) {
                 if(!empty($requests['model_type'])) {
                     $requests['abo_requests'] = (int)$requests['model_type'] - $requests['abo_requests'] . ' / ' . $requests['model_type'];
+                } else {
+                    unset($requests['abo_requests']);
                 }
                 $view->assign('requests', $requests);
             }
-            throw new \Exception('No requests found');
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             if (str_contains($e->getMessage(), 'db.tx_aisuite_domain_model_requests')) {

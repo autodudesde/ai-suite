@@ -1,0 +1,10 @@
+<label for="sysLanguage">
+    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.selectSysLanguage" extensionName="ai_suite"/>
+</label>
+<select name="{selectName}" id="sysLanguage" class="form-select w-100">
+    <f:for each="{sysLanguages}" key="isoCode" as="sysLanguage">
+        <option value="{isoCode}" {f:if(condition: '{isoCode} == {selected}', then: 'selected', else: '')}>{sysLanguage}</option>
+    </f:for>
+</select>
+
+

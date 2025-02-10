@@ -167,7 +167,10 @@
                 <source>Edit file metas</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.massActionFilelist.allColumns">
-                <source>All cloumns</source>
+                <source>All columns</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.massActionFilelist.selectedDirectory">
+                <source>Selected directory</source>
             </trans-unit>
 
             <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
@@ -566,7 +569,7 @@
                 <source>Remove suggestions</source>
             </trans-unit>
             <trans-unit id="AiSuite.fetchContentFailed" resname="AiSuite.fetchContentFailed">
-                <source>Page content could not be loaded.</source>
+                <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
             </trans-unit>
             <trans-unit id="AiSuite.apiNotReachable" resname="AiSuite.apiNotReachable">
                 <source>Unfortunately, the OpenAI API is currently not available. Please try again later.</source>
@@ -636,7 +639,7 @@
                 <source>Paid Credits</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.aboCredits" xml:space="preserve">
-                <source>Limit</source>
+                <source>Plan</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
@@ -1098,7 +1101,7 @@
                 <source>Metadata suggestion generation in process</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataError" resname="aiSuite.module.modal.metaDataError">
-                <source>Unable to generate metadata suggestions</source>
+                <source>Unable to generate metadata suggestions. If HTTP basic auth is active, please activate it within the extension settings and enter the credentials there.</source>
             </trans-unit>
             <trans-unit id="AiSuite.metadataWizardSaveButton" resname="AiSuite.metadataWizardSaveButton">
                 <source>Save metadata</source>
@@ -1276,6 +1279,12 @@
             </trans-unit>
             <trans-unit id="massActionSection.sys_file_reference.alternative" resname="massActionSection.sys_file_reference.alternative">
                 <source>Image alternative text</source>
+            </trans-unit>
+            <trans-unit id="translation.failed" resname="translation.failed">
+                <source>Translation failed for one or more elements.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
+                <source>Select (target) language:</source>
             </trans-unit>
         </body>
     </file>

@@ -226,9 +226,9 @@ class ContentController extends AbstractBackendController
         $this->view->assign('regenerateActionUri', $regenerateActionUri);
 
         try {
-            $site = $this->siteService->getSiteByPageId($content['pid']);
-            $siteLanguage = $site->getLanguageById($content['sysLanguageUid']);
-            $langIsoCode = $siteLanguage->getLocale()->getLanguageCode();
+//            $site = $this->siteService->getSiteByPageId($content['pid']);
+//            $siteLanguage = $site->getLanguageById($content['sysLanguageUid']);
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId($content['sysLanguageUid'], $content['pid']);
         } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->view->addFlashMessage(

@@ -123,13 +123,14 @@ class MassActionController extends AbstractAjaxController
             $params['columnName'] = $pageMetadataColumns[$massActionData['column']];
             $params['pages'] = $this->pagesRepository->fetchNecessaryPageData($massActionData, $foundPageUids);
             $pagesUids = array_column($params['pages'], 'uid');
-            $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages');
+            if(count($pagesUids) > 0) {
+                $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages');
 
-            $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
-                $carry[$item['table_uid']] = $item['status'];
-                return $carry;
-            }, []);
-
+                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
+                    $carry[$item['table_uid']] = $item['status'];
+                    return $carry;
+                }, []);
+            }
 
             $output = $this->getContentFromTemplate(
                 $request,
@@ -168,14 +169,19 @@ class MassActionController extends AbstractAjaxController
         $response = new Response();
         $massActionData = $serverRequest->getParsedBody()['massActionPagesExecute'];
         $pages = json_decode($massActionData['pages'], true);
-
+        $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
         $bulkPayload = [];
         $failedPages = [];
         foreach ($pages as $pageUid => $pageSlug) {
-            $previewUriBuilder = PreviewUriBuilder::create($pageUid);
+            $page = $this->pageRepository->getPage($pageUid);
+            $previewUriPageId = $pageUid;
+            if ($page['is_siteroot'] === 1 && $page['l10n_parent'] > 0) {
+                $previewUriPageId = $page['l10n_parent'];
+            }
+            $previewUriBuilder = PreviewUriBuilder::create($previewUriPageId);
             $previewUri = $previewUriBuilder
-                ->withLanguage((int)$massActionData['sysLanguage'])
+                ->withLanguage((int)$languageParts[1])
                 ->buildUri();
             $url = $this->siteService->buildAbsoluteUri($previewUri);
             try {
@@ -189,7 +195,8 @@ class MassActionController extends AbstractAjaxController
                     $massActionData['column'],
                     'pages',
                     'uid',
-                    $pageUid
+                    $pageUid,
+                    (int)$languageParts[1]
                 );
                 $payload[] = [
                     'field_label' => $massActionData['column'],
@@ -211,7 +218,7 @@ class MassActionController extends AbstractAjaxController
                     'type' => 'metadata'
                 ],
                 '',
-                $this->siteService->getIsoCodeByLanguageId($massActionData['sysLanguage']),
+                $languageParts[0],
                 [
                     'text' => $massActionData['textAiModel'],
                 ]
@@ -299,18 +306,17 @@ class MassActionController extends AbstractAjaxController
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
 
             $massActionData = $request->getParsedBody()['massActionFileReferencesPrepare'];
-            $massActionData['showOnlyEmpty'] = (array_key_exists('showOnlyEmpty', $massActionData) && $massActionData['showOnlyEmpty']);
+            $languageParts = explode('__', $massActionData['sysLanguage']);
             $foundPageUids = $this->pageRepository->getPageIdsRecursive(
                 [(int)$massActionData['startFromPid']],
                 (int)$massActionData['depth']
             );
-            $pageData = $this->pagesRepository->fetchNecessaryPageData($massActionData, $foundPageUids, 'sys_file_reference');
-            $pagesUids = array_column($pageData, 'uid');
 
             $fileReferenceMetadataColumns = $this->metadataService->getFileMetadataColumns();
             $params['column'] = $massActionData['column'];
             $params['columnName'] = $fileReferenceMetadataColumns[$massActionData['column']];
-            $params['fileReferences'] = $this->pagesRepository->fetchSysFileReferences($pagesUids, $massActionData['column'], (int)$massActionData['sysLanguage'], $massActionData['showOnlyEmpty']);
+
+            $params['fileReferences'] = $this->pagesRepository->fetchSysFileReferences($foundPageUids, $massActionData['column'], (int)$languageParts[1], isset($massActionData['showOnlyEmpty']));
 
             $sysFileReferenceUids = array_column($params['fileReferences'], 'uid');
             $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference');
@@ -357,7 +363,7 @@ class MassActionController extends AbstractAjaxController
         $response = new Response();
         $massActionData = $serverRequest->getParsedBody()['massActionFileReferencesExecute'];
         $fileReferences = json_decode($massActionData['fileReferences'], true);
-
+        $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
         $bulkPayload = [];
         $failedFileReferences = [];
@@ -373,7 +379,8 @@ class MassActionController extends AbstractAjaxController
                     $massActionData['column'],
                     'sys_file_reference',
                     'uid',
-                    $sysFileReferenceUid
+                    $sysFileReferenceUid,
+                    (int)$languageParts[1]
                 );
                 $payload[] = [
                     'field_label' => $massActionData['column'],
@@ -395,7 +402,7 @@ class MassActionController extends AbstractAjaxController
                     'type' => 'metadata'
                 ],
                 '',
-                $this->siteService->getIsoCodeByLanguageId($massActionData['sysLanguage']),
+                $languageParts[0],
                 [
                     'text' => $massActionData['textAiModel'],
                 ]
@@ -528,7 +535,7 @@ class MassActionController extends AbstractAjaxController
             }
         }
         $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
-
+        $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
         $bulkPayload = [];
         $failedFilesMetadata = [];
@@ -546,7 +553,8 @@ class MassActionController extends AbstractAjaxController
                         $column,
                         'sys_file_metadata',
                         'uid',
-                        $sysFileMetaUid
+                        $sysFileMetaUid,
+                        (int)$languageParts[1]
                     );
                     $payload[] = [
                         'field_label' => $column,
@@ -569,7 +577,7 @@ class MassActionController extends AbstractAjaxController
                     'type' => 'metadata'
                 ],
                 '',
-                $this->siteService->getIsoCodeByLanguageId($massActionData['sysLanguage']),
+                $languageParts[0],
                 [
                     'text' => $massActionData['textAiModel'],
                 ]
@@ -599,8 +607,8 @@ class MassActionController extends AbstractAjaxController
         try {
             $massActionData = $serverRequest->getParsedBody();
             $datamap = [];
-
-            if (!array_key_exists('file-selection', $massActionData) || !is_array($massActionData['file-selection']) || count($massActionData['file-selection']) === 0) {
+            $fileSelection = array_key_exists('file-selection', $massActionData) ? json_decode($massActionData['file-selection'], true) : [];
+            if (!is_array($fileSelection) || count($fileSelection) === 0) {
                 $response->getBody()->write(
                     json_encode(
                         [
@@ -612,9 +620,9 @@ class MassActionController extends AbstractAjaxController
                 return $response;
             }
 
-            foreach ($massActionData['file-selection'] as $sysFileUid) {
+            foreach ($fileSelection as $sysFileUid => $fields) {
                 $sysFileUid = (int)$sysFileUid;
-                $fileMetaData = $massActionData['files'][$sysFileUid];
+                $fileMetaData = $fields;
                 foreach ($fileMetaData as $column => $value) {
                     if ($massActionData['options']['column'] === $column || $massActionData['options']['column'] === 'all') {
                         $datamap['sys_file_metadata'][$sysFileUid][$column] = $value;
