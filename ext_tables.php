@@ -17,6 +17,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableRteAiPluginDescription',
         ],
+        'enable_rte_aieasylanguageplugin' => [
+            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription',
+        ],
         'enable_translation' => [
             $lll . 'aiSuite.customPermOptions.enableTranslation',
             'tx-aisuite-permissions',

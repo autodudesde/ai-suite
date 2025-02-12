@@ -37,18 +37,21 @@ class BeforePrepareConfigurationForEditorEventListener
      */
     public function __invoke(BeforePrepareConfigurationForEditorEvent $event): void
     {
-        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
-            try {
-                $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
-            } catch (Throwable $e) {
-                return;
-            }
-            $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
-
-            $configuration = $event->getConfiguration();
-            $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/ai-plugin.js';
-            $configuration['toolbar']['items'][] = 'aiPlugin';
-            $event->setConfiguration($configuration);
+        try {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
+        } catch (Throwable $e) {
+            return;
         }
+        $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
+        $configuration = $event->getConfiguration();
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
+            $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin.js';
+            $configuration['toolbar']['items'][] = 'aiPlugin';
+        }
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aieasylanguageplugin')) {
+            $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/AiEasyLanguagePlugin/ai-easy-language-plugin.js';
+            $configuration['toolbar']['items'][] = 'aiEasyLanguagePlugin';
+        }
+        $event->setConfiguration($configuration);
     }
 }

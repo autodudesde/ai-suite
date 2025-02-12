@@ -24,12 +24,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
 
 #[AsController]
 class CkeditorController extends AbstractAjaxController
 {
+    protected ExtensionConfiguration $extensionConfiguration;
     public function __construct(
         BackendUserService $backendUserService,
         SendRequestService $requestService,
@@ -39,6 +41,7 @@ class CkeditorController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
+        ExtensionConfiguration $extensionConfiguration,
         LoggerInterface $logger,
     ) {
         parent::__construct(
@@ -52,6 +55,7 @@ class CkeditorController extends AbstractAjaxController
             $viewFactory,
             $logger
         );
+        $this->extensionConfiguration = $extensionConfiguration;
     }
 
     public function librariesAction(ServerRequestInterface $request): ResponseInterface
@@ -86,6 +90,45 @@ class CkeditorController extends AbstractAjaxController
         );
         return $response;
     }
+
+    public function easyLanguageLibrariesAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::RTE_CONTENT, 'editContent', ['text']);
+
+        if ($librariesAnswer->getType() === 'Error') {
+            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => false,
+                        'output' => '<div class="alert alert-danger" role="alert">' . $this->translationService->translate('aiSuite.module.errorFetchingLibraries.title') . '</div>'
+                    ]
+                )
+            );
+            return $response;
+        }
+        $configuredLibrary = $this->extensionConfiguration->get('ai_suite', 'easyLanguageLibrary');
+        $library = array_filter(
+            $librariesAnswer->getResponseData()['textGenerationLibraries'],
+            function ($library) use ($configuredLibrary) {
+                return $library['model_identifier'] === $configuredLibrary;
+            }
+        );
+        $response->getBody()->write(
+            json_encode(
+                [
+                    'success' => true,
+                    'output' => [
+                        'library' => $library,
+                        'uuid' => $this->uuidService->generateUuid(),
+                    ],
+                ]
+            )
+        );
+        return $response;
+    }
+
     public function requestAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
@@ -96,6 +139,7 @@ class CkeditorController extends AbstractAjaxController
                 'uuid' => $request->getParsedBody()['uuid'],
                 'selectedContent' => $request->getParsedBody()['selectedContent'] ?? '',
                 'wholeContent' => $request->getParsedBody()['wholeContent'] ?? '',
+                'type' => $request->getParsedBody()['type'] ?? '',
             ],
             $request->getParsedBody()['prompt'] ?? '',
             $request->getParsedBody()['languageCode'] ?? 'en',

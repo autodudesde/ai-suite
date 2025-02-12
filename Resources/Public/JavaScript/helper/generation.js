@@ -54,7 +54,6 @@ class Generation {
         const pageSelectionList = document.querySelectorAll('ul.dropdown-menu li');
         const languageSelections = document.querySelectorAll('.language-selection');
         this.checkLanguageSelection(languageSelections);
-        console.log(languageSelections);
         pageSelectionList.forEach((element) => {
             element.addEventListener('click', function(ev) {
                 ev.preventDefault();
@@ -64,7 +63,6 @@ class Generation {
     }
     checkLanguageSelection(languageSelections) {
         const pageFields = document.querySelectorAll('input[name="startStructureFromPid"]');
-        console.log(pageFields);
         languageSelections.forEach((languageSelection) => {
             if(languageSelection && pageFields.length >= 1 && parseInt(pageFields[0].value) === -1) {
                 languageSelection.style.display = 'block';

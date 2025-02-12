@@ -1,5 +1,4 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-{namespace core=TYPO3\CMS\Core\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
 
 <f:layout name="Module" />
 
@@ -10,6 +9,18 @@
                 <h1 class="mb-4">
                     <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
                 </h1>
+                <div class="my-4 position-relative">
+                    <label for="clickAndSave" class="position-relative">
+                        <input type="checkbox" name="clickAndSave" id="clickAndSave" />
+                        <strong class="px-4">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave" />
+                        </strong>
+                        <div class="tooltip">
+                            <core:icon identifier="actions-info" size="small" />
+                            <span class="tooltiptext p-3"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave.tooltip" /></span>
+                        </div>
+                    </label>
+                </div>
                 <div class="filter my-3">
                     <select id="backgroundTaskFilter" class="form-select">
                         <option value="Page">

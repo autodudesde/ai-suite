@@ -1001,6 +1001,12 @@
             <trans-unit id="aiSuite.customPermOptions.enableRteAiPluginDescription" xml:space="preserve">
                 <source>If active the AI Plugin will be shown within CKEditor / RTE fields.</source>
             <target>Wenn aktiv, wird das AI-Plugin in den Feldern von CKEditor/RTE angezeigt.</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin" xml:space="preserve">
+                <source>AI "Leichte Sprache" Plugin in CKEditor / RTE fields</source>
+            <target>AI „Leichte Sprache“ Plugin in CKEditor / RTE-Feldern</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription" xml:space="preserve">
+                <source>If active the AI "Leichte Sprache" Plugin will be shown within CKEditor / RTE fields.</source>
+            <target>Wenn aktiv, wird das AI-Plugin „Leichte Sprache“ in den CKEditor-/RTE-Feldern angezeigt.</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
                 <source>AI translation options within translation wizard</source>
             <target>KI-Übersetzungsoptionen im Übersetzungsassistenten</target></trans-unit>
@@ -1159,7 +1165,7 @@
             <target>Metadaten mit KI generieren</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.saveMetadataBtn" resname="AiSuite.module.massAction.saveMetadataBtn">
                 <source><![CDATA[Update selected metadata <strong>(no credits needed)</strong>]]></source>
-            <target> Ausgewählte Metadaten aktualisieren &lt;strong&gt;(keine Credits erforderlich)&lt;/strong&gt;</target></trans-unit>
+            <target>Ausgewählte Metadaten aktualisieren &lt;strong&gt;(keine Credits erforderlich)&lt;/strong&gt;</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.missingPages" resname="AiSuite.notification.generation.massAction.missingPages">
                 <source>Please select at least one page.</source>
             <target>Bitte wähle mindestens eine Seite aus.</target></trans-unit>
@@ -1170,7 +1176,7 @@
                 <source>Already handled %s: </source>
             <target>%s bereits bearbeitet:</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
-                <source>WorkflowManager action successfully created</source>
+                <source>WorkflowManager task successfully created</source>
             <target>WorkflowManager Aufgabe erfolgreich erstellt</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
                 <source>Metadata fields successfully updated</source>
@@ -1206,10 +1212,10 @@
                 <source>Entry could not be saved.</source>
             <target>Eintrag konnte nicht gespeichert werden.</target></trans-unit>
             <trans-unit id="AiSuite.notification.errorSavingTask" resname="AiSuite.notification.errorSavingTask">
-                <source>Error while saving TaskEngine task data</source>
+                <source>Error while saving background task data</source>
             <target>Fehler beim Speichern der TaskEngine Aufgaben</target></trans-unit>
             <trans-unit id="AiSuite.notification.errorDeletingTask" resname="AiSuite.notification.errorDeletingTask">
-                <source>Error while deletingTaskEngine data</source>
+                <source>Error while deleting TaskEngine task data</source>
             <target>Fehler beim Löschen der TaskEngine Aufgaben</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedPages" resname="AiSuite.notification.generation.failedPages">
                 <source>Content of the following pages could not be fetched: </source>
@@ -1286,6 +1292,36 @@
             <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
                 <source>Select (target) language:</source>
             <target>Wähle die (Ziel-) Sprache aus:</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.clickAndSave" resname="AiSuite.module.massAction.clickAndSave">
+                <source>Click and Save</source>
+            <target>Click and Save</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.clickAndSave.tooltip" resname="AiSuite.module.massAction.clickAndSave.tooltip">
+                <source>If "Click and Save" is activated, metadata is saved directly when you click on the desired field.</source>
+            <target>Wenn "Click and Save" aktiviert ist, werden Metadaten direkt beim Klick auf das gewünschte Feld gespeichert.</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.noLibraryFound" resname="AiSuite.easyLanguagePlugin.noLibraryFound">
+                <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
+            <target>Kein Model verfügbar. Bitte wählen eines in den Erweiterungseinstellungen aus oder wende dich an deinen Administrator, um das ausgewählte Modell überprüfen zu lassen.</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.noContentSelectedModalText" resname="AiSuite.easyLanguagePlugin.noContentSelectedModalText">
+                <source>No content selected. Do you want to continue with the whole content?</source>
+            <target>Kein Inhalt ausgewählt. Möchtest du mit dem gesamten Inhalt fortfahren?</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.useWholeContent" resname="AiSuite.easyLanguagePlugin.useWholeContent">
+                <source>Continue with whole content</source>
+            <target>Weiter mit dem gesamten Inhalt</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.abort" resname="AiSuite.easyLanguagePlugin.abort">
+                <source>Abort</source>
+            <target>Abbrechen</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.inProgress" resname="AiSuite.easyLanguagePlugin.inProgress">
+                <source>"Leichte Sprache" translation in progress</source>
+            <target>Übersetzung von „Leichte Sprache“ in Bearbeitung</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.success" resname="AiSuite.easyLanguagePlugin.success">
+                <source>"Leichte Sprache" translation successful</source>
+            <target>„Leichte Sprache“-Übersetzung erfolgreich</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.failed" resname="AiSuite.easyLanguagePlugin.failed">
+                <source>"Leichte Sprache" translation failed</source>
+            <target>Die Übersetzung von „Leichte Sprache“ ist fehlgeschlagen</target></trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.pleaseWait" resname="AiSuite.easyLanguagePlugin.pleaseWait">
+                <source>Please wait...</source>
+            <target>Bitte warten...</target></trans-unit>
         </body>
     </file>
 </xliff>

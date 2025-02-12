@@ -89,6 +89,7 @@ class AiSuiteController extends AbstractBackendController
     {
         try {
             if ($this->extConf['aiSuiteApiKey'] === '' && $this->backendUserService->checkGroupSpecificInputs('aiSuiteApiKey') === '') {
+                $this->requestsRepository->deleteRequests();
                 $this->view->addFlashMessage(
                     $this->translationService->translate('aiSuite.module.missingAiSuiteApiKey.message'),
                     $this->translationService->translate('aiSuite.module.missingAiSuiteApiKey.title'),
@@ -106,8 +107,8 @@ class AiSuiteController extends AbstractBackendController
                 $aboRequests = $answer->getResponseData()['abo_requests'] ?? -1;
                 $modelType = $answer->getResponseData()['model_type'] ?? '';
                 $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
-                BackendUtility::setUpdateSignal('updateTopbar');
             } else {
+                $this->requestsRepository->deleteRequests();
                 $this->view->addFlashMessage(
                     $answer->getResponseData()['message'],
                     $this->translationService->translate('aiSuite.module.warningFetchingCreditsState.title'),
@@ -120,6 +121,7 @@ class AiSuiteController extends AbstractBackendController
                 'aboRequests' => (int)$modelType - $aboRequests . ' / ' . $modelType,
                 'modelType' => $modelType
             ]);
+            BackendUtility::setUpdateSignal('updateTopbar');
         }  catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             $this->view->addFlashMessage(

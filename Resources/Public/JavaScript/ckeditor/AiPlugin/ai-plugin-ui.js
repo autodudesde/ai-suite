@@ -1,6 +1,6 @@
 import {Plugin} from '@ckeditor/ckeditor5-core';
 import {ButtonView,ContextualBalloon,clickOutsideHandler} from '@ckeditor/ckeditor5-ui';
-import ModalView from '@autodudes/ai-suite/ckeditor/ai-plugin-view.js';
+import ModalView from '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin-view.js';
 import General from '@autodudes/ai-suite/helper/general.js';
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 

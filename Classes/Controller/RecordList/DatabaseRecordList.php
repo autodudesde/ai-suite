@@ -13,11 +13,13 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Schema\SearchableSchemaFieldsCollector;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
 
 class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordList
 {
     protected BackendUserService $backendUserService;
     protected TranslationService $translationService;
+    protected readonly TcaSchemaFactory $tcaSchemaFactory;
 
     public function __construct(
         IconFactory $iconFactory,
@@ -28,7 +30,8 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
         ModuleProvider $moduleProvider,
         SearchableSchemaFieldsCollector $searchableSchemaFieldsCollector,
         BackendUserService $backendUserService,
-        TranslationService $translationService
+        TranslationService $translationService,
+        ?TcaSchemaFactory $tcaSchemaFactory = null
     ) {
         parent::__construct(
             $iconFactory,
@@ -38,6 +41,7 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
             $backendViewFactory,
             $moduleProvider,
             $searchableSchemaFieldsCollector,
+            $tcaSchemaFactory
         );
         $this->backendUserService = $backendUserService;
         $this->translationService = $translationService;

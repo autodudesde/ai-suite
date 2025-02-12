@@ -26,9 +26,11 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Exception;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 #[AsController]
 final class FilelistController extends AbstractBackendController
@@ -73,6 +75,14 @@ final class FilelistController extends AbstractBackendController
 
     protected function indexAction(): ResponseInterface {
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::METADATA, 'createMetadata', ['text']);
+        if ($librariesAnswer->getType() === 'Error') {
+            $this->view->addFlashMessage(
+                strip_tags($librariesAnswer->getResponseData()['message']),
+                '',
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->view->renderResponse('MassAction/FilesPrepare');
+        }
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/filelist-files-prepare.js');
 
         $viewProperties = $this->massActionService->filelistFileDirectorySupport($this->request->getQueryParams(), $librariesAnswer);
