@@ -1001,6 +1001,12 @@
             <trans-unit id="aiSuite.customPermOptions.enableRteAiPluginDescription" xml:space="preserve">
                 <source>If active the AI Plugin will be shown within CKEditor / RTE fields.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin" xml:space="preserve">
+                <source>AI "Leichte Sprache" Plugin in CKEditor / RTE fields</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription" xml:space="preserve">
+                <source>If active the AI "Leichte Sprache" Plugin will be shown within CKEditor / RTE fields.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
                 <source>AI translation options within translation wizard</source>
             </trans-unit>
@@ -1285,6 +1291,36 @@
             </trans-unit>
             <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
                 <source>Select (target) language:</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.clickAndSave" resname="AiSuite.module.massAction.clickAndSave">
+                <source>Click and Save</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.clickAndSave.tooltip" resname="AiSuite.module.massAction.clickAndSave.tooltip">
+                <source>If "Click and Save" is activated, metadata is saved directly when you click on the desired field.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.noLibraryFound" resname="AiSuite.easyLanguagePlugin.noLibraryFound">
+                <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.noContentSelectedModalText" resname="AiSuite.easyLanguagePlugin.noContentSelectedModalText">
+                <source>No content selected. Do you want to continue with the whole content?</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.useWholeContent" resname="AiSuite.easyLanguagePlugin.useWholeContent">
+                <source>Continue with whole content</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.abort" resname="AiSuite.easyLanguagePlugin.abort">
+                <source>Abort</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.inProgress" resname="AiSuite.easyLanguagePlugin.inProgress">
+                <source>"Leichte Sprache" translation in progress</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.success" resname="AiSuite.easyLanguagePlugin.success">
+                <source>"Leichte Sprache" translation successful</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.failed" resname="AiSuite.easyLanguagePlugin.failed">
+                <source>"Leichte Sprache" translation failed</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.easyLanguagePlugin.pleaseWait" resname="AiSuite.easyLanguagePlugin.pleaseWait">
+                <source>Please wait...</source>
             </trans-unit>
         </body>
     </file>

@@ -24,7 +24,7 @@ export default class ModalView extends View {
             }
             this.radioButtonGroup.push(radioButton);
         }
-        let promtTemplateDisplay = 'flex';
+        let promptTemplateDisplay = 'flex';
         if(promptTemplates.length > 0) {
             this.dropdown = createDropdown( editorLocale );
 
@@ -55,7 +55,7 @@ export default class ModalView extends View {
                 this.promptInputView.element.value = selectedItem.promptTemplate;
             });
         } else {
-            promtTemplateDisplay = 'none';
+            promptTemplateDisplay = 'none';
             this.dropdown = '';
         }
         this.saveButtonView = this._createButton(TYPO3.lang['tx_aisuite.module.PageContent.submit'], icons.pencil, 'ck-button-save');
@@ -111,7 +111,7 @@ export default class ModalView extends View {
                             attributes: {
                                 class: 'ck-prompt-template-title',
                                 style: {
-                                    display: promtTemplateDisplay,
+                                    display: promptTemplateDisplay,
                                     width: '100%',
                                     fontWeight: 'bold',
                                     marginBottom: 'var(--ck-spacing-medium)'
@@ -126,7 +126,7 @@ export default class ModalView extends View {
                             attributes: {
                                 class: 'ck-prompt-template-dropdown',
                                 style: {
-                                    display: promtTemplateDisplay,
+                                    display: promptTemplateDisplay,
                                     width: '100%',
                                     marginBottom: 'var(--ck-spacing-large)'
                                 }

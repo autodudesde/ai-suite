@@ -76,7 +76,7 @@ div[data-module-id="aiSuite"] .tooltip {
 div[data-module-id="aiSuite"] .tooltip .tooltiptext {
     visibility: hidden;
     width: 350px;
-    background-color: black;
+    background-color: #171717;
     color: #fff;
     text-align: left;
     border-radius: 6px;
@@ -749,6 +749,7 @@ div[data-module-id="aiSuite"] #resultsToExecute {
 }
 
 #showOnlyEmpty,
+#clickAndSave,
 #togglePageSelection,
 #toggleFileSelection,
 #toggleFileReferenceSelection,
@@ -870,7 +871,7 @@ html[data-color-scheme="auto"] #backgroundTaskWrapper .accordion-background-task
     right: 35px;
     top: 0;
     font-size: 0.8rem;
-    color: #000;
+    color: #171717;
     background: #fff;
     border: 1px solid #dc3545;
 }
@@ -902,4 +903,24 @@ html[data-color-scheme="auto"] #backgroundTaskWrapper .accordion-background-task
 
 div[data-module-id="aiSuite"] .form-select:focus {
     outline: none;
+}
+#backgroundTaskWrapper .accordion-background-tasks .accordion-header .tooltip svg {
+    color: #dc3545;
+}
+div[data-module-name="ai_suite_backgroundtask"] .tooltip {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 19px;
+    width: 18px;
+    border: 1px solid #171717;
+    background: #171717;
+    border-radius: 3px;
+}
+div[data-module-name="ai_suite_backgroundtask"] .tooltip svg {
+    color: #ffffff;
+}
+div[data-module-name="ai_suite_backgroundtask"] .tooltip .tooltiptext {
+    top: -25px;
+    left: 105%;
 }

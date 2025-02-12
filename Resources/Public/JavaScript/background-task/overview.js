@@ -6,19 +6,47 @@ import Severity from "@typo3/backend/severity.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 
 class Overview {
+
+    views;
+    clickAndSave;
+    activeView;
+
     constructor() {
+        this.views = ['Page', 'FileReference', 'FileMetadata'];
+        this.clickAndSave = false;
+        this.activeView = 'Page';
+
         this.selectionHandler();
         this.addDeleteEventListener();
         this.addSaveEventListener();
         this.addViewEventListener();
+        this.addFilterEventListener();
         this.addInfoWindowEventListener();
+        this.addClickAndSaveEventListener();
     }
 
     addViewEventListener() {
-        document.querySelector('#accordionBackgroundTasksPage').style.display = 'block';
-        if(document.querySelector('#accordionBackgroundTasksPage').querySelectorAll('.accordion-item').length === 0) {
+        const self = this;
+        let viewUpdated = false;
+        this.views.forEach(function(view) {
+            if(document.querySelector('#accordionBackgroundTasks' + view).querySelectorAll('.accordion-item').length > 0 && !viewUpdated) {
+                self.activeView = view;
+                viewUpdated = true;
+            }
+        });
+        if(this.activeView === 'Page' && document.querySelector('#accordionBackgroundTasksPage').querySelectorAll('.accordion-item').length === 0) {
+            document.querySelector('#accordionBackgroundTasks' + this.activeView).style.display = 'block';
             document.querySelector('.accordion-background-tasks').querySelector('#noBackgroundTasks').style.display = 'block';
+        } else {
+            document.querySelector('#backgroundTaskFilter').value = this.activeView;
+            document.querySelector('#accordionBackgroundTasks' + this.activeView).style.display = 'block';
+            document.querySelector('#accordionBackgroundTasks' + this.activeView).querySelector('#noBackgroundTasks').style.display = 'none';
+            document.querySelector('#accordionBackgroundTasks' + this.activeView)
+                .querySelector('.accordion-item:first-child')
+                .querySelector('.open-accordion-item').click();
         }
+    }
+    addFilterEventListener() {
         document.querySelector('#backgroundTaskFilter').addEventListener('change', function(ev) {
             let filterValue = ev.target.value;
             document.querySelectorAll('.accordion-background-tasks').forEach(function(element) {
@@ -26,6 +54,11 @@ class Overview {
                     element.style.display = 'block';
                     if(element.querySelectorAll('.accordion-item').length === 0) {
                         element.querySelector('#noBackgroundTasks').style.display = 'block';
+                    } else {
+                        const firstAccordionItem = element.querySelector('.accordion-item:first-child');
+                        if(firstAccordionItem.querySelector('button.accordion-button').classList.contains('collapsed')) {
+                            firstAccordionItem.querySelector('.open-accordion-item').click();
+                        }
                     }
                 } else {
                     element.style.display = 'none';
@@ -72,18 +105,24 @@ class Overview {
                 let accordionBackgroundTasksElement = ev.target.closest('.accordion-background-tasks');
                 let uuid = ev.target.dataset.uuid;
                 let inputValue = document.querySelector('.accordion-item[data-uuid="'+uuid+'"] input.metadata-value').value;
+                let title = document.querySelector('.accordion-item[data-uuid="'+uuid+'"] .accordion-header .title').innerText;
                 let res = await Ajax.sendAjaxRequest('aisuite_background_task_save', {uuid: uuid, inputValue: inputValue});
                 if (General.isUsable(res)) {
-                    Notification.success(TYPO3.lang['AiSuite.notification.saveSuccess']);
+                    Notification.success(TYPO3.lang['AiSuite.notification.saveSuccess'], inputValue + ' (' + title + ')');
                     document.querySelector('.accordion-item[data-uuid="'+uuid+'"]').remove();
                     if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
                         accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
+                    } else {
+                        accordionBackgroundTasksElement
+                            .querySelector('.accordion-item:first-child')
+                            .querySelector('.open-accordion-item').click();
                     }
                 }
             });
         });
     }
     selectionHandler() {
+        const self = this;
         document.querySelectorAll('label.ce-metadata-selection').forEach(function(element) {
             element.addEventListener('click', function(ev) {
                 let selectionGroup = ev.target.dataset.selectionGroup;
@@ -95,6 +134,11 @@ class Overview {
                 });
                 let metadataValueElement = ev.target.closest('.accordion-body').querySelector('.metadata-value');
                 metadataValueElement.value = element.innerText.trim();
+                if(self.clickAndSave) {
+                    metadataValueElement
+                        .closest('.accordion-item')
+                        .querySelector('.save-accordion-item').click();
+                }
             });
         });
     }
@@ -107,6 +151,13 @@ class Overview {
                 const uid = ev.target.dataset.uid;
                 InfoWindow.showItem(table, uid);
             });
+        });
+    }
+
+    addClickAndSaveEventListener() {
+        const self = this;
+        document.querySelector('#clickAndSave').addEventListener('click', function() {
+            self.clickAndSave = !self.clickAndSave;
         });
     }
 }

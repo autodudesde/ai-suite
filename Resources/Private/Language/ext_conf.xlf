@@ -18,6 +18,9 @@
             <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
             </trans-unit>
+            <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
+                <source>Use the following library for "Leichte Sprache" translations</source>
+            </trans-unit>
             <trans-unit id="openAiApiKey" resname="openAiApiKey">
                 <source>Enter your OpenAI API key</source>
             </trans-unit>

@@ -27,6 +27,7 @@ if (Array.isArray(searchableInputList)){
             if (a !== null){
                 item.value = a.textContent || a.innerText;
                 dropdownButton.textContent = dropdownButton.dataset.initialText + ' ' + item.value;
+                dropdownElement.querySelector('input.searchableInput').value = '';
             }
         }
     });
@@ -40,7 +41,8 @@ if (Array.isArray(searchableOptionList)){
             let dropdownElement = this.parentNode.parentNode.parentNode;
             let txtValue = this.textContent || this.innerText;
             dropdownElement.querySelector('input.searchableInputProperty').value = this.dataset.value;
-            dropdownElement.querySelector('input.searchableInput').value = txtValue;
+            // dropdownElement.querySelector('input.searchableInput').value = txtValue;
+            dropdownElement.querySelector('input.searchableInput').value = '';
             let dropdownButton = dropdownElement.querySelector('button.dropdown-toggle');
             dropdownButton.textContent = dropdownButton.dataset.initialText + ' ' + txtValue;
         });

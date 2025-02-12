@@ -101,6 +101,10 @@ return [
         'path' => '/generate/ckeditor-libraries',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::librariesAction'
     ],
+    'aisuite_ckeditor_easy_language_libraries' => [
+        'path' => '/generate/ckeditor-easy-language-libraries',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::easyLanguageLibrariesAction'
+    ],
     'aisuite_ckeditor_request' => [
         'path' => '/generate/ckeditor-request',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\CkeditorController::class . '::requestAction'
