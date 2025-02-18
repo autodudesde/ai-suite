@@ -22,7 +22,7 @@ class AfterTcaCompilationEventListener
         'special',
         'plugins',
         'social',
-        'form',
+        'forms',
     ];
     public const EXCLUDE_CTYPE_LIST = [
         'csv',

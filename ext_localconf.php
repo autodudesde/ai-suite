@@ -73,6 +73,18 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410688] = [
     'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\FileList\AiSysFileTitle::class
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410689] = [
+    'nodeName' => 'aiSysFileReferenceAlternative',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative::class
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410690] = [
+    'nodeName' => 'aiSysFileReferenceTitle',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle::class
+];
+
 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410684] = [
         'nodeName' => 'aiNewsMetaDescription',

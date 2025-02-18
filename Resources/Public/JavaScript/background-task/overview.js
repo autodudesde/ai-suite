@@ -59,6 +59,7 @@ class Overview {
                         if(firstAccordionItem.querySelector('button.accordion-button').classList.contains('collapsed')) {
                             firstAccordionItem.querySelector('.open-accordion-item').click();
                         }
+                        element.querySelector('#noBackgroundTasks').style.display = 'none';
                     }
                 } else {
                     element.style.display = 'none';
@@ -144,7 +145,7 @@ class Overview {
     }
 
     addInfoWindowEventListener() {
-        document.querySelectorAll('.page-meta-content-info, .file-meta-content-info').forEach(function(element) {
+        document.querySelectorAll('.page-meta-content-info, .file-reference-meta-content-info, .file-meta-content-info').forEach(function(element) {
             element.addEventListener('click', function(ev) {
                 ev.preventDefault();
                 const table = ev.target.dataset.table;
