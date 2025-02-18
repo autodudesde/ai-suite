@@ -15,7 +15,7 @@ final class ModifyNewContentElementWizardItemsEventListener
         'special',
         'plugins',
         'social',
-        'form',
+        'forms',
     ];
 
     private BackendUserService $backendUserService;

@@ -6,7 +6,7 @@
     <div class="accordion accordion-background-tasks" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
         <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
             <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
-                <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask}" />
+                <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, position: it.index}" />
             </div>
         </f:for>
         <div id="noBackgroundTasks" class="alert alert-info">

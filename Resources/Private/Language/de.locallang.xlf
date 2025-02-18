@@ -1176,8 +1176,11 @@
                 <source>Already handled %s: </source>
             <target>%s bereits bearbeitet:</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
-                <source>WorkflowManager task successfully created</source>
-            <target>WorkflowManager Aufgabe erfolgreich erstellt</target></trans-unit>
+                <source>Tasks successfully created</source>
+            <target>Aufgaben erfolgreich erstellt</target></trans-unit>
+            <trans-unit id="AiSuite.notification.generation.massAction.successDescription" resname="AiSuite.notification.generation.massAction.successDescription">
+                <source>Switch to the TaskEngine to check the progress.</source>
+            <target>Wechsel zur TaskEngine, um den Fortschritt zu überprüfen.</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
                 <source>Metadata fields successfully updated</source>
             <target>Metadatenfelder erfolgreich aktualisiert</target></trans-unit>

@@ -4,7 +4,7 @@ $GLOBALS['TCA']['sys_file_metadata']['columns']['alternative']['config'] = array
     $GLOBALS['TCA']['sys_file_metadata']['columns']['alternative']['config'],
     [
         'fieldControl' => [
-            'importControl' => [
+            'tx_aisuite_custom_field' => [
                 'renderType' => 'aiSysFileAlternative'
             ]
         ]
@@ -14,7 +14,7 @@ $GLOBALS['TCA']['sys_file_metadata']['columns']['title']['config'] = array_merge
     $GLOBALS['TCA']['sys_file_metadata']['columns']['title']['config'],
     [
         'fieldControl' => [
-            'importControl' => [
+            'tx_aisuite_custom_field' => [
                 'renderType' => 'aiSysFileTitle'
             ]
         ]

@@ -61,7 +61,7 @@ class MetadataService
                 (int)$request->getParsedBody()['id'],
                 (int)$request->getParsedBody()['newsDetailPlugin']
             );
-        } elseif ($request->getParsedBody()['table'] === 'sys_file_metadata') {
+        } elseif ($request->getParsedBody()['table'] === 'sys_file_metadata' || $request->getParsedBody()['table'] === 'sys_file_reference') {
             return $this->getFileContent((int)$request->getParsedBody()['sysFileId']);
         } else {
             $previewUrl = $this->getPreviewUrl((int)$request->getParsedBody()['pageId']);

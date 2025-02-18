@@ -94,13 +94,15 @@ class BackgroundTaskController extends AbstractBackendController
                 $freeRequests = $answer->getResponseData()['free_requests'] ?? -1;
                 $paidRequests = $answer->getResponseData()['paid_requests'] ?? -1;
                 $aboRequests = $answer->getResponseData()['abo_requests'] ?? -1;
+                $modelType = $answer->getResponseData()['model_type'] ?? '';
                 try {
-                    $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, '');
+                    $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
                 } catch (\Exception $e) {
+                    $this->requestsRepository->deleteRequests();
                     $this->view->addFlashMessage(
-                        $e->getMessage(),
-                        $this->translationService->translate('aiSuite.error_no_credits_table'),
-                        ContextualFeedbackSeverity::ERROR
+                        $answer->getResponseData()['message'],
+                        $this->translationService->translate('aiSuite.module.warningFetchingCreditsState.title'),
+                        ContextualFeedbackSeverity::WARNING
                     );
                 }
                 BackendUtility::setUpdateSignal('updateTopbar');
