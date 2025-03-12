@@ -98,7 +98,7 @@ class AgenciesController extends AbstractBackendController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,'translate', ['translate']);
         $this->view->assignMultiple([
             'allLanguagesList' => $this->siteService->getAvailableLanguages(),
-            'translateGenerationLibraries' => $librariesAnswer->getResponseData()['translateGenerationLibraries'],
+            'translateGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['translateGenerationLibraries']),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable']
         ]);
         return $this->view->renderResponse('Agencies/TranslateXlf');

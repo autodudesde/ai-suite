@@ -7,14 +7,14 @@
 
 <f:section name="Content">
 
-    <section class="container">
+    <section>
         <h2 class="text-gradient">
             <f:translate key="AiSuite.module.Agencies.translateXlf.header" extensionName="ai_suite"/>
         </h2>
 
         <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_validate_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
             <f:render partial="Libs/SelectTranslateGenerationLibrary" arguments="{translateGenerationLibraries: translateGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <div class="row prompt-settings">
+            <div class="prompt-settings">
                 <div class="card card-size-large active">
                     <div class="card-header">
                         <h3 class="text-gradient">
@@ -63,8 +63,7 @@
                 </div>
             </div>
         </form>
-        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation', 'extensionName: 'ai_suite')}" />
-        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+        <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
     </section>
 
 </f:section>

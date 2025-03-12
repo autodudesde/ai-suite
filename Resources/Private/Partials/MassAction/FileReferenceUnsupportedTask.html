@@ -1,0 +1,28 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+>
+<div class="list-group nested-sortable">
+    <f:for each="{tasks}" as="task">
+        <div class="list-group-item nested">
+            <div class="d-flex w-100">
+                <div class="preview-image">
+                    <f:image src="{task.uid}" treatIdAsReference="1" />
+                </div>
+                <div class="file-reference-meta-content">
+                    <div class="file-reference-meta-content-info badge badge-info"
+                         data-table="{task.tablenames}"
+                         data-uid="{task.uid_foreign}"
+                    >
+                        <core:icon identifier="actions-document-info" size="small" /> Info
+                    </div>
+                    <p class="title">
+                        <span class="badge"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.file.unsupportedImageFormat" /></span>
+                        <span class="px-4">{task.fileName}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </f:for>
+</div>
+</html>

@@ -1,7 +1,7 @@
 {
     "name": "autodudes/ai-suite",
     "type": "typo3-cms-extension",
-    "description": "Adds a backend module as well as various helper functionalities and features to your TYPO3 backend, which are intended to make the daily work of editors easier and faster with the help of AI.",
+    "description": "The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies. It seamlessly integrates a wide variety of AI interfaces and the AI Suite open source models into the TYPO3 backend. Enables, among other things, more efficient creation and management of image and page metadata (individually and as batch processing), content translations (including \"Easy Language\"), content creation and modification, image generation and page structure generation.",
     "authors": [
         {
             "name": "AutoDudes",
@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "12.9.1",
+    "version": "12.10.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -33,6 +33,7 @@
         "typo3/cms-backend": "^12.4.11",
         "typo3/cms-filelist": "^12.4.11",
         "typo3/cms-fluid": "^12.4.11",
+        "typo3/cms-rte-ckeditor": "^12.4.11",
         "typo3/cms-seo": "^12.4.11"
     },
     "suggest": {
@@ -70,8 +71,10 @@
         "typo3/cms-beuser": "^12.4.11",
         "typo3/cms-lowlevel": "^12.4.11",
         "typo3/cms-tstemplate": "^12.4.11",
+        "typo3/cms-install": "^12.4.11",
         "typo3/cms-impexp": "^12.4.11",
         "typo3/cms-indexed-search": "^12.4.11",
+        "typo3/cms-filemetadata": "^12.4.11",
         "typo3/cms-form": "^12.4.11",
         "typo3/coding-standards": "^0.7"
     },

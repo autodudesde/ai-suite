@@ -311,6 +311,9 @@
             <trans-unit id="tx_aisuite.module.preparePages.showOnlyEmpty" resname="tx_aisuite.module.preparePages.showOnlyEmpty">
                 <source>Show only empty fields</source>
             </trans-unit>
+            <trans-unit id="tx_aisuite.module.prepareFiles.showOnlyUsed" resname="tx_aisuite.module.prepareFiles.showOnlyUsed">
+                <source>Show only in content included files</source>
+            </trans-unit>
             <trans-unit id="tx_aisuite.module.preparePages.showPrepareResults" resname="tx_aisuite.module.preparePages.showPrepareResults">
                 <source>Show results</source>
             </trans-unit>
@@ -498,6 +501,9 @@
             </trans-unit>
             <trans-unit id="AiSuite.generation.titleSuggestions" resname="AiSuite.generation.titleSuggestions">
                 <source>Generate title suggestions for file (1 Credit)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.generation.descriptionSuggestions" resname="AiSuite.generation.descriptionSuggestions">
+                <source>Generate description suggestions (1 Credit)</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.start" resname="AiSuite.notification.generation.start">
                 <source>Started</source>
@@ -1049,6 +1055,12 @@
             <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription" xml:space="preserve">
                 <source>If active the "TaskEngine" button will be shown within the backend module</source>
             </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableToolbarStatsItem" xml:space="preserve">
+                <source>Enable AI Suite toolbar item</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableToolbarStatsItemDescription" xml:space="preserve">
+                <source>If active the AI Suite toolbar item will be shown</source>
+            </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
                 <source>Show Metadata generation buttons</source>
             </trans-unit>
@@ -1081,6 +1093,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
                 <source>DeepL</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextLite" xml:space="preserve">
+                <source>Meta Llama-3.1 (8B-Instruct)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
+                <source>Meta Llama-3.3 (70B-Instruct)</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataGeneration" xml:space="preserve">
                 <source>Generated metadata suggestions</source>
@@ -1324,6 +1342,36 @@
             </trans-unit>
             <trans-unit id="AiSuite.easyLanguagePlugin.pleaseWait" resname="AiSuite.easyLanguagePlugin.pleaseWait">
                 <source>Please wait...</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.file.unsupportedImageFormat" resname="AiSuite.file.unsupportedImageFormat">
+                <source>Unsupported image format</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteAll" resname="AiSuite.backgroundTasks.deleteAll">
+                <source>Delete all visible tasks</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.deleteAllSuccess" resname="AiSuite.notification.deleteAllSuccess">
+                <source> task(s) have been deleted successfully.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteAllModalTitle" resname="AiSuite.backgroundTasks.deleteAllModalTitle">
+                <source>Are you sure you want to delete all visible tasks in this scope?</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.deleteAllModalText" resname="AiSuite.backgroundTasks.deleteAllModalText">
+                <source>Delete all visible tasks</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.refresh" resname="AiSuite.backgroundTasks.refresh">
+                <source>Refresh</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.loadMore" resname="AiSuite.backgroundTasks.loadMore">
+                <source>Load more</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.title" resname="AiSuite.backgroundTasks.loadMoreHint.title">
+                <source>More tasks available</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.message" resname="AiSuite.backgroundTasks.loadMoreHint.message">
+                <source>The first 50 tasks are displayed. Once you have completed one or more tasks, you can load additional tasks using the "Load more" button.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
+                <source>Content of the following files could not be fetched: </source>
             </trans-unit>
         </body>
     </file>

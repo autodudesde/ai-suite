@@ -7,7 +7,7 @@
 
 <f:section name="Content">
 
-    <section class="container">
+    <section>
         <h2 class="text-gradient">
             <f:translate key="tx_aisuite.module.pageStructure.headline" extensionName="ai_suite"/>
         </h2>
@@ -16,7 +16,7 @@
 
             <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
             <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <div class="row prompt-settings mt-3">
+            <div class="prompt-settings mt-3">
                 <div class="card card-size-large active">
                     <div class="card-header">
                         <h3 class="text-gradient">
@@ -41,9 +41,7 @@
                 </div>
             </div>
         </form>
-
-        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation', extensionName: 'ai_suite')}" />
-        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+        <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
     </section>
 
 </f:section>

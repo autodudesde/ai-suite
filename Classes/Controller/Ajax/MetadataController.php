@@ -172,6 +172,10 @@ class MetadataController extends AbstractAjaxController
             $this->logError($answer->getResponseData()['message'], $response, 503);
             return $response;
         }
+        $additionalFields = $this->metadataAdditionalFields[$request->getParsedBody()['fieldName']] ?? [];
+        if($request->getParsedBody()['table'] === 'sys_file_metadata' && $request->getParsedBody()['fieldName'] === 'description') {
+            $additionalFields = [];
+        }
         $params = [
             'textAiModel' => $request->getParsedBody()['textAiModel'],
             'metadataSuggestions' => $answer->getResponseData()['metadataResult'],
@@ -179,7 +183,7 @@ class MetadataController extends AbstractAjaxController
             'table' => $request->getParsedBody()['table'] ?? '',
             'id' => $request->getParsedBody()['id'],
             'uuid' => $request->getParsedBody()['uuid'],
-            'additionalFields' => $this->metadataAdditionalFields[$request->getParsedBody()['fieldName']] ?? []
+            'additionalFields' => $additionalFields
         ];
         $output = $this->getContentFromTemplate(
             $request,

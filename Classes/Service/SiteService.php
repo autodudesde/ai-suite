@@ -51,11 +51,18 @@ class SiteService implements SingletonInterface
      */
     public function getIsoCodeByLanguageId(int $languageId, int $pageUid): string
     {
-        $site = $this->siteFinder->getSiteByPageId($pageUid);
-        foreach ($site->getLanguages() as $language) {
-            if ($language->getLanguageId() === $languageId) {
-                return $language->getLocale()->getLanguageCode();
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageUid);
+            if($languageId === -1) {
+                $languageId = $site->getDefaultLanguage()->getLanguageId();
             }
+            foreach ($site->getLanguages() as $language) {
+                if ($language->getLanguageId() === $languageId) {
+                    return $language->getLocale()->getLanguageCode();
+                }
+            }
+        } catch (\Exception $e) {
+            throw new SiteNotFoundException('No site found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716622);
         }
         throw new SiteNotFoundException('No site found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716622);
     }

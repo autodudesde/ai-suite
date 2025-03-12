@@ -9,17 +9,16 @@
                 <h1 class="mb-4">
                     <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
                 </h1>
-                <div class="my-4 position-relative">
-                    <label for="clickAndSave" class="position-relative">
+                <div id="clickAndSaveInfo" class="d-flex my-4 position-relative">
+                    <label for="clickAndSave">
                         <input type="checkbox" name="clickAndSave" id="clickAndSave" />
-                        <strong class="px-4">
+                        <strong>
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave" />
                         </strong>
-                        <div class="tooltip">
-                            <core:icon identifier="actions-info" size="small" />
-                            <span class="tooltiptext p-3"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave.tooltip" /></span>
-                        </div>
                     </label>
+                    <div class="info-icon">
+                        <core:icon identifier="actions-info" size="small" />
+                    </div>
                 </div>
                 <div class="filter my-3">
                     <select id="backgroundTaskFilter" class="form-select">

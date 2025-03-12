@@ -125,7 +125,10 @@ class PagesRepository extends AbstractRepository
         }
         if($mode === 'pages' && $massActionData['showOnlyEmpty']) {
             $queryBuilder->andWhere(
-                $queryBuilder->expr()->eq($massActionData['column'], $queryBuilder->createNamedParameter('', Connection::PARAM_STR))
+                $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq($massActionData['column'], $queryBuilder->createNamedParameter('', Connection::PARAM_STR)),
+                    $queryBuilder->expr()->isNull($massActionData['column'])
+                )
             );
         }
         return $queryBuilder
@@ -157,6 +160,8 @@ class PagesRepository extends AbstractRepository
      * @throws DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws Exception
+     *
+     * @todo: PageRepository should not be responsible for fetching tt_content
      */
     public function getAvailableNewsDetailPlugins(array $pids, int $languageId): array
     {
@@ -172,7 +177,8 @@ class PagesRepository extends AbstractRepository
             ->where(
                 $queryBuilder->expr()->in('tt_content.pid', $pids),
                 $queryBuilder->expr()->eq('tt_content.sys_language_uid', $languageId),
-                $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail'))
+                $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail')),
+                $queryBuilder->expr()->eq('p.deleted', 0)
             )
             ->executeQuery()
             ->fetchAllAssociative();
@@ -182,11 +188,13 @@ class PagesRepository extends AbstractRepository
      * @throws DBALException
      * @throws Exception
      * @throws \Doctrine\DBAL\Driver\Exception
+     *
+     * @todo: PageRepository should not be responsible for fetching sys_file_references
      */
     public function fetchSysFileReferences(array $pagesUids, string $column, int $sysLanguageUid, bool $showOnlyEmpty): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.' . $column . ' AS columnValue', 'sf.name AS fileName')
+        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.' . $column . ' AS columnValue', 'sf.name AS fileName', 'sf.mime_type AS fileMimeType')
             ->from('sys_file_reference', 'sfr')
             ->leftJoin(
                 'sfr',
@@ -198,10 +206,14 @@ class PagesRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('sf.type', 2),
                 $queryBuilder->expr()->in('sfr.pid', $pagesUids),
                 $queryBuilder->expr()->eq('sfr.sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid)),
+                $queryBuilder->expr()->eq('sf.missing', 0),
             );
         if($showOnlyEmpty === true) {
             $queryBuilder->andWhere(
-                $queryBuilder->expr()->eq('sfr.' . $column, $queryBuilder->createNamedParameter('', Connection::PARAM_STR))
+                $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->isNull('sfr.' . $column),
+                    $queryBuilder->expr()->eq('sfr.' . $column, $queryBuilder->createNamedParameter('', Connection::PARAM_STR))
+                )
             );
         }
         return $queryBuilder

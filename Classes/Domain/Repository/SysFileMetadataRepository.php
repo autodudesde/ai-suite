@@ -33,8 +33,14 @@ class SysFileMetadataRepository extends AbstractRepository
     /**
      * @throws Exception
      */
-    public function findByLangUidAndFileIdList(array $uids, string $column, string $indexColumn = 'uid', int $langUid = 0, bool $showOnlyEmpty = false): array
-    {
+    public function findByLangUidAndFileIdList(
+        array $uids,
+        string $column,
+        string $indexColumn = 'uid',
+        int $langUid = 0,
+        bool $showOnlyEmpty = false,
+        bool $showOnlyUsed = false
+    ): array {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
         $constraints = [
             $queryBuilder->expr()->in('file', $uids),
@@ -42,12 +48,24 @@ class SysFileMetadataRepository extends AbstractRepository
         ];
         if($showOnlyEmpty) {
             if($column === 'title') {
-                $constraints[] = $queryBuilder->expr()->isNull('title');
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('title')
+                );
             } elseif ($column === 'alternative') {
-                $constraints[] = $queryBuilder->expr()->isNull('alternative');
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('alternative', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('alternative')
+                );
             } else {
-                $constraints[] = $queryBuilder->expr()->isNull('title');
-                $constraints[] = $queryBuilder->expr()->isNull('alternative');
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('title')
+                );
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('alternative', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('alternative')
+                );
             }
         }
         $queryBuilder
@@ -55,6 +73,13 @@ class SysFileMetadataRepository extends AbstractRepository
             ->from($this->table)
             ->where(...$constraints);
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
+        if($showOnlyUsed) {
+            foreach ($metadataList as $key => $metadata) {
+                if(!$this->isFileUsed($metadata['file'])) {
+                    unset($metadataList[$key]);
+                }
+            }
+        }
         return array_column($metadataList, null, $indexColumn);
     }
 
@@ -69,5 +94,19 @@ class SysFileMetadataRepository extends AbstractRepository
             );
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
         return array_column($metadataList, null, $indexColumn);
+    }
+
+    public function isFileUsed(int $fileUid): bool
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable("sys_refindex");
+        $queryBuilder
+            ->count('ref_uid')
+            ->from('sys_refindex')
+            ->where(
+                $queryBuilder->expr()->eq('ref_table', $queryBuilder->createNamedParameter('sys_file')),
+                $queryBuilder->expr()->eq('tablename', $queryBuilder->createNamedParameter('sys_file_reference')),
+                $queryBuilder->expr()->eq('ref_uid', $queryBuilder->createNamedParameter($fileUid))
+            );
+        return $queryBuilder->executeQuery()->fetchOne() > 0;
     }
 }

@@ -19,10 +19,14 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
     private const ACTION_LOCALIZE_ANTHROPIC = 'localizeAnthropic';
     private const ACTION_LOCALIZE_GOOGLE_TRANSLATE = 'localizeGoogleTranslate';
     private const ACTION_LOCALIZE_DEEPL = 'localizeDeepl';
+    private const ACTION_LOCALIZE_AISUITETEXTLITE = 'localizeAiSuiteTextLite';
+    private const ACTION_LOCALIZE_AISUITETEXTULTIMATE = 'localizeAiSuiteTextUltimate';
     private const ACTION_COPY_OPEN_AI = 'copyFromLanguageChatGPT';
     private const ACTION_COPY_ANTHROPIC = 'copyFromLanguageAnthropic';
     private const ACTION_COPY_GOOGLE_TRANSLATE = 'copyFromLanguageGoogleTranslate';
     private const ACTION_COPY_DEEPL = 'copyFromLanguageDeepl';
+    private const ACTION_COPY_AISUITETEXTLITE = 'copyFromLanguageAiSuiteTextLite';
+    private const ACTION_COPY_AISUITETEXTULTIMATE = 'copyFromLanguageAiSuiteTextUltimate';
 
     public function __construct()
     {
@@ -56,10 +60,14 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             && $params['action'] !== static::ACTION_LOCALIZE_ANTHROPIC
             && $params['action'] !== static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
             && $params['action'] !== static::ACTION_LOCALIZE_DEEPL
+            && $params['action'] !== static::ACTION_LOCALIZE_AISUITETEXTLITE
+            && $params['action'] !== static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
             && $params['action'] !== static::ACTION_COPY_OPEN_AI
             && $params['action'] !== static::ACTION_COPY_ANTHROPIC
             && $params['action'] !== static::ACTION_COPY_GOOGLE_TRANSLATE
             && $params['action'] !== static::ACTION_COPY_DEEPL
+            && $params['action'] !== static::ACTION_COPY_AISUITETEXTLITE
+            && $params['action'] !== static::ACTION_COPY_AISUITETEXTULTIMATE
         ) {
             $response = new Response('php://temp', 400, ['Content-Type' => 'application/json; charset=utf-8']);
             $response->getBody()->write('Invalid action "' . $params['action'] . '" called.');
@@ -99,6 +107,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                     || $params['action'] === static::ACTION_LOCALIZE_ANTHROPIC
                     || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                     || $params['action'] === static::ACTION_LOCALIZE_DEEPL
+                    || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTLITE
+                    || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
                 ) {
                     $cmd['tt_content'][$currentUid] = [
                         'localize' => $destLanguageId,
@@ -108,6 +118,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_LOCALIZE_ANTHROPIC
                         || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_LOCALIZE_DEEPL
+                        || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTLITE
+                        || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('localize', '', $params['action']);
@@ -123,6 +135,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_ANTHROPIC
                         || $params['action'] === static::ACTION_COPY_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_COPY_DEEPL
+                        || $params['action'] === static::ACTION_COPY_AISUITETEXTLITE
+                        || $params['action'] === static::ACTION_COPY_AISUITETEXTULTIMATE
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);;

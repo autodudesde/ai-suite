@@ -7,7 +7,7 @@
 
 <f:section name="Content">
 
-    <section class="container">
+    <section class="overflow-x-hidden">
         <f:if condition="{error}">
             <f:else>
                 <h1 class="text-gradient">
@@ -24,7 +24,7 @@
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable, showMaxImageHint: showMaxImageHint}" />
                     <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries, additionalImageSettings: additionalImageSettings}" />
                     <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
-                    <div class="row">
+                    <div>
                         <div class="card card-size-large active mt-3">
                             <div class="card-header">
                                 <h3 class="text-gradient">
@@ -51,8 +51,7 @@
                         </div>
                     </div>
                 </form>
-                <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation', extensionName: 'ai_suite')}" />
-                <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+                <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
             </f:else>
         </f:if>
     </section>

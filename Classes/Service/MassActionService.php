@@ -35,6 +35,7 @@ class MassActionService implements SingletonInterface
     protected LibraryService $libraryService;
     protected TranslationService $translationService;
     protected SysFileMetadataRepository $sysFileMetadataRepository;
+    protected array $supportedMimeTypes;
 
     public function __construct(
         MetadataService $metadataService,
@@ -56,6 +57,13 @@ class MassActionService implements SingletonInterface
         $this->libraryService = $libraryService;
         $this->translationService = $translationService;
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
+
+        $this->supportedMimeTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/web",
+        ];
     }
 
     public function filelistFileDirectorySupport(array $params, ClientAnswer $librariesAnswer): array
@@ -71,6 +79,7 @@ class MassActionService implements SingletonInterface
 
         $pendingFileMetadata = [];
         $parsedFiles = [];
+        $unsupportedFiles = [];
         $folderName = '';
         if ($directoryId !== '') {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryId);
@@ -93,9 +102,11 @@ class MassActionService implements SingletonInterface
                     $column,
                     'file',
                     $languageId,
-                    isset($params['options']['showOnlyEmpty'])
+                    isset($params['options']['showOnlyEmpty']),
+                    isset($params['options']['showOnlyUsed'])
                 );
-                $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($fileUids, 'sys_file_metadata');
+                $metadataUids = array_column($metadataList, 'uid');
+                $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($metadataUids, 'sys_file_metadata');
                 $pendingFileMetadata = array_reduce($pendingFileMetadata, function ($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'];
                     return $carry;
@@ -104,7 +115,11 @@ class MassActionService implements SingletonInterface
                     if ($file->checkActionPermission('write') && strpos('image', $file->getMimeType()) !== -1) {
                         if (array_key_exists($file->getUid(), $metadataList)) {
                             $fileMeta = $metadataList[$file->getUid()];
-                            $parsedFiles[$fileMeta['uid']] = FileMetadata::createFromFileObject($file, $fileMeta);
+                            if(in_array($file->getMimeType(), $this->supportedMimeTypes)) {
+                                $parsedFiles[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
+                            } else {
+                                $unsupportedFiles[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
+                            }
                         }
                     }
                 }
@@ -115,10 +130,12 @@ class MassActionService implements SingletonInterface
             'directory' => $directoryId,
             'directoryName' => $folderName,
             'files' => $parsedFiles,
+            'unsupportedFiles' => $unsupportedFiles,
             'depths' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5],
             'columns' => array_merge_recursive(
                 ['all' => $this->translationService->translate('tx_aisuite.module.massActionFilelist.allColumns')],
                 $this->metadataService->getFileMetadataColumns()),
+            'activeColumn' => $params['options']['column'] ?? 'all',
             'sysLanguages' => $availableLanguages,
             'alreadyPendingFiles' => $pendingFileMetadata,
             'parentUuid' => $params['options']['parentUuid'] ?? $this->uuidService->generateUuid(),

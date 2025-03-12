@@ -62,6 +62,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription',
         ],
+        'enable_toolbar_stats_item' => [
+            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItem',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItemDescription',
+        ],
     ],
 ];
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
@@ -99,6 +104,16 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
         ],
         'Deepl' => [
             $lll . 'aiSuite.customPermOptions.modelDeepl',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
+        'AiSuiteTextLite' => [
+            $lll . 'aiSuite.customPermOptions.modelAiSuiteTextLite',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
+        'AiSuiteTextUltimate' => [
+            $lll . 'aiSuite.customPermOptions.modelAiSuiteTextUltimate',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.modelDescription',
         ],

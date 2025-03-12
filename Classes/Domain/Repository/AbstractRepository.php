@@ -70,4 +70,26 @@ class AbstractRepository
                 [$whereColumn => $whereValue]
             );
     }
+
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     *
+     * @param int $uid  the unique id
+     */
+    public function findByUid(int $uid): array
+    {
+        return $this->selectQuery('uid', $uid);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     *
+     * @param int $pid  the page id
+     */
+    public function findByPid(int $pid): array
+    {
+        return $this->selectQuery('pid', $pid);
+    }
 }

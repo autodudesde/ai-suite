@@ -15,10 +15,10 @@
             <div class="d-flex align-items-center mx-4">
                 <span class="badge badge-info mx-2"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" /></span>
                 <span class="delete-accordion-item" data-uuid="{backgroundTask.uuid}"><core:icon identifier="actions-delete" size="medium" /></span>
-                <f:if condition="{backgroundTask.status} == failed">
-                    <div class="tooltip">
+                <f:if condition="{backgroundTask.status} == 'task-error'">
+                    <div class="error-info">
                         <core:icon identifier="actions-exclamation-triangle" size="medium" />
-                        <span class="tooltiptext p-3">{backgroundTask.error}</span>
+                        <span class="error-message">{backgroundTask.error}</span>
                     </div>
                 </f:if>
                 <f:if condition="{backgroundTask.status} == 'finished'">

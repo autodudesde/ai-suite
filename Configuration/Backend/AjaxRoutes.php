@@ -165,4 +165,8 @@ return [
         'path' => '/background-task/save',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::saveAction'
     ],
+    'aisuite_background_task_retry' => [
+        'path' => '/background-task/retry',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::retryAction'
+    ],
 ];

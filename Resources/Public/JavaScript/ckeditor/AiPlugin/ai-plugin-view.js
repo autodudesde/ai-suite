@@ -79,7 +79,7 @@ export default class ModalView extends View {
                             whiteSpace: 'initial',
                             width: '100%',
                             minWidth: '450px',
-                            maxWidth: '800px'
+                            maxWidth: '700px'
                         },
                     },
                     children: [
@@ -93,12 +93,7 @@ export default class ModalView extends View {
                                     fontWeight: 'bold',
                                     fontSize: '1.1rem',
                                     marginBottom: 'var(--ck-spacing-medium)',
-                                    width: '106%',
-                                    marginLeft: '-13px',
-                                    marginTop: '-12px',
-                                    backgroundColor: '#eee',
-                                    borderBottom: '1px solid black',
-                                    padding: '0.5rem 1rem'
+                                    width: '100%'
                                 }
                             },
                             children: [
@@ -187,7 +182,8 @@ export default class ModalView extends View {
                                     display: 'flex',
                                     width: '100%',
                                     marginBottom: '1rem',
-                                    position: 'relative'
+                                    position: 'relative',
+                                    flexWrap: 'wrap'
                                 }
                             },
                             children: this.radioButtonGroup

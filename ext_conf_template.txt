@@ -8,7 +8,7 @@ mediaStorageFolder =
 openTranslatedRecordInEditMode = 1
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
 translateFlexFormFields = 1
-# cat=Translation; type=options[OpenAI=ChatGPT,Claude=Anthropic]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
+# cat=Translation; type=options[OpenAI=ChatGPT,Claude=Anthropic,Meta Llama-3.3 (70B-Instruct)=AiSuiteTextUltimate]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
 easyLanguageLibrary = ChatGPT
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
 openAiApiKey =

@@ -18,7 +18,7 @@
             </a>
         </f:then>
         <f:else>
-            <section class="container">
+            <section class="overflow-x-hidden">
                 <h2 class="text-gradient">
                     <f:translate key="tx_aisuite.module.PageContent.validate.headline" extensionName="ai_suite"/>
                 </h2>
@@ -41,8 +41,7 @@
                         </a>
                     </div>
                 </form>
-                <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.default', extensionName: 'ai_suite')}" />
-                <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+                <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.default'}" />
             </section>
         </f:else>
     </f:if>

@@ -1,4 +1,4 @@
-<div class="row text-generation-library library mt-2">
+<div class="text-generation-library library mt-2">
     <div class="card card-size-large active mb-0">
         <div class="card-header">
             <h3 class="text-gradient">
@@ -6,8 +6,8 @@
             </h3>
             <f:if condition="{textGenerationLibraries -> f:count()} > 0">
                 <f:then>
-                    <f:for each="{textGenerationLibraries}" as="library" iteration="it">
-                        <div class="col-12 my-3">
+                    <div class="flex-row d-flex justify-content-between flex-wrap">
+                        <f:for each="{textGenerationLibraries}" as="library" iteration="it">
                             <input
                                 type="radio"
                                 id="text-generation-library-{library.model_identifier}"
@@ -15,13 +15,15 @@
                                 name="libraries[textGenerationLibrary]"
                                 value="{library.model_identifier}"
                                 {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
-                            {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
+                                {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
                             />
-                            <label for="text-generation-library-{library.model_identifier}">
+                            <label class="d-flex flex-row align-items-center mb-3" style="width:48%;" for="text-generation-library-{library.model_identifier}">
+                                <f:image src="EXT:ai_suite/Resources/Public/Icons/Models/{library.model_identifier}.svg" alt="{library.name}" />
                                 <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
+                                <f:image class="checked-icon" src="EXT:ai_suite/Resources/Public/Icons/check.svg" alt="{library.name}" />
                             </label>
-                        </div>
-                    </f:for>
+                        </f:for>
+                    </div>
                 </f:then>
                 <f:else>
                     <div class="col-12 my-3">
