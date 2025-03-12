@@ -30,7 +30,7 @@ class Translation {
                         <div class="row align-items-center mb-4">
                             <div class="col-sm-3">
                               <input type="radio" class="btn-check t3js-localization-option" name="mode" id="mode_translate_` + library.model_identifier + `" value="` + actionPrefix + library.model_identifier + `">
-                              <label class="btn btn-default btn-block-vertical" for="mode_translate_` + library.model_identifier + `" data-action="` + actionPrefix + library.model_identifier + `">
+                              <label class="btn btn-default btn-block-vertical" for="mode_translate_` + library.model_identifier + `" data-action="` + actionPrefix + library.model_identifier + `" style="white-space: normal;text-align: center;">
                                ` + libraryIcon + `
                                 ` + library.name + `
                                 ` + onlyPaid + `

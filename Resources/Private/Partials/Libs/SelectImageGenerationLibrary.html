@@ -1,5 +1,5 @@
 
-    <div class="row image-generation-library library">
+    <div class="image-generation-library library">
         <div class="card card-size-large active mt-3 mb-0">
             <div class="card-header">
                 <h3 class="text-gradient">
@@ -12,8 +12,8 @@
                 </f:if>
                 <f:if condition="{imageGenerationLibraries -> f:count()} > 0">
                     <f:then>
-                        <f:for each="{imageGenerationLibraries}" as="library" iteration="it">
-                            <div class="col-12 my-3">
+                        <div class="flex-row d-flex justify-content-between flex-wrap">
+                            <f:for each="{imageGenerationLibraries}" as="library" iteration="it">
                                 <input
                                     type="radio"
                                     id="image-generation-library-{library.model_identifier}"
@@ -23,11 +23,13 @@
                                     {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
                                 {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
                                 />
-                                <label for="image-generation-library-{library.model_identifier}">
+                                <label class="d-flex flex-row align-items-center mb-3" style="width:48%;" for="image-generation-library-{library.model_identifier}">
+                                    <f:image src="EXT:ai_suite/Resources/Public/Icons/Models/{library.model_identifier}.svg" alt="{library.name}" />
                                     <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
+                                    <f:image class="checked-icon" src="EXT:ai_suite/Resources/Public/Icons/check.svg" alt="{library.name}" />
                                 </label>
-                            </div>
-                        </f:for>
+                            </f:for>
+                        </div>
                     </f:then>
                     <f:else>
                         <div class="col-12 my-3">

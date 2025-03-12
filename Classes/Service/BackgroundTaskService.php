@@ -87,7 +87,7 @@ class BackgroundTaskService
                         $site = $this->siteFinder->getSiteByPageId($pageId);
                         $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier() ?? '';
                     }
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $foundBackgroundTask['flag'] = '';
                 }
                 $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;

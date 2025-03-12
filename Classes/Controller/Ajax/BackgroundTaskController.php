@@ -60,36 +60,6 @@ class BackgroundTaskController extends AbstractAjaxController
         $this->backgroundTaskRepository = $backgroundTaskRepository;
     }
 
-    public function deleteAction(ServerRequestInterface $request): ResponseInterface
-    {
-        $response = new Response();
-        try {
-            $uuid = $request->getParsedBody()['uuid'];
-            $affectedRows = $this->backgroundTaskRepository->deleteByUuid($uuid);
-            if ($affectedRows === 0) {
-                throw new \Exception('No background task with uuid ' . $uuid . ' found');
-            }
-            $response->getBody()->write(
-                json_encode(
-                    [
-                        'success' => true
-                    ]
-                )
-            );
-        } catch (\Throwable $e) {
-            $this->logger->error('Error while deleting background task: ' . $e->getMessage());
-            $response->getBody()->write(
-                json_encode(
-                    [
-                        'success' => false,
-                        'error' => $this->translationService->translate('AiSuite.notification.errorDeletingTask')
-                    ]
-                )
-            );
-        }
-        return $response;
-    }
-
     public function saveAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
@@ -126,6 +96,104 @@ class BackgroundTaskController extends AbstractAjaxController
                     [
                         'success' => false,
                         'error' => $this->translationService->translate('AiSuite.notification.errorSavingTask')
+                    ]
+                )
+            );
+        }
+        return $response;
+    }
+
+    public function deleteAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        try {
+            $data = $request->getParsedBody();
+            $uuids = $data['uuids'] ?? [];
+
+            if (empty($uuids)) {
+                throw new \Exception('No UUIDs provided');
+            }
+            $answer = $this->requestService->sendDataRequest(
+                'handleBackgroundTask',
+                [
+                    'uuids' => $uuids,
+                    'mode' => 'delete'
+                ]
+            );
+            if ($answer->getType() === 'Error') {
+                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+            }
+            $deletedCount = $this->backgroundTaskRepository->deleteByUuids($uuids);
+
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => true,
+                        'count' => $deletedCount
+                    ]
+                )
+            );
+        } catch (\Throwable $e) {
+            $this->logger->error('Error while deleting background tasks: ' . $e->getMessage());
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => false,
+                        'error' => $this->translationService->translate('AiSuite.notification.errorDeletingAllTasks')
+                    ]
+                )
+            );
+        }
+        return $response;
+    }
+
+    public function retryAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        try {
+            $data = $request->getParsedBody();
+            $uuid = $data['uuid'] ?? '';
+
+            if (empty($uuid)) {
+                throw new \Exception('No UUID provided');
+            }
+
+            $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
+            if (empty($backgroundTask)) {
+                throw new \Exception('No background task with UUID ' . $uuid . ' found');
+            }
+            $answer = $this->requestService->sendDataRequest(
+                'handleBackgroundTask',
+                [
+                    'uuid' => $uuid,
+                    'mode' => 'retry'
+                ]
+            );
+            if ($answer->getType() === 'Error') {
+                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+            }
+            $this->backgroundTaskRepository->updateStatus([
+                $uuid => [
+                    'status' => 'pending',
+                    'answer' => '',
+                    'error' => ''
+                ]
+            ]);
+
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => true
+                    ]
+                )
+            );
+        } catch (\Throwable $e) {
+            $this->logger->error('Error while retrying background task: ' . $e->getMessage());
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => false,
+                        'error' => $this->translationService->translate('AiSuite.notification.errorRetryingTask')
                     ]
                 )
             );

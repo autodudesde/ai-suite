@@ -79,8 +79,9 @@ export default class AiEasyLanguagePluginUi extends Plugin {
 
     async _sendRequest(editor) {
         Modal.dismiss();
+        const firstKey = Object.keys(this.library)[0];
         const postData = {
-            textModel: this.library[0].model_identifier,
+            textModel: this.library[firstKey].model_identifier,
             selectedContent: this.selectedContent,
             languageCode: this.languageCode,
             uuid: this.uuid,

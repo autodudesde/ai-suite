@@ -62,7 +62,7 @@ class FileMetadata
     {
         $fileMeta = new self();
         $meta = count($metadata) > 0 ? $metadata : $file->getMetaData();
-        $fileMeta->uid = $file->getUid();
+        $fileMeta->uid = $meta['uid'];
         $fileMeta->identifier = $file->getIdentifier();
         $fileMeta->title = ($meta['title'] ?? '');
         $fileMeta->name = $file->getName();

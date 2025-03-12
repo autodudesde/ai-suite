@@ -14,7 +14,7 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Exception;
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -24,12 +24,12 @@ class BackgroundTaskRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = 'tx_aisuite_domain_model_backgroundtask';
-    protected string $sortBy = 'timestamp';
+    protected string $sortBy = 'status';
 
     public function __construct(
         ConnectionPool $connectionPool,
         string $table = 'tx_aisuite_domain_model_backgroundtask',
-        string $sortBy = 'timestamp'
+        string $sortBy = 'status'
     ) {
         $this->connectionPool = $connectionPool;
         $this->table = $table;
@@ -37,7 +37,7 @@ class BackgroundTaskRepository
     }
 
     /**
-     * @throws DBALException|\Doctrine\DBAL\Driver\Exception
+     * @throws Exception
      */
     public function findAll(): array
     {
@@ -49,12 +49,18 @@ class BackgroundTaskRepository
             ->fetchAllAssociative();
     }
 
-    public function findAllPageBackgroundTasks(): array {
+    /**
+     * @throws Exception
+     */
+    public function findAllPageBackgroundTasks(): array
+    {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        return $queryBuilder->select('bt.*', 'p.title', 'p.slug', 'p.seo_title', 'p.description', 'p.og_title', 'p.og_description', 'p.twitter_title', 'p.twitter_description')
+
+        return $queryBuilder->select('bt.*', 'p.title', 'p.slug', 'p.seo_title', 'p.description',
+            'p.og_title', 'p.og_description', 'p.twitter_title', 'p.twitter_description')
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -64,16 +70,23 @@ class BackgroundTaskRepository
             )
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('page')),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('pages'))
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('pages')),
+                $queryBuilder->expr()->eq('p.deleted', 0)
             )
+            ->orderBy('bt.' . $this->sortBy, 'ASC')
+            ->setMaxResults(50)
             ->executeQuery()
             ->fetchAllAssociative();
     }
 
+    /**
+     * @throws Exception
+     */
     public function findAllFileReferenceBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage', 'sfr.title', 'sfr.alternative', 'sfr.sys_language_uid', 'tt.pid AS pageId')
+        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage',
+            'sfr.title', 'sfr.alternative', 'sfr.sys_language_uid', 'sfr.pid AS pageId')
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -87,24 +100,26 @@ class BackgroundTaskRepository
                 'sf',
                 $queryBuilder->expr()->eq('sf.uid', $queryBuilder->quoteIdentifier('sfr.uid_local'))
             )
-            ->leftJoin(
-                'sfr',
-                'tt_content',
-                'tt',
-                $queryBuilder->expr()->eq('tt.uid', $queryBuilder->quoteIdentifier('sfr.uid_foreign'))
-            )
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('fileReference')),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_reference'))
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_reference')),
+                $queryBuilder->expr()->eq('sf.missing', 0),
+                $queryBuilder->expr()->eq('sfr.deleted', 0)
             )
+            ->orderBy('bt.' . $this->sortBy, 'ASC')
+            ->setMaxResults(50)
             ->executeQuery()
             ->fetchAllAssociative();
     }
 
+    /**
+     * @throws Exception
+     */
     public function findAllFileMetadataBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage', 'sfm.title', 'sfm.description', 'sfm.alternative')
+        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage',
+            'sfm.title', 'sfm.description', 'sfm.alternative')
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -120,12 +135,19 @@ class BackgroundTaskRepository
             )
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('fileMetadata')),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_metadata'))
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_metadata')),
+                $queryBuilder->expr()->eq('sf.missing', 0),
+                $queryBuilder->expr()->gt('sfm.file', 0)
             )
+            ->orderBy('bt.' . $this->sortBy, 'ASC')
+            ->setMaxResults(50)
             ->executeQuery()
             ->fetchAllAssociative();
     }
 
+    /**
+     * @throws Exception
+     */
     public function findByUuid(string $uuid): array|bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -139,9 +161,6 @@ class BackgroundTaskRepository
             ->fetchAssociative();
     }
 
-    /**
-     * @throws DBALException
-     */
     public function deleteByUuid(string $uuid): int
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -158,23 +177,21 @@ class BackgroundTaskRepository
      */
     public function updateStatus(array $data): void
     {
-       foreach ($data as $uuid => $statusData) {
-           $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-           $queryBuilder
-               ->update($this->table)
-               ->where(
-                   $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
-               )
-               ->set('status', $statusData['status'])
-               ->set('answer', $statusData['answer'])
-               ->executeStatement();
-       }
+        foreach ($data as $uuid => $statusData) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+            $queryBuilder
+                ->update($this->table)
+                ->where(
+                    $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
+                )
+                ->set('status', $statusData['status'])
+                ->set('answer', $statusData['answer'])
+                ->executeStatement();
+        }
     }
 
     /**
      * @throws Exception
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Exception
      */
     public function fetchAlreadyPendingEntries(array $foundUids, string $tableName): array
     {
@@ -197,10 +214,12 @@ class BackgroundTaskRepository
         if (empty($bulkPayloadList)) {
             return;
         }
+
         $bulkPayload = [];
         foreach ($bulkPayloadList as $bulkPayloadItem) {
             $bulkPayload[] = $bulkPayloadItem->getBulkInsertPayload();
         }
+
         $this->connectionPool
             ->getConnectionForTable($this->table)
             ->bulkInsert(
@@ -209,5 +228,23 @@ class BackgroundTaskRepository
                 BackgroundTask::getDbColumnsForBulkInsert(),
                 BackgroundTask::getTypesForBulkInsert()
             );
+    }
+
+    /**
+     * @throws DBALException
+     */
+    public function deleteByUuids(array $uuids): int
+    {
+        if (empty($uuids)) {
+            return 0;
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        return $queryBuilder
+            ->delete($this->table)
+            ->where(
+                $queryBuilder->expr()->in('uuid', $queryBuilder->createNamedParameter($uuids, Connection::PARAM_STR_ARRAY))
+            )
+            ->executeStatement();
     }
 }

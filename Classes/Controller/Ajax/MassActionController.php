@@ -16,6 +16,7 @@ use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
+use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LibraryService;
@@ -54,6 +55,10 @@ class MassActionController extends AbstractAjaxController
 
     protected MassActionService $massActionService;
 
+    protected array $supportedMimeTypes;
+
+    protected SysFileReferenceRepository $sysFileReferenceRepository;
+
     public function __construct(
         BackendUserService $backendUserService,
         SendRequestService $requestService,
@@ -70,7 +75,8 @@ class MassActionController extends AbstractAjaxController
         BackgroundTaskRepository $backgroundTaskRepository,
         SysFileMetadataRepository $sysFileMetadataRepository,
         MetadataService $metadataService,
-        MassActionService $massActionService
+        MassActionService $massActionService,
+        SysFileReferenceRepository $sysFileReferenceRepository
     ) {
         parent::__construct(
             $backendUserService,
@@ -90,6 +96,14 @@ class MassActionController extends AbstractAjaxController
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
         $this->metadataService = $metadataService;
         $this->massActionService = $massActionService;
+        $this->sysFileReferenceRepository = $sysFileReferenceRepository;
+
+        $this->supportedMimeTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/web",
+        ];
     }
 
     public function pagesPrepareExecuteAction(ServerRequestInterface $request): ResponseInterface
@@ -308,6 +322,7 @@ class MassActionController extends AbstractAjaxController
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
 
             $massActionData = $request->getParsedBody()['massActionFileReferencesPrepare'];
+            $massActionData['showOnlyEmpty'] = (array_key_exists('showOnlyEmpty', $massActionData) && $massActionData['showOnlyEmpty']);
             $languageParts = explode('__', $massActionData['sysLanguage']);
             $foundPageUids = $this->pageRepository->getPageIdsRecursive(
                 [(int)$massActionData['startFromPid']],
@@ -318,8 +333,13 @@ class MassActionController extends AbstractAjaxController
             $params['column'] = $massActionData['column'];
             $params['columnName'] = $fileReferenceMetadataColumns[$massActionData['column']];
 
-            $params['fileReferences'] = $this->pagesRepository->fetchSysFileReferences($foundPageUids, $massActionData['column'], (int)$languageParts[1], isset($massActionData['showOnlyEmpty']));
-
+            $foundFileReferences = $this->pagesRepository->fetchSysFileReferences($foundPageUids, $massActionData['column'], (int)$languageParts[1], $massActionData['showOnlyEmpty']);
+            $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+                return !in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
+            });
+            $params['fileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+                return in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
+            });
             $sysFileReferenceUids = array_column($params['fileReferences'], 'uid');
             $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference');
 
@@ -370,6 +390,14 @@ class MassActionController extends AbstractAjaxController
         $failedFileReferences = [];
         foreach ($fileReferences as $sysFileReferenceUid => $sysFileUid) {
             try {
+                // Fallback for not given sys_file uid. We should find out, why this can happen and remove this fallback afterward.
+                if ((int)$sysFileUid === 0) {
+                    $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int)$sysFileReferenceUid);
+                    if (count($fileReferenceRow) === 0 || !array_key_exists('uid_local', $fileReferenceRow[0])) {
+                        throw new \Exception('No file reference row found for sys file reference uid ' . $sysFileReferenceUid . '. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.');
+                    }
+                    $sysFileUid = (int)$fileReferenceRow[0]["uid_local"];
+                }
                 $fileContent = $this->metadataService->getFileContent((int)$sysFileUid);
                 $uuid = $this->uuidService->generateUuid();
                 $bulkPayload[] = new BackgroundTask(
@@ -563,7 +591,7 @@ class MassActionController extends AbstractAjaxController
                         'uuid' => $uuid,
                     ];
                 } catch (\Exception $e) {
-                    $this->logger->error('Error while fetching file content for file with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
+                    $this->logger->error('Error while fetching file content for file ' . $fileUid . ' with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
                     $failedFilesMetadata[] = $sysFileMetaUid;
                 }
             }

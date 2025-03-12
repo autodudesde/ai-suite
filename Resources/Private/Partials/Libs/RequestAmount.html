@@ -1,14 +1,17 @@
-{library.name} {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
-<f:if condition="{library.weight}">
-    <span class="request-amount">
-        <f:if condition="{library.weight} == 1">
-            <f:then>
-                <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.oneCredit" extensionName="ai_suite"/>
-            </f:then>
-            <f:else>
-                <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.multipleCredits" extensionName="ai_suite"/>
-            </f:else>
-        </f:if>
-    </span>
-</f:if>
+<div class="d-flex flex-column">
+    <strong>{library.name}</strong> {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
+    <f:if condition="{library.weight}">
+        <span class="request-amount">
+            <f:if condition="{library.weight} == 1">
+                <f:then>
+                    <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.oneCredit" extensionName="ai_suite"/>
+                </f:then>
+                <f:else>
+                    <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.multipleCredits" extensionName="ai_suite"/>
+                </f:else>
+            </f:if>
+        </span>
+    </f:if>
+</div>
+
 

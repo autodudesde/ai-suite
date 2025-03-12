@@ -3,13 +3,27 @@
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-    <div class="accordion accordion-background-tasks" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
-        <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
-            <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
-                <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, position: it.index}" />
-            </div>
-        </f:for>
-        <div id="noBackgroundTasks" class="alert alert-info">
+<div class="accordion accordion-background-tasks" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
+    <div class="delete-all-wrapper mb-2 justify-content-between" style="display: none;">
+        <div>
+            <button class="btn btn-default refresh-tasks" data-type="{type}">
+                <core:icon identifier="actions-refresh" size="small" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.refresh" />
+            </button>
+            <f:if condition="{backgroundTasks -> f:count()} == 50">
+                <button class="btn btn-default load-more-tasks mx-2" data-type="{type}">
+                    <core:icon identifier="actions-database-reload" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMore" />
+                </button>
+            </f:if>
+        </div>
+        <button class="btn btn-danger delete-all-accordion-items" data-type="{type}">
+            <core:icon identifier="actions-delete" size="small" />
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.deleteAll" />
+        </button>
+    </div>
+    <f:if condition="{backgroundTasks -> f:count()} == 50">
+        <div class="alert alert-info">
             <div class="alert-inner">
                 <div class="alert-icon">
                     <span class="icon-emphasized">
@@ -17,13 +31,35 @@
                     </span>
                 </div>
                 <div class="alert-content">
-                    <div class="alert-title">Info</div>
+                    <div class="alert-title">
+                        <f:translate key="AiSuite.backgroundTasks.loadMoreHint.title" extensionName="ai_suite"/>
+                    </div>
                     <p class="alert-message">
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" />
+                        <f:translate key="AiSuite.backgroundTasks.loadMoreHint.message" extensionName="ai_suite"/>
                     </p>
                 </div>
             </div>
         </div>
+    </f:if>
+    <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
+        <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
+            <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, position: it.index}" />
+        </div>
+    </f:for>
+    <div id="noBackgroundTasks" class="alert alert-info">
+        <div class="alert-inner">
+            <div class="alert-icon">
+                    <span class="icon-emphasized">
+                        <core:icon identifier="actions-info" size="small" />
+                    </span>
+            </div>
+            <div class="alert-content">
+                <div class="alert-title">Info</div>
+                <p class="alert-message">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" />
+                </p>
+            </div>
+        </div>
     </div>
+</div>
 </html>
-

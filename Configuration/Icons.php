@@ -21,6 +21,14 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/deepl.svg',
     ],
+    'tx-aisuite-localization-AiSuiteTextLite' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+    ],
+    'tx-aisuite-localization-AiSuiteTextUltimate' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+    ],
     'tx-aisuite-localization' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',

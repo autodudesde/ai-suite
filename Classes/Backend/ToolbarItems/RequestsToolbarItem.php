@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Backend\ToolbarItems;
 
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -17,6 +18,8 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
     protected LoggerInterface $logger;
     private ServerRequestInterface $request;
 
+    protected BackendUserService $backendUserService;
+
     protected TranslationService $translationService;
 
     protected RequestsRepository $requestsRepository;
@@ -24,11 +27,13 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
     protected BackendViewFactory $backendViewFactory;
 
     public function __construct(
+        BackendUserService $backendUserService,
         TranslationService $translationService,
         BackendViewFactory $backendViewFactory,
         RequestsRepository $requestsRepository,
         LoggerInterface $logger
     ) {
+        $this->backendUserService = $backendUserService;
         $this->translationService = $translationService;
         $this->backendViewFactory = $backendViewFactory;
         $this->requestsRepository = $requestsRepository;
@@ -49,6 +54,9 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
     {
         $view = $this->backendViewFactory->create($this->request, ['ai_suite']);
         try {
+            if(!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_toolbar_stats_item')) {
+                return $view->render('ToolbarItems/RequestsToolbarItem');
+            }
             $requests = $this->requestsRepository->findFirstEntry();
             if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0 && $requests['abo_requests'] >= 0) {
                 if(!empty($requests['model_type'])) {
