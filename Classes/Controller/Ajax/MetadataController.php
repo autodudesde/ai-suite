@@ -117,7 +117,7 @@ class MetadataController extends AbstractAjaxController
             $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         }
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-        if($request->getParsedBody()['table'] !== 'sys_file_metadata') {
+        if($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
                 return $library['name'] !== 'Vision';
             });
