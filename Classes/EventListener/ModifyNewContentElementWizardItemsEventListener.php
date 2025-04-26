@@ -57,13 +57,18 @@ final class ModifyNewContentElementWizardItemsEventListener
                     ]
                 );
             }
+
+            if (null === ($wizardItem['title'] ?? null)) {
+                continue;
+            }
+
             $event->setWizardItem(
                 'aisuite_'.$itemName,
                 [
-                    'iconIdentifier' => $wizardItem['iconIdentifier'],
-                    'title' => $wizardItem['title'] . ' (AI Suite)',
-                    'description' => $wizardItem['description'] . ' (with AI generated content)',
-                    'tt_content_defValues' => $wizardItem['tt_content_defValues'],
+                    'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
+                    'title' => ($wizardItem['title']  ?? ''). ' (AI Suite)',
+                    'description' => ($wizardItem['description'] ?? '' ) . ' (with AI generated content)',
+                    'tt_content_defValues' => ($wizardItem['tt_content_defValues'] ?? ''),
                 ]
             );
             $addedAiSuiteWizardItems[] = $itemName;
