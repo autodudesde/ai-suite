@@ -98,21 +98,20 @@
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
     background-color: var(--module-docheader-bg) !important;
 }
-.translate-generation-library img,
-.image-generation-library img,
-.text-generation-library img {
+.translate-generation-library .icon,
+.image-generation-library .icon,
+.text-generation-library .icon {
     margin-right: 0.5rem;
     border-radius: 5px;
-    width: 45px;
-    height: 45px;
 }
-.translate-generation-library img.checked-icon,
-.image-generation-library img.checked-icon,
-.text-generation-library img.checked-icon {
+.translate-generation-library .checked-icon .icon,
+.image-generation-library .checked-icon .icon,
+.text-generation-library .checked-icon .icon {
     width: 25px;
     height: 25px;
     position: absolute;
     right: 15px;
+    top: 15px;
     display: none;
 }
 .translate-generation-library label .request-amount,
@@ -128,6 +127,9 @@
 
 .ai-suite#wizardSlideOne input[type="radio"]:checked + label {
     background-color: var(--typo3-card-bg) !important;
+    .checked-icon .icon {
+        display: block;
+    }
 }
 .ai-suite#wizardSlideOne input[type="radio"]:checked + label img.checked-icon {
     display: block;

@@ -17,6 +17,7 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
@@ -50,6 +51,7 @@ class PromptTemplateController extends AbstractBackendController
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
         TranslationService $translationService,
+        SessionService $sessionService,
         CustomPromptTemplateRepository $customPromptTemplateRepository,
         LoggerInterface $logger
     ) {
@@ -64,7 +66,8 @@ class PromptTemplateController extends AbstractBackendController
             $libraryService,
             $promptTemplateService,
             $siteService,
-            $translationService
+            $translationService,
+            $sessionService
         );
         $this->customPromptTemplateRepository = $customPromptTemplateRepository;
         $this->logger = $logger;

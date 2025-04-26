@@ -108,7 +108,7 @@ class PagesPrepare {
                             formData.append('massActionPagesExecute[sysLanguage]', document.querySelector('select[name="massActionPagesPrepare[sysLanguage]"]').value);
                             formData.append('massActionPagesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
                             for (let key in selectedPages) {
-                                if(counter === 10) {
+                                if(counter === 5) {
                                     try {
                                         handledPages = { ...handledPages, ...currentPages };
                                         formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
@@ -127,8 +127,10 @@ class PagesPrepare {
                                 await self.sendPagesToExecute(formData, selectedPages, handledPages);
                             }
                             Generation.hideSpinner();
-                            document.querySelector('#resultsToExecute').innerHTML = '';
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
+                            let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
+                            formData = new FormData(pagesPrepareExecuteForm);
+                            self.preparePages(formData).then(() => {});
                         }
                     }
                 }

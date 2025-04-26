@@ -73,8 +73,8 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('pages')),
                 $queryBuilder->expr()->eq('p.deleted', 0)
             )
-            ->orderBy('bt.' . $this->sortBy, 'ASC')
-            ->setMaxResults(50)
+            ->orderBy('p.title', 'ASC')
+            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
     }
@@ -106,8 +106,8 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('sf.missing', 0),
                 $queryBuilder->expr()->eq('sfr.deleted', 0)
             )
-            ->orderBy('bt.' . $this->sortBy, 'ASC')
-            ->setMaxResults(50)
+            ->orderBy('sfr.title', 'ASC')
+            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
     }
@@ -139,8 +139,8 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('sf.missing', 0),
                 $queryBuilder->expr()->gt('sfm.file', 0)
             )
-            ->orderBy('bt.' . $this->sortBy, 'ASC')
-            ->setMaxResults(50)
+            ->orderBy('sf.name', 'ASC')
+            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
     }
@@ -193,14 +193,26 @@ class BackgroundTaskRepository
     /**
      * @throws Exception
      */
-    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName): array
+    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $constraints = [
+            $queryBuilder->expr()->in('table_uid', $queryBuilder->createNamedParameter($foundUids, Connection::PARAM_INT_ARRAY)),
+            $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName)),
+        ];
+        if($column === 'all') {
+            $constraints[] = $queryBuilder->expr()->or(
+                $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('title')),
+                $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('alternative')),
+            );
+        } else {
+            $constraints[] = $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter($column));
+        }
+
         return $queryBuilder->select('table_name', 'table_uid', 'status')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->in('table_uid', $queryBuilder->createNamedParameter($foundUids, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName))
+                ...$constraints
             )
             ->executeQuery()
             ->fetchAllAssociative();

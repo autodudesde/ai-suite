@@ -141,7 +141,7 @@ class MassActionController extends AbstractAjaxController
             $params['pages'] = $this->pagesRepository->fetchNecessaryPageData($massActionData, $foundPageUids);
             $pagesUids = array_column($params['pages'], 'uid');
             if(count($pagesUids) > 0) {
-                $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages');
+                $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages', $params['column']);
 
                 $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'];
@@ -341,7 +341,7 @@ class MassActionController extends AbstractAjaxController
                 return in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
             });
             $sysFileReferenceUids = array_column($params['fileReferences'], 'uid');
-            $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference');
+            $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference', $params['column']);
 
             $params['alreadyPendingFileReferences'] = array_reduce($alreadyPendingFiles, function($carry, $item) {
                 $carry[$item['table_uid']] = $item['status'];
@@ -511,7 +511,7 @@ class MassActionController extends AbstractAjaxController
                 return $response;
             }
 
-            $viewProperties = $this->massActionService->filelistFileDirectorySupport($serverRequest->getParsedBody(), $librariesAnswer);
+            $viewProperties = $this->massActionService->filelistFileDirectorySupport($librariesAnswer);
 
             $output = $this->getContentFromTemplate(
                 $serverRequest,

@@ -273,6 +273,9 @@ class TranslationService
         $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
         $params['cmd']['localization'][0]['aiSuite']['srcLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId(), $pageId);
         $params['cmd']['localization'][0]['aiSuite']['destLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($lUid_OnPage, $pageId);
+        $params['cmd']['localization'][0]['aiSuite']['destLangId'] = $lUid_OnPage;
+        $params['cmd']['localization'][0]['aiSuite']['srcLangId'] = $site->getDefaultLanguage()->getLanguageId();
+        $params['cmd']['localization'][0]['aiSuite']['rootPageId'] = $this->siteService->getSiteRootPageId($pageId);
         $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
         $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
         $href = (string)$this->uriBuilder->buildUriFromRoute('tce_db', $params);
@@ -287,12 +290,12 @@ class TranslationService
                 ->render();
         }
 
-        return '<a href="#"'
-            . '" class="btn btn-default t3js-action-localize ai-suite-record-localization"'
-            . 'data-href="' . htmlspecialchars($href) . '"'
-            . 'data-page-id="' . $pageId . '"'
-            . 'data-uuid="' . $uuid . '"'
-            . ' title="' . $title . '">'
+        return '<a href="#" '
+            . 'class="btn btn-default t3js-action-localize ai-suite-record-localization" '
+            . 'data-href="' . htmlspecialchars($href) . '" '
+            . 'data-page-id="' . $pageId . '" '
+            . 'data-uuid="' . $uuid . '" '
+            . 'title="' . $title . '">'
             . $lC . '</a> ';
     }
     public function getLanguageService(): LanguageService

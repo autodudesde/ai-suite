@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
@@ -28,10 +29,12 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 #[AsController]
 class AiSuiteController extends AbstractBackendController
@@ -53,6 +56,7 @@ class AiSuiteController extends AbstractBackendController
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
         TranslationService $translationService,
+        SessionService $sessionService,
         RequestsRepository $requestsRepository,
         SettingsFactory $settingsFactory,
         LoggerInterface $logger
@@ -68,7 +72,8 @@ class AiSuiteController extends AbstractBackendController
             $libraryService,
             $promptTemplateService,
             $siteService,
-            $translationService
+            $translationService,
+            $sessionService,
         );
         $this->settingsFactory = $settingsFactory;
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
@@ -78,10 +83,12 @@ class AiSuiteController extends AbstractBackendController
 
     /**
      * @throws RouteNotFoundException
+     * @throws PropagateResponseException
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
         $this->initialize($request);
+        $this->sessionService->handleRedirectBySessionRoute();
         return $this->dashboardAction();
     }
 

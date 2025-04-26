@@ -100,11 +100,11 @@ class SysFileMetadataRepository extends AbstractRepository
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable("sys_refindex");
         $queryBuilder
-            ->count('ref_uid')
+            ->count('recuid')
             ->from('sys_refindex')
             ->where(
                 $queryBuilder->expr()->eq('ref_table', $queryBuilder->createNamedParameter('sys_file')),
-                $queryBuilder->expr()->eq('tablename', $queryBuilder->createNamedParameter('sys_file_reference')),
+                $queryBuilder->expr()->neq('tablename', $queryBuilder->createNamedParameter('sys_file_metadata')),
                 $queryBuilder->expr()->eq('ref_uid', $queryBuilder->createNamedParameter($fileUid))
             );
         return $queryBuilder->executeQuery()->fetchOne() > 0;

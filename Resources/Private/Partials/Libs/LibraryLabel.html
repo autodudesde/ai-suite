@@ -1,0 +1,20 @@
+<input
+    type="radio"
+    id="{type}-generation-library-{library.model_identifier}"
+    class="input-hidden mx-1 {type}-generation-library-selection"
+    name="libraries[{type}GenerationLibrary]"
+    value="{library.model_identifier}"
+    {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
+{f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
+/>
+<label class="d-flex flex-row align-items-center mb-3" style="width:48%;" for="{type}-generation-library-{library.model_identifier}">
+    <core:icon identifier="tx-aisuite-model-{library.model_identifier}" size="medium"/>
+    <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
+    <div class="checked-icon">
+        <core:icon identifier="tx-aisuite-model-check-icon" size="small"/>
+    </div>
+</label>
+
+
+
+

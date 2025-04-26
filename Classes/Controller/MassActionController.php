@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
@@ -52,6 +53,7 @@ class MassActionController extends AbstractBackendController
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
         TranslationService $translationService,
+        SessionService $sessionService,
         MetadataService $metadataService,
         MassActionService $massActionService,
         LoggerInterface $logger
@@ -67,7 +69,8 @@ class MassActionController extends AbstractBackendController
             $libraryService,
             $promptTemplateService,
             $siteService,
-            $translationService
+            $translationService,
+            $sessionService
         );
         $this->metadataService = $metadataService;
         $this->massActionService = $massActionService;
@@ -103,18 +106,18 @@ class MassActionController extends AbstractBackendController
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/pages-prepare.js');
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
         ksort($availableLanguages);
-        $params = $this->request->getQueryParams();
-        $accessablePages = $this->metadataService->fetchAccessablePages();
-        $pageId = 0;
-        if (isset($params['id'])) {
-            $pageId = (int)$params['id'];
-        }
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $pageId = $this->sessionService->getWebPageId();
         if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
             $pageTitle = $accessablePages[$pageId];
             $this->view->assignMultiple([
                 'pageTitle' => $pageTitle,
                 'pageId' => $pageId,
             ]);
+        }
+        $sessionData = $this->sessionService->getParametersForRoute('ai_suite_massaction_pages_prepare');
+        if (isset($sessionData['massActionPagesPrepare'])) {
+            $this->view->assign('preSelection', $sessionData['massActionPagesPrepare']);
         }
         $this->view->assignMultiple([
             'pagesSelect' => $accessablePages,
@@ -128,7 +131,7 @@ class MassActionController extends AbstractBackendController
                 5 => 5
             ],
             'columns' => $this->metadataService->getMetadataColumns(),
-            'sysLanguages' => $availableLanguages,
+            'sysLanguages' => $availableLanguages
         ]);
         return $this->view->renderResponse('MassAction/PagesPrepare');
     }
@@ -139,11 +142,21 @@ class MassActionController extends AbstractBackendController
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/file-references-prepare.js');
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
         ksort($availableLanguages);
-        $params = $this->request->getQueryParams();
-
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $pageId = $this->sessionService->getWebPageId();
+        if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
+            $pageTitle = $accessablePages[$pageId];
+            $this->view->assignMultiple([
+                'pageTitle' => $pageTitle,
+                'pageId' => $pageId,
+            ]);
+        }
+        $sessionData = $this->sessionService->getParametersForRoute('ai_suite_massaction_filereferences_prepare');
+        if (isset($sessionData['massActionFileReferencesPrepare'])) {
+            $this->view->assign('preSelection', $sessionData['massActionFileReferencesPrepare']);
+        }
         $this->view->assignMultiple([
-            'pageId' => $params['id'] ?? '',
-            'pagesSelect' => $this->metadataService->fetchAccessablePages(),
+            'pagesSelect' => $this->backendUserService->fetchAccessablePages(),
             'depths' => [
                 0 => $this->translationService->translate('tx_aisuite.massActionSection.filter.depth.onlyThisPage'),
                 1 => 1,

@@ -58,10 +58,12 @@ class SendRequestService implements SingletonInterface
     public function sendRequest(ServerRequest $serverRequest): ClientAnswer
     {
         try {
+            $data = $serverRequest->getDataForRequest();
+            $endpoint = $serverRequest->getEndpoint();
             $request = $this->requestFactory->request(
-                $serverRequest->getEndpoint(),
+                $endpoint,
                 'POST',
-                $serverRequest->getDataForRequest()
+                $data
             );
             $requestContent = json_decode($request->getBody()->getContents(), true);
             if ($requestContent === null) {

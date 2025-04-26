@@ -46,6 +46,16 @@ class SiteService implements SingletonInterface
         return $availableLanguages;
     }
 
+    public function getSiteRootPageId(int $pageId): int
+    {
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+            return $site->getRootPageId();
+        } catch (SiteNotFoundException $e) {
+            return 0;
+        }
+    }
+
     /**
      * @throws SiteNotFoundException
      */

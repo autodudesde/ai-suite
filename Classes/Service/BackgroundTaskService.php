@@ -33,7 +33,14 @@ class BackgroundTaskService
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
     {
         $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
-
+        $counter = [
+            'seo_title' => 0,
+            'description' => 0,
+            'og_title' => 0,
+            'og_description' => 0,
+            'twitter_title' => 0,
+            'twitter_description' => 0
+        ];
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
             if(!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
                 continue;
@@ -53,15 +60,21 @@ class BackgroundTaskService
             } catch (\Exception $e) {
                 $foundBackgroundTask['flag'] = '';
             }
-            $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+            if($counter[$foundBackgroundTask['column']] < 50) {
+                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+            }
             $uuidStatus[$foundBackgroundTask['uuid']] =  [
                 'uuid' => $foundBackgroundTask['uuid'],
                 'status' => $foundBackgroundTask['status']
             ];
+            $counter[$foundBackgroundTask['column']]++;
         }
 
         $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
-
+        $counter = [
+            'title' => 0,
+            'alternative' => 0,
+        ];
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
             $filePermissions = false;
             if(!$this->backendUserService->getBackendUser()->isAdmin()) {
@@ -90,16 +103,22 @@ class BackgroundTaskService
                 } catch (\Throwable $e) {
                     $foundBackgroundTask['flag'] = '';
                 }
-                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                if ($counter[$foundBackgroundTask['column']] < 50) {
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],
                     'status' => $foundBackgroundTask['status']
                 ];
+                $counter[$foundBackgroundTask['column']]++;
             }
         }
 
         $foundBackgroundTasksFileMetadata = $this->backgroundTaskRepository->findAllFileMetadataBackgroundTasks();
-
+        $counter = [
+            'title' => 0,
+            'alternative' => 0,
+        ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
             $filePermissions = false;
             if(!$this->backendUserService->getBackendUser()->isAdmin()) {
@@ -113,11 +132,14 @@ class BackgroundTaskService
             }
             if($filePermissions) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
-                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                if($counter[$foundBackgroundTask['column']] < 50) {
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],
                     'status' => $foundBackgroundTask['status']
                 ];
+                $counter[$foundBackgroundTask['column']]++;
             }
         }
     }
@@ -127,20 +149,25 @@ class BackgroundTaskService
      */
     public function mergeBackgroundTasksAndUpdateStatus(array &$backgroundTasks, array $fetchedStatusData): void
     {
-        foreach($backgroundTasks as $scope => $tasks) {
-            $backgroundTasks[$scope] = array_map(function ($task) use ($fetchedStatusData) {
-                $task['status'] = isset($fetchedStatusData[$task['uuid']]) > 0 ? $fetchedStatusData[$task['uuid']]['status'] : $task['status'];
-                $answer = isset($fetchedStatusData[$task['uuid']]) ? json_decode($fetchedStatusData[$task['uuid']]['answer'], true) : json_decode($task['answer'], true);
-                if(isset($answer['type']) && $answer['type'] === 'Metadata') {
-                    $task['metadataSuggestions'] = $answer['body']['metadataResult'];
-                }
-                if(isset($answer['type']) && $answer['type'] === 'Error') {
-                    $task['error'] = $answer['body']['message'];
-                }
-                unset($task['answer']);
-                return $task;
-            }, $backgroundTasks[$scope]);
+        if(count($fetchedStatusData) > 0) {
+            $this->backgroundTaskRepository->updateStatus($fetchedStatusData);
         }
-        $this->backgroundTaskRepository->updateStatus($fetchedStatusData);
+
+        foreach ($backgroundTasks as $scope => $tasksByColumn) {
+            foreach ($tasksByColumn as $column => $tasks) {
+                foreach ($tasks as $key => $task) {
+                    $backgroundTasks[$scope][$column][$key]['status'] = $task['status'];
+                    $answer = json_decode($task['answer'], true);
+                    if (isset($answer['type'])) {
+                        if ($answer['type'] === 'Metadata' && isset($answer['body']['metadataResult'])) {
+                            $backgroundTasks[$scope][$column][$key]['metadataSuggestions'] = $answer['body']['metadataResult'];
+                        } elseif ($answer['type'] === 'Error' && isset($answer['body']['message'])) {
+                            $backgroundTasks[$scope][$column][$key]['error'] = $answer['body']['message'];
+                        }
+                    }
+                    unset($backgroundTasks[$scope][$column][$key]['answer']);
+                }
+            }
+        }
     }
 }

@@ -72,11 +72,8 @@ class MetadataService
     public function getFileContent(int $sysFileId): string
     {
         $file = $this->fileRepository->findByUid($sysFileId);
-        $absoluteImageUrl = Environment::getPublicPath() . $file->getPublicUrl();
-
-        $type = pathinfo($absoluteImageUrl, PATHINFO_EXTENSION);
-        $data = file_get_contents($absoluteImageUrl);
-        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+        $data = $file->getContents();
+        return 'data:' . $file->getMimeType() . ';base64,' . base64_encode($data);
     }
 
     /**
@@ -159,24 +156,6 @@ class MetadataService
             throw new UnableToLinkToPageException($this->translationService->translate('AiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
         }
         return $this->siteService->buildAbsoluteUri($previewUri);
-    }
-
-    public function fetchAccessablePages(): array
-    {
-        if($this->backendUserService->getBackendUser()->isAdmin()) {
-            $foundPages = $this->pagesRepository->findAvailablePages();
-        } else {
-            $foundPages = [];
-            $uniquePageUids = [];
-            $availableFileMounts = $this->backendUserService->getBackendUser()->getWebMounts();
-            foreach($availableFileMounts as $mountPageUid) {
-                $uniquePageUids = array_unique(array_merge($uniquePageUids, $this->backendUserService->getSearchableWebmounts($mountPageUid)));
-            }
-            if(count($uniquePageUids) > 0) {
-                $foundPages = $this->pagesRepository->findAvailablePages($uniquePageUids);
-            }
-        }
-        return $this->backendUserService->getPagesInWebMountAndWithEditAccess($foundPages);
     }
 
     public function getMetadataColumns(): array

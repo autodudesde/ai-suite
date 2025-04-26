@@ -1,0 +1,23 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+    <div class="alert alert-{type}" {f:if(condition: id, then: 'id="{id}"', else: '')}>
+        <div class="alert-inner">
+            <div class="alert-icon">
+                <span class="icon-emphasized">
+                    <core:icon identifier="{iconIdentifier}" size="{iconSize}" />
+                </span>
+            </div>
+            <div class="alert-content">
+                <f:if condition="{titleKey}">
+                    <div class="alert-title"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:{titleKey}" /></div>
+                </f:if>
+                <f:if condition="{messageKey}">
+                    <p class="alert-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:{messageKey}" /></p>
+                </f:if>
+            </div>
+        </div>
+    </div>
+</html>

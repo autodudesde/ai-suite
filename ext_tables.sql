@@ -53,3 +53,14 @@ CREATE TABLE be_groups (
     mediaStorageFolder text DEFAULT '',
     openTranslatedRecordInEditMode tinyint(3) DEFAULT '1' NOT NULL
 );
+
+CREATE TABLE tx_aisuite_domain_model_glossar (
+    input varchar(255) DEFAULT '' NOT NULL
+);
+
+CREATE TABLE tx_aisuite_domain_model_deepl (
+    glossar_uuid varchar(255) DEFAULT '' NOT NULL,
+    root_page_uid int(11) DEFAULT 0,
+    source_lang varchar(10) DEFAULT '' NOT NULL,
+    target_lang varchar(10) DEFAULT '' NOT NULL
+);

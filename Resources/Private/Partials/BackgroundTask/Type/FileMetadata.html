@@ -13,8 +13,8 @@
                 <span class="title">{backgroundTask.fileName}</span>
             </div>
             <div class="d-flex align-items-center mx-4">
-                <span class="badge badge-info mx-2"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" /></span>
-                <span class="delete-accordion-item" data-uuid="{backgroundTask.uuid}"><core:icon identifier="actions-delete" size="medium" /></span>
+                <span class="badge badge-info mx-2"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" /></span>
+                <span class="delete-accordion-item" data-uuid="{backgroundTask.uuid}" data-column="{column}"><core:icon identifier="actions-delete" size="medium" /></span>
                 <f:if condition="{backgroundTask.status} == 'task-error'">
                     <div class="error-info">
                         <core:icon identifier="actions-exclamation-triangle" size="medium" />
@@ -41,13 +41,13 @@
                         <core:icon identifier="actions-document-info" size="small" /> Info
                     </div>
                     <h3 class="mb-2">
-                        <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{backgroundTask.column}" />"</strong> ({backgroundTask.column}):
+                        <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />"</strong> ({column}):
                     </h3>
                     <input
                         type="text"
                         class="w-100 mb-4 p-2 metadata-value"
                         data-sys-file-reference-uid="{backgroundTask.table_uid}"
-                        data-column="{backgroundTask.column}"
+                        data-column="{column}"
                         data-uuid="{backgroundTask.uuid}"
                         value="{backgroundTask.columnValue}"
                     />
@@ -61,10 +61,10 @@
                         </h2>
                     </div>
                 </div>
-                <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: backgroundTask.metadataSuggestions, fieldName: backgroundTask.column, table: 'sys_file_metadata', position: position}" />
+                <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: backgroundTask.metadataSuggestions, fieldName: column, table: 'sys_file_metadata', position: position}" />
                 <div class="row mt-3">
                     <div class="col-6">
-                        <button class="mb-3 mt-1 btn btn-primary w-100 save-accordion-item" data-uuid="{backgroundTask.uuid}">
+                        <button class="mb-3 mt-1 btn btn-primary w-100 save-accordion-item" data-uuid="{backgroundTask.uuid}" data-column="{column}">
                             <core:icon identifier="actions-check" size="small" />
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
                         </button>
@@ -74,3 +74,4 @@
         </div>
     </div>
 </f:if>
+</html>

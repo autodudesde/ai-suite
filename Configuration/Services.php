@@ -36,8 +36,34 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             'identifier' => 'aiSuitePagesContextMenuProvider',
         ]);
 
-    $services->set(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class)
-        ->decorate(\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+    $services->set(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class);
+
+    $containerBuilder->addCompilerPass(new class implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
+        public function process(ContainerBuilder $container): void
+        {
+            if (!$container->hasDefinition(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class)) {
+                return;
+            }
+            try {
+                $extConfig = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
+                    ->get('ai_suite');
+                $disableTranslationFunctionality = array_key_exists('disableTranslationFunctionality', $extConfig) && !empty($extConfig['disableTranslationFunctionality']) && (bool)$extConfig['disableTranslationFunctionality'];
+            } catch (\Throwable $e) {
+                $disableTranslationFunctionality = false;
+            }
+
+            if ($disableTranslationFunctionality === false) {
+                $customDatabaseRecordListDefinition = $container->getDefinition(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class);
+                $customDatabaseRecordListDefinition->setDecoratedService(\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+
+                $customLocalizationControllerDefinition = $container->getDefinition(\AutoDudes\AiSuite\Controller\Page\LocalizationController::class);
+                $customLocalizationControllerDefinition->setDecoratedService(\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class);
+            } else {
+                $container->removeDefinition(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class);
+                $container->removeDefinition(\AutoDudes\AiSuite\Controller\Page\LocalizationController::class);
+            }
+        }
+    });
 
     $services->set(\AutoDudes\AiSuite\Hooks\TranslationHook::class)
         ->public();

@@ -27,6 +27,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableTranslationDescription',
         ],
+        'enable_translation_deepl_sync' => [
+            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSync',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSyncDescription',
+        ],
         'enable_image_generation' => [
             $lll . 'aiSuite.customPermOptions.enableImageGeneration',
             'tx-aisuite-permissions',
@@ -104,11 +109,6 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
         ],
         'Deepl' => [
             $lll . 'aiSuite.customPermOptions.modelDeepl',
-            'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
-        ],
-        'AiSuiteTextLite' => [
-            $lll . 'aiSuite.customPermOptions.modelAiSuiteTextLite',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.modelDescription',
         ],

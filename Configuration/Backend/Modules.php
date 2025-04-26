@@ -7,7 +7,7 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'path' => '/module/page/aisuite',
-        'icon'   => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+        'iconIdentifier' => 'tx-aisuite-extension',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
         'routes' => [
             '_default' => [
@@ -21,7 +21,7 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'path' => '/module/file/aisuite',
-        'icon'   => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+        'iconIdentifier' => 'tx-aisuite-extension',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
         'routes' => [
             '_default' => [

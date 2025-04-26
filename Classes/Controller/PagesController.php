@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Doctrine\DBAL\Exception;
@@ -53,6 +54,7 @@ class PagesController extends AbstractBackendController
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
         TranslationService $translationService,
+        SessionService $sessionService,
         PageStructureFactory $pageStructureFactory,
         PagesRepository $pagesRepository,
         LoggerInterface $logger
@@ -68,7 +70,8 @@ class PagesController extends AbstractBackendController
             $libraryService,
             $promptTemplateService,
             $siteService,
-            $translationService
+            $translationService,
+            $sessionService
         );
         $this->pageStructureFactory = $pageStructureFactory;
         $this->pagesRepository = $pagesRepository;
@@ -199,23 +202,14 @@ class PagesController extends AbstractBackendController
         return $this->overviewAction();
     }
 
-    /**
-     * @throws Exception
-     */
     private function getPagesInWebMount(): array
     {
-        $foundPages = $this->pagesRepository->findAiStructurePages('uid');
+        $pagesSelect = [];
         if ($this->backendUserService->getBackendUser()->isAdmin()) {
             $pagesSelect = [
                 -1 => $this->translationService->translate('aiSuite.module.pages.newRootPage')
             ];
         }
-        foreach ($foundPages as $page) {
-            $pageInWebMount = $this->backendUserService->getBackendUser()->isInWebMount($page['uid']);
-            if ($pageInWebMount !== null) {
-                $pagesSelect[$page['uid']] = $page['title'];
-            }
-        }
-        return $pagesSelect ?? [];
+        return $pagesSelect + $this->backendUserService->fetchAccessablePages();
     }
 }

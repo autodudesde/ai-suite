@@ -3,6 +3,7 @@
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\TranslationService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
@@ -13,9 +14,14 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 class ModifyNewContentElementWizardItemsEventListener
 {
     private BackendUserService $backendUserService;
-    public function __construct(BackendUserService $backendUserService)
-    {
+    private TranslationService $translationService;
+
+    public function __construct(
+        BackendUserService $backendUserService,
+        TranslationService $translationService
+    ) {
         $this->backendUserService = $backendUserService;
+        $this->translationService = $translationService;
     }
 
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
@@ -38,11 +44,14 @@ class ModifyNewContentElementWizardItemsEventListener
             if (in_array($cType, $addedAiSuiteWizardItems)) {
                 continue;
             }
+            if (null === ($wizardItem['title'] ?? null)) {
+                continue;
+            }
             if (count($addedAiSuiteWizardItems) === 0) {
                 $event->setWizardItem(
                     'aisuite',
                     [
-                        'header' => 'AI Suite Content',
+                        'header' => $this->translationService->translate('mlang_tabs_tab') . ' Content',
                     ]
                 );
             }
@@ -50,9 +59,9 @@ class ModifyNewContentElementWizardItemsEventListener
                 'aisuite_'.$key,
                 [
                     'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
-                    'title' => $wizardItem['title'] . ' (AI Suite)',
-                    'description' => $wizardItem['description'] . ' (with AI generated content)',
-                    'defaultValues' => $wizardItem['defaultValues'],
+                    'title' => ($wizardItem['title']  ?? '') . ' (' . $this->translationService->translate('mlang_tabs_tab') . ')',
+                    'description' => ($wizardItem['description'] ?? '') . ' (with AI generated content)',
+                    'defaultValues' => $wizardItem['defaultValues'] ?? [],
                 ]
             );
             $addedAiSuiteWizardItems[] = $cType;

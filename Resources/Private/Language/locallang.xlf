@@ -320,8 +320,14 @@
             <trans-unit id="AiSuite.module.massAction.noPagesFound" resname="AiSuite.module.massAction.noPagesFound">
                 <source>No pages available for your selection.</source>
             </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.info" resname="AiSuite.module.massAction.info">
+                <source>Info</source>
+            </trans-unit>
             <trans-unit id="AiSuite.module.massAction.noFileReferencesFound" resname="AiSuite.module.massAction.noFileReferencesFound">
                 <source>No file references available for your selection.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.noFilesFound" resname="AiSuite.module.massAction.noFilesFound">
+                <source>No files available for your selection.</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
@@ -1019,6 +1025,12 @@
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
                 <source>If active AI translation options will be added within the translation wizard</source>
             </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSync" xml:space="preserve">
+                <source>"Synchronize DeepL glossaries" button within list module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSyncDescription" xml:space="preserve">
+                <source>If active "Synchronize DeepL glossaries" button will be displayed within the list module (if at least oneglossar entry is available on selected page)</source>
+            </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
                 <source>Buttons "Generate image with AI"</source>
             </trans-unit>
@@ -1093,9 +1105,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
                 <source>DeepL</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextLite" xml:space="preserve">
-                <source>Meta Llama-3.1 (8B-Instruct)</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
                 <source>Meta Llama-3.3 (70B-Instruct)</source>
@@ -1372,6 +1381,24 @@
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
                 <source>Content of the following files could not be fetched: </source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_glossar" resname="tx_aisuite_domain_model_glossar">
+                <source>Glossar entry</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_glossar.input" resname="tx_aisuite_domain_model_glossar.input">
+                <source>Word/paragraph</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.synchronizeDeeplGlossary" resname="AiSuite.synchronizeDeeplGlossary">
+                <source>Synchronize DeepL glossaries</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncStarted" resname="AiSuite.notification.deeplSyncStarted">
+                <source>Started DeepL glossaries synchronization</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncSuccessful" resname="AiSuite.notification.deeplSyncSuccessful">
+                <source>DeepL glossaries synchronization successful</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncFailed" resname="AiSuite.notification.deeplSyncFailed">
+                <source>DeepL glossaries synchronization failed</source>
             </trans-unit>
         </body>
     </file>

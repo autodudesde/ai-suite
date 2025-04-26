@@ -2,6 +2,7 @@
 
 namespace AutoDudes\AiSuite\EventListener;
 
+use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\FileListService;
 use AutoDudes\AiSuite\Service\SiteService;
@@ -12,6 +13,7 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -30,6 +32,11 @@ class ModifyButtonBarEventListener
     protected SiteService $siteService;
     protected UuidService $uuidService;
     protected TranslationService $translationService;
+    protected GlossarRepository $glossarRepository;
+
+    protected ExtensionConfiguration $extensionConfiguration;
+
+    protected array $extConf = [];
 
     public function __construct(
         PageRenderer $pageRenderer,
@@ -39,7 +46,9 @@ class ModifyButtonBarEventListener
         FileListService $fileListService,
         SiteService $siteService,
         UuidService $uuidService,
-        TranslationService $translationService
+        TranslationService $translationService,
+        GlossarRepository $glossarRepository,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         $this->pageRenderer = $pageRenderer;
         $this->iconFactory = $iconFactory;
@@ -49,6 +58,9 @@ class ModifyButtonBarEventListener
         $this->siteService = $siteService;
         $this->uuidService = $uuidService;
         $this->translationService = $translationService;
+        $this->glossarRepository = $glossarRepository;
+        $this->extensionConfiguration = $extensionConfiguration;
+        $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
 
     /**
@@ -78,6 +90,27 @@ class ModifyButtonBarEventListener
                 ->setIcon($buttonIcon);
             $event->setButtons($buttons);
         }
+
+        if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' &&
+            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_deepl_sync') &&
+            $this->glossarRepository->findGlossarEntriesByPid($request->getQueryParams()['id'] ?? 0) > 0
+        ) {
+            $buttonText = htmlspecialchars($this->translationService->translate('AiSuite.synchronizeDeeplGlossary'));
+            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/glossar/sync.js');
+            $buttonIcon = $this->iconFactory->getIcon('tx-aisuite-model-Deepl', 'small');
+            $buttons[ButtonBar::BUTTON_POSITION_LEFT][6][] = $event->getButtonBar()
+                ->makeLinkButton()
+                ->setClasses('btn btn-default t3js-ai-suite-sync-glossary-btn')
+                ->setDataAttributes([
+                    'pid' => $request->getQueryParams()['id'] ?? 0,
+                ])
+                ->setTitle($buttonText)
+                ->setShowLabelText(true)
+                ->setIcon($buttonIcon);
+            $event->setButtons($buttons);
+        }
+
         if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' &&
             ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams()) &&
             $this->backendUserService->checkPermissions('tx_aisuite_features:enable_news_generation')
@@ -105,17 +138,18 @@ class ModifyButtonBarEventListener
 
             $event->setButtons($buttons);
         }
-        if ($request->getUri()->getPath() === $entryPoint . '/module/web/layout') {
-            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
-            $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
-            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+        if(array_key_exists('disableTranslationFunctionality', $this->extConf) && (bool)$this->extConf['disableTranslationFunctionality'] === false) {
+            if ($request->getUri()->getPath() === $entryPoint . '/module/web/layout') {
+                $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+                $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+            }
+            if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' || $request->getUri()->getPath() === $entryPoint . '/record/edit' &&
+                $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')) {
+                $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+                $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
+            }
         }
-        if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' || $request->getUri()->getPath() === $entryPoint . '/record/edit' &&
-            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')) {
-            $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
-            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
-            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
-        }
-        $this->fileListService->rememberFileListId();
     }
 }

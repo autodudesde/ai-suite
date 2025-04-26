@@ -23,7 +23,7 @@ class Translation {
             } else {
                 if(permissions) {
                     for (const library of libraries) {
-                        const libraryIcon = await Icons.getIcon('tx-aisuite-localization-' + library.model_identifier, Icons.sizes.large);
+                        const libraryIcon = await Icons.getIcon('tx-aisuite-model-' + library.model_identifier, Icons.sizes.large);
                         const onlyPaid = library.only_paid === 1 && res.output.paidRequestsAvailable === false ? '<span class="badge badge-danger mx-2">(only paid)</span>' : '';
                         const disabled = library.only_paid === 1 && res.output.paidRequestsAvailable === false ? 'style="pointer-events: none"' : '';
                         actions.push(`
