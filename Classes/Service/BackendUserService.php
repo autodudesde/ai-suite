@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -27,16 +28,20 @@ class BackendUserService implements SingletonInterface
     protected array $ignorePageTypes = [3, 4, 6, 7, 199, 254, 255];
 
     protected TranslationService $translationService;
+
+    protected PagesRepository $pagesRepository;
     protected PageTreeRepository $pageTreeRepository;
 
     protected ConnectionPool $connectionPool;
     public function __construct(
         TranslationService $translationService,
         PageTreeRepository $pageTreeRepository,
+        PagesRepository $pagesRepository,
         ConnectionPool $connectionPool
     ) {
         $this->translationService = $translationService;
         $this->pageTreeRepository = $pageTreeRepository;
+        $this->pagesRepository = $pagesRepository;
         $this->connectionPool = $connectionPool;
     }
 
@@ -106,6 +111,12 @@ class BackendUserService implements SingletonInterface
             }
         }
         return $availablePageTypes;
+    }
+
+    public function fetchAccessablePages(): array
+    {
+        $foundPages = $this->pagesRepository->findAvailablePages();
+        return $this->getPagesInWebMountAndWithEditAccess($foundPages);
     }
 
     public function getPagesInWebMountAndWithEditAccess(array $foundPages): array

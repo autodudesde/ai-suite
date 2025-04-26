@@ -41,8 +41,15 @@
                             </label>
                             <br />
                             <select class="form-select" id="column" name="options[column]">
-                                <f:for as="colum" each="{columns}" key="key">
-                                    <option value="{key}">{colum}</option>
+                                <f:for each="{columns}" as="column" key="value">
+                                    <f:if condition="{preSelection} && {preSelection.column} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{column}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <option value="{value}">{column}</option>
+                                        </f:else>
+                                    </f:if>
                                 </f:for>
                             </select>
                         </div>
@@ -51,14 +58,36 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <div class="form-group">
-                            <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'options[sysLanguage]', selected: ''}" />
+                            <label>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.selectSysLanguage" extensionName="ai_suite"/>
+                            </label>
+                            <br />
+                            <select name="options[sysLanguage]" class="form-select" id="sysLanguage">
+                                <f:for each="{sysLanguages}" as="sysLanguage" key="value">
+                                    <f:if condition="{preSelection} && {preSelection.sysLanguage} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{sysLanguage}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <option value="{value}">{sysLanguage}</option>
+                                        </f:else>
+                                    </f:if>
+                                </f:for>
+                            </select>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3 d-flex align-items-center pt-3">
                     <div class="form-group">
                         <label class="position-relative">
-                            <input type="checkbox" id="showOnlyEmpty" value="1" name="options[showOnlyEmpty]" />
+                            <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
+                                <f:then>
+                                    <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
+                                </f:then>
+                                <f:else>
+                                    <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
+                                </f:else>
+                            </f:if>
                             <span class="px-4">
                                 <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
                             </span>
@@ -68,7 +97,14 @@
                 <div class="col-md-3 d-flex align-items-center pt-3">
                     <div class="form-group">
                         <label class="position-relative">
-                            <input type="checkbox" id="showOnlyUsed" value="1" name="options[showOnlyUsed]" />
+                            <f:if condition="{preSelection} && {preSelection.showOnlyUsed}">
+                                <f:then>
+                                    <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1" checked="checked"/>
+                                </f:then>
+                                <f:else>
+                                    <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1"/>
+                                </f:else>
+                            </f:if>
                             <span class="px-4">
                                 <f:translate key="tx_aisuite.module.prepareFiles.showOnlyUsed" extensionName="ai_suite"/>
                             </span>

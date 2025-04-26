@@ -14,20 +14,7 @@
                     <f:then>
                         <div class="flex-row d-flex justify-content-between flex-wrap">
                             <f:for each="{imageGenerationLibraries}" as="library" iteration="it">
-                                <input
-                                    type="radio"
-                                    id="image-generation-library-{library.model_identifier}"
-                                    class="input-hidden mx-1 image-generation-library-selection"
-                                    name="libraries[imageGenerationLibrary]"
-                                    value="{library.model_identifier}"
-                                    {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
-                                {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
-                                />
-                                <label class="d-flex flex-row align-items-center mb-3" style="width:48%;" for="image-generation-library-{library.model_identifier}">
-                                    <f:image src="EXT:ai_suite/Resources/Public/Icons/Models/{library.model_identifier}.svg" alt="{library.name}" />
-                                    <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
-                                    <f:image class="checked-icon" src="EXT:ai_suite/Resources/Public/Icons/check.svg" alt="{library.name}" />
-                                </label>
+                                <f:render partial="Libs/LibraryLabel" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable, type: 'image'}" />
                             </f:for>
                         </div>
                     </f:then>

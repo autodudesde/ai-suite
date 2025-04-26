@@ -3,6 +3,7 @@
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\TranslationService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 
 final class ModifyNewContentElementWizardItemsEventListener
@@ -19,10 +20,14 @@ final class ModifyNewContentElementWizardItemsEventListener
     ];
 
     private BackendUserService $backendUserService;
+    private TranslationService $translationService;
 
-    public function __construct(BackendUserService $backendUserService)
-    {
+    public function __construct(
+        BackendUserService $backendUserService,
+        TranslationService $translationService
+    ) {
         $this->backendUserService = $backendUserService;
+        $this->translationService = $translationService;
     }
 
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
@@ -53,17 +58,20 @@ final class ModifyNewContentElementWizardItemsEventListener
                 $event->setWizardItem(
                     'aisuite',
                     [
-                        'header' => 'AI Suite Content',
+                        'header' => $this->translationService->translate('mlang_tabs_tab') . ' Content',
                     ]
                 );
+            }
+            if (null === ($wizardItem['title'] ?? null)) {
+                continue;
             }
             $event->setWizardItem(
                 'aisuite_'.$itemName,
                 [
-                    'iconIdentifier' => $wizardItem['iconIdentifier'],
-                    'title' => $wizardItem['title'] . ' (AI Suite)',
-                    'description' => $wizardItem['description'] . ' (with AI generated content)',
-                    'tt_content_defValues' => $wizardItem['tt_content_defValues'],
+                    'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
+                    'title' => ($wizardItem['title']  ?? '') . ' (' . $this->translationService->translate('mlang_tabs_tab') . ')',
+                    'description' => ($wizardItem['description'] ?? '' ) . ' (with AI generated content)',
+                    'tt_content_defValues' => ($wizardItem['tt_content_defValues'] ?? []),
                 ]
             );
             $addedAiSuiteWizardItems[] = $itemName;

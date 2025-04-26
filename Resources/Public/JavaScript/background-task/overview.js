@@ -45,7 +45,10 @@ class Overview {
             document.querySelector('#backgroundTaskFilter').value = this.activeView;
             document.querySelector('#accordionBackgroundTasks' + this.activeView).style.display = 'block';
             document.querySelector('#accordionBackgroundTasks' + this.activeView).querySelector('#noBackgroundTasks').style.display = 'none';
-            document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .accordion-item .open-accordion-item')?.click();
+            const firstAccordionItem = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .accordion-item .open-accordion-item');
+            if (firstAccordionItem) {
+                firstAccordionItem.click();
+            }
         }
         this.updateDeleteAllButtonVisibility();
     }
@@ -62,8 +65,11 @@ class Overview {
                         element.querySelector('.delete-all-wrapper').style.display = 'none';
                     } else {
                         const firstAccordionItem = element.querySelector('.accordion-item');
-                        if(firstAccordionItem.querySelector('button.accordion-button').classList.contains('collapsed')) {
-                            firstAccordionItem.querySelector('.open-accordion-item')?.click();
+                        if(firstAccordionItem && firstAccordionItem.querySelector('button.accordion-button').classList.contains('collapsed')) {
+                            const openButton = firstAccordionItem.querySelector('.open-accordion-item');
+                            if (openButton) {
+                                openButton.click();
+                            }
                         }
                         element.querySelector('#noBackgroundTasks').style.display = 'none';
                         element.querySelector('.delete-all-wrapper').style.display = 'flex';
@@ -84,15 +90,31 @@ class Overview {
                 ev.preventDefault();
                 let accordionBackgroundTasksElement = ev.target.closest('.accordion-background-tasks');
                 let uuid = ev.target.dataset.uuid;
+                let column = ev.target.dataset.column;
                 Modal.confirm('Warning', TYPO3.lang['AiSuite.backgroundTasks.deleteModalTitle'], Severity.warning, [
                     {
                         text: TYPO3.lang['AiSuite.backgroundTasks.deleteModalText'],
                         active: true,
                         trigger: async function() {
-                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid]});
+                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid], column: column});
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess']);
-                                document.querySelector('.accordion-item[data-uuid="'+uuid+'"]').remove();
+
+                                // Remove the accordion item
+                                const accordionItem = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"]');
+                                const columnSection = accordionItem.closest('.accordion-column');
+                                accordionItem.remove();
+
+                                // Check if this column section is now empty
+                                if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
+                                    columnSection.remove();
+                                } else if (columnSection) {
+                                    // Update the task count badge
+                                    const taskCount = columnSection.querySelectorAll('.accordion-item').length;
+                                    columnSection.querySelector('.column-task-count').textContent = taskCount;
+                                }
+
+                                // Check if all accordion items are removed
                                 if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
                                     accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
                                     accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
@@ -119,9 +141,11 @@ class Overview {
                 ev.preventDefault();
                 let accordionBackgroundTasksElement = document.querySelector('#accordionBackgroundTasks' + self.activeView);
                 let uuids = [];
+                let columns = [];
 
                 accordionBackgroundTasksElement.querySelectorAll('.accordion-item').forEach(function(item) {
                     uuids.push(item.dataset.uuid);
+                    columns.push(item.dataset.column);
                 });
 
                 if (uuids.length === 0) {
@@ -133,15 +157,20 @@ class Overview {
                         text: TYPO3.lang['AiSuite.backgroundTasks.deleteAllModalText'],
                         active: true,
                         trigger: async function() {
-                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: uuids});
+                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: uuids, columns: columns});
                             if (General.isUsable(res)) {
                                 Notification.success(res.count + TYPO3.lang['AiSuite.notification.deleteAllSuccess']);
                                 accordionBackgroundTasksElement.querySelectorAll('.accordion-item').forEach(function(item) {
                                     item.remove();
                                 });
-                                document.querySelector('a.btn.btn-md[title="TaskEngine"]').click();
+                                accordionBackgroundTasksElement.querySelectorAll('.accordion-column').forEach(function(column) {
+                                    column.remove();
+                                });
+                                accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
+                                accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
                             }
                             Modal.dismiss();
+                            document.querySelector('a.btn.btn-md[title="TaskEngine"]').click();
                         }
                     }, {
                         text: TYPO3.lang['AiSuite.backgroundTasks.deleteAbort'],
@@ -161,20 +190,37 @@ class Overview {
                 ev.preventDefault();
                 let accordionBackgroundTasksElement = ev.target.closest('.accordion-background-tasks');
                 let uuid = ev.target.dataset.uuid;
-                let inputValue = document.querySelector('.accordion-item[data-uuid="'+uuid+'"] input.metadata-value').value;
-                let title = document.querySelector('.accordion-item[data-uuid="'+uuid+'"] .accordion-header .title').innerText;
-                let res = await Ajax.sendAjaxRequest('aisuite_background_task_save', {uuid: uuid, inputValue: inputValue});
+                let column = ev.target.dataset.column;
+                let inputValue = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"] input.metadata-value').value;
+                let title = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"] .accordion-header .title').innerText;
+                let res = await Ajax.sendAjaxRequest('aisuite_background_task_save', {uuid: uuid, column: column, inputValue: inputValue});
                 if (General.isUsable(res)) {
                     Notification.success(TYPO3.lang['AiSuite.notification.saveSuccess'], inputValue + ' (' + title + ')');
-                    document.querySelector('.accordion-item[data-uuid="'+uuid+'"]').remove();
+
+                    // Remove the accordion item
+                    const accordionItem = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"]');
+                    const columnSection = accordionItem.closest('.accordion-column');
+                    accordionItem.remove();
+
+                    // Check if the column is now empty
+                    if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
+                        columnSection.remove();
+                    } else if (columnSection) {
+                        // Update the task count badge
+                        const taskCount = columnSection.querySelectorAll('.accordion-item').length;
+                        columnSection.querySelector('.column-task-count').textContent = taskCount;
+                    }
+
+                    // Check if all accordion items are removed
                     if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
                         accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
                         accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
                     } else {
-                        accordionBackgroundTasksElement
-                            .querySelector('.accordion-item')
-                            .querySelector('.open-accordion-item').click();
-                        accordionBackgroundTasksElement.querySelector('.accordion-item .open-accordion-item')?.click();
+                        // Open another accordion item if available
+                        const firstAccordionItem = accordionBackgroundTasksElement.querySelector('.accordion-item');
+                        if(firstAccordionItem) {
+                            firstAccordionItem.querySelector('.open-accordion-item')?.click();
+                        }
                     }
                     self.updateDeleteAllButtonVisibility();
                 }
@@ -196,9 +242,8 @@ class Overview {
                 let metadataValueElement = ev.target.closest('.accordion-body').querySelector('.metadata-value');
                 metadataValueElement.value = element.innerText.trim();
                 if(self.clickAndSave) {
-                    metadataValueElement
-                        .closest('.accordion-item')
-                        .querySelector('.save-accordion-item').click();
+                    const accordionItem = metadataValueElement.closest('.accordion-item');
+                    accordionItem.querySelector('.save-accordion-item').click();
                 }
             });
         });
@@ -248,6 +293,7 @@ class Overview {
             }
         });
     }
+
     addErrorTooltipEventListener() {
         const self = this;
         document.querySelectorAll('.accordion-header .error-info').forEach(function(element) {
@@ -257,6 +303,7 @@ class Overview {
                 const errorMessage = element.querySelector('.error-message').textContent;
                 const accordionItem = element.closest('.accordion-item');
                 const uuid = accordionItem.dataset.uuid;
+                const column = accordionItem.dataset.column;
 
                 Modal.confirm(TYPO3.lang['AiSuite.errorDetails.title'] || 'Error Details', errorMessage, Severity.error, [
                     {
@@ -271,7 +318,7 @@ class Overview {
                                 TYPO3.lang['AiSuite.errorDetails.pleaseWait'] || 'Please wait'
                             );
 
-                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid});
+                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid, column: column});
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
                                 // Optionally reload the accordion item or refresh the list
@@ -290,10 +337,24 @@ class Overview {
                         trigger: async function() {
                             Modal.dismiss();
 
-                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuid: uuid});
+                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid], columns: [column]});
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess'] || 'Task deleted successfully');
+
+                                // Remove the accordion item
+                                const columnSection = accordionItem.closest('.accordion-column');
                                 accordionItem.remove();
+
+                                // Check if the column is now empty
+                                if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
+                                    columnSection.remove();
+                                } else if (columnSection) {
+                                    // Update the task count badge
+                                    const taskCount = columnSection.querySelectorAll('.accordion-item').length;
+                                    columnSection.querySelector('.column-task-count').textContent = taskCount;
+                                }
+
+                                // Check if all items are now removed
                                 const accordionBackgroundTasksElement = document.querySelector('#accordionBackgroundTasks' + self.activeView);
                                 if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
                                     accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
@@ -318,6 +379,7 @@ class Overview {
             });
         });
     }
+
     addRefreshAndReloadButtonEventListener() {
         document.querySelectorAll('.refresh-tasks, .load-more-tasks').forEach(function(element) {
             element.addEventListener('click', function () {

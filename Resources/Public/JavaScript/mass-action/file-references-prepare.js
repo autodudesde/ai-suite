@@ -107,7 +107,7 @@ class FileReferencePrepare {
                             formData.append('massActionFileReferencesExecute[sysLanguage]', document.querySelector('select[name="massActionFileReferencesPrepare[sysLanguage]"]').value);
                             formData.append('massActionFileReferencesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
                             for (let key in selectedFileReferences) {
-                                if(counter === 10) {
+                                if(counter === 5) {
                                     try {
                                         handledFileReferences = { ...handledFileReferences, ...currentFileReferences };
                                         formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
@@ -126,8 +126,10 @@ class FileReferencePrepare {
                                 await self.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
                             }
                             Generation.hideSpinner();
-                            document.querySelector('#resultsToExecute').innerHTML = '';
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
+                            let fileReferencesPrepareExecuteForm = document.querySelector('form[name="fileReferencesPrepareExecute"]');
+                            formData = new FormData(fileReferencesPrepareExecuteForm);
+                            self.prepareFileReferences(formData).then(() => {});
                         }
                     }
                 }

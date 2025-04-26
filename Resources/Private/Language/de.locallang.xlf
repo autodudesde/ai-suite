@@ -320,9 +320,15 @@
             <trans-unit id="AiSuite.module.massAction.noPagesFound" resname="AiSuite.module.massAction.noPagesFound">
                 <source>No pages available for your selection.</source>
             <target>Für deine Auswahl sind keine Seiten verfügbar.</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.info" resname="AiSuite.module.massAction.info">
+                <source>Info</source>
+            <target>Info</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.noFileReferencesFound" resname="AiSuite.module.massAction.noFileReferencesFound">
                 <source>No file references available for your selection.</source>
             <target>Für deine Auswahl sind keine Datei-Referenzen verfügbar.</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.noFilesFound" resname="AiSuite.module.massAction.noFilesFound">
+                <source>No files available for your selection.</source>
+            <target>Für deine Auswahl sind keine Dateien verfügbar.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
             <target>Seitenstruktur generieren</target></trans-unit>
@@ -1019,6 +1025,12 @@
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
                 <source>If active AI translation options will be added within the translation wizard</source>
             <target>Wenn aktiv, werden KI-Übersetzungsoptionen im Übersetzungsassistenten hinzugefügt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSync" xml:space="preserve">
+                <source>"Synchronize DeepL glossaries" button within list module</source>
+            <target>Button „DeepL-Glossare synchronisieren“ im Listenmodul</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSyncDescription" xml:space="preserve">
+                <source>If active "Synchronize DeepL glossaries" button will be displayed within the list module (if at least oneglossar entry is available on selected page)</source>
+            <target>Wenn aktiv, wird die Schaltfläche „DeepL-Glossare synchronisieren“ im Listenmodul angezeigt (wenn mindestens ein Glossareintrag auf der ausgewählten Seite verfügbar ist).</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
                 <source>Buttons "Generate image with AI"</source>
             <target>Buttons „Bild mit KI generieren“</target></trans-unit>
@@ -1094,9 +1106,6 @@
             <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
                 <source>DeepL</source>
             <target>DeepL</target></trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextLite" xml:space="preserve">
-                <source>Meta Llama-3.1 (8B-Instruct)</source>
-            <target>Meta Llama-3.1 (8B-Instruct)</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
                 <source>Meta Llama-3.3 (70B-Instruct)</source>
             <target>Meta Llama-3.3 (70B-Instruct)</target></trans-unit>
@@ -1192,7 +1201,7 @@
             <target>Bitte wähle mindestens eine Datei aus.</target></trans-unit>
             <trans-unit id="AiSuite.massAction.processing" resname="AiSuite.massAction.processing">
                 <source>Already handled %s: </source>
-            <target>%s bereits bearbeitet:</target></trans-unit>
+            <target>Bereits bearbeitete %s: </target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
                 <source>Tasks successfully created</source>
             <target>Aufgaben erfolgreich erstellt</target></trans-unit>
@@ -1373,6 +1382,24 @@
             <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
                 <source>Content of the following files could not be fetched: </source>
             <target>Der Inhalt der folgenden Dateien konnte nicht abgerufen werden:</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_glossar" resname="tx_aisuite_domain_model_glossar">
+                <source>Glossar entry</source>
+            <target>Glossareintrag</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_glossar.input" resname="tx_aisuite_domain_model_glossar.input">
+                <source>Word/paragraph</source>
+            <target>Wort/Absatz</target></trans-unit>
+            <trans-unit id="AiSuite.synchronizeDeeplGlossary" resname="AiSuite.synchronizeDeeplGlossary">
+                <source>Synchronize DeepL glossaries</source>
+            <target>DeepL-Glossare synchronisieren</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncStarted" resname="AiSuite.notification.deeplSyncStarted">
+                <source>Started DeepL glossaries synchronization</source>
+            <target>Synchronisierung der DeepL-Glossare gestartet</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncSuccessful" resname="AiSuite.notification.deeplSyncSuccessful">
+                <source>DeepL glossaries synchronization successful</source>
+            <target>Synchronisierung der DeepL-Glossare erfolgreich</target></trans-unit>
+            <trans-unit id="AiSuite.notification.deeplSyncFailed" resname="AiSuite.notification.deeplSyncFailed">
+                <source>DeepL glossaries synchronization failed</source>
+            <target>Die Synchronisierung der DeepL-Glossare ist fehlgeschlagen</target></trans-unit>
         </body>
     </file>
 </xliff>

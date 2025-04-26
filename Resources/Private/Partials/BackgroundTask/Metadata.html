@@ -10,50 +10,55 @@
                 <core:icon identifier="actions-refresh" size="small" />
                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.refresh" />
             </button>
-            <f:if condition="{backgroundTasks -> f:count()} == 50">
-                <button class="btn btn-default load-more-tasks mx-2" data-type="{type}">
-                    <core:icon identifier="actions-database-reload" size="small" />
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMore" />
-                </button>
-            </f:if>
         </div>
         <button class="btn btn-danger delete-all-accordion-items" data-type="{type}">
             <core:icon identifier="actions-delete" size="small" />
             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.deleteAll" />
         </button>
     </div>
-    <f:if condition="{backgroundTasks -> f:count()} == 50">
-        <div class="alert alert-info">
-            <div class="media">
-                <div class="media-left">
-                        <span class="icon-emphasized">
-                           <core:icon identifier="actions-info" size="small" />
-                        </span>
-                </div>
-                <div class="media-body">
-                    <div class="alert-title"><f:translate key="AiSuite.backgroundTasks.loadMoreHint.title" extensionName="ai_suite"/></div>
-                    <p class="alert-message"><f:translate key="AiSuite.backgroundTasks.loadMoreHint.message" extensionName="ai_suite"/></p>
+    <f:for each="{backgroundTasks}" as="columnsTask" key="column" iteration="columnIt">
+        <div class="accordion-column mb-3" data-column="{column}">
+            <div class="column-header-wrapper d-flex align-items-center justify-content-between"
+                 data-bs-toggle="collapse"
+                 data-bs-target="#columnCollapse{type}{columnIt.index}"
+                 aria-expanded="true"
+                 aria-controls="columnCollapse{type}{columnIt.index}"
+            >
+                <h3 class="column-header mb-0 flex-grow-1">
+                    <f:if condition="{type} == 'Page'">
+                        <f:then>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" /> ({column})
+                        </f:then>
+                        <f:else>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" /> ({column})
+                        </f:else>
+                    </f:if>
+                </h3>
+                <div class="d-flex align-items-center">
+                    <f:if condition="{columnsTask -> f:count()} == 50">
+                        <button class="btn btn-default load-more-tasks mx-2" data-type="{type}">
+                            <core:icon identifier="actions-database-reload" size="small" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMore" />
+                        </button>
+                    </f:if>
+                    <span class="badge mx-2 column-task-count">{columnsTask -> f:count()}</span>
+                    <span class="toggle-icon"><core:icon identifier="actions-chevron-up" size="medium" /></span>
                 </div>
             </div>
-        </div>
-    </f:if>
-    <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
-        <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
-            <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, position: it.index}" />
+            <div class="collapse show" id="columnCollapse{type}{columnIt.index}">
+                <f:if condition="{columnsTask -> f:count()} == 50">
+                    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.backgroundTasks.loadMoreHint.title', messageKey: 'AiSuite.backgroundTasks.loadMoreHint.message'}"/>
+                </f:if>
+                <div class="column-content">
+                    <f:for each="{columnsTask}" as="backgroundTask" iteration="it">
+                        <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}" data-column="{column}">
+                            <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, column: column, position: it.index}" />
+                        </div>
+                    </f:for>
+                </div>
+            </div>
         </div>
     </f:for>
-    <div id="noBackgroundTasks" class="alert alert-info">
-        <div class="media">
-            <div class="media-left">
-                        <span class="icon-emphasized">
-                           <core:icon identifier="actions-info" size="small" />
-                        </span>
-            </div>
-            <div class="media-body">
-                <div class="alert-title">Info</div>
-                <p class="alert-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" /></p>
-            </div>
-        </div>
-    </div>
+    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.backgroundTasks.noTasksInfo', id: 'noBackgroundTasks'}"/>
 </div>
 </html>

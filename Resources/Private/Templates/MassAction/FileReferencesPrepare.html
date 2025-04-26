@@ -19,7 +19,7 @@
         <form action="fileReferencesPrepareExecute" name="fileReferencesPrepareExecute">
             <div class="row">
                 <div class="col-md-6">
-                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionFileReferencesPrepare[startFromPid]', label: 'tx_aisuite.module.preparePages.pageChooser', selected:pageId}" />
+                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionFileReferencesPrepare[startFromPid]', label: 'tx_aisuite.module.preparePages.pageChooser', selected: pageId}" />
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
@@ -29,7 +29,14 @@
                         <br />
                         <select name="massActionFileReferencesPrepare[depth]" class="form-select" id="depth">
                             <f:for each="{depths}" as="depth" key="value">
-                                <option value="{value}">{depth}</option>
+                                <f:if condition="{preSelection} && {preSelection.depth} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{depth}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <option value="{value}">{depth}</option>
+                                    </f:else>
+                                </f:if>
                             </f:for>
                         </select>
                     </div>
@@ -45,7 +52,14 @@
                             <br />
                             <select name="massActionFileReferencesPrepare[column]" class="form-select" id="column">
                                 <f:for each="{columns}" as="column" key="value">
-                                    <option value="{value}">{column}</option>
+                                    <f:if condition="{preSelection} && {preSelection.column} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{column}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <option value="{value}">{column}</option>
+                                        </f:else>
+                                    </f:if>
                                 </f:for>
                             </select>
                         </div>
@@ -58,14 +72,28 @@
                     <br />
                     <select name="massActionFileReferencesPrepare[sysLanguage]" class="form-select" id="sysLanguage">
                         <f:for each="{sysLanguages}" as="sysLanguage" key="value">
-                            <option value="{value}">{sysLanguage}</option>
+                            <f:if condition="{preSelection} && {preSelection.sysLanguage} == {value}">
+                                <f:then>
+                                    <option value="{value}" selected="selected">{sysLanguage}</option>
+                                </f:then>
+                                <f:else>
+                                    <option value="{value}">{sysLanguage}</option>
+                                </f:else>
+                            </f:if>
                         </f:for>
                     </select>
                 </div>
                 <div class="col-md-4 d-flex align-items-center pt-3">
                     <div class="form-group">
                         <label class="position-relative">
-                            <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
+                            <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
+                                <f:then>
+                                    <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
+                                </f:then>
+                                <f:else>
+                                    <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
+                                </f:else>
+                            </f:if>
                             <span class="px-4">
                                 <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
                             </span>

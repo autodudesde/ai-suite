@@ -16,6 +16,7 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Template\Components\Buttons\AiSuiteLinkButton;
@@ -43,6 +44,7 @@ class AbstractBackendController
     protected PromptTemplateService $promptTemplateService;
     protected SiteService $siteService;
     protected TranslationService $translationService;
+    protected SessionService $sessionService;
     protected ServerRequestInterface $request;
     protected ModuleTemplate $view;
 
@@ -57,7 +59,8 @@ class AbstractBackendController
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
-        TranslationService $translationService
+        TranslationService $translationService,
+        SessionService $sessionService,
     ) {
         $this->moduleTemplateFactory = $moduleTemplateFactory;
         $this->iconFactory = $iconFactory;
@@ -70,6 +73,7 @@ class AbstractBackendController
         $this->promptTemplateService = $promptTemplateService;
         $this->siteService = $siteService;
         $this->translationService = $translationService;
+        $this->sessionService = $sessionService;
     }
 
     public function injectModuleTemplateFactory(ModuleTemplateFactory $moduleTemplateFactory): void

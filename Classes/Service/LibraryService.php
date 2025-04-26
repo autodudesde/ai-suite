@@ -27,24 +27,25 @@ class LibraryService implements SingletonInterface
 
     public function prepareLibraries(array $libraries, string $selectedLibraryKey = ''): array
     {
-        foreach ($libraries as $key => $library) {
+        $processedLibraries = [];
+
+        foreach ($libraries as $library) {
             if(!$this->backendUserService->getBackendUser()->isAdmin() &&
                 !$this->backendUserService->checkPermissions('tx_aisuite_models:' . $library['model_identifier'])
             ) {
-                unset($libraries[$key]);
                 continue;
             }
             if ($library['model_identifier'] === $selectedLibraryKey) {
-                $libraries[$key]['checked'] = true;
+                $library['checked'] = true;
             } else {
-                $libraries[$key]['checked'] = false;
+                $library['checked'] = false;
             }
+            $processedLibraries[] = $library;
         }
-        if (empty($selectedLibraryKey) && count($libraries) > 0) {
-            $firstKey = array_key_first($libraries);
-            $libraries[$firstKey]['checked'] = true;
+        if (empty($selectedLibraryKey) && count($processedLibraries) > 0) {
+            $processedLibraries[0]['checked'] = true;
         }
-        return $libraries;
+        return $processedLibraries;
     }
 
     public function prepareAdditionalImageSettings(string $additionalImageSettings): array

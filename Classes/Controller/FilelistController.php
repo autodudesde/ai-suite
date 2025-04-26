@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
@@ -26,7 +27,6 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -47,6 +47,7 @@ final class FilelistController extends AbstractBackendController
         PromptTemplateService $promptTemplateService,
         SiteService $siteService,
         TranslationService $translationService,
+        SessionService $sessionService,
         protected MassActionService $massActionService
     ) {
         parent::__construct(
@@ -60,7 +61,8 @@ final class FilelistController extends AbstractBackendController
             $libraryService,
             $promptTemplateService,
             $siteService,
-            $translationService
+            $translationService,
+            $sessionService
         );
     }
 
@@ -85,7 +87,7 @@ final class FilelistController extends AbstractBackendController
         }
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/filelist-files-prepare.js');
 
-        $viewProperties = $this->massActionService->filelistFileDirectorySupport($this->request->getQueryParams(), $librariesAnswer);
+        $viewProperties = $this->massActionService->filelistFileDirectorySupport($librariesAnswer);
         $this->view->assignMultiple($viewProperties);
 
         return $this->view->renderResponse('MassAction/FilesPrepare');

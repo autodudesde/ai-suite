@@ -34,6 +34,7 @@ class MassActionService implements SingletonInterface
     protected SiteService $siteService;
     protected LibraryService $libraryService;
     protected TranslationService $translationService;
+    protected SessionService $sessionService;
     protected SysFileMetadataRepository $sysFileMetadataRepository;
     protected array $supportedMimeTypes;
 
@@ -46,6 +47,7 @@ class MassActionService implements SingletonInterface
         SiteService $siteService,
         LibraryService $libraryService,
         TranslationService $translationService,
+        SessionService $sessionService,
         SysFileMetadataRepository $sysFileMetadataRepository
     ) {
         $this->metadataService = $metadataService;
@@ -56,6 +58,7 @@ class MassActionService implements SingletonInterface
         $this->siteService = $siteService;
         $this->libraryService = $libraryService;
         $this->translationService = $translationService;
+        $this->sessionService = $sessionService;
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
 
         $this->supportedMimeTypes = [
@@ -66,9 +69,11 @@ class MassActionService implements SingletonInterface
         ];
     }
 
-    public function filelistFileDirectorySupport(array $params, ClientAnswer $librariesAnswer): array
+    public function filelistFileDirectorySupport(ClientAnswer $librariesAnswer): array
     {
-        $directoryId = $this->fileListService->getFileListId($params);
+        $directoryId = $this->sessionService->getFilelistFolderId();
+        $sessionData = $this->sessionService->getParametersForRoute('ai_suite_massaction_filelist_files_prepare');
+
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
             return $library['name'] === 'Vision';
@@ -94,19 +99,19 @@ class MassActionService implements SingletonInterface
                     }
                 }
 
-                $languageParts = isset($params['options']['sysLanguage']) ? explode('__', $params['options']['sysLanguage']) : [];
-                $column = $params['options']['column'] ?? 'all';
+                $languageParts = isset($sessionData['options']['sysLanguage']) ? explode('__', $sessionData['options']['sysLanguage']) : [];
+                $column = $sessionData['options']['column'] ?? 'all';
                 $languageId = isset($languageParts[1]) ? (int)$languageParts[1] : 0;
                 $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
                     $fileUids,
                     $column,
                     'file',
                     $languageId,
-                    isset($params['options']['showOnlyEmpty']),
-                    isset($params['options']['showOnlyUsed'])
+                    isset($sessionData['options']['showOnlyEmpty']),
+                    isset($sessionData['options']['showOnlyUsed'])
                 );
                 $metadataUids = array_column($metadataList, 'uid');
-                $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($metadataUids, 'sys_file_metadata');
+                $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($metadataUids, 'sys_file_metadata', $column);
                 $pendingFileMetadata = array_reduce($pendingFileMetadata, function ($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'];
                     return $carry;
@@ -135,12 +140,13 @@ class MassActionService implements SingletonInterface
             'columns' => array_merge_recursive(
                 ['all' => $this->translationService->translate('tx_aisuite.module.massActionFilelist.allColumns')],
                 $this->metadataService->getFileMetadataColumns()),
-            'activeColumn' => $params['options']['column'] ?? 'all',
+            'activeColumn' => $sessionData['options']['column'] ?? 'all',
             'sysLanguages' => $availableLanguages,
             'alreadyPendingFiles' => $pendingFileMetadata,
-            'parentUuid' => $params['options']['parentUuid'] ?? $this->uuidService->generateUuid(),
+            'parentUuid' => $this->uuidService->generateUuid(),
             'textGenerationLibraries' => $this->libraryService->prepareLibraries($textGenerationLibraries),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
+            'preSelection' => $sessionData['options'] ?? [],
         ];
     }
 

@@ -26,10 +26,12 @@ class FileControlsEventListener
 
     public function __invoke(CustomFileControlsEvent $event): void
     {
-        if ($event->getFieldConfig()['type'] === 'file' &&
-            $event->getFieldConfig()['foreign_table'] === 'sys_file_reference' &&
-            (in_array('jpeg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])) ||
-            in_array('jpg', explode(',', $event->getFieldConfig()['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']))) &&
+        $fieldConfig = $event->getFieldConfig();
+
+        if (($fieldConfig['type'] ?? '') === 'file' &&
+            ($fieldConfig['foreign_table'] ?? '') === 'sys_file_reference' &&
+            (in_array('jpeg', explode(',', $fieldConfig['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])) ||
+                in_array('jpg', explode(',', $fieldConfig['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext']))) &&
             $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
             $languageService = $this->getLanguageService();
@@ -42,12 +44,12 @@ class FileControlsEventListener
             $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
             $buttonSubmit = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
 
-            $objectPrefix = $event->getFormFieldIdentifier() . '-' . $event->getFieldConfig()['foreign_table'];
+            $objectPrefix = $event->getFormFieldIdentifier() . '-' . $fieldConfig['foreign_table'];
 
             // check maxitems
             if (
-                (array_key_exists('showNewFileReferenceButton', $event->getFieldConfig()['inline']) && $event->getFieldConfig()['inline']['showNewFileReferenceButton'] === false) ||
-                (array_key_exists('showCreateNewRelationButton', $event->getFieldConfig()['inline']) && $event->getFieldConfig()['inline']['showCreateNewRelationButton'] === false)
+                (array_key_exists('showNewFileReferenceButton', $fieldConfig['inline']) && $fieldConfig['inline']['showNewFileReferenceButton'] === false) ||
+                (array_key_exists('showCreateNewRelationButton', $fieldConfig['inline']) && $fieldConfig['inline']['showCreateNewRelationButton'] === false)
             ) {
                 return;
             }
@@ -60,7 +62,7 @@ class FileControlsEventListener
             }
             $button = '
                     <button type="button" class="btn btn-default t3js-ai-suite-image-generation-add-btn"
-                        data-mode="' . htmlspecialchars($event->getFieldConfig()['type']) . '"
+                        data-mode="' . htmlspecialchars($fieldConfig['type']) . '"
                         data-file-irre-object="' . htmlspecialchars($objectPrefix) . '"
                         data-file-context-config="' . htmlspecialchars($resultArray['inlineData']['config'][$objectPrefix]['context']['config']) . '"
                         data-file-context-hmac="' . htmlspecialchars($resultArray['inlineData']['config'][$objectPrefix]['context']['hmac']) . '"

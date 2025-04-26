@@ -113,9 +113,9 @@
             <p class="calculated-requests"></p>
         </f:if>
         <f:if condition="{files -> f:count()} == 0 && {unsupportedFiles -> f:count()} == 0">
-            <p class="my-4">
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.noFilesFound" extensionName="ai_suite" />
-            </p>
+            <div class="my-4">
+                <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.module.massAction.noFilesFound'}"/>
+            </div>
         </f:if>
     </div>
 </div>

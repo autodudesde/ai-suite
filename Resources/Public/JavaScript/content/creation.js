@@ -44,10 +44,10 @@ class Creation {
     }
 
     handleModelChange() {
-        let calculateRequestAmountFn = this.calculateRequestAmount;
+        const self = this;
         document.querySelectorAll('.library input[type="radio"]').forEach(function (radio) {
             radio.addEventListener('change', function() {
-                calculateRequestAmountFn();
+                self.calculateRequestAmount();
             });
         });
     }

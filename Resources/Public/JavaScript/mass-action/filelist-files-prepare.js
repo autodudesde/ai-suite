@@ -86,7 +86,7 @@ class FilelistFilesPrepare {
                             formData.append('massActionFilesExecute[sysLanguage]', document.querySelector('select#sysLanguage').value);
                             formData.append('massActionFilesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
                             for (let key in selectedFiles) {
-                                if(counter === 10) {
+                                if(counter === 5) {
                                     try {
                                         handledFiles = { ...handledFiles, ...currentFiles };
                                         formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));

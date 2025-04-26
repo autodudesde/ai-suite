@@ -169,4 +169,8 @@ return [
         'path' => '/background-task/retry',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::retryAction'
     ],
+    'aisuite_glossary_synchronize' => [
+        'path' => '/glossary/synchronize',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::synchronizeAction'
+    ],
 ];
