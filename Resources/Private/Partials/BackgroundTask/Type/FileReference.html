@@ -5,14 +5,14 @@
 >
 
 <h2 class="accordion-header mb-0">
-    <button class="accordion-button collapsed w-100 text-start position-relative" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{backgroundTask.uuid}" aria-expanded="false" aria-controls="accordion{backgroundTask.uuid}">
+    <button class="accordion-button collapsed w-100 text-start position-relative pe-none" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{backgroundTask.uuid}" aria-expanded="false" aria-controls="accordion{backgroundTask.uuid}">
         <div class="d-flex align-items-center justify-content-between">
             <div>
-                <span class="badge badge-{backgroundTask.status}">{backgroundTask.status}</span>
-                <f:image src="{backgroundTask.fileUid}" />
-                <span class="title">{backgroundTask.fileName}</span>
+                <span class="pe-auto badge badge-{backgroundTask.status}">{backgroundTask.status}</span>
+                <f:image src="{backgroundTask.fileUid}" class="pe-auto" />
+                <span class="title pe-none">{backgroundTask.fileName}</span>
             </div>
-            <div class="d-flex align-items-center mx-4">
+            <div class="d-flex align-items-center mx-4 pe-auto">
                 <f:if condition="{backgroundTask.flag} != ''">
                     <span class="flag"><core:icon identifier="{backgroundTask.flag}" size="small" /></span>
                 </f:if>

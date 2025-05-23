@@ -10,11 +10,11 @@ use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\RequestFactory;
-use TYPO3\CMS\Core\Resource\FileRepository;
+use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Routing\UnableToLinkToPageException;
 
 class MetadataService
@@ -23,7 +23,7 @@ class MetadataService
     protected PageRepository $pageRepository;
     protected RequestFactory $requestFactory;
     protected RequestsRepository $requestsRepository;
-    protected FileRepository $fileRepository;
+    protected ResourceFactory $resourceFactory;
     protected BackendUserService $backendUserService;
     protected TranslationService $translationService;
     protected SiteService $siteService;
@@ -33,7 +33,7 @@ class MetadataService
         PageRepository $pageRepository,
         RequestFactory $requestFactory,
         RequestsRepository $requestsRepository,
-        FileRepository $fileRepository,
+        ResourceFactory $resourceFactory,
         BackendUserService $backendUserService,
         TranslationService $translationService,
         SiteService $siteService
@@ -42,7 +42,7 @@ class MetadataService
         $this->pageRepository = $pageRepository;
         $this->requestFactory = $requestFactory;
         $this->requestsRepository = $requestsRepository;
-        $this->fileRepository = $fileRepository;
+        $this->resourceFactory = $resourceFactory;
         $this->backendUserService = $backendUserService;
         $this->translationService = $translationService;
         $this->siteService = $siteService;
@@ -69,10 +69,24 @@ class MetadataService
         }
     }
 
+    /**
+     * @throws FileDoesNotExistException
+     */
     public function getFileContent(int $sysFileId): string
     {
-        $file = $this->fileRepository->findByUid($sysFileId);
-        $data = $file->getContents();
+        $file = $this->resourceFactory->getFileObject($sysFileId);
+        try {
+            $data = $file->getContents();
+            if(empty($data)) {
+                $decodedIdentifier = urldecode($file->getIdentifier());
+                $file->setIdentifier($decodedIdentifier);
+                $data = $file->getContents();
+            }
+        } catch(\Throwable $e) {
+            $decodedIdentifier = urldecode($file->getIdentifier());
+            $file->setIdentifier($decodedIdentifier);
+            $data = $file->getContents();
+        }
         return 'data:' . $file->getMimeType() . ';base64,' . base64_encode($data);
     }
 

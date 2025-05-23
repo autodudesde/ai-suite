@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Backend\ToolbarItems;
 
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
+use AutoDudes\AiSuite\Factory\SettingsFactory;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,18 +27,26 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
 
     protected BackendViewFactory $backendViewFactory;
 
+    protected SettingsFactory $settingsFactory;
+
+    protected array $extConf = [];
+
     public function __construct(
         BackendUserService $backendUserService,
         TranslationService $translationService,
         BackendViewFactory $backendViewFactory,
         RequestsRepository $requestsRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SettingsFactory $settingsFactory
     ) {
         $this->backendUserService = $backendUserService;
         $this->translationService = $translationService;
         $this->backendViewFactory = $backendViewFactory;
         $this->requestsRepository = $requestsRepository;
         $this->logger = $logger;
+        $this->settingsFactory = $settingsFactory;
+
+        $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
 
     public function setRequest(ServerRequestInterface $request): void
@@ -57,7 +66,7 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
             if(!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_toolbar_stats_item')) {
                 return $view->render('ToolbarItems/RequestsToolbarItem');
             }
-            $requests = $this->requestsRepository->findFirstEntry();
+            $requests = $this->requestsRepository->findEntryByApiKey($this->extConf['aiSuiteApiKey']);
             if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0 && $requests['abo_requests'] >= 0) {
                 if(!empty($requests['model_type'])) {
                     $requests['abo_requests'] = (int)$requests['model_type'] - $requests['abo_requests'] . ' / ' . $requests['model_type'];

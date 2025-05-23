@@ -16,13 +16,13 @@ class SessionService implements SingletonInterface
     private const AI_SUITE_ROUTES = [
         'ajax_aisuite_massaction_pages_prepare' => 'ai_suite_massaction_pages_prepare',
         'ajax_aisuite_massaction_filereferences_prepare' => 'ai_suite_massaction_filereferences_prepare',
-        'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare',
-
-        'ai_suite_backgroundtask' => 'ai_suite_taskengine',
+        'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare'
     ];
 
     private const AI_SUITE_FILELIST_FOLDER_ID = 'ai_suite_filelist_folder_id';
     private const AI_SUITE_WEB_PAGE_ID = 'ai_suite_web_page_id';
+    private const AI_SUITE_BACKGROUND_TASK_FILTER = 'ai_suite_background_task_filter';
+    private const AI_SUITE_CLICK_AND_SAVE = 'ai_suite_click_and_save';
 
     protected BackendUserService $backendUserService;
 
@@ -41,7 +41,7 @@ class SessionService implements SingletonInterface
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
 
         $queryParams = $request->getQueryParams();
-        $this->storeFileOrPageId($sessionData, $queryParams);
+        $this->storeQueryParams($sessionData, $queryParams);
 
         $postParams = $request->getParsedBody() ?? [];
 
@@ -80,7 +80,7 @@ class SessionService implements SingletonInterface
         return $sessionData['ai_suite_last_route'] ?? '';
     }
 
-    public function storeFileOrPageId(array &$sessionData, array $queryParams): void
+    public function storeQueryParams(array &$sessionData, array $queryParams): void
     {
         if (array_key_exists('id', $queryParams)) {
             if (strpos($queryParams['id'], ':') > 0) {
@@ -91,6 +91,12 @@ class SessionService implements SingletonInterface
                     $sessionData[self::AI_SUITE_WEB_PAGE_ID] = $pageId;
                 }
             }
+        }
+        if(array_key_exists('backgroundTaskFilter', $queryParams)) {
+            $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] = $queryParams['backgroundTaskFilter'];
+        }
+        if(array_key_exists('clickAndSave', $queryParams)) {
+            $sessionData[self::AI_SUITE_CLICK_AND_SAVE] = $queryParams['clickAndSave'] === '1';
         }
     }
 
@@ -104,6 +110,16 @@ class SessionService implements SingletonInterface
     {
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_WEB_PAGE_ID] ?? 0;
+    }
+
+    public function getBackgroundTaskFilter(): string {
+        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        return $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] ?? '';
+    }
+
+    public function getClickAndSaveState(): bool {
+        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        return $sessionData[self::AI_SUITE_CLICK_AND_SAVE] ?? false;
     }
 
     /**

@@ -3,12 +3,19 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
+    <h2 class="mb-4">
+        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
+    </h2>
+    <f:if condition="{taskStatistics}">
+        <section class="mb-5" id="backgroundTaskStatistics">
+            <f:render partial="BackgroundTask/Statistic/Overall" arguments="{taskStatistics: taskStatistics}" />
+            <f:render partial="BackgroundTask/Statistic/Detailed" arguments="{taskStatistics: taskStatistics}" />
+        </section>
+    </f:if>
+
     <f:if condition="{backgroundTasks}">
         <f:then>
             <section>
-                <h1 class="mb-4">
-                    <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
-                </h1>
                 <div id="clickAndSaveInfo" class="d-flex my-4 position-relative">
                     <label for="clickAndSave">
                         <input type="checkbox" name="clickAndSave" id="clickAndSave" />
@@ -42,3 +49,5 @@
         </f:then>
     </f:if>
 </f:section>
+
+</html>

@@ -95,7 +95,7 @@ class AiSuiteController extends AbstractBackendController
     public function dashboardAction(): ResponseInterface
     {
         try {
-            if ($this->extConf['aiSuiteApiKey'] === '' && $this->backendUserService->checkGroupSpecificInputs('aiSuiteApiKey') === '') {
+            if (empty($this->extConf['aiSuiteApiKey'])) {
                 $this->requestsRepository->deleteRequests();
                 $this->view->addFlashMessage(
                     $this->translationService->translate('aiSuite.module.missingAiSuiteApiKey.message'),
@@ -113,9 +113,9 @@ class AiSuiteController extends AbstractBackendController
                 $paidRequests = $answer->getResponseData()['paid_requests'] ?? -1;
                 $aboRequests = $answer->getResponseData()['abo_requests'] ?? -1;
                 $modelType = $answer->getResponseData()['model_type'] ?? '';
-                $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
+                $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType, $this->extConf['aiSuiteApiKey']);
             } else {
-                $this->requestsRepository->deleteRequests();
+                $this->requestsRepository->deleteRequests($this->extConf['aiSuiteApiKey']);
                 $this->view->addFlashMessage(
                     $answer->getResponseData()['message'],
                     $this->translationService->translate('aiSuite.module.warningFetchingCreditsState.title'),

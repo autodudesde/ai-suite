@@ -194,7 +194,7 @@ class PagesRepository extends AbstractRepository
     public function fetchSysFileReferences(array $pagesUids, string $column, int $sysLanguageUid, bool $showOnlyEmpty): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.' . $column . ' AS columnValue', 'sf.name AS fileName', 'sf.mime_type AS fileMimeType')
+        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.' . $column . ' AS columnValue', 'sf.name AS fileName', 'sf.mime_type AS fileMimeType', 'sf.size AS size')
             ->from('sys_file_reference', 'sfr')
             ->leftJoin(
                 'sfr',

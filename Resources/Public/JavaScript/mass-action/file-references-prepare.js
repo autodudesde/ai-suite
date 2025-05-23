@@ -107,7 +107,7 @@ class FileReferencePrepare {
                             formData.append('massActionFileReferencesExecute[sysLanguage]', document.querySelector('select[name="massActionFileReferencesPrepare[sysLanguage]"]').value);
                             formData.append('massActionFileReferencesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
                             for (let key in selectedFileReferences) {
-                                if(counter === 5) {
+                                if(counter === 3) {
                                     try {
                                         handledFileReferences = { ...handledFileReferences, ...currentFileReferences };
                                         formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));

@@ -13,6 +13,7 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
+use AutoDudes\AiSuite\Factory\SettingsFactory;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
 use AutoDudes\AiSuite\Service\LibraryService;
@@ -42,6 +43,10 @@ class BackgroundTaskController extends AbstractBackendController
 
     protected LoggerInterface $logger;
 
+    protected SettingsFactory $settingsFactory;
+
+    protected array $extConf = [];
+
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
         IconFactory $iconFactory,
@@ -57,7 +62,8 @@ class BackgroundTaskController extends AbstractBackendController
         SessionService $sessionService,
         RequestsRepository $requestsRepository,
         BackgroundTaskService $backgroundTaskService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SettingsFactory $settingsFactory
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -76,6 +82,8 @@ class BackgroundTaskController extends AbstractBackendController
         $this->requestsRepository = $requestsRepository;
         $this->backgroundTaskService = $backgroundTaskService;
         $this->logger = $logger;
+        $this->settingsFactory = $settingsFactory;
+        $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
 
     /**
@@ -99,7 +107,7 @@ class BackgroundTaskController extends AbstractBackendController
                 $aboRequests = $answer->getResponseData()['abo_requests'] ?? -1;
                 $modelType = $answer->getResponseData()['model_type'] ?? '';
                 try {
-                    $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType);
+                    $this->requestsRepository->setRequests($freeRequests, $paidRequests, $aboRequests, $modelType, $this->extConf['aiSuiteApiKey']);
                 } catch (\Exception $e) {
                     $this->requestsRepository->deleteRequests();
                     $this->view->addFlashMessage(
@@ -130,6 +138,8 @@ class BackgroundTaskController extends AbstractBackendController
                 }
                 $this->backgroundTaskService->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $answer->getResponseData()['statusData']);
             }
+            $taskStatistics = $this->backgroundTaskService->getBackgroundTasksStatistics();
+            $this->view->assign('taskStatistics', $taskStatistics);
             $this->view->assign('backgroundTasks', $backgroundTasks);
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());

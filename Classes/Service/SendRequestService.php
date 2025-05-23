@@ -138,7 +138,8 @@ class SendRequestService implements SingletonInterface
                 $answer->getResponseData()['free_requests'],
                 $answer->getResponseData()['paid_requests'],
                 $answer->getResponseData()['abo_requests'],
-                $answer->getResponseData()['model_type'] ?? ''
+                $answer->getResponseData()['model_type'] ?? '',
+                $this->extConf['aiSuiteApiKey']
             );
             BackendUtility::setUpdateSignal('updateTopbar');
         }

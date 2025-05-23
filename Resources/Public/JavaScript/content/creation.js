@@ -3,13 +3,14 @@ import General from "@autodudes/ai-suite/helper/general.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
+import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 
 class Creation {
 
     constructor() {
         this.hideShowImageLibraries();
         this.hideShowTextLibraries();
-        this.addAdditionalImageGenerationSettingsHandling();
+        GenerationHandling.addAdditionalImageGenerationSettingsHandling();
         this.addFormSubmitEventListener();
         PromptTemplate.loadPromptTemplates('initialPrompt');
         this.calculateRequestAmount();
@@ -81,28 +82,38 @@ class Creation {
             formsWithSpinner.forEach(function (form, index, arr) {
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
-                    document.querySelector('input[name="additionalImageSettings"]').value = self.getAdditionalImageSettings();
-                    const fileCheckboxes = document.querySelectorAll('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"], .request-field-checkbox[value="file"]');
-
-                    const atLeastOneChecked = Array.from(fileCheckboxes).some(function (checkbox) {
-                        return checkbox.checked;
-                    });
-                    let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="initialPrompt"]').value
-                    if (enteredPrompt.length < 5) {
-                        Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
-                    }
-                    if(atLeastOneChecked === false) {
-                        Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedTitle'], TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedMessage'], 8);
-                    }
-                    if(atLeastOneChecked && enteredPrompt.length > 4) {
-                        Generation.showSpinner();
-                        const submitBtn = form.querySelector('button[type="submit"]');
-                        let data = {
-                            uuid: submitBtn.getAttribute('data-uuid'),
-                            pageId: submitBtn.getAttribute('data-page-id'),
-                        };
-                        StatusHandling.fetchStatusContentElement(data, self);
-                        form.submit();
+                    let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
+                    try {
+                        document.querySelector('input[name="additionalImageSettings"]').value = GenerationHandling.getAdditionalImageSettings(imageAiModel);
+                        const fileCheckboxes = document.querySelectorAll('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"], .request-field-checkbox[value="file"]');
+                        const atLeastOneChecked = Array.from(fileCheckboxes).some(function (checkbox) {
+                            return checkbox.checked;
+                        });
+                        let enteredPrompt = document.querySelector('div[data-module-id="aiSuite"] textarea[name="initialPrompt"]').value
+                        if (enteredPrompt.length < 5) {
+                            Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
+                        }
+                        if(atLeastOneChecked === false) {
+                            Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedTitle'], TYPO3.lang['aiSuite.module.notification.modal.noFieldsSelectedMessage'], 8);
+                        }
+                        if(atLeastOneChecked && enteredPrompt.length > 4) {
+                            Generation.showSpinner();
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            let data = {
+                                uuid: submitBtn.getAttribute('data-uuid'),
+                                pageId: submitBtn.getAttribute('data-page-id'),
+                            };
+                            StatusHandling.fetchStatusContentElement(data, self);
+                            form.submit();
+                        }
+                    } catch (error) {
+                        if (error.message === 'Invalid URL for --sref parameter') {
+                            Notification.warning(
+                                TYPO3.lang['AiSuite.notification.invalidUrlTitle'],
+                                TYPO3.lang['AiSuite.notification.invalidUrlMessage'],
+                                8
+                            );
+                        }
                     }
                 });
             });
@@ -123,48 +134,6 @@ class Creation {
             marker = TYPO3.lang['aiSuite.module.oneCredit'];
         }
         document.querySelector('div[data-module-id="aiSuite"] .calculated-requests').textContent = '(' + calculatedRequests + ' ' + marker + ')';
-    }
-
-    addAdditionalImageGenerationSettingsHandling() {
-        let imageGenerationLibraries = document.querySelectorAll('.image-generation-library input[name="libraries[imageGenerationLibrary]"]');
-        let imageSettingsMidjourney = document.querySelector('.image-settings-midjourney');
-
-        imageGenerationLibraries.forEach(function(element) {
-            element.addEventListener('click', function(event) {
-                if(event.target.value === 'Midjourney') {
-                    imageSettingsMidjourney.style.display = 'block';
-                } else {
-                    imageSettingsMidjourney.style.display = 'none';
-                }
-            });
-        });
-    }
-    getAdditionalImageSettings() {
-        let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
-        let additionalSettings = '';
-        if(imageAiModel === 'Midjourney') {
-            let imageSettingsMidjourneySelect = document.querySelectorAll('.image-settings-midjourney select');
-            let imageSettingsMidjourneyInputText = document.querySelectorAll('.image-settings-midjourney input[type="text"]');
-            imageSettingsMidjourneySelect.forEach(function(settingsElement) {
-                let prefix = settingsElement.getAttribute('data-prefix');
-                let value = settingsElement.value;
-                additionalSettings += ' ' + prefix + ' ' + value;
-            });
-            imageSettingsMidjourneyInputText.forEach(function(settingsElement) {
-                let prefix = settingsElement.getAttribute('data-prefix');
-                let value = settingsElement.value;
-                if(prefix === '--no' && value.trim() !== '') {
-                    value = value.replace(', ', ',');
-                    value = value.replace('  ', ' ');
-                    value = value.replace(' ', ',');
-                }
-                value = value.trim();
-                if(value !== '') {
-                    additionalSettings += ' ' + prefix + ' ' + value;
-                }
-            });
-        }
-        return additionalSettings;
     }
 }
 export default new Creation();

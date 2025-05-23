@@ -459,7 +459,7 @@ div[data-module-id="aiSuite"] {
 
                 .title {
                     font-size: 0.9rem;
-                    padding-left: 1rem;
+                    padding: 1rem;
                 }
             }
 
@@ -539,6 +539,12 @@ div[data-module-id="aiSuite"] {
 
     button strong {
         pointer-events: none;
+    }
+    .size-info {
+        font-weight: 600;
+    }
+    .size-info svg {
+        color: #dc3545;
     }
 }
 
@@ -625,6 +631,24 @@ div[data-module-id="aiSuite"] {
     }
 }
 
+#backgroundTaskStatistics .card .card-header {
+    height: initial;
+    transition: background-color 0.2s ease;
+    padding-bottom: 1rem;
+}
+
+#backgroundTaskStatistics .card .card-header .toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+#backgroundTaskStatistics .card .card-header[aria-expanded="false"] .toggle-icon {
+    transform: rotate(180deg);
+}
+
+#backgroundTaskStatistics .card .card-header:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
 /* Animations */
 @keyframes l7-1 {
     0%,55%,100% { border-top-left-radius:0; border-bottom-right-radius:0 }
@@ -679,7 +703,7 @@ div[data-module-id="aiSuite"] {
 
     .ck-prompt-template-dropdown .ck.ck-dropdown {
         width: 100%;
-        border: 1px solid black;
+        border: 1px solid var(--typo3-text-color-base);
         border-radius: 3px;
 
         .ck-button.ck-dropdown__button {
@@ -693,7 +717,7 @@ div[data-module-id="aiSuite"] {
             &,
             .ck-button__label {
                 width: 100%;
-                color: black !important;
+                color: var(--typo3-text-color-base);
                 background: transparent !important;
             }
         }
