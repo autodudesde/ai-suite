@@ -105,16 +105,17 @@ class ContentService
         int $pid,
         string $table
     ): void {
-        if (!empty($paletteName)) {
-            $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
-            foreach ($fieldsArray as $fieldString) {
-                $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
-                $fieldName = $fieldArray['fieldName'];
-                if ($fieldName === '--linebreak--') {
-                    continue;
-                } else {
-                    $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
-                }
+        if (empty($paletteName) || empty($GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'])) {
+            return;
+        }
+        $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
+        foreach ($fieldsArray as $fieldString) {
+            $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
+            $fieldName = $fieldArray['fieldName'];
+            if ($fieldName === '--linebreak--') {
+                continue;
+            } else {
+                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
             }
         }
     }

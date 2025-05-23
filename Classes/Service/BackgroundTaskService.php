@@ -5,6 +5,7 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
@@ -15,19 +16,22 @@ class BackgroundTaskService
     protected PagesRepository $pagesRepository;
     protected SiteFinder $siteFinder;
     protected PageRepository $pageRepository;
+    protected MetadataService $metadataService;
 
     public function __construct(
         BackendUserService $backendUserService,
         BackgroundTaskRepository $backgroundTaskRepository,
         PagesRepository $pagesRepository,
         SiteFinder $siteFinder,
-        PageRepository $pageRepository
+        PageRepository $pageRepository,
+        MetadataService $metadataService
     ) {
         $this->backendUserService = $backendUserService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
         $this->pagesRepository = $pagesRepository;
         $this->siteFinder = $siteFinder;
         $this->pageRepository = $pageRepository;
+        $this->metadataService = $metadataService;
     }
 
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
@@ -156,11 +160,17 @@ class BackgroundTaskService
         foreach ($backgroundTasks as $scope => $tasksByColumn) {
             foreach ($tasksByColumn as $column => $tasks) {
                 foreach ($tasks as $key => $task) {
-                    $backgroundTasks[$scope][$column][$key]['status'] = $task['status'];
-                    $answer = json_decode($task['answer'], true);
+                    if (array_key_exists($task['uuid'], $fetchedStatusData) && array_key_exists('status', $fetchedStatusData[$task['uuid']]) && array_key_exists('answer', $fetchedStatusData[$task['uuid']])) {
+                        $backgroundTasks[$scope][$column][$key]['status'] = $fetchedStatusData[$task['uuid']]['status'];
+                        $answer = json_decode($fetchedStatusData[$task['uuid']]['answer'], true);
+                    } else {
+                        $backgroundTasks[$scope][$column][$key]['status'] = $task['status'];
+                        $answer = json_decode($task['answer'], true);
+                    }
                     if (isset($answer['type'])) {
                         if ($answer['type'] === 'Metadata' && isset($answer['body']['metadataResult'])) {
-                            $backgroundTasks[$scope][$column][$key]['metadataSuggestions'] = $answer['body']['metadataResult'];
+                            $result = array_filter($answer['body']['metadataResult'], 'is_string');
+                            $backgroundTasks[$scope][$column][$key]['metadataSuggestions'] = $result;
                         } elseif ($answer['type'] === 'Error' && isset($answer['body']['message'])) {
                             $backgroundTasks[$scope][$column][$key]['error'] = $answer['body']['message'];
                         }
@@ -168,6 +178,68 @@ class BackgroundTaskService
                     unset($backgroundTasks[$scope][$column][$key]['answer']);
                 }
             }
+        }
+    }
+
+    public function getBackgroundTasksStatistics(): ?array
+    {
+        try {
+            $statuses = ['finished', 'pending', 'taskError'];
+            $scopes = ['page', 'fileReference', 'fileMetadata'];
+            $statistics = [
+                'total' => [
+                    'finished' => 0,
+                    'pending' => 0,
+                    'taskError' => 0,
+                    'total' => 0
+                ]
+            ];
+
+            foreach ($scopes as $scope) {
+                $statistics[$scope] = [
+                    'finished' => 0,
+                    'pending' => 0,
+                    'taskError' => 0,
+                    'total' => 0,
+                    'columns' => []
+                ];
+            }
+
+            $result =  $this->backgroundTaskRepository->countBackgroundTasksByStatusAndScope();
+            $pageMetadataColumns = $this->metadataService->getMetadataColumns();
+            $fileMetadataColumns = $this->metadataService->getFileMetadataColumns();
+
+            foreach ($result as $row) {
+                $scope = $row['scope'];
+                $status = $row['status'] === 'task-error' ? 'taskError' : $row['status'];
+                $column = $row['column'];
+                $count = (int)$row['count'];
+
+                if (!in_array($scope, $scopes) || !in_array($status, $statuses)) {
+                    continue;
+                }
+
+                $statistics['total'][$status] += $count;
+                $statistics['total']['total'] += $count;
+
+                $statistics[$scope][$status] += $count;
+                $statistics[$scope]['total'] += $count;
+
+                if (!isset($statistics[$scope]['columns'][$column])) {
+                    $statistics[$scope]['columns'][$column] = [
+                        'finished' => 0,
+                        'pending' => 0,
+                        'taskError' => 0,
+                        'total' => 0,
+                        'columnName' => $scope === 'page' ? $pageMetadataColumns[$column] : $fileMetadataColumns[$column],
+                    ];
+                }
+                $statistics[$scope]['columns'][$column][$status] += $count;
+                $statistics[$scope]['columns'][$column]['total'] += $count;
+            }
+            return $statistics;
+        } catch (\Throwable $e) {
+            return null;
         }
     }
 }

@@ -37,48 +37,61 @@ class GenerationHandling {
             let enteredPrompt = modal.querySelector('.modal-body textarea#imageGenerationPrompt').value ?? '';
             let imageAiModel = modal.querySelector('.modal-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
 
-            let additionalImageSettings = self.getAdditionalImageSettings(modal, imageAiModel);
-            enteredPrompt += additionalImageSettings;
+            try {
+                let additionalImageSettings = self.getAdditionalImageSettings(imageAiModel, modal);
+                enteredPrompt += additionalImageSettings;
 
-            if (enteredPrompt.length < 10) {
-                Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
-            } else {
-                data.uuid = ev.target.getAttribute('data-uuid');
-                data.imagePrompt = enteredPrompt;
-                data.imageAiModel = imageAiModel;
-                Modal.dismiss();
-                if (scope === 'ContentElement') {
-                    if (data.imageAiModel === 'DALL-E') {
-                        const DalleContentElement = (await import('./wizards/dalle-content-element.js')).default
-                        DalleContentElement.addImageGenerationWizard(data);
-                    } else if (data.imageAiModel === 'Midjourney') {
-                        const MidjourneyContentElement = (await import('./wizards/midjourney-content-element.js')).default
-                        MidjourneyContentElement.addImageGenerationWizard(data);
-                    }
-                } else if(scope === 'FileList') {
-                    data.langIsoCode = modal.querySelector('.modal-body #languageSelection select').value ?? '';
-                    if (data.imageAiModel === 'DALL-E') {
-                        const DalleFileList = (await import('./wizards/dalle.js')).default
-                        DalleFileList.addImageGenerationWizard(data, true);
-                    } else if (data.imageAiModel === 'Midjourney') {
-                        const MidjourneyFileList = (await import('./wizards/midjourney.js')).default
-                        MidjourneyFileList.addImageGenerationWizard(data, true);
-                    }
+                if (enteredPrompt.length < 10) {
+                    Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
                 } else {
-                    if (data.imageAiModel === 'DALL-E') {
-                        const Dalle = (await import('./wizards/dalle.js')).default
-                        Dalle.addImageGenerationWizard(data);
-                    } else if (data.imageAiModel === 'Midjourney') {
-                        const Midjourney = (await import('./wizards/midjourney.js')).default
-                        Midjourney.addImageGenerationWizard(data);
+                    data.uuid = ev.target.getAttribute('data-uuid');
+                    data.imagePrompt = enteredPrompt;
+                    data.imageAiModel = imageAiModel;
+                    Modal.dismiss();
+                    if (scope === 'ContentElement') {
+                        if (data.imageAiModel === 'DALL-E') {
+                            const DalleContentElement = (await import('./wizards/dalle-content-element.js')).default
+                            DalleContentElement.addImageGenerationWizard(data);
+                        } else if (data.imageAiModel === 'Midjourney') {
+                            const MidjourneyContentElement = (await import('./wizards/midjourney-content-element.js')).default
+                            MidjourneyContentElement.addImageGenerationWizard(data);
+                        }
+                    } else if(scope === 'FileList') {
+                        data.langIsoCode = modal.querySelector('.modal-body #languageSelection select').value ?? '';
+                        if (data.imageAiModel === 'DALL-E') {
+                            const DalleFileList = (await import('./wizards/dalle.js')).default
+                            DalleFileList.addImageGenerationWizard(data, true);
+                        } else if (data.imageAiModel === 'Midjourney') {
+                            const MidjourneyFileList = (await import('./wizards/midjourney.js')).default
+                            MidjourneyFileList.addImageGenerationWizard(data, true);
+                        }
+                    } else {
+                        if (data.imageAiModel === 'DALL-E') {
+                            const Dalle = (await import('./wizards/dalle.js')).default
+                            Dalle.addImageGenerationWizard(data);
+                        } else if (data.imageAiModel === 'Midjourney') {
+                            const Midjourney = (await import('./wizards/midjourney.js')).default
+                            Midjourney.addImageGenerationWizard(data);
+                        }
                     }
+                }
+            } catch (error) {
+                if (error.message === 'Invalid URL for --sref parameter') {
+                    Notification.warning(
+                        TYPO3.lang['AiSuite.notification.invalidUrlTitle'],
+                        TYPO3.lang['AiSuite.notification.invalidUrlMessage'],
+                        8
+                    );
                 }
             }
         });
     }
-    addAdditionalImageGenerationSettingsHandling(modal) {
-        let imageGenerationLibraries = modal.querySelectorAll('.modal-body .image-generation-library input[name="libraries[imageGenerationLibrary]"]');
-        let imageSettingsMidjourney = modal.querySelector('.modal-body .image-settings-midjourney');
+    addAdditionalImageGenerationSettingsHandling(modal = null) {
+        const selector = modal === null ? document : modal;
+        const prefix = modal === null ? '' : '.modal-body ';
+
+        const imageGenerationLibraries = selector.querySelectorAll(`${prefix}.image-generation-library input[name="libraries[imageGenerationLibrary]"]`);
+        const imageSettingsMidjourney = selector.querySelector(`${prefix}.image-settings-midjourney`);
 
         imageGenerationLibraries.forEach(function(element) {
             element.addEventListener('click', function(event) {
@@ -90,11 +103,14 @@ class GenerationHandling {
             });
         });
     }
-    getAdditionalImageSettings(modal, imageAiModel) {
+    getAdditionalImageSettings(imageAiModel, modal = null) {
         let additionalSettings = '';
         if(imageAiModel === 'Midjourney') {
-            let imageSettingsMidjourneySelect = modal.querySelectorAll('.modal-body .image-settings-midjourney select');
-            let imageSettingsMidjourneyInputText = modal.querySelectorAll('.modal-body .image-settings-midjourney input[type="text"]');
+            const selector = modal === null ? document : modal;
+            const prefix = modal === null ? '' : '.modal-body ';
+
+            const imageSettingsMidjourneySelect = selector.querySelectorAll(`${prefix}.image-settings-midjourney select`);
+            const imageSettingsMidjourneyInputText = selector.querySelectorAll(`${prefix}.image-settings-midjourney input[type="text"]`);
             imageSettingsMidjourneySelect.forEach(function(settingsElement) {
                 let prefix = settingsElement.getAttribute('data-prefix');
                 let value = settingsElement.value;
@@ -105,6 +121,18 @@ class GenerationHandling {
                 let value = settingsElement.value;
                 if(prefix === '--no' && value.trim() !== '') {
                     value = value.replace(' ', ', ');
+                }
+                if(prefix === '--sref' && value.trim() !== '') {
+                    let isValidUrl;
+                    try {
+                        const url = new URL(value);
+                        isValidUrl = url.protocol === 'http:' || url.protocol === 'https:';
+                    } catch (e) {
+                        isValidUrl = false;
+                    }
+                    if(!isValidUrl) {
+                        throw new Error('Invalid URL for --sref parameter');
+                    }
                 }
                 value = value.trim();
                 if(value !== '') {

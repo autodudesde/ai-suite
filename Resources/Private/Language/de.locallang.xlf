@@ -1201,7 +1201,7 @@
             <target>Bitte wähle mindestens eine Datei aus.</target></trans-unit>
             <trans-unit id="AiSuite.massAction.processing" resname="AiSuite.massAction.processing">
                 <source>Already handled %s: </source>
-            <target>Bereits bearbeitete %s: </target></trans-unit>
+            <target>Bereits bearbeitete %s:</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
                 <source>Tasks successfully created</source>
             <target>Aufgaben erfolgreich erstellt</target></trans-unit>
@@ -1377,8 +1377,8 @@
                 <source>More tasks available</source>
             <target>Weitere Aufgaben verfügbar</target></trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.message" resname="AiSuite.backgroundTasks.loadMoreHint.message">
-                <source>The first 50 tasks are displayed. Once you have completed one or more tasks, you can load additional tasks using the "Load more" button.</source>
-            <target>Es werden die ersten 50 Aufgaben angezeigt. Sobald du eine oder mehrere Aufgaben erledigt hast, kannst du über den Button „Mehr laden“ weitere Aufgaben laden.</target></trans-unit>
+                <source>The first 50 tasks are displayed. Additional tasks will be loaded automatically as soon as the tasks are completed.</source>
+            <target>Es werden die ersten 50 Aufgaben angezeigt. Weitere Aufgaben werden automatisch geladen, sobald die Aufgaben erledigt sind.</target></trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
                 <source>Content of the following files could not be fetched: </source>
             <target>Der Inhalt der folgenden Dateien konnte nicht abgerufen werden:</target></trans-unit>
@@ -1400,6 +1400,54 @@
             <trans-unit id="AiSuite.notification.deeplSyncFailed" resname="AiSuite.notification.deeplSyncFailed">
                 <source>DeepL glossaries synchronization failed</source>
             <target>Die Synchronisierung der DeepL-Glossare ist fehlgeschlagen</target></trans-unit>
+            <trans-unit id="AiSuite.notification.imageSizeTooLargeBadge" resname="AiSuite.notification.imageSizeTooLargeBadge">
+                <source>Image size too large</source>
+            <target>Bildgröße zu groß</target></trans-unit>
+            <trans-unit id="AiSuite.notification.imageSizeTooLarge" resname="AiSuite.notification.imageSizeTooLarge">
+                <source>Based on your environment configuration, this image is too large and would cause problems.</source>
+            <target>Basierend auf Ihrer Umgebungskonfiguration ist dieses Bild zu groß und würde Probleme verursachen.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.invalidUrlTitle" resname="AiSuite.notification.invalidUrlTitle">
+                <source>Invalid URL provided for style parameter</source>
+            <target>Für den Stilparameter wurde eine ungültige URL angegeben.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.invalidUrlMessage" resname="AiSuite.notification.invalidUrlMessage">
+                <source>Please check and edit your inputs.</source>
+            <target>Bitte überprüfen und korrigiere deine Eingaben.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.title">
+                <source>Background Tasks Overview</source>
+            <target>Übersicht über Hintergrundaufgaben</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.overall">
+                <source>Overall Statistics</source>
+            <target>Gesamtstatistik</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.detailed">
+                <source>Detailed Statistics</source>
+            <target>Detaillierte Statistiken</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.total">
+                <source>Total</source>
+            <target>Gesamt</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished">
+                <source>Finished</source>
+            <target>Fertig</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending">
+                <source>Pending</source>
+            <target>Ausstehend</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.error">
+                <source>Error</source>
+            <target>Fehler</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pages">
+                <source>Pages</source>
+            <target>Seiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileReferences">
+                <source>File References</source>
+            <target>Dateireferenzen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata">
+                <source>File Metadata</source>
+            <target>Dateimetadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn">
+                <source>By Column</source>
+            <target>Nach Spalte</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.column">
+                <source>Column</source>
+            <target>Spalte</target></trans-unit>
         </body>
     </file>
 </xliff>

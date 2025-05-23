@@ -13,7 +13,7 @@
                     </span>
                 </p>
                 <div id="sortable-file-references" class="sortable-wrap">
-                    <f:render partial="MassAction/FileReferenceTask" arguments="{tasks: fileReferences, alreadyPendingFileReferences: alreadyPendingFileReferences, column: column, columnName: columnName}" />
+                    <f:render partial="MassAction/FileReferenceTask" arguments="{tasks: fileReferences, alreadyPendingFileReferences: alreadyPendingFileReferences, column: column, columnName: columnName, maxAllowedFileSize: maxAllowedFileSize}" />
                 </div>
         </f:if>
         <f:if condition="{unsupportedFileReferences -> f:count()} > 0">

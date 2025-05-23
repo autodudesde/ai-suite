@@ -17,6 +17,7 @@ CREATE TABLE tx_aisuite_domain_model_requests (
     paid_requests int(10) DEFAULT '0',
     abo_requests int(10) DEFAULT '0',
     model_type varchar(255) DEFAULT '',
+    api_key varchar(255) DEFAULT ''
 );
 
 CREATE TABLE tx_aisuite_domain_model_backgroundtask (

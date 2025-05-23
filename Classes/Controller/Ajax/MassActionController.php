@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\DirectiveService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
@@ -58,6 +59,8 @@ class MassActionController extends AbstractAjaxController
 
     protected SysFileReferenceRepository $sysFileReferenceRepository;
 
+    protected DirectiveService $directiveService;
+
     public function __construct(
         BackendUserService $backendUserService,
         SendRequestService $requestService,
@@ -74,7 +77,8 @@ class MassActionController extends AbstractAjaxController
         SysFileMetadataRepository $sysFileMetadataRepository,
         MetadataService $metadataService,
         MassActionService $massActionService,
-        SysFileReferenceRepository $sysFileReferenceRepository
+        SysFileReferenceRepository $sysFileReferenceRepository,
+        DirectiveService $directiveService
     ) {
         parent::__construct(
             $backendUserService,
@@ -94,12 +98,13 @@ class MassActionController extends AbstractAjaxController
         $this->metadataService = $metadataService;
         $this->massActionService = $massActionService;
         $this->sysFileReferenceRepository = $sysFileReferenceRepository;
+        $this->directiveService = $directiveService;
 
         $this->supportedMimeTypes = [
             "image/jpeg",
             "image/png",
             "image/gif",
-            "image/web",
+            "image/webp",
         ];
     }
 
@@ -346,6 +351,8 @@ class MassActionController extends AbstractAjaxController
                 return $carry;
             }, []);
 
+            $params['maxAllowedFileSize'] = $this->directiveService->getEffectiveMaxUploadSize();
+
             $output = $this->getContentFromTemplate(
                 $request,
                 'FileReferencesPrepareExecute',
@@ -387,9 +394,10 @@ class MassActionController extends AbstractAjaxController
         $payload = [];
         $bulkPayload = [];
         $failedFileReferences = [];
+        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
+        $fileSizeSumInBytes = 0;
         foreach ($fileReferences as $sysFileReferenceUid => $sysFileUid) {
             try {
-                // Fallback for not given sys_file uid. We should find out, why this can happen and remove this fallback afterward.
                 if ((int)$sysFileUid === 0) {
                     $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int)$sysFileReferenceUid);
                     if (count($fileReferenceRow) === 0 || !array_key_exists('uid_local', $fileReferenceRow[0])) {
@@ -398,6 +406,34 @@ class MassActionController extends AbstractAjaxController
                     $sysFileUid = (int)$fileReferenceRow[0]["uid_local"];
                 }
                 $fileContent = $this->metadataService->getFileContent((int)$sysFileUid);
+                $fileSize = strlen($fileContent);
+
+                if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
+                    $answer = $this->requestService->sendDataRequest(
+                        'createMassAction',
+                        [
+                            'uuid' => $massActionData['parentUuid'],
+                            'payload' => $payload,
+                            'scope' => 'fileReference',
+                            'type' => 'metadata'
+                        ],
+                        '',
+                        $languageParts[0],
+                        [
+                            'text' => $massActionData['textAiModel'],
+                        ]
+                    );
+
+                    if ($answer->getType() === 'Error') {
+                        $this->logError($answer->getResponseData()['message'], $response, 503);
+                        return $response;
+                    }
+                    $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+                    $payload = [];
+                    $bulkPayload = [];
+                    $fileSizeSumInBytes = 0;
+                }
+
                 $uuid = $this->uuidService->generateUuid();
                 $bulkPayload[] = new BackgroundTask(
                     'fileReference',
@@ -415,6 +451,7 @@ class MassActionController extends AbstractAjaxController
                     'request_content' => $fileContent,
                     'uuid' => $uuid,
                 ];
+                $fileSizeSumInBytes += $fileSize;
             } catch (\Exception $e) {
                 $this->logger->error('Error while fetching file content for file with sys file reference uid ' . $sysFileReferenceUid . ': ' . $e->getMessage());
                 $failedFileReferences[] = $sysFileReferenceUid;
@@ -567,11 +604,41 @@ class MassActionController extends AbstractAjaxController
         $payload = [];
         $bulkPayload = [];
         $failedFilesMetadata = [];
+        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
+        $fileSizeSumInBytes = 0;
         foreach ($files as $sysFileMetaUid => $columns) {
             foreach ($columns as $column => $value) {
                 try {
                     $fileUid = (int)$metadataListFromRepo[$sysFileMetaUid]['file'];
                     $fileContent = $this->metadataService->getFileContent($fileUid);
+                    $fileSize = strlen($fileContent);
+
+                    if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
+                        $answer = $this->requestService->sendDataRequest(
+                            'createMassAction',
+                            [
+                                'uuid' => $massActionData['parentUuid'],
+                                'payload' => $payload,
+                                'scope' => $scope,
+                                'type' => 'metadata'
+                            ],
+                            '',
+                            $languageParts[0],
+                            [
+                                'text' => $massActionData['textAiModel'],
+                            ]
+                        );
+
+                        if ($answer->getType() === 'Error') {
+                            $this->logError($answer->getResponseData()['message'], $response, 503);
+                            return $response;
+                        }
+                        $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+                        $payload = [];
+                        $bulkPayload = [];
+                        $fileSizeSumInBytes = 0;
+                    }
+
                     $uuid = $this->uuidService->generateUuid();
                     $bulkPayload[] = new BackgroundTask(
                         $scope,
@@ -589,9 +656,10 @@ class MassActionController extends AbstractAjaxController
                         'request_content' => $fileContent,
                         'uuid' => $uuid,
                     ];
+                    $fileSizeSumInBytes += $fileSize;
                 } catch (\Exception $e) {
                     $this->logger->error('Error while fetching file content for file ' . $fileUid . ' with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
-                    $failedFilesMetadata[] = $sysFileMetaUid;
+                    $failedFilesMetadata[] = $fileUid;
                 }
             }
         }

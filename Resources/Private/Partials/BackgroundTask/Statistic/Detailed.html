@@ -1,0 +1,124 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center"
+         data-bs-toggle="collapse"
+         data-bs-target="#detailedStatsCollapse"
+         aria-expanded="false"
+         aria-controls="detailedStatsCollapse"
+         style="cursor: pointer;">
+        <h3 class="mb-0">
+            <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.detailed" extensionName="ai_suite"/>
+        </h3>
+        <span class="toggle-icon">
+            <core:icon identifier="actions-chevron-down" size="small" />
+        </span>
+    </div>
+
+    <div class="collapse" id="detailedStatsCollapse">
+        <div class="card-body">
+            <div class="row">
+                <!-- Pages -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.pages" extensionName="ai_suite"/>
+                            </h4>
+                            <span class="badge badge-secondary">{taskStatistics.page.total}</span>
+                        </div>
+                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.page}" />
+                    </div>
+                </div>
+                <!-- File References -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileReferences" extensionName="ai_suite"/>
+                            </h4>
+                            <span class="badge badge-secondary">{taskStatistics.fileReference.total}</span>
+                        </div>
+                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.fileReference}" />
+                    </div>
+                </div>
+                <!-- File Metadata -->
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">
+                                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata" extensionName="ai_suite"/>
+                            </h4>
+                            <span class="badge badge-secondary">{taskStatistics.fileMetadata.total}</span>
+                        </div>
+                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.fileMetadata}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
+
+<f:section name="columnCardBody">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-success">
+                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished" extensionName="ai_suite"/>
+            </span>
+            <span class="badge badge-success">{taskStatisticsDetails.finished}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-2">
+            <span class="text-info">
+                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending" extensionName="ai_suite"/>
+            </span>
+            <span class="badge badge-info">{taskStatisticsDetails.pending}</span>
+        </div>
+        <div class="d-flex justify-content-between mb-3">
+            <span class="text-danger">
+                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.error" extensionName="ai_suite"/>
+            </span>
+            <span class="badge badge-danger">{taskStatisticsDetails.taskError}</span>
+        </div>
+        <h5 class="mt-4 mb-2">
+            <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn" extensionName="ai_suite"/>
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                <tr>
+                    <th>
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.column" extensionName="ai_suite"/>
+                    </th>
+                    <th class="text-center">
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.total" extensionName="ai_suite"/>
+                    </th>
+                    <th class="text-center text-success">
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished" extensionName="ai_suite"/>
+                    </th>
+                    <th class="text-center text-info">
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending" extensionName="ai_suite"/>
+                    </th>
+                    <th class="text-center text-danger">
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.error" extensionName="ai_suite"/>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <f:for each="{taskStatisticsDetails.columns}" as="columnStats">
+                    <tr>
+                        <td>{columnStats.columnName}</td>
+                        <td class="text-center">{columnStats.total}</td>
+                        <td class="text-center text-success">{columnStats.finished}</td>
+                        <td class="text-center text-info">{columnStats.pending}</td>
+                        <td class="text-center text-danger">{columnStats.taskError}</td>
+                    </tr>
+                </f:for>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</f:section>

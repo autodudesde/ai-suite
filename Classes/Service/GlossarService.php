@@ -129,6 +129,7 @@ class GlossarService implements SingletonInterface
             ]
         );
         if ($answer->getType() === 'Error') {
+            $this->logger->error('Error while synchronizing glossary: ' . $answer->getResponseData()['message']);
             return false;
         } else {
             $createdGlossaries = $answer->getResponseData()['createdGlossaries'];

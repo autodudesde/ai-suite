@@ -6,7 +6,6 @@ namespace AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference;
 
 use AutoDudes\AiSuite\Service\SiteService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
-use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -25,7 +24,6 @@ class AiSysFileReferenceTitle extends AbstractNode
             }
             $langIsoCode = $siteService->getIsoCodeByLanguageId((int)$this->data['databaseRow']['sys_language_uid'], $pageUid);
         } catch (\Throwable $e) {
-            GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__)->error($e->getMessage());
             return [];
         }
         return [

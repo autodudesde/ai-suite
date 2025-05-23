@@ -1377,7 +1377,7 @@
                 <source>More tasks available</source>
             </trans-unit>
             <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.message" resname="AiSuite.backgroundTasks.loadMoreHint.message">
-                <source>The first 50 tasks are displayed. Once you have completed one or more tasks, you can load additional tasks using the "Load more" button.</source>
+                <source>The first 50 tasks are displayed. Additional tasks will be loaded automatically as soon as the tasks are completed.</source>
             </trans-unit>
             <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
                 <source>Content of the following files could not be fetched: </source>
@@ -1399,6 +1399,54 @@
             </trans-unit>
             <trans-unit id="AiSuite.notification.deeplSyncFailed" resname="AiSuite.notification.deeplSyncFailed">
                 <source>DeepL glossaries synchronization failed</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.imageSizeTooLargeBadge" resname="AiSuite.notification.imageSizeTooLargeBadge">
+                <source>Image size too large</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.imageSizeTooLarge" resname="AiSuite.notification.imageSizeTooLarge">
+                <source>Based on your environment configuration, this image is too large and would cause problems.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.invalidUrlTitle" resname="AiSuite.notification.invalidUrlTitle">
+                <source>Invalid URL provided for style parameter</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.invalidUrlMessage" resname="AiSuite.notification.invalidUrlMessage">
+                <source>Please check and edit your inputs.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.title">
+                <source>Background Tasks Overview</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.overall">
+                <source>Overall Statistics</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.detailed">
+                <source>Detailed Statistics</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.total">
+                <source>Total</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished">
+                <source>Finished</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending">
+                <source>Pending</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pages">
+                <source>Pages</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileReferences">
+                <source>File References</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata">
+                <source>File Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn">
+                <source>By Column</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.column">
+                <source>Column</source>
             </trans-unit>
         </body>
     </file>

@@ -111,19 +111,25 @@ class AbstractBackendController
             $buttonBar->addButton($this->buildButton('actions-duplicate', 'tx_aisuite.module.actionmenu.massAction', 'btn-md btn-default rounded', 'ai_suite_massaction'));
         }
         if($this->backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling')) {
-            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'tx_aisuite.module.actionmenu.backgroundTask', 'btn-md btn-default mx-2 rounded', 'ai_suite_backgroundtask'));
+            $additonalParams = [];
+            if(!empty($this->sessionService->getBackgroundTaskFilter())) {
+                $additonalParams['backgroundTaskFilter'] = $this->sessionService->getBackgroundTaskFilter();
+                $additonalParams['clickAndSave'] = $this->sessionService->getClickAndSaveState();
+            }
+            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'tx_aisuite.module.actionmenu.backgroundTask', 'btn-md btn-default mx-2 rounded', 'ai_suite_backgroundtask', $additonalParams));
         }
     }
 
     /**
      * @throws RouteNotFoundException
      */
-    protected function buildButton(string $iconIdentifier, string $translationKey, string $classes, string $route): AiSuiteLinkButton
+    protected function buildButton(string $iconIdentifier, string $translationKey, string $classes, string $route, array $additionalParams = []): AiSuiteLinkButton
     {
         $rootPageId = $this->request->getAttribute('site')->getRootPageId();
         $uriParameters = [
             'id' => $this->request->getQueryParams()['id'] ?? $rootPageId,
         ];
+        $uriParameters = array_merge_recursive($uriParameters, $additionalParams);
         $url = (string)$this->uriBuilder->buildUriFromRoute($route, $uriParameters);
         $button = GeneralUtility::makeInstance(AiSuiteLinkButton::class);
         return $button

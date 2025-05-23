@@ -259,4 +259,23 @@ class BackgroundTaskRepository
             )
             ->executeStatement();
     }
+
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws DBALException
+     */
+    public function countBackgroundTasksByStatusAndScope(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        return $queryBuilder
+            ->addSelectLiteral('COUNT(*) AS ' . $queryBuilder->quoteIdentifier('count'))
+            ->addSelect('scope', 'status', 'column')
+            ->from($this->table)
+            ->groupBy('scope', 'status', 'column')
+            ->orderBy('scope')
+            ->addOrderBy('column')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 }

@@ -30,6 +30,7 @@ class FileMetadata
     protected bool $userCanRead;
     protected bool $userCanWrite;
     protected bool $userCanDelete;
+    protected int $size;
 
     public function __construct(
         int $uid = 0,
@@ -42,7 +43,8 @@ class FileMetadata
         string $publicUrl = '',
         bool $userCanRead = false,
         bool $userCanWrite = false,
-        bool $userCanDelete = false
+        bool $userCanDelete = false,
+        int $size = 0
     )
     {
         $this->uid = $uid;
@@ -56,6 +58,7 @@ class FileMetadata
         $this->userCanRead = $userCanRead;
         $this->userCanWrite = $userCanWrite;
         $this->userCanDelete = $userCanDelete;
+        $this->size = $size;
     }
 
     public static function createFromFileObject(File $file, array $metadata = []): self
@@ -73,6 +76,7 @@ class FileMetadata
         $fileMeta->userCanRead = $file->checkActionPermission('read');
         $fileMeta->userCanWrite = $file->checkActionPermission('write');
         $fileMeta->userCanDelete = $file->checkActionPermission('delete');
+        $fileMeta->size = $file->getSize();
         return $fileMeta;
     }
 
@@ -186,6 +190,16 @@ class FileMetadata
         return $this->userCanDelete;
     }
 
+    public function getSize(): int
+    {
+        return $this->size;
+    }
+
+    public function setSize(int $size): void
+    {
+        $this->size = $size;
+    }
+
     public function toArray(): array
     {
         return [
@@ -199,6 +213,7 @@ class FileMetadata
             'userCanRead' => $this->userCanRead,
             'userCanWrite' => $this->userCanWrite,
             'userCanDelete' => $this->userCanDelete,
+            'size' => $this->size
         ];
     }
 }

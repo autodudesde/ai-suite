@@ -36,6 +36,7 @@ class MassActionService implements SingletonInterface
     protected TranslationService $translationService;
     protected SessionService $sessionService;
     protected SysFileMetadataRepository $sysFileMetadataRepository;
+    protected DirectiveService $directiveService;
     protected array $supportedMimeTypes;
 
     public function __construct(
@@ -48,7 +49,8 @@ class MassActionService implements SingletonInterface
         LibraryService $libraryService,
         TranslationService $translationService,
         SessionService $sessionService,
-        SysFileMetadataRepository $sysFileMetadataRepository
+        SysFileMetadataRepository $sysFileMetadataRepository,
+        DirectiveService $directiveService,
     ) {
         $this->metadataService = $metadataService;
         $this->resourceFactory = $resourceFactory;
@@ -60,12 +62,13 @@ class MassActionService implements SingletonInterface
         $this->translationService = $translationService;
         $this->sessionService = $sessionService;
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
+        $this->directiveService = $directiveService;
 
         $this->supportedMimeTypes = [
             "image/jpeg",
             "image/png",
             "image/gif",
-            "image/web",
+            "image/webp",
         ];
     }
 
@@ -147,7 +150,7 @@ class MassActionService implements SingletonInterface
             'textGenerationLibraries' => $this->libraryService->prepareLibraries($textGenerationLibraries),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'preSelection' => $sessionData['options'] ?? [],
+            'maxAllowedFileSize' => $this->directiveService->getEffectiveMaxUploadSize(),
         ];
     }
-
 }
