@@ -70,10 +70,10 @@ class XliffService implements SingletonInterface
         try {
             $fileData = file_get_contents($file);
             if ($fileData === false) {
-                throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.');
+                throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.', 6398389116);
             }
         } catch (\Exception $e) {
-            throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.');
+            throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.', 2944521033);
         }
         $xmlData = new \SimpleXMLElement($fileData);
         $rawData = self::simpleXMLElementToArray($xmlData);

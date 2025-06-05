@@ -65,7 +65,7 @@ class BackgroundTaskController extends AbstractAjaxController
             $data = $request->getParsedBody();
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($data['uuid']);
             if (empty($backgroundTask)) {
-                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found');
+                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found', 6800832209);
             }
 
             $datamap[$backgroundTask['table_name']][$backgroundTask['table_uid']][$backgroundTask['column']] = $data['inputValue'];
@@ -74,11 +74,11 @@ class BackgroundTaskController extends AbstractAjaxController
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
             if(count($dataHandler->errorLog) > 0) {
-                throw new \Exception(implode(', ', $dataHandler->errorLog));
+                throw new \Exception(implode(', ', $dataHandler->errorLog), 7632189096);
             }
             $affectedRows = $this->backgroundTaskRepository->deleteByUuid($data['uuid']);
             if ($affectedRows === 0) {
-                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found');
+                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found', 4451806639);
             }
             $response->getBody()->write(
                 json_encode(
@@ -109,7 +109,7 @@ class BackgroundTaskController extends AbstractAjaxController
             $uuids = $data['uuids'] ?? [];
 
             if (empty($uuids)) {
-                throw new \Exception('No UUIDs provided');
+                throw new \Exception('No UUIDs provided', 3456348992);
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
@@ -119,7 +119,7 @@ class BackgroundTaskController extends AbstractAjaxController
                 ]
             );
             if ($answer->getType() === 'Error') {
-                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message'], 7911214034);
             }
             $deletedCount = $this->backgroundTaskRepository->deleteByUuids($uuids);
 
@@ -153,12 +153,12 @@ class BackgroundTaskController extends AbstractAjaxController
             $uuid = $data['uuid'] ?? '';
 
             if (empty($uuid)) {
-                throw new \Exception('No UUID provided');
+                throw new \Exception('No UUID provided', 7968544501);
             }
 
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
             if (empty($backgroundTask)) {
-                throw new \Exception('No background task with UUID ' . $uuid . ' found');
+                throw new \Exception('No background task with UUID ' . $uuid . ' found', 9102867507);
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
@@ -168,7 +168,7 @@ class BackgroundTaskController extends AbstractAjaxController
                 ]
             );
             if ($answer->getType() === 'Error') {
-                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message'], 7539338172);
             }
             $this->backgroundTaskRepository->updateStatus([
                 $uuid => [

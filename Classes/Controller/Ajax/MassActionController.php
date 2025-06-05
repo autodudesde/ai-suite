@@ -278,7 +278,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
             if(count($dataHandler->errorLog) > 0) {
-                throw new \Exception(implode(', ', $dataHandler->errorLog));
+                throw new \Exception(implode(', ', $dataHandler->errorLog), 3608910312);
             }
             $response->getBody()->write(
                 json_encode(
@@ -401,7 +401,7 @@ class MassActionController extends AbstractAjaxController
                 if ((int)$sysFileUid === 0) {
                     $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int)$sysFileReferenceUid);
                     if (count($fileReferenceRow) === 0 || !array_key_exists('uid_local', $fileReferenceRow[0])) {
-                        throw new \Exception('No file reference row found for sys file reference uid ' . $sysFileReferenceUid . '. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.');
+                        throw new \Exception('No file reference row found for sys file reference uid ' . $sysFileReferenceUid . '. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.', 2506481516);
                     }
                     $sysFileUid = (int)$fileReferenceRow[0]["uid_local"];
                 }
@@ -508,7 +508,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
             if(count($dataHandler->errorLog) > 0) {
-                throw new \Exception(implode(', ', $dataHandler->errorLog));
+                throw new \Exception(implode(', ', $dataHandler->errorLog), 9208016106);
             }
             $response->getBody()->write(
                 json_encode(
@@ -729,7 +729,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
             if(count($dataHandler->errorLog) > 0) {
-                throw new \Exception(implode(', ', $dataHandler->errorLog));
+                throw new \Exception(implode(', ', $dataHandler->errorLog), 6006998867);
             }
             $response->getBody()->write(
                 json_encode(
