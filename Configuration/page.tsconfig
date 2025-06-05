@@ -1,3 +1,5 @@
 TCEMAIN {
     translateToMessage =
 }
+
+templates.typo3/cms-backend.1720458914000 = autodudes/ai-suite:Resources/Private/

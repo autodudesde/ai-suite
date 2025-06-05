@@ -134,7 +134,7 @@ class MetadataService
         $fetchedContent = $response->getBody()->getContents();
 
         if (empty($fetchedContent)) {
-            throw new FetchedContentFailedException($this->translationService->translate('AiSuite.fetchContentFailed'));
+            throw new FetchedContentFailedException($this->translationService->translate('AiSuite.fetchContentFailed'), 1293631879);
         }
         return $fetchedContent;
     }
@@ -165,9 +165,9 @@ class MetadataService
 
         if ($previewUri === null) {
             if (array_key_exists('tx_news_pi1[news]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[action]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[controller]', $additionalQueryParameters)) {
-                throw new UnableToFetchNewsRecordException($this->translationService->translate('AiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
+                throw new UnableToFetchNewsRecordException($this->translationService->translate('AiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]), 4105934769);
             }
-            throw new UnableToLinkToPageException($this->translationService->translate('AiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
+            throw new UnableToLinkToPageException($this->translationService->translate('AiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]), 5268056041);
         }
         return $this->siteService->buildAbsoluteUri($previewUri);
     }

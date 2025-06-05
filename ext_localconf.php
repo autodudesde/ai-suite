@@ -108,9 +108,6 @@ try {
         ];
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
             = \AutoDudes\AiSuite\Hooks\TranslationHook::class;
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-            'templates.typo3/cms-backend.1720458914000 = autodudes/ai-suite:Resources/Private/'
-        );
     }
 } catch (\Throwable $e) {
 
