@@ -69,6 +69,9 @@ class BackgroundTaskController extends AbstractAjaxController
             if (empty($backgroundTask)) {
                 throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found');
             }
+            if (empty($backgroundTask['table_name'])) {
+                throw new \Exception('Background task with uuid ' . $data['uuid'] . ' has invalid table_name');
+            }
 
             $datamap[$backgroundTask['table_name']][$backgroundTask['table_uid']][$backgroundTask['column']] = $data['inputValue'];
 

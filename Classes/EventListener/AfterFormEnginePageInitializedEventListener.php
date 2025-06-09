@@ -7,7 +7,7 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 #[AsEventListener(
-    identifier: 'ai-suite/after-form-engine-page-initialized-event-listener',
+    identifier: 'tx-ai-suite/after-form-engine-page-initialized-event-listener',
     event: AfterFormEnginePageInitializedEvent::class,
 )]
 class AfterFormEnginePageInitializedEventListener

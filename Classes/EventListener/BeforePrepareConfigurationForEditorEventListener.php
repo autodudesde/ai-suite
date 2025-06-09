@@ -13,7 +13,7 @@ use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditor
 use Throwable;
 
 #[AsEventListener(
-    identifier: 'ai-suite/file-controls-event-listener',
+    identifier: 'tx-ai-suite/file-controls-event-listener',
     event: BeforePrepareConfigurationForEditorEvent::class,
 )]
 class BeforePrepareConfigurationForEditorEventListener
