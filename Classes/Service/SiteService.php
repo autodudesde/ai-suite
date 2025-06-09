@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use Psr\Http\Message\UriInterface;
+use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -24,11 +25,16 @@ class SiteService implements SingletonInterface
 {
     protected SiteFinder $siteFinder;
     protected BasicAuthService $basicAuthService;
+    protected TranslationConfigurationProvider $translationConfigurationProvider;
 
-    public function __construct(?SiteFinder $siteFinder = null, ?BasicAuthService $basicAuthService = null)
-    {
+    public function __construct(
+        ?SiteFinder $siteFinder = null,
+        ?BasicAuthService $basicAuthService = null,
+        ?TranslationConfigurationProvider $translationConfigurationProvider = null
+    ) {
         $this->siteFinder = $siteFinder ?? GeneralUtility::makeInstance(SiteFinder::class);
         $this->basicAuthService = $basicAuthService ?? GeneralUtility::makeInstance(BasicAuthService::class);
+        $this->translationConfigurationProvider = $translationConfigurationProvider ?? GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
     }
 
     public function getAvailableLanguages(bool $includeLanguageIds = false): array
@@ -57,24 +63,51 @@ class SiteService implements SingletonInterface
     }
 
     /**
+     * Get ISO code by language ID using TYPO3's built-in functionality
+     *
      * @throws SiteNotFoundException
      */
     public function getIsoCodeByLanguageId(int $languageId, int $pageUid): string
     {
         try {
+            $allSystemLanguages = $this->translationConfigurationProvider->getSystemLanguages($pageUid);
+            $sites = $this->siteFinder->getAllSites();
+            $updatedSystemLanguages = [];
+            foreach ($sites as $site) {
+                $updatedSystemLanguages = $this->addSiteLanguagesToConsolidatedList(
+                    $allSystemLanguages,
+                    $site->getAvailableLanguages($GLOBALS['BE_USER'], true)
+                );
+            }
             $site = $this->siteFinder->getSiteByPageId($pageUid);
             if($languageId === -1) {
                 $languageId = $site->getDefaultLanguage()->getLanguageId();
             }
-            foreach ($site->getLanguages() as $language) {
-                if ($language->getLanguageId() === $languageId) {
-                    return $language->getLocale()->getLanguageCode();
+            foreach ($updatedSystemLanguages as $language) {
+                if ($language['uid'] === $languageId) {
+                    return $language['isoCode'] ?? '';
                 }
             }
+            throw new SiteNotFoundException('No language found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716621);
         } catch (\Exception $e) {
             throw new SiteNotFoundException('No site found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716622);
         }
-        throw new SiteNotFoundException('No site found for language id ' . $languageId . ' and page uid ' . $pageUid, 1521716622);
+    }
+
+    protected function addSiteLanguagesToConsolidatedList(array $allSystemLanguages, array $languagesOfSpecificSite): array
+    {
+        foreach ($languagesOfSpecificSite as $language) {
+            $languageId = $language->getLanguageId();
+            if (isset($allSystemLanguages[$languageId])) {
+                $allSystemLanguages[$languageId]['isoCode'] = $language->getLocale()->getLanguageCode();
+            } else {
+                $allSystemLanguages[$languageId] = [
+                    'uid' => $languageId,
+                    'isoCode' => $language->getLocale()->getLanguageCode(),
+                ];
+            }
+        }
+        return $allSystemLanguages;
     }
 
     public function buildAbsoluteUri(UriInterface $uri): string {

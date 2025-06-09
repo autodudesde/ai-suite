@@ -48,7 +48,7 @@ class ServerRequest
     {
         return [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->extConf['aiSuiteApiKey']
+                'Authorization' => 'Bearer ' . ($this->extConf['aiSuiteApiKey'] ?? '')
             ],
             'form_params' => array_merge($this->getGeneralFormData(), $this->additionalFormData)
         ];

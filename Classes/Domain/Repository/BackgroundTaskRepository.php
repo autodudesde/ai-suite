@@ -70,8 +70,7 @@ class BackgroundTaskRepository
             )
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('page')),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('pages')),
-                $queryBuilder->expr()->eq('p.deleted', 0)
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('pages'))
             )
             ->orderBy('p.title', 'ASC')
             ->addOrderBy('bt.' . $this->sortBy, 'ASC')

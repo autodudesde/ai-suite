@@ -197,7 +197,7 @@ class PageContentFactory
                 throw new AiSuiteException('Content/SaveContent','aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
             }
         }
-        if ($this->extConf['mediaStorageFolder'] !== '') {
+        if (!empty($this->extConf['mediaStorageFolder'])) {
             try {
                 $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
             } catch (\Exception $e) {

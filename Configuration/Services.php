@@ -78,29 +78,34 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\ModifyNewContentElementWizardItemsEvent',
+            'identifier' => 'tx-ai-suite/modify-new-content-element-wizard-items-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
+            'identifier' => 'tx-ai-suite/after-tca-compilation-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => \TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent::class,
+            'identifier' => 'tx-ai-suite/after-form-engine-page-initialized-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
+            'identifier' => 'tx-ai-suite/modify-button-bar-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
             'event' => 'TYPO3\\CMS\\RteCKEditor\\Form\\Element\\Event\\BeforePrepareConfigurationForEditorEvent',
+            'identifier' => 'tx-ai-suite/before-prepare-configuration-for-editor-event-listener'
         ]);
 };

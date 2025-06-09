@@ -85,4 +85,30 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
             // nothing todo
         }
     }
+
+    /**
+     * in b13/container, version 3.1.10: function structure changed
+     */
+    protected function localizeChildren(int $uid, int $language, string $command, DataHandler $dataHandler): void
+    {
+        try {
+            $container = $this->containerFactory->buildContainer($uid);
+            $children = $container->getChildRecords();
+            foreach ($children as $record) {
+                $cmd = ['tt_content' => [$record['uid'] => [$command => $language]]];
+                $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                $localDataHandler->enableLogging = $dataHandler->enableLogging;
+                $localDataHandler->start([], $cmd, $dataHandler->BE_USER);
+                $localDataHandler->process_cmdmap();
+
+                foreach ($localDataHandler->copyMappingArray_merged as $tableKey => $table) {
+                    foreach ($table as $ceSrcLangUid => $ceDestLangUid) {
+                        $dataHandler->copyMappingArray_merged[$tableKey][$ceSrcLangUid] = $ceDestLangUid;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            // nothing todo
+        }
+    }
 }

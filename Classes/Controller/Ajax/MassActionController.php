@@ -146,7 +146,7 @@ class MassActionController extends AbstractAjaxController
                 $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages', $params['column']);
 
                 $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
-                    $carry[$item['table_uid']] = $item['status'];
+                    $carry[$item['table_uid']] = $item['status'] ?? 'pending';
                     return $carry;
                 }, []);
             }
@@ -347,7 +347,7 @@ class MassActionController extends AbstractAjaxController
             $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference', $params['column']);
 
             $params['alreadyPendingFileReferences'] = array_reduce($alreadyPendingFiles, function($carry, $item) {
-                $carry[$item['table_uid']] = $item['status'];
+                $carry[$item['table_uid']] = $item['status'] ?? 'pending';
                 return $carry;
             }, []);
 

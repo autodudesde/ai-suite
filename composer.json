@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "12.11.1",
+    "version": "12.11.2",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -37,7 +37,8 @@
         "typo3/cms-seo": "^12.4.11"
     },
     "suggest": {
-        "b13/container": "*"
+        "b13/container": "*",
+        "ichhabrecht/content-defender": "*"
     },
     "conflict": {
         "passionweb/ai-seo-helper": "*"
@@ -59,10 +60,12 @@
         }
     },
     "require-dev": {
-        "b13/container": "^2.3",
+        "friendsoftypo3/content-blocks": "^0.7",
         "bk2k/bootstrap-package": "^14.0",
-        "friendsofphp/php-cs-fixer": "^3.60",
         "georgringer/news": "^11.4",
+        "b13/container": "^2.3",
+        "ichhabrecht/content-defender": "^3.5",
+        "friendsofphp/php-cs-fixer": "^3.52",
         "helhum/typo3-console": "^8.1",
         "phpstan/phpstan": "^1.10",
         "typo3/cms-beuser": "^12.4.11",

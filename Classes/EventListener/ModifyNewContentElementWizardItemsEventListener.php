@@ -6,19 +6,8 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 
-final class ModifyNewContentElementWizardItemsEventListener
+class ModifyNewContentElementWizardItemsEventListener
 {
-    private const exclusionTabList = [
-        'ext-news',
-        'container',
-        'data',
-        'menu',
-        'special',
-        'plugins',
-        'social',
-        'forms',
-    ];
-
     private BackendUserService $backendUserService;
     private TranslationService $translationService;
 
@@ -36,22 +25,24 @@ final class ModifyNewContentElementWizardItemsEventListener
             return;
         }
         $addedAiSuiteWizardItems = [];
+        $currentTabKey = '';
         foreach ($event->getWizardItems() as $key => $wizardItem) {
-            if (!str_contains($key, '_')) {
+            if (array_key_exists('header', $wizardItem)) {
+                $currentTabKey = $key;
                 continue;
             }
-            $wizardItemParts = explode('_', $key);
-            if (in_array($wizardItemParts[0], self::exclusionTabList)) {
+            if (!array_key_exists('CType', $wizardItem['tt_content_defValues']) || empty($wizardItem['tt_content_defValues']['CType'])) {
                 continue;
             }
-            $itemName = '';
-            foreach ($wizardItemParts as $partKey => $value) {
-                if ($partKey > 0) {
-                    $itemName .= $value . '_';
-                }
+            $cType = $wizardItem['tt_content_defValues']['CType'];
+            if (in_array($currentTabKey, AfterTcaCompilationEventListener::EXCLUDE_TAB_LIST) ||
+                in_array($cType, AfterTcaCompilationEventListener::EXCLUDE_CTYPE_LIST)) {
+                continue;
             }
-            $itemName = rtrim($itemName, '_');
-            if (in_array($itemName, $addedAiSuiteWizardItems)) {
+            if (in_array($cType, $addedAiSuiteWizardItems)) {
+                continue;
+            }
+            if (null === ($wizardItem['title'] ?? null)) {
                 continue;
             }
             if (count($addedAiSuiteWizardItems) === 0) {
@@ -62,19 +53,16 @@ final class ModifyNewContentElementWizardItemsEventListener
                     ]
                 );
             }
-            if (null === ($wizardItem['title'] ?? null)) {
-                continue;
-            }
             $event->setWizardItem(
-                'aisuite_'.$itemName,
+                'aisuite_'.$cType,
                 [
                     'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
                     'title' => ($wizardItem['title']  ?? '') . ' (' . $this->translationService->translate('mlang_tabs_tab') . ')',
-                    'description' => ($wizardItem['description'] ?? '' ) . ' (with AI generated content)',
-                    'tt_content_defValues' => ($wizardItem['tt_content_defValues'] ?? []),
+                    'description' => ($wizardItem['description'] ?? '') . ' (with AI generated content)',
+                    'tt_content_defValues' => $wizardItem['tt_content_defValues'] ?? [],
                 ]
             );
-            $addedAiSuiteWizardItems[] = $itemName;
+            $addedAiSuiteWizardItems[] = $cType;
         }
         $wizardItems = $event->getWizardItems();
 
@@ -83,7 +71,7 @@ final class ModifyNewContentElementWizardItemsEventListener
         $otherEntries = [];
 
         foreach ($wizardItems as $key => $value) {
-            if (str_starts_with($key, 'common')) {
+            if (str_starts_with($key, 'default')) {
                 $commonEntries[$key] = $value;
             } elseif (str_starts_with($key, 'aisuite')) {
                 $aiSuiteEntries[$key] = $value;
@@ -92,7 +80,7 @@ final class ModifyNewContentElementWizardItemsEventListener
             }
         }
 
-        $sortedWizardItems = $commonEntries + $aiSuiteEntries + $otherEntries;
+        $sortedWizardItems = $commonEntries + $otherEntries + $aiSuiteEntries;
         $event->setWizardItems($sortedWizardItems);
     }
 }

@@ -63,7 +63,6 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
                     && !$this->isRecordDeletePlaceholder($row)
                     && !isset($translations[$lUid_OnPage])
                     && $this->getBackendUserAuthentication()->checkLanguageAccess($lUid_OnPage)
-                    && $this->translationService->isTranslatable($pageId, $lUid_OnPage)
                 ) {
                     $out .= $this->translationService->buildTranslateButton(
                         $table,
