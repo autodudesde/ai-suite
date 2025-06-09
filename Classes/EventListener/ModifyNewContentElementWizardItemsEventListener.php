@@ -8,7 +8,7 @@ use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
 #[AsEventListener(
-    identifier: 'ai-suite/modify-new-content-element-wizard-items-event-listener',
+    identifier: 'tx-ai-suite/modify-new-content-element-wizard-items-event-listener',
     event: ModifyNewContentElementWizardItemsEvent::class,
 )]
 class ModifyNewContentElementWizardItemsEventListener
@@ -34,6 +34,9 @@ class ModifyNewContentElementWizardItemsEventListener
         foreach ($event->getWizardItems() as $key => $wizardItem) {
             if (array_key_exists('header', $wizardItem)) {
                 $currentTabKey = $key;
+                continue;
+            }
+            if (!array_key_exists('CType', $wizardItem['defaultValues']) || empty($wizardItem['defaultValues']['CType'])) {
                 continue;
             }
             $cType = $wizardItem['defaultValues']['CType'];

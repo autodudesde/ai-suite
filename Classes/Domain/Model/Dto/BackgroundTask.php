@@ -12,8 +12,8 @@ class BackgroundTask
         protected string $parentUuid,
         protected string $uuid,
         protected string $column,
-        protected string $tableName,
-        protected string $idColumn,
+        protected ?string $tableName,
+        protected ?string $idColumn,
         protected int $tableUid,
         protected int $sysLanguageUid,
         protected string $status = 'pending',
@@ -46,18 +46,18 @@ class BackgroundTask
     public static function getTypesForBulkInsert(): array
     {
         return [
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_STR,
-            Connection::PARAM_INT,
+            Connection::PARAM_STR, // scope
+            Connection::PARAM_STR, // type
+            Connection::PARAM_STR, // parent_uuid
+            Connection::PARAM_STR, // uuid
+            Connection::PARAM_STR, // column
+            Connection::PARAM_STR, // slug
+            Connection::PARAM_STR, // status
+            Connection::PARAM_INT, // crdate
+            Connection::PARAM_STR, // table_name
+            Connection::PARAM_STR, // id_column
+            Connection::PARAM_INT, // table_uid
+            Connection::PARAM_INT, // sys_language_uid
         ];
     }
 
@@ -72,8 +72,8 @@ class BackgroundTask
             $this->slug,
             $this->status,
             $this->crdate,
-            $this->tableName,
-            $this->idColumn,
+            $this->tableName ?? '',
+            $this->idColumn ?? '',
             $this->tableUid,
             $this->sysLanguageUid,
         ];

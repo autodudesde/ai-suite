@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 #[AsEventListener(
-    identifier: 'ai-suite/modify-button-bar-event-listener',
+    identifier: 'tx-ai-suite/modify-button-bar-event-listener',
     event: ModifyButtonBarEvent::class,
 )]
 class ModifyButtonBarEventListener

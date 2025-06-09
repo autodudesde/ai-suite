@@ -69,7 +69,7 @@ class BackgroundTaskService
             }
             $uuidStatus[$foundBackgroundTask['uuid']] =  [
                 'uuid' => $foundBackgroundTask['uuid'],
-                'status' => $foundBackgroundTask['status']
+                'status' => $foundBackgroundTask['status'] ?? 'pending'
             ];
             $counter[$foundBackgroundTask['column']]++;
         }
@@ -112,7 +112,7 @@ class BackgroundTaskService
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status']
+                    'status' => $foundBackgroundTask['status'] ?? 'pending'
                 ];
                 $counter[$foundBackgroundTask['column']]++;
             }
@@ -141,7 +141,7 @@ class BackgroundTaskService
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status']
+                    'status' => $foundBackgroundTask['status'] ?? 'pending'
                 ];
                 $counter[$foundBackgroundTask['column']]++;
             }
@@ -162,10 +162,10 @@ class BackgroundTaskService
                 foreach ($tasks as $key => $task) {
                     if (array_key_exists($task['uuid'], $fetchedStatusData) && array_key_exists('status', $fetchedStatusData[$task['uuid']]) && array_key_exists('answer', $fetchedStatusData[$task['uuid']])) {
                         $backgroundTasks[$scope][$column][$key]['status'] = $fetchedStatusData[$task['uuid']]['status'];
-                        $answer = json_decode($fetchedStatusData[$task['uuid']]['answer'], true);
+                        $answer = json_decode($fetchedStatusData[$task['uuid']]['answer'] ?? '', true);
                     } else {
                         $backgroundTasks[$scope][$column][$key]['status'] = $task['status'];
-                        $answer = json_decode($task['answer'], true);
+                        $answer = json_decode($task['answer'] ?? '', true);
                     }
                     if (isset($answer['type'])) {
                         if ($answer['type'] === 'Metadata' && isset($answer['body']['metadataResult'])) {

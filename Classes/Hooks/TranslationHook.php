@@ -63,7 +63,7 @@ class TranslationHook
                 $elementsCount = 0;
                 foreach ($dataHandler->copyMappingArray_merged as $tableKey => $table) {
                     foreach ($table as $ceSrcLangUid => $ceDestLangUid) {
-                        $fields = $this->translationService->fetchTranslationtFields($request, [], $ceSrcLangUid, $tableKey);
+                        $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
                         if (count($fields) > 0) {
                             $translateFields[$tableKey][$ceDestLangUid] = $fields;
                             $elementsCount++;

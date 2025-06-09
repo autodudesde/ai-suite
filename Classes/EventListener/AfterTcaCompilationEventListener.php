@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Configuration\Event\AfterTcaCompilationEvent;
 
 #[AsEventListener(
-    identifier: 'ai-suite/after-tca-compilation-event-listener',
+    identifier: 'tx-ai-suite/after-tca-compilation-event-listener',
     event: AfterTcaCompilationEvent::class,
 )]
 class AfterTcaCompilationEventListener

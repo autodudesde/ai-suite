@@ -59,7 +59,7 @@ class BackendUserService implements SingletonInterface
     {
         try {
             foreach ($this->getBackendUser()->userGroups as $group) {
-                if (!empty($group[$inputKey])) {
+                if (isset($group[$inputKey]) && $group[$inputKey] !== null && $group[$inputKey] !== '') {
                     return $group[$inputKey];
                 }
             }

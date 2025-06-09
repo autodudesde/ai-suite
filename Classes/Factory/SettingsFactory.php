@@ -49,7 +49,7 @@ class SettingsFactory
                 return $this->extConf;
             }
             foreach ($this->extConf as $key => $value) {
-                $this->extConf[$key] = $this->backendUserService->checkGroupSpecificInputs($key) ?: $value;
+                $this->extConf[$key] = $this->backendUserService->checkGroupSpecificInputs($key) ?: ($value ?? '');
             }
             return $this->extConf;
         } catch (\Exception $e) {

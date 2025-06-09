@@ -92,25 +92,37 @@ class TranslationService
         $this->flexFormTranslationService = $flexFormTranslationService;
     }
 
-    public function fetchTranslationtFields(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table): array
+    public function fetchTranslationFields(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table): array
     {
         $formData = $this->getFormData($request, $defaultValues, $ceSrcLangUid, $table);
-
         $translateFields = [];
+        $this->getAllFieldsFromTableTypes($table, $formData, $translateFields);
+        return $this->contentService->cleanupRequestField($translateFields, $table);
+    }
 
-        if ($table === 'tt_content') {
-            $itemList = $GLOBALS['TCA'][$table]['types'][$formData['databaseRow']['CType'][0]]['showitem'];
-        } elseif ($table === 'sys_file_reference') {
-            $itemList = $GLOBALS['TCA'][$table]['types'][2]['showitem'];
-        } else {
-            $types = $GLOBALS['TCA'][$table]['types'];
-            $firstKey = array_key_first($types);
-            $itemList = $types[$firstKey]['showitem'];
+    protected function getAllFieldsFromTableTypes(string $table, array $formData, array &$translateFields): void
+    {
+        $types = $GLOBALS['TCA'][$table]['types'] ?? [];
+
+        if (empty($types)) {
+            return;
         }
 
-        $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $translateFields, $formData, $table);
-        return $this->contentService->cleanupRequestField($translateFields, $table);
+        if ($table === 'tt_content') {
+            $cType = $formData['databaseRow']['CType'][0] ?? '';
+            if (!empty($cType) && isset($types[$cType]['showitem'])) {
+                $itemList = $types[$cType]['showitem'];
+                $allFields = GeneralUtility::trimExplode(',', $itemList, true);
+                $this->iterateOverFieldsArray($allFields, $translateFields, $formData, $table);
+            }
+        } else {
+            foreach ($types as $typeConfig) {
+                if (!empty($typeConfig['showitem'])) {
+                    $typeFields = GeneralUtility::trimExplode(',', $typeConfig['showitem'], true);
+                    $this->iterateOverFieldsArray($typeFields, $translateFields, $formData, $table);
+                }
+            }
+        }
     }
 
     protected function explodeSingleFieldShowItemConfiguration($field): array
@@ -282,11 +294,11 @@ class TranslationService
         $title = $this->translate('aiSuite.translateRecord');
 
         if ($flagIcon) {
-            $icon = $this->iconFactory->getIcon($flagIcon, 'small', 'tx-aisuite-localization');
+            $icon = $this->iconFactory->getIcon($flagIcon, 'small', 'tx-aisuite-extension');
             $lC = $icon->render();
         } else {
             $lC = $this->iconFactory
-                ->getIcon('tx-aisuite-localization', 'small')
+                ->getIcon('tx-aisuite-extension', 'small')
                 ->render();
         }
 

@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 #[AsEventListener(
-    identifier: 'ai-suite/file-controls-event-listener',
+    identifier: 'tx-ai-suite/file-controls-event-listener',
     event: CustomFileControlsEvent::class,
 )]
 class FileControlsEventListener
