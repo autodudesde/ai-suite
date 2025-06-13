@@ -5,7 +5,7 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
         $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['description']['config'],
         [
             'fieldControl' => [
-                'importControl' => [
+                'tx_aisuite_custom_field' => [
                     'renderType' => 'aiNewsMetaDescription'
                 ]
             ]
@@ -16,7 +16,7 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
         $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['alternative_title']['config'],
         [
             'fieldControl' => [
-                'importControl' => [
+                'tx_aisuite_custom_field' => [
                     'renderType' => 'aiNewsAlternativeTitle'
                 ]
             ]

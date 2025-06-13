@@ -8,20 +8,25 @@ define([
     SaveHandling
 ) {
 
-    function addSelectionEventListeners(modal, data, slide) {
-        backToPreviousSlideButton(modal, data);
-        SaveHandling.selectionHandler(modal, 'label.ce-metadata-selection');
-        saveGeneratedMetadataButton(modal, data);
+    function Metadata() {
+
     }
 
-    function backToPreviousSlideButton(modal, data) {
+    Metadata.prototype.addSelectionEventListeners = function(modal, data, slide) {
+        this.backToPreviousSlideButton(modal, data);
+        SaveHandling.selectionHandler(modal, 'label.ce-metadata-selection');
+        this.saveGeneratedMetadataButton(modal, data);
+    }
+
+    Metadata.prototype.backToPreviousSlideButton = function(modal, data) {
         let aiSuiteBackToPreviousSlideBtn = modal.find('.modal-body').find('button#aiSuiteBackToPreviousSlideBtn');
         aiSuiteBackToPreviousSlideBtn.on('click', function() {
             MultiStepWizard.unlockPrevStep().trigger('click');
         });
     }
 
-    function saveGeneratedMetadataButton(modal) {
+    Metadata.prototype.saveGeneratedMetadataButton = function(modal) {
+        const self = this;
         let aiSuiteSaveMetadataBtn = modal.find('.modal-body').find('button#aiSuiteSaveMetadataBtn');
         aiSuiteSaveMetadataBtn.on('click', function() {
             let selectedSuggestion = modal.find('.metadata-suggestions input.metadata-selection:checked');
@@ -29,9 +34,9 @@ define([
                 Notification.warning(TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelection'], TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
             } else {
                 let data = MultiStepWizard.setup.settings['postData'];
-                insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion);
+                self.insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion);
                 modal.find('input.use-for-selection:checked').each(function() {
-                    insertSelectedSuggestions(data['table'], data['id'], $(this).val(), selectedSuggestion);
+                    self.insertSelectedSuggestions(data['table'], data['id'], $(this).val(), selectedSuggestion);
                 });
                 MultiStepWizard.dismiss();
             }
@@ -43,7 +48,7 @@ define([
      * @param {string} fieldName
      * @param {object} selectedSuggestion
      */
-    function insertSelectedSuggestions(model, modelId, fieldName, selectedSuggestion) {
+    Metadata.prototype.insertSelectedSuggestions = function(model, modelId, fieldName, selectedSuggestion) {
         if (document.querySelector('input[data-formengine-input-name="data[' + model + '][' + modelId + '][' + fieldName + ']"]')) {
             document.querySelector('input[data-formengine-input-name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
             document.querySelector('input[name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
@@ -53,9 +58,6 @@ define([
         }
     }
 
-    return {
-        addSelectionEventListeners: addSelectionEventListeners,
-        insertSelectedSuggestions: insertSelectedSuggestions,
-    };
+    return new Metadata();
 });
 

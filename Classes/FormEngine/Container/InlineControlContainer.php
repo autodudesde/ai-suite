@@ -15,7 +15,6 @@
 
 namespace AutoDudes\AiSuite\FormEngine\Container;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use TYPO3\CMS\Backend\Form\Container\AbstractContainer;
 use TYPO3\CMS\Backend\Form\InlineStackProcessor;
 use TYPO3\CMS\Backend\Form\NodeFactory;
@@ -187,12 +186,13 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             // TODO: add dynamic check for allowed file types based on the AI model
             if($mode === 'file' && $foreign_table === 'sys_file_reference' &&
                 (in_array('jpeg', $allowedArray) || in_array('jpg', $allowedArray))
-                && $elementBrowserEnabled && BackendUserUtility::checkPermissions('tx_aisuite_features:enable_image_generation')
+                && $elementBrowserEnabled && $GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_image_generation')
             ) {
                 $this->requireJsModules[] = JavaScriptModuleInstruction::forRequireJS('TYPO3/CMS/AiSuite/Ajax/Image/GenerateImage');
                 $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
                 $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
                 $buttonSubmit = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
+                $languageId = $this->data['databaseRow']['sys_language_uid'] ?? 0;
                 $item .= '
 						<button type="button" class="btn btn-default t3js-ai-suite-image-generation-add-btn"
 							' . $buttonStyle . '
@@ -204,6 +204,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
 							data-record-uid="' . htmlspecialchars($this->data['databaseRow']['uid']) . '"
 							data-fieldname="' . $this->data['fieldName'] . '"
 							data-page-id="' . htmlspecialchars($this->data['databaseRow']['pid']) . '"
+							data-language-id="' . $languageId . '"
 							data-position="0"
 							title="' . $buttonText . '"
 							data-btn-submit="' . $buttonSubmit . '"

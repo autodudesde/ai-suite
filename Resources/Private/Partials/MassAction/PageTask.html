@@ -1,0 +1,41 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+>
+<div class="list-group nested-sortable">
+    <f:for each="{tasks}" as="task">
+        <div class="list-group-item nested">
+            <f:variable name="taskStatus">{aiSuite:inArray(needle: task.uid, haystack: alreadyPendingPages)}</f:variable>
+            <div class="page-meta-content-info badge badge-info"
+                 data-table="pages"
+                 data-uid="{task.uid}"
+            >
+                <core:icon identifier="actions-document-info" size="small" /> Info
+            </div>
+            <div class="page-meta-content d-flex flex-column w-100">
+                <p class="title">
+                    <f:if condition="{taskStatus} != ''">
+                        <f:then>
+                            <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                        </f:then>
+                        <f:else>
+                            <input
+                                type="checkbox"
+                                name="page-selection"
+                                value="{task.uid}"
+                                data-slug="{task.slug}"
+                            >
+                        </f:else>
+                    </f:if>
+                    <span class="px-4">{task.title} (PID: {task.uid})</span>
+                </p>
+                <label>
+                    <strong>{columnName} ({column})</strong>
+                    <input type="text" class="w-100 page-metadata-field" value="{task.columnValue}" />
+                </label>
+            </div>
+        </div>
+    </f:for>
+</div>
+</html>

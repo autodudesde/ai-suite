@@ -6,38 +6,43 @@
 <f:section name="Content">
 
     <h1 class="mb-2">
-        <f:translate key="tx_aisuite.module.dashboard.header"/>
+        <f:translate key="tx_aisuite.module.dashboard.header" extensionName="ai_suite"/>
     </h1>
 
     <f:link.external uri="https://www.autodudes.de/documentation/ai-suite/en/introduction" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
         <core:icon identifier="actions-document-view" />
-        <f:translate key="aiSuite.module.openDocumentation"/>
+        <f:translate key="aiSuite.module.openDocumentation" extensionName="ai_suite"/>
     </f:link.external>
     <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="mx-3 my-2 px-3 py-2 btn btn-primary">
         <core:icon identifier="actions-file-video" />
-        <f:translate key="aiSuite.module.watchIntroductionVideo"/>
+        <f:translate key="aiSuite.module.watchIntroductionVideo" extensionName="ai_suite"/>
     </f:link.external>
     <f:link.external uri="https://www.autodudes.de/en/account/login" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
         <core:icon identifier="actions-key" />
-        <f:translate key="aiSuite.module.manageLicense"/>
+        <f:translate key="aiSuite.module.manageLicense" extensionName="ai_suite"/>
     </f:link.external>
 
-    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0">
+    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0 && {aboRequests} >= 0">
         <h2 class="mb-4">
-            <f:translate key="tx_aisuite.module.dashboard.creditState" />
+            <f:translate key="tx_aisuite.module.dashboard.creditState" extensionName="ai_suite"/>
         </h2>
         <p class="request-state">
             <span class="badge badge-warning p-2">
-                <f:translate key="aiSuite.module.freeCredits"/>: {freeRequests}
+                <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite"/>: {freeRequests}
             </span>
             <span class="badge badge-warning p-2 mx-3">
-                 <f:translate key="aiSuite.module.paidCredits"/>: {paidRequests}
+                 <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests}
             </span>
+            <f:if condition="{modelType} != ''">
+                <span class="badge badge-warning p-2">
+                     <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
+                </span>
+            </f:if>
         </p>
     </f:if>
 
     <h2 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.headerSections"/>
+        <f:translate key="tx_aisuite.module.dashboard.headerSections" extensionName="ai_suite"/>
     </h2>
 
     <section class="card-container">
@@ -46,7 +51,7 @@
             icon: 'content-menu-pages',
             cardname: 'pagesSection',
             controller: 'Pages',
-            action: 'overview',
+            route: 'ai_suite_page',
             status: 'active'
         }" />
 
@@ -54,7 +59,7 @@
             icon: 'actions-rocket',
             cardname: 'agencySection',
             controller: 'Agencies',
-            action: 'overview',
+            route: 'ai_suite_agencies',
             status: 'active'
         }" />
 
@@ -62,7 +67,7 @@
             icon: 'actions-message-dots',
             cardname: 'managePromptTemplates',
             controller: 'PromptTemplate',
-            action: 'overview',
+            route: 'ai_suite_prompt',
             status: 'active'
         }" />
 
@@ -73,16 +78,16 @@
                 </div>
                 <div class="card-header-body">
                     <h3 class="card-title">
-                        <f:translate key="aiSuite.module.feedbackTitle"/>
+                        <f:translate key="aiSuite.module.feedbackTitle" extensionName="ai_suite"/>
                     </h3>
                     <div class="card-longdesc">
                         <p>
-                            <f:translate key="aiSuite.module.feedbackDescription"/>
+                            <f:translate key="aiSuite.module.feedbackDescription" extensionName="ai_suite"/>
                         </p>
                     </div>
                     <br>
                     <f:link.external uri="mailto:service@autodudes.de" target="_blank" class="btn btn-secondary">
-                        <f:translate key="aiSuite.module.feedbackBtn"/>
+                        <f:translate key="aiSuite.module.feedbackBtn" extensionName="ai_suite"/>
                     </f:link.external>
                 </div>
             </div>

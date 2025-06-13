@@ -2,8 +2,6 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\ContentUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
@@ -53,6 +51,24 @@ class ContentService
         'inline'
     ];
 
+    protected array $ignoreFieldsByRecord = [
+        'tx_news_domain_model_news' => [
+            'tx_news_domain_model_link',
+            'tt_content',
+        ]
+    ];
+
+    public function cleanupRequestField(array $requestFields, $table): array
+    {
+        if (array_key_exists($table, $this->ignoreFieldsByRecord)) {
+            $ignoreFields = $this->ignoreFieldsByRecord[$table];
+            foreach ($ignoreFields as $ignoreField) {
+                unset($requestFields[$ignoreField]);
+            }
+        }
+        return $requestFields;
+    }
+
     public function fetchRequestFields(ServerRequestInterface $request, array $defaultValues, string $cType, int $pid, $table): array
     {
         $formData = $this->getFormData($defaultValues, $pid, $table);
@@ -66,7 +82,7 @@ class ContentService
         $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
         $this->iterateOverFieldsArray($request, $fieldsArray, $requestFields, $formData, $pid, $table);
-        return ContentUtility::cleanupRequestField($requestFields, $table);
+        return $this->cleanupRequestField($requestFields, $table);
     }
 
     protected function explodeSingleFieldShowItemConfiguration($field): array
@@ -90,16 +106,17 @@ class ContentService
         int $pid,
         string $table
     ): void {
-        if (!empty($paletteName)) {
-            $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
-            foreach ($fieldsArray as $fieldString) {
-                $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
-                $fieldName = $fieldArray['fieldName'];
-                if ($fieldName === '--linebreak--') {
-                    continue;
-                } else {
-                    $this->checkSingleField($request, $formData, $fieldName, $requestFields, $pid, $table);
-                }
+        if (empty($paletteName) || empty($GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'])) {
+            return;
+        }
+        $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
+        foreach ($fieldsArray as $fieldString) {
+            $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
+            $fieldName = $fieldArray['fieldName'];
+            if ($fieldName === '--linebreak--') {
+                continue;
+            } else {
+                $this->checkSingleField($request, $formData, $fieldName, $requestFields, $pid, $table);
             }
         }
     }
@@ -119,7 +136,7 @@ class ContentService
         $parameterArray['fieldConf'] = $formData['processedTca']['columns'][$fieldName];
 
         $fieldIsExcluded = $parameterArray['fieldConf']['exclude'] ?? false;
-        $fieldNotExcludable = BackendUserUtility::getBackendUser()->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
+        $fieldNotExcludable = $GLOBALS['BE_USER']->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
         if ($fieldIsExcluded && !$fieldNotExcludable) {
             return;
         }
@@ -166,7 +183,7 @@ class ContentService
             }
         }
 
-        if (in_array($renderType, $this->consideredImageRenderTypes) &&
+        if (in_array($renderType, $this->consideredImageRenderTypes) && isset($parameterArray['fieldConf']['config']['filter']) &&
             ((strpos($parameterArray['fieldConf']['config']['filter'][0]['parameters']['allowedFileExtensions'], 'jpg') !== false ||
                 strpos($parameterArray['fieldConf']['config']['filter'][0]['parameters']['allowedFileExtensions'], 'jpeg') !== false))
         ) {

@@ -1,11 +1,6 @@
 :root {
     --checkbox-radio-size: 18px;
-    --checkbox-radio-gap: 10px;
-    --checkbox-radio-border-width: 1px;
     --checkbox-radio-line-height: 1.4;
-    --radio-marker-size: 8px;
-    --checkbox-marker-size: 12px;
-    --checkbox-radius: 4px;
 }
 .ai-suite#wizardSlideOne label {
     font-size: 0.875rem;
@@ -20,22 +15,13 @@
 .ai-suite#wizardSlideOne .card-container {
     display: block;
 }
-.ai-suite#wizardSlideOne .card-container .row {
-    margin-right: -15px;
-}
+
 .ai-suite#wizardSlideOne .card-container .card {
     margin-left: 0;
 }
 .ai-suite#wizardSlideOne select {
     font-size: 0.875rem;
     padding: 0.5rem;
-}
-.ai-suite#wizardSlideOne .text-generation-library,
-.ai-suite#wizardSlideOne .image-generation-library,
-.ai-suite#wizardSlideOne .translate-generation-library,
-.ai-suite#wizardSlideOne .prompt-settings,
-.ai-suite#wizardSlideOne .image-settings {
-    margin-left: 0;
 }
 
 .ai-suite#wizardSlideOne .image-settings-midjourney {
@@ -44,46 +30,6 @@
 
 .ai-suite#wizardSlideOne .btn-primary svg {
     fill: #fff;
-}
-
-.ai-suite#wizardSlideOne .form-control {
-    -webkit-appearance: auto;
-    -moz-appearance: auto;
-    appearance: auto;
-}
-
-.ai-suite#wizardSlideOne .tooltip {
-    position: absolute;
-    right: 0;
-    display: inline-block;
-    opacity: 1;
-    width: 16px;
-    height: 16px;
-    background: black;
-    color: white;
-    text-align: center;
-    border-radius: 10px;
-    top: 4px;
-    font-size: 12px;
-}
-
-.ai-suite#wizardSlideOne .tooltip .tooltiptext {
-    visibility: hidden;
-    width: 350px;
-    background-color: black;
-    color: #fff;
-    text-align: left;
-    border-radius: 6px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 10;
-    top: -5px;
-    right: 105%;
-}
-
-.ai-suite#wizardSlideOne .tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
 }
 
 .ai-suite#wizardSlideOne .spinner-overlay {
@@ -140,40 +86,53 @@
     color: black;
 }
 
-.text-generation-library label,
+.translate-generation-library label,
 .image-generation-library label,
-.translate-generation-library label {
+.text-generation-library label {
     position: relative;
     width: 100%;
     height: 100%;
-    padding: 0.75rem 0.5rem 0.75rem 2.25rem !important;
-    background-color: #fefefe !important;
+    padding: 0.5rem !important;
     border: 1px solid #bbb !important;
     border-radius: 0.125rem !important;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
+    background-color: var(--module-docheader-bg) !important;
 }
-
-.text-generation-library label:hover,
-.image-generation-library label:hover {
-    background-color: #f9f9f9 !important;
+.translate-generation-library .icon,
+.image-generation-library .icon,
+.text-generation-library .icon {
+    margin-right: 0.5rem;
+    border-radius: 5px;
 }
-
-.text-generation-library label .request-amount,
-.image-generation-library label .request-amount,
-.translate-generation-library label .request-amount {
+.translate-generation-library .checked-icon .icon,
+.image-generation-library .checked-icon .icon,
+.text-generation-library .checked-icon .icon {
+    width: 25px;
+    height: 25px;
     position: absolute;
-    top: 0;
-    right: 0;
-    padding: 10px;
+    right: 15px;
+    top: 15px;
+    display: none;
+}
+.translate-generation-library label .request-amount,
+.image-generation-library label .request-amount,
+.text-generation-library label .request-amount {
+    font-size: 0.7rem;
+}
+.translate-generation-library label strong,
+.image-generation-library label strong,
+.text-generation-library label strong {
     font-size: 0.8rem;
-    background: #F09C42;
-    height: 100%;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    min-width: 100px;
-    color: black;
-    font-weight: 600;
+}
+
+.ai-suite#wizardSlideOne input[type="radio"]:checked + label {
+    background-color: var(--typo3-card-bg) !important;
+    .checked-icon .icon {
+        display: block;
+    }
+}
+.ai-suite#wizardSlideOne input[type="radio"]:checked + label img.checked-icon {
+    display: block;
 }
 
 .ai-suite#wizardSlideOne .btn.btn-secondary {
@@ -201,10 +160,6 @@
     transition: all ease-in-out .3s;
 }
 
-.ai-suite#wizardSlideOne button:not(.btn):hover {
-    background: #EE4524;
-}
-
 .ai-suite#wizardSlideOne button.add,
 .ai-suite#wizardSlideOne button.edit,
 .ai-suite#wizardSlideOne button.delete {
@@ -219,98 +174,13 @@
     background: #cacaca;
 }
 
-.ai-suite#wizardSlideOne:not(.image-selection) input[type="radio"],
-.ai-suite#wizardSlideOne:not(.image-selection) input[type="checkbox"] {
+.ai-suite#wizardSlideOne:not(.image-selection) input[type="radio"] {
     position: absolute;
     padding: 0;
-    margin: 0;
-    margin-top: calc((1em * var(--checkbox-radio-line-height) - var(--checkbox-radio-size)) / 2);
+    margin: calc((1em * var(--checkbox-radio-line-height) - var(--checkbox-radio-size)) / 2) 0 0;
     opacity: 0;
     height: var(--checkbox-radio-size);
     width: 100%;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:not(.image-selection) + label,
-.ai-suite#wizardSlideOne input[type="checkbox"]:not(.image-selection) + label {
-    display: inline-block;
-    line-height: var(--checkbox-radio-line-height);
-    user-select: none;
-    cursor: pointer;
-    padding-left: calc(var(--checkbox-radio-size) + var(--checkbox-radio-gap));
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:not(.image-selection) + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:not(.image-selection) + label::before {
-    content: '';
-    box-sizing: border-box;
-    display: inline-block;
-    position: relative;
-    vertical-align: middle;
-    top: -0.1em;
-    margin-left: calc(-1 * (var(--checkbox-radio-size) + var(--checkbox-radio-gap)));
-    flex-shrink: 0;
-    width: var(--checkbox-radio-size);
-    height: var(--checkbox-radio-size);
-    background-color: white;
-    border-width: var(--checkbox-radio-border-width);
-    border-color: rgba(240, 156, 66, 0.65);
-    border-style: solid;
-    box-shadow: 0 0.9px 1.25px hsla(0, 0%, 0%, 0.025),0 3px 5px hsla(0, 0%, 0%, 0.05),0 12px 20px hsla(0, 0%, 0%, 0.09);
-    background-repeat: no-repeat;
-    background-position: center;
-    margin-right: var(--checkbox-radio-gap);
-    transition: transform .2s, border .2s;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:not(:checked):not(:focus) + label:hover::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:not(:checked):not(:focus) + label:hover::before {
-    border-color: #A2A2A9;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"] + label::before {
-    border-radius: 50%;
-}
-
-.ai-suite#wizardSlideOne input[type="checkbox"] + label::before {
-    border-radius: var(--checkbox-radius);
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:checked + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:checked + label::before {
-    background-color: #F09C42;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    border-color: #F09C42;
-    transition: transform .2s;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:active + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:active + label::before {
-    transform: scale(0.8);
-    transition: transform .2s;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:checked:active + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:checked:active + label::before {
-    transform: none;
-    transition: none;
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:checked + label::before {
-    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg class='nc-icon-wrapper' fill='%23ffffff'%3E%3Ccircle cx='8' cy='8' r='8' fill='%23ffffff'%3E%3C/circle%3E%3C/g%3E%3C/svg%3E");
-    background-size: var(--radio-marker-size);
-}
-
-.ai-suite#wizardSlideOne input[type="checkbox"]:checked + label::before {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpolyline points='1 6.5 4 9.5 11 2.5' fill='none' stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2'/%3E%3C/svg%3E");
-    background-size: var(--checkbox-marker-size);
-}
-
-.ai-suite#wizardSlideOne input[type="radio"]:checked:active + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:checked:active + label::before,
-.ai-suite#wizardSlideOne input[type="radio"]:focus + label::before,
-.ai-suite#wizardSlideOne input[type="checkbox"]:focus + label::before {
-    border-color: #F09C42;
-    box-shadow: 0 0 0 3px rgba(240, 156, 66, 0.2);
 }
 
 .ai-suite#wizardSlideOne .form-control:focus {

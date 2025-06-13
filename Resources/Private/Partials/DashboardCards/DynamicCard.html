@@ -9,14 +9,14 @@
             </div>
         </f:if>
         <div class="card-header-body">
-            <h3 class="card-title">{title}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.title')}</h3>
-            <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle')}"/>
+            <h3 class="card-title">{title}<f:translate key="tx_aisuite.module.dashboard.card.{cardname}.title" extensionName="ai_suite"/></h3>
+            <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle', extensionName: 'ai_suite')}"/>
             <f:if condition="{subtitle}">
                 <span class="card-subtitle">
                     {subtitle}
                 </span>
             </f:if>
-            <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description')}"/>
+            <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description', extensionName: 'ai_suite')}"/>
             <f:if condition="{description}">
                 <div class="card-longdesc">
                     <p>
@@ -27,13 +27,17 @@
             <br>
             <f:if condition="{status} == 'active'">
                 <f:then>
-                    <f:link.action controller="{controller}" action="{action}" class="btn btn-secondary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}">
-                        {f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel')}
-                    </f:link.action>
+                    <f:variable name="routeLink">{f:be.uri(route: route)}</f:variable>
+                    <f:if condition="{params}">
+                        <f:variable name="routeLink">{f:be.uri(route: route, parameters: params)}</f:variable>
+                    </f:if>
+                    <a href="{routeLink}" class="btn btn-secondary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel', extensionName: 'ai_suite')}">
+                        <f:translate key="tx_aisuite.module.dashboard.card.{cardname}.linklabel" extensionName="ai_suite"/>
+                    </a>
                 </f:then>
                 <f:else if="{status} == 'comming-soon'">
                     <span class="comming-soon">
-                        {f:translate(key: 'tx_aisuite.module.dashboard.card.comming-soon')}
+                        <f:translate key="tx_aisuite.module.dashboard.card.comming-soon" extensionName="ai_suite"/>
                     </span>
                 </f:else>
             </f:if>

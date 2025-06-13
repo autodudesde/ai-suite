@@ -1,0 +1,36 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+    <div class="ai-suite mt-4" id="massActionPagesPrepareExecute">
+        <hr />
+        <h2 class="my-4">
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.foundPagesAndMetadata" />
+        </h2>
+        <f:if condition="{pages -> f:count()} > 0">
+            <f:then>
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <p class="my-4 position-relative">
+                    <input type="checkbox" id="togglePageSelection" value="1" />
+                    <span class="px-4">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.toggleAll" />
+                    </span>
+                </p>
+                <div id="sortable-pages" class="sortable-wrap">
+                    <f:render partial="MassAction/PageTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, column: column, columnName: columnName}" />
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="pagesExecuteFormSubmitBtn">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.executeBtn" />
+                    </button>
+                    <button class="btn btn-primary mt-4 mx-2" type="submit" id="pagesSaveMetadataSubmitBtn">
+                        <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.saveMetadataBtn" /></f:format.raw>
+                    </button>
+                </div>
+                <p class="calculated-requests"></p>
+            </f:then>
+            <f:else>
+                <p>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.noPagesFound" />
+                </p>
+            </f:else>
+        </f:if>
+    </div>
+</html>

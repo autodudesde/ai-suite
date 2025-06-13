@@ -1,33 +1,38 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    {namespace core=TYPO3\CMS\Core\ViewHelpers}
+    {namespace be=TYPO3\CMS\Backend\ViewHelpers}
 
-<f:if condition="{textFields -> f:count()} > 0">
-    <strong class="ps-0 pt-3 pb-2">
-        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.availableInputFields"/>
-    </strong>
-    <f:for each="{textFields}" key="fieldName" as="data" iteration="it">
-        <div class="col-12 col-md-6 ps-0">
-            <f:variable name="inputFields">{selectedTcaColumns.{table}.text}</f:variable>
-            <f:if condition="{inputFields.{fieldName}}">
-                <f:then>
-                    <f:form.checkbox
-                        class="request-field-checkbox"
-                        name="tx_aisuite_web_aisuiteaisuite[content][selectedTcaColumns][{table}][text][{fieldName}]"
-                        id="tx_aisuite_web_aisuiteaisuite[content][selectedTcaColumns][{table}][text][{fieldName}]"
-                        value="{data.renderType}"
-                        checked="checked"
-                    />
-                </f:then>
-                <f:else>
-                    <f:form.checkbox
-                        class="request-field-checkbox"
-                        name="tx_aisuite_web_aisuiteaisuite[content][selectedTcaColumns][{table}][text][{fieldName}]"
-                        id="tx_aisuite_web_aisuiteaisuite[content][selectedTcaColumns][{table}][text][{fieldName}]"
-                        value="{data.renderType}"
-                    />
-                </f:else>
-            </f:if>
-            <label class="mb-1" for="tx_aisuite_web_aisuiteaisuite[content][selectedTcaColumns][{table}][text][{fieldName}]">{data.label}</label>
-        </div>
-    </f:for>
-</f:if>
+    <f:if condition="{textFields -> f:count()} > 0">
+        <strong class="ps-0 pt-3 pb-2">
+            <f:translate key="aiSuite.module.availableInputFields" extensionName="ai_suite"/>
+        </strong>
 
+        <f:for each="{textFields}" key="fieldName" as="data" iteration="it">
+            <div class="col-12 col-md-6 ps-0">
+                <f:variable name="textFields">{selectedTcaColumns.{table}.text}</f:variable>
+                <f:if condition="{textFields.{fieldName}}">
+                    <f:then>
+                        <input type="checkbox"
+                            class="request-field-checkbox"
+                            name="selectedTcaColumns[{table}][text][{fieldName}]"
+                            id="selectedTcaColumns[{table}][text][{fieldName}]"
+                            value="{data.renderType}"
+                            checked="checked"
+                        />
+                    </f:then>
+                    <f:else>
+                        <input type="checkbox"
+                            class="request-field-checkbox"
+                            name="selectedTcaColumns[{table}][text][{fieldName}]"
+                            id="selectedTcaColumns[{table}][text][{fieldName}]"
+                            value="{data.renderType}"
+                        />
+                    </f:else>
+                </f:if>
+                <label class="mb-1" for="selectedTcaColumns[{table}][text][{fieldName}]">{data.label}</label>
+            </div>
+        </f:for>
+    </f:if>
+</html>
 

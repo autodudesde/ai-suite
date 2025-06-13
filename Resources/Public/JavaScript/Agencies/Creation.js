@@ -2,9 +2,11 @@ define([
     "TYPO3/CMS/AiSuite/Helper/Generation",
     "TYPO3/CMS/AiSuite/Helper/General",
 ], function(Generation, General) {
-    addFormSubmitEventListener();
+    function AgenciesCreation() {
+        this.addFormSubmitEventListener();
+    }
 
-    function addFormSubmitEventListener() {
+    AgenciesCreation.prototype.addFormSubmitEventListener = function() {
         let formsWithSpinner = Array.from(document.querySelectorAll('div[data-module-id="aiSuite"] form.with-spinner'));
         let spinnerOverlay = document.querySelector('div[data-module-id="aiSuite"] .spinner-overlay');
 
@@ -12,11 +14,12 @@ define([
             formsWithSpinner.forEach(function (form, index, arr) {
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
-                    Generation.showFormSpinner();
+                    Generation.showSpinner();
                     form.submit();
                 });
             });
         }
     }
+    return new AgenciesCreation();
 });
 

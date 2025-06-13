@@ -12,13 +12,13 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class AbstractRepository extends Repository
+class AbstractRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = '';
@@ -36,10 +36,12 @@ class AbstractRepository extends Repository
 
     /**
      * @throws Exception
+     * @throws DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     protected function selectQuery(string $column, string $value): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
@@ -69,8 +71,25 @@ class AbstractRepository extends Repository
             );
     }
 
-    public function persistAll(): void
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     *
+     * @param int $uid  the unique id
+     */
+    public function findByUid(int $uid): array
     {
-        $this->persistenceManager->persistAll();
+        return $this->selectQuery('uid', $uid);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
+     *
+     * @param int $pid  the page id
+     */
+    public function findByPid(int $pid): array
+    {
+        return $this->selectQuery('pid', $pid);
     }
 }

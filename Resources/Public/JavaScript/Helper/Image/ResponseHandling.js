@@ -9,7 +9,9 @@ define([
     General,
     require
 ) {
-    function handleResponse(res, errorMessage) {
+    let ResponseHandling = function () {}
+
+    ResponseHandling.prototype.handleResponse = function(res, errorMessage) {
         if(res !== null) {
             if(res.error) {
                 Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
@@ -21,23 +23,23 @@ define([
         }
     }
 
-    function handleResponseContentElement(res, data, errorMessage, showGeneralImageSettingsModal, preselectionContent = '') {
+    ResponseHandling.prototype.handleResponseContentElement = function(res, data, errorMessage, showGeneralImageSettingsModal, preselectionContent = '') {
         if(res !== null) {
             if(res.error) {
                 Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
                 if(data.table === 'tt_content') {
-                    document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
                 } else {
-                    document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
                 }
             } else {
                 let regenerateButton;
                 if(data.table === 'tt_content') {
-                    document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = res.output;
-                    regenerateButton = document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
+                    document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = res.output;
+                    regenerateButton = document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
                 } else {
                     document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = res.output;
-                    regenerateButton = document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
+                    regenerateButton = document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).querySelector('.create-content-update-image');
                 }
                 if (regenerateButton !== null) {
                     regenerateButton.addEventListener('click', function(ev) {
@@ -51,14 +53,14 @@ define([
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);
             if(data.table === 'tt_content') {
-                document.querySelector('form[name="content"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             } else {
-                document.querySelector('form[name="content"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
+                document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             }
         }
     }
 
-    function handleStatusResponse(res, modal) {
+    ResponseHandling.prototype.handleStatusResponse = function(res, modal) {
         let statusElement = modal.find('.modal-body').find('.spinner-wrapper .status');
         if(
             General.isUsable(statusElement) &&
@@ -68,7 +70,7 @@ define([
             statusElement.html(res.output);
         }
     }
-    function handleStatusContentElementResponse(res) {
+    ResponseHandling.prototype.handleStatusContentElementResponse = function(res) {
         let statusElement = document.querySelector('.spinner-overlay .status');
         if(
             General.isUsable(statusElement) &&
@@ -78,10 +80,5 @@ define([
             statusElement.innerHTML = res.output;
         }
     }
-    return {
-        handleResponse: handleResponse,
-        handleResponseContentElement: handleResponseContentElement,
-        handleStatusResponse: handleStatusResponse,
-        handleStatusContentElementResponse: handleStatusContentElementResponse
-    };
+    return new ResponseHandling();
 });

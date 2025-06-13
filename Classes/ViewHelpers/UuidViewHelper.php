@@ -2,7 +2,8 @@
 
 namespace AutoDudes\AiSuite\ViewHelpers;
 
-use AutoDudes\AiSuite\Utility\UuidUtility;
+use AutoDudes\AiSuite\Service\UuidService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
@@ -20,6 +21,7 @@ final class UuidViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
-        return UuidUtility::generateUuid();
+        $uuidService = GeneralUtility::makeInstance(UuidService::class);
+        return $uuidService->generateUuid();
     }
 }

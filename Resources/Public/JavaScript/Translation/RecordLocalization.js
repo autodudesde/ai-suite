@@ -6,8 +6,12 @@ define([
     "TYPO3/CMS/AiSuite/Helper/Image/StatusHandling",
     "TYPO3/CMS/AiSuite/Helper/Generation",
 ], function($, Severity, MultiStepWizard, Translation, StatusHandling, Generation) {
-    initialize();
-    function initialize() {
+
+    function RecordLocalization() {
+        this.initialize();
+    }
+
+    RecordLocalization.prototype.initialize = function() {
         MultiStepWizard.dismiss();
         document.querySelectorAll('.ai-suite-record-localization').forEach(function(recordLocalizationButton) {
             recordLocalizationButton.addEventListener('click', async function (event) {
@@ -49,4 +53,5 @@ define([
             });
         });
     }
+    return new RecordLocalization();
 });

@@ -12,103 +12,172 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\XlfInput;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
-use AutoDudes\AiSuite\Exception\EmptyXliffException;
-use AutoDudes\AiSuite\Utility\SiteUtility;
-use AutoDudes\AiSuite\Utility\XliffUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SessionService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\XliffService;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Http\ResponseFactory;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class AgenciesController extends AbstractBackendController
 {
-    public function __construct()
+    protected LoggerInterface $logger;
+    protected XliffService $xliffService;
+
+    public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory,
+        IconFactory $iconFactory,
+        UriBuilder $uriBuilder,
+        PageRenderer $pageRenderer,
+        FlashMessageService $flashMessageService,
+        SendRequestService $requestService,
+        BackendUserService $backendUserService,
+        LibraryService $libraryService,
+        PromptTemplateService $promptTemplateService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        SessionService $sessionService,
+        XliffService $xliffService,
+        LoggerInterface $logger,
+        ResponseFactory $responseFactory
+    ) {
+        parent::__construct(
+            $moduleTemplateFactory,
+            $iconFactory,
+            $uriBuilder,
+            $pageRenderer,
+            $flashMessageService,
+            $requestService,
+            $backendUserService,
+            $libraryService,
+            $promptTemplateService,
+            $siteService,
+            $translationService,
+            $sessionService,
+            $responseFactory
+        );
+        $this->xliffService = $xliffService;
+        $this->logger = $logger;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
-        parent::__construct();
+        $this->initialize($request);
+        $identifier = $request->getAttribute('route')->getOption('_identifier');
+        return match ($identifier) {
+            'ai_suite_agencies_translate_xlf' => $this->translateXlfAction(),
+            'ai_suite_agencies_validate_xlf' => $this->validateXlfAction(),
+            'ai_suite_agencies_write_xlf' => $this->writeXlfAction(),
+            default => $this->overviewAction()
+        };
     }
 
     public function overviewAction(): ResponseInterface
     {
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->htmlResponse(
+            $this->view->setContent(
+                $this->renderView(
+                    'Agencies/Overview',
+                    []
+                )
+            )->renderContent()
+        );
     }
 
     public function translateXlfAction(): ResponseInterface
     {
+//        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agencies/creation.js');
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/AiSuite/Agencies/Creation');
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,'translate', ['translate']);
-        if ($librariesAnswer->getType() === 'Error') {
-            $this->addFlashMessage(
-                $librariesAnswer->getResponseData()['message'],
-                LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'),
-                AbstractMessage::ERROR
-            );
-            return $this->redirect('overview');
-        }
-        $this->view->assignMultiple([
-            'allLanguagesList' => SiteUtility::getAvailableLanguages(),
-            'input' => XlfInput::createEmpty(),
-            'translateGenerationLibraries' => $librariesAnswer->getResponseData()['translateGenerationLibraries'],
+        $assignMultiple = [
+            'allLanguagesList' => $this->siteService->getAvailableLanguages(),
+            'translateGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['translateGenerationLibraries']),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable']
-        ]);
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        ];
+        return $this->htmlResponse(
+            $this->view->setContent(
+                $this->renderView(
+                    'Agencies/TranslateXlf',
+                    $assignMultiple
+                )
+            )->renderContent()
+        );
     }
 
-    public function validateXlfResultAction(XlfInput $input): ResponseInterface
+    public function validateXlfAction(): ResponseInterface
     {
-        if (empty($input->getDestinationLanguage())) {
-            $this->addFlashMessage(
-                LocalizationUtility::translate('aiSuite.module.errorTargetLangMissing.message', 'ai_suite'),
-                LocalizationUtility::translate('aiSuite.module.errorTargetLangMissing.title', 'ai_suite'),
+        $parsedBody = $this->request->getParsedBody();
+        if (empty($parsedBody['destinationLanguage'])) {
+            $this->view->addFlashMessage(
+                $this->translationService->translate('aiSuite.module.errorTargetLangMissing.message'),
+                $this->translationService->translate('aiSuite.module.errorTargetLangMissing.title'),
                 AbstractMessage::WARNING
             );
-            return $this->redirect('translateXlf');
+            return $this->translateXlfAction();
         }
-        if ($input->getTranslationMode() === 'missingProperties') {
+        if ($parsedBody['translationMode'] === 'missingProperties') {
             try {
-                $destinationFile = XliffUtility::readXliff($input->getExtensionKey(), $input->getDestinationLanguage() . '.' . $input->getFilename(), false);
+                $destinationFile = $this->xliffService->readXliff($parsedBody['extensionKey'], $parsedBody['destinationLanguage'] . '.' . $parsedBody['filename'], false);
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());
-                $this->addFlashMessage(
-                    LocalizationUtility::translate('aiSuite.module.destinationFileNotFound.message.prefix', 'ai_suite') .
-                    $input->getDestinationLanguage() . '.' . $input->getFilename() .
-                    LocalizationUtility::translate('aiSuite.module.destinationFileNotFound.message.suffix', 'ai_suite'),
-                    LocalizationUtility::translate('aiSuite.module.destinationFileNotFound.title', 'ai_suite'),
+                $this->view->addFlashMessage(
+                    $this->translationService->translate('aiSuite.module.destinationFileNotFound.message.prefix') .
+                    $parsedBody['destinationLanguage'] . '.' . $parsedBody['filename'] .
+                    $this->translationService->translate('aiSuite.module.destinationFileNotFound.message.suffix'),
+                    $this->translationService->translate('aiSuite.module.destinationFileNotFound.title'),
                     AbstractMessage::WARNING
                 );
-                $input->setTranslationMode('all');
+                $parsedBody['translationMode'] = 'all';
             } catch (\Exception $exception) {
                 $this->logger->error($exception->getMessage());
-                $this->addFlashMessage(
+                $this->view->addFlashMessage(
                     $exception->getMessage(),
-                    LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
+                    $this->translationService->translate('AiSuite.notification.generation.error'),
                     AbstractMessage::ERROR
                 );
-                return $this->redirect('translateXlf');
+                return $this->translateXlfAction();
             }
         }
         try {
-            $translateAi = !empty($this->request->getParsedBody()['libraries']['translateGenerationLibrary']) ? $this->request->getParsedBody()['libraries']['translateGenerationLibrary'] : '';
-            $neededTranslations = XliffUtility::getTranslateValues($input);
+            $translateAi = !empty($parsedBody['libraries']['translateGenerationLibrary']) ? $parsedBody['libraries']['translateGenerationLibrary'] : '';
+            $neededTranslations = $this->xliffService->getTranslateValues(
+                $parsedBody['extensionKey'],
+                $parsedBody['filename'],
+                $parsedBody['destinationLanguage'],
+                $parsedBody['translationMode']
+            );
             if (count($neededTranslations) === 0) {
-                $this->addFlashMessage(
-                    LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.message', 'ai_suite'),
-                    LocalizationUtility::translate('aiSuite.module.noTranslationsNeeded.title', 'ai_suite'),
+                $this->view->addFlashMessage(
+                    $this->translationService->translate('aiSuite.module.noTranslationsNeeded.message'),
+                    $this->translationService->translate('aiSuite.module.noTranslationsNeeded.title'),
                     AbstractMessage::WARNING
                 );
-                return $this->redirect('translateXlf');
+                return $this->translateXlfAction();
             }
             $answer = $this->requestService->sendDataRequest(
                 'translate',
                 [
                     'source_lang' => 'en',
-                    'target_lang' => $input->getDestinationLanguage(),
+                    'target_lang' => $parsedBody['destinationLanguage'],
                     'translation_content' => $neededTranslations,
                 ],
                 '',
@@ -118,16 +187,15 @@ class AgenciesController extends AbstractBackendController
                 ]
             );
             if ($answer->getType() === 'Error') {
-                $this->addFlashMessage(
+                $this->view->addFlashMessage(
                     $answer->getResponseData()['message'],
-                    LocalizationUtility::translate('aiSuite.module.errorFetchingTranslationResponse.title', 'ai_suite'),
+                    $this->translationService->translate('aiSuite.module.errorFetchingTranslationResponse.title'),
                     AbstractMessage::ERROR
                 );
-                return $this->redirect('translateXlf');
+                return $this->translateXlfAction();
             }
             $translations = $answer->getResponseData()['translations'];
-            $input->setTranslations($translations);
-            $originalValues = XliffUtility::readXliff($input->getExtensionKey(), $input->getFilename())->getFormatedData();
+            $originalValues = $this->xliffService->readXliff($parsedBody['extensionKey'], $parsedBody['filename'])->getFormatedData();
             foreach ($originalValues as $origKey => $origValue) {
                 if (array_key_exists($origKey, $translations)) {
                     $originalValues[$origKey]['translated'] = $translations[$origKey];
@@ -136,69 +204,75 @@ class AgenciesController extends AbstractBackendController
                 }
             }
 
-            $this->view->assignMultiple([
-                'allLanguagesList' => SiteUtility::getAvailableLanguages(),
-                'input' => $input,
-                'originalValues' => $originalValues
-            ]);
-            $this->addFlashMessage(
-                LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.message', 'ai_suite'),
-                LocalizationUtility::translate('aiSuite.module.fetchingDataSuccessful.title', 'ai_suite'),
+            $assignMultiple = [
+                'allLanguagesList' => $this->siteService->getAvailableLanguages(),
+                'translations' => $translations,
+                'originalValues' => $originalValues,
+                'fileData' => json_encode([
+                    'extensionKey' => $parsedBody['extensionKey'],
+                    'filename' => $parsedBody['filename'],
+                    'destinationLanguage' => $parsedBody['destinationLanguage'],
+                    'translationMode' => $parsedBody['translationMode'],
+                ]),
+            ];
+            $this->view->addFlashMessage(
+                $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.message'),
+                $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.title'),
             );
-            $this->moduleTemplate->setContent($this->view->render());
-            return $this->htmlResponse($this->moduleTemplate->renderContent());
+            return $this->htmlResponse(
+                $this->view->setContent(
+                    $this->renderView(
+                        'Agencies/ValidateXlfResult',
+                        $assignMultiple
+                    )
+                )->renderContent()
+            );
         } catch (UnknownPackageException $exception) {
             $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
+            $this->view->addFlashMessage(
                 $exception->getMessage(),
-                LocalizationUtility::translate('aiSuite.module.errorExtensionNotFound.title', 'ai_suite'),
+                $this->translationService->translate('aiSuite.module.errorExtensionNotFound.title'),
                 AbstractMessage::ERROR
             );
-            return $this->redirect('translateXlf');
+            return $this->translateXlfAction();
         } catch (FileNotFoundException|Exception $exception) {
             $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
+            $this->view->addFlashMessage(
                 $exception->getMessage(),
-                LocalizationUtility::translate('aiSuite.module.errorFileNotFound.title', 'ai_suite'),
+                $this->translationService->translate('aiSuite.module.errorFileNotFound.title'),
                 AbstractMessage::ERROR
             );
-            return $this->redirect('translateXlf');
-        } catch (EmptyXliffException $exception) {
-            $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
-                $exception->getMessage(),
-                LocalizationUtility::translate('aiSuite.module.sourceXliffFileEmpty.message', 'ai_suite'),
-                AbstractMessage::ERROR
-            );
-            return $this->redirect('translateXlf');
+            return $this->translateXlfAction();
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
-            $this->addFlashMessage(
+            $this->view->addFlashMessage(
                 $exception->getMessage(),
-                LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
+                $this->translationService->translate('AiSuite.notification.generation.error'),
                 AbstractMessage::ERROR
             );
-            return $this->redirect('translateXlf');
+            return $this->translateXlfAction();
         }
     }
 
     /**
      * @throws UnknownPackageException
      */
-    public function writeXlfAction(XlfInput $input): ResponseInterface
+    public function writeXlfAction(): ResponseInterface
     {
-        if (XliffUtility::writeXliff($input)) {
-            $this->addFlashMessage(
-                LocalizationUtility::translate('aiSuite.module.translationGenerationSuccessful.message', 'ai_suite'),
-                LocalizationUtility::translate('aiSuite.module.translationGenerationSuccessful.title', 'ai_suite'),
+        $parsedBody = $this->request->getParsedBody();
+
+        if ($this->xliffService->writeXliff(json_decode($parsedBody['fileData'], true), $parsedBody['translations'])) {
+            $this->view->addFlashMessage(
+                $this->translationService->translate('aiSuite.module.translationGenerationSuccessful.message'),
+                $this->translationService->translate('aiSuite.module.translationGenerationSuccessful.title'),
             );
         } else {
-            $this->addFlashMessage(
-                LocalizationUtility::translate('aiSuite.module.errorWritingTranslationFile.message', 'ai_suite'),
-                LocalizationUtility::translate('AiSuite.notification.generation.error', 'ai_suite'),
+            $this->view->addFlashMessage(
+                $this->translationService->translate('aiSuite.module.errorWritingTranslationFile.message'),
+                $this->translationService->translate('AiSuite.notification.generation.error'),
                 AbstractMessage::ERROR
             );
         }
-        return $this->redirect('overview');
+        return $this->overviewAction();
     }
 }

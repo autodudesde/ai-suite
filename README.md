@@ -1,25 +1,30 @@
 TYPO3 AI Suite
 ==============================================================
 
-Official documentation for the TYPO3 AI Suite extension:
-[www.autodudes.de/documentation/ai-suite/](https://www.autodudes.de/documentation/ai-suite/en/introduction)
+The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies.
 
-## [Setup:](https://www.autodudes.de/documentation/ai-suite/en/for-administrators/installation)
+It seamlessly integrates a wide variety of AI interfaces and the AI Suite open source models into the TYPO3 backend.
 
-- Install the extension via composer or via TER
+Enables, among other things, more efficient creation and management of image and page metadata (individually and as batch processing), content translations (including "Easy Language"), content creation and modification, image generation and page structure generation.
+
+## Introduction video
+
+[![TYPO3 AI Suite](http://img.youtube.com/vi/_6x-tMKIxwY/0.jpg)](https://www.youtube.com/watch?v=_6x-tMKIxwY "AI Suite for TYPO3")
+
+## Quickstart
+
+- [Install the extension via composer or via TER](https://www.autodudes.de/documentation/ai-suite/en/for-administrators/installation)
 - Go to www.autodudes.de and get an API key
-- Add the API key to the extension settings left side in backend admin tools -> settings
+- Add the API key to the extension settings (left side in backend admin tools -> settings)
 - Update database in backend admin tools -> maintenance -> analyze database structure
-- Enjoy AI powered content suggestions
+- Enjoy the AI Suite
+
+## Find out more about the TYPO3 AI Suite extension
+
+Official documentation for the TYPO3 AI Suite extension [could be found here.](https://www.autodudes.de/en/documentation/ai-suite/introduction)
+
+* [Feature list](https://www.autodudes.de/en/documentation/ai-suite/overview-of-features)
+* [Instructions for editors](https://www.autodudes.de/en/documentation/ai-suite/for-editors)
+* [Instructions for integrators](https://www.autodudes.de/en/documentation/ai-suite/for-administrators)
 
 
-## How to use:
-
-Watch our instruction video to get an overview of the extension and how to use it.
-
-[![TYPO3 AI Suite](http://img.youtube.com/vi/Yy0p5FH1P_M/0.jpg)](http://www.youtube.com/watch?v=Yy0p5FH1P_M "AI Suite for TYPO3")
-
-Find out more about the TYPO3 AI Suite extension:
-
-* [Feature list](https://www.autodudes.de/documentation/ai-suite/en/overview-of-features)
-* [Instructions for editors](https://www.autodudes.de/documentation/ai-suite/en/for-editors)

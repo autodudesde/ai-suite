@@ -3,7 +3,12 @@ define([
     "TYPO3/CMS/AiSuite/Helper/General",
     "TYPO3/CMS/AiSuite/Helper/Ajax",
 ], function(Icons, General, Ajax) {
-    async function addAvailableLibraries(permissions, allowTranslate = false, allowCopy = false) {
+
+    function Translation() {
+
+    }
+
+    Translation.prototype.addAvailableLibraries = async function(permissions, allowTranslate = false, allowCopy = false) {
         let actionPrefix = 'copyFromLanguage'
         if(allowTranslate) {
             actionPrefix = 'localize'
@@ -23,7 +28,7 @@ define([
             } else {
                 if(permissions) {
                     for (const library of libraries) {
-                        const libraryIcon = await Icons.getIcon('tx-aisuite-localization-' + library.model_identifier, Icons.sizes.large);
+                        const libraryIcon = await Icons.getIcon('tx-aisuite-model-' + library.model_identifier, Icons.sizes.large);
                         const onlyPaid = library.only_paid === 1 && res.output.paidRequestsAvailable === false ? '<span class="badge badge-danger mx-2">(only paid)</span>' : '';
                         const disabled = library.only_paid === 1 && res.output.paidRequestsAvailable === false ? 'style="pointer-events: none"' : '';
                         actions.push(`
@@ -92,7 +97,5 @@ define([
         }
         return actions;
     }
-    return {
-        addAvailableLibraries: addAvailableLibraries
-    };
+    return new Translation();
 });

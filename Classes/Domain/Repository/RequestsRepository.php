@@ -12,87 +12,103 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
-class RequestsRepository extends AbstractPromptTemplateRepository
+class RequestsRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = 'tx_aisuite_domain_model_requests';
     protected string $sortBy = 'uid';
 
-    public function __construct(
-        ConnectionPool $connectionPool,
-        string $table = 'tx_aisuite_domain_model_requests',
-        string $sortBy = 'uid'
-    ) {
-        parent::__construct(
-            $connectionPool,
-            $table,
-            $sortBy
-        );
+    public function __construct(ConnectionPool $connectionPool) {
+        $this->connectionPool = $connectionPool;
     }
 
     /**
-     * @throws \Doctrine\DBAL\Driver\Exception|Exception
+     * @throws DriverException
+     * @throws DBALException
      */
-    public function findFirstEntry(): array
+    public function findEntryByApiKey(string $apiKey): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $result = $queryBuilder
-            ->select('free_requests', 'paid_requests')
+            ->select('free_requests', 'paid_requests', 'abo_requests', 'model_type')
             ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+            )
             ->executeQuery()
             ->fetchAllAssociative();
         return array_key_exists('0', $result) ? $result[0] : [];
     }
 
     /**
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws DriverException|DBALException
      */
-    public function setRequests(int $freeRequests, int $paidRequests): void
+    public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
-        if (count($this->findFirstEntry()) > 0 && $freeRequests > -1 && $paidRequests > -1) {
-            $this->updateRequests($freeRequests, $paidRequests);
-        } elseif (count($this->findFirstEntry()) > 0 && $freeRequests < 0 && $paidRequests < 0) {
-            $this->deleteRequests();
+        $apiKeyEntity = $this->findEntryByApiKey($apiKey);
+        if (count($apiKeyEntity) > 0 && $freeRequests > -1 && $paidRequests > -1) {
+            $this->updateRequests($freeRequests, $paidRequests, $aboRequests, $modelType, $apiKey);
+        } elseif (count($apiKeyEntity) > 0 && $freeRequests < 0 && $paidRequests < 0) {
+            $this->deleteRequests($apiKey);
         } else {
-            $this->insertRequests($freeRequests, $paidRequests);
+            $this->insertRequests($freeRequests, $paidRequests, $aboRequests, $modelType, $apiKey);
         }
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|DBALException
      */
-    public function updateRequests(int $freeRequests, int $paidRequests): void
+    public function updateRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->update($this->table)
             ->set('free_requests', $freeRequests)
             ->set('paid_requests', $paidRequests)
+            ->set('abo_requests', $aboRequests)
+            ->set('model_type', $modelType)
+            ->set('api_key', $apiKey)
+            ->where(
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+            )
             ->executeStatement();
     }
 
-    /**
-     * @throws Exception
+    /**$queryBuilder
+     * @throws Exception|DBALException
      */
-    public function insertRequests(int $freeRequests, int $paidRequests): void
+    public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
             ->insert($this->table)
             ->values([
                 'free_requests' => $freeRequests,
-                'paid_requests' => $paidRequests
+                'paid_requests' => $paidRequests,
+                'abo_requests' => $aboRequests,
+                'model_type' => $modelType,
+                'api_key' => $apiKey
             ])
             ->executeStatement();
     }
-    public function deleteRequests(): void
+
+    /**
+     * @throws DBALException
+     */
+    public function deleteRequests(string $apiKey = ''): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        $queryBuilder
-            ->delete($this->table)
-            ->executeStatement();
+        $queryBuilder->delete($this->table);
+        if(!empty($apiKey)) {
+            $queryBuilder->where(
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+            );
+        }
+        $queryBuilder->executeStatement();
     }
 }

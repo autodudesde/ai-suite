@@ -7,31 +7,28 @@
 
 <f:section name="Content">
 
-    <f:flashMessages />
-
-    <section class="container">
-
+    <section class="overflow-x-hidden">
         <f:if condition="{error}">
             <f:else>
                 <h1 class="text-gradient">
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.createContent.title"/> "{contentTypeTitle}"
+                    <f:translate key="tx_aisuite.module.dashboard.card.createContent.title" extensionName="ai_suite"/> "{contentTypeTitle}"
                 </h1>
-                <f:form actionUri="{actionUri}" name="tx_aisuite_web_aisuiteaisuite[content]" object="{content}" enctype="multipart/form-data" class="with-spinner">
-                    <f:form.hidden property="availableTcaColumns" name="tx_aisuite_web_aisuiteaisuite[content][availableTcaColumns]" value="{content.availableTcaColumns -> f:format.json()}" />
-                    <f:form.hidden name="defVals" value="{defVals -> f:format.json()}" />
-                    <f:form.hidden name="additionalImageSettings" value="" />
-                    <f:form.hidden name="uuid" value="{uuid}" />
+                <form method="POST" action="{f:be.uri(route: 'ai_suite_content_request', parameters: '{id: content.pid, table: table}')}" name="createContent" enctype="multipart/form-data" class="with-spinner">
+                    <input type="hidden" name="content" value="{content -> f:format.json()}" />
+                    <input type="hidden" name="availableTcaColumns" value="{availableTcaColumns -> f:format.json()}" />
+                    <input type="hidden" name="defVals" value="{defVals -> f:format.json()}" />
+                    <input type="hidden" name="additionalImageSettings" value="" />
+                    <input type="hidden" name="uuid" value="{uuid}" />
 
-                    <f:render partial="PageContent/AllProperties" arguments="{_all}" />
                     <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable, showMaxImageHint: showMaxImageHint}" />
                     <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries, additionalImageSettings: additionalImageSettings}" />
                     <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
-                    <div class="row">
+                    <div>
                         <div class="card card-size-large active mt-3">
                             <div class="card-header">
                                 <h3 class="text-gradient">
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" />
+                                    <f:translate key="AiSuite.contentElementPromptHeader" extensionName="ai_suite"/>
                                 </h3>
                                 <br />
                                 <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
@@ -48,14 +45,13 @@
                                 data-page-id="{content.pid}"
                             >
                                 <core:icon identifier="actions-file-text" size="small"/>
-                                {f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.PageContent.submit')}
+                                <f:translate key="tx_aisuite.module.PageContent.submit" extensionName="ai_suite"/>
                             </button>
                             <p class="calculated-requests"></p>
                         </div>
                     </div>
-                </f:form>
-                <f:variable name="spinnerMessage" value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.general.spinner.contentCreation')}" />
-                <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+                </form>
+                <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
             </f:else>
         </f:if>
     </section>

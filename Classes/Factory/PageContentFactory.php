@@ -12,74 +12,73 @@
 
 namespace AutoDudes\AiSuite\Factory;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\PageContent;
+use AutoDudes\AiSuite\Exception\AiSuiteException;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\FileNameSanitizerService;
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
-use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class PageContentFactory
 {
-    protected DataHandler $dataHandler;
     protected StorageRepository $storageRepository;
     protected Filesystem $filesystem;
     protected LinkService $linkService;
     protected array $extConf;
     protected SettingsFactory $settingsFactory;
+    protected BackendUserService $backendUserService;
     protected LoggerInterface $logger;
 
     public function __construct(
-        DataHandler $dataHandler,
         StorageRepository $storageRepository,
         Filesystem $filesystem,
         LinkService $linkService,
-        SettingsFactory $settingsFactory
+        SettingsFactory $settingsFactory,
+        BackendUserService $backendUserService,
+        LoggerInterface $logger
     ) {
-        $this->dataHandler = $dataHandler;
         $this->storageRepository = $storageRepository;
         $this->filesystem = $filesystem;
         $this->linkService = $linkService;
         $this->settingsFactory = $settingsFactory;
+        $this->backendUserService = $backendUserService;
+        $this->logger = $logger;
+
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
-        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
     /**
-     * @throws Exception
-     * @throws InsufficientFolderAccessPermissionsException
+     * @throws AiSuiteException
+     * @throws InsufficientFolderReadPermissionsException|InsufficientFolderAccessPermissionsException
      */
     public function createContentElementData(
-        PageContent $content,
+        array $content,
         array $contentElementTextData,
         array $contentElementImageData,
         array $contentElementIrreFields
     ): void {
         $data = [];
         $newStrings = [];
-        // content element without text or textarea fields, set inital data
         if (count($contentElementTextData) === 0) {
             if (array_key_exists('tt_content', $contentElementImageData)) {
                 $newStrings['tt_content'] = $this->newStringPlaceholder('tt_content');
-                $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content->getColPos();
-                $data['tt_content'][$newStrings['tt_content']]["CType"] = $content->getCType();
-                $data['tt_content'][$newStrings['tt_content']]["pid"] = $content->getPid();
-                $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content->getSysLanguageUid();
-                if ($content->getContainerParentUid() !== 0) {
-                    $data['tt_content'][$newStrings['tt_content']]["tx_container_parent"] = $content->getContainerParentUid();
+                $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content['colPos'];
+                $data['tt_content'][$newStrings['tt_content']]["CType"] = $content['CType'];
+                $data['tt_content'][$newStrings['tt_content']]["pid"] = $content['pid'];
+                $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content['sysLanguageUid'];
+                if ($content['containerParentUid'] !== 0) {
+                    $data['tt_content'][$newStrings['tt_content']]["tx_container_parent"] = $content['containerParentUid'];
                 }
             } else {
                 $newStrings['tx_news_domain_model_news'] = $this->newStringPlaceholder('tx_news_domain_model_news');
-                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content->getPid();
-                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["sys_language_uid"] = $content->getSysLanguageUid();
+                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content['pid'];
+                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["sys_language_uid"] = $content['sysLanguageUid'];
             }
         }
 
@@ -88,35 +87,34 @@ class PageContentFactory
             foreach ($fieldsArray as $key => $fields) {
                 if ($table === 'tt_content') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
-                    $data[$table][$newStrings[$table]]["colPos"] = $content->getColPos();
-                    $data[$table][$newStrings[$table]]["CType"] = $content->getCType();
-                    $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
-                    $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
-                    if ($content->getContainerParentUid() !== 0) {
-                        $data[$table][$newStrings[$table]]["tx_container_parent"] = $content->getContainerParentUid();
+                    $data[$table][$newStrings[$table]]["colPos"] = $content['colPos'];
+                    $data[$table][$newStrings[$table]]["CType"] = $content['CType'];
+                    $data[$table][$newStrings[$table]]["pid"] = $content['pid'];
+                    $data[$table][$newStrings[$table]]["sys_language_uid"] = $content['sysLanguageUid'];
+                    if ($content['containerParentUid'] !== 0) {
+                        $data[$table][$newStrings[$table]]["tx_container_parent"] = $content['containerParentUid'];
                     }
                     foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 } elseif ($table === 'tx_news_domain_model_news') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
-                    $data[$table][$newStrings[$table]]["pid"] = $content->getPid();
-                    $data[$table][$newStrings[$table]]["sys_language_uid"] = $content->getSysLanguageUid();
+                    $data[$table][$newStrings[$table]]["pid"] = $content['pid'];
+                    $data[$table][$newStrings[$table]]["sys_language_uid"] = $content['sysLanguageUid'];
                     $data[$table][$newStrings[$table]]["datetime"] = time();
                     foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 } else {
                     $newStrings[$table][$key] = $this->newStringPlaceholder($table, $key);
-                    $data[$table][$newStrings[$table][$key]]["pid"] = $content->getPid();
-                    $data[$table][$newStrings[$table][$key]]["sys_language_uid"] = $content->getSysLanguageUid();
+                    $data[$table][$newStrings[$table][$key]]["pid"] = $content['pid'];
+                    $data[$table][$newStrings[$table][$key]]["sys_language_uid"] = $content['sysLanguageUid'];
                     foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table][$key]][$fieldName] = html_entity_decode($fieldValue);
                     }
                 }
             }
         }
-        // add irre relations
         foreach ($contentElementIrreFields as $table => $parentTable) {
             if (!array_key_exists($table, $newStrings)) {
                 continue;
@@ -127,12 +125,10 @@ class PageContentFactory
                 $data[$parentTable][$newStrings[$parentTable]][$table] = $newStrings[$table];
             }
         }
-        // add image relations
         foreach ($contentElementImageData as $table => $fieldsArray) {
             foreach ($fieldsArray as $key => $fields) {
                 foreach ($fields as $fieldName => $fieldData) {
-                    // add file to fileadmin
-                    $newFileUid = $this->addImage($fieldData['newImageUrl'], $fieldData['imageTitle'] ?? '');
+                    $newFileUid = $this->addImage($fieldData['newImageUrl'], $fieldData['imageTitle'] ?? '', $content['regenerateReturnUrl']);
                     $newString = $this->newStringPlaceholder($table.'_sys_file_refrence', $key);
                     $data['sys_file_reference'][$newString] = [
                         'table_local' => 'sys_file',
@@ -140,7 +136,7 @@ class PageContentFactory
                         'tablenames' => $table,
                         'uid_foreign' => ($table === 'tt_content' || $table === 'tx_news_domain_model_news') ? $newStrings[$table] : $newStrings[$table][$key],
                         'fieldname' => $fieldName,
-                        'pid' => $content->getPid(),
+                        'pid' => $content['pid'],
                         'title' => $fieldData['imageTitle'] ?? '',
                         'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
@@ -152,58 +148,56 @@ class PageContentFactory
                 }
             }
         }
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($data, []);
+        $dataHandler->process_datamap();
 
-        $this->dataHandler->start(
-            $data,
-            []
-        );
-        $this->dataHandler->process_datamap();
-
-        if (count($this->dataHandler->errorLog) > 0) {
-            throw new Exception('Error while creating content element with message: '. $this->dataHandler->errorLog[0]);
+        if (count($dataHandler->errorLog) > 0) {
+            throw new AiSuiteException('Content/SaveContent','', '', $dataHandler->errorLog[0], $content['regenerateReturnUrl']);
         }
 
         if (array_key_exists('tt_content', $data)) {
             $tempUid = array_key_first($data['tt_content']);
-            $uid = $this->dataHandler->substNEWwithIDs[$tempUid];
-            $cmd['tt_content'][$uid]['move'] = $content->getUidPid();
-            $this->dataHandler->start([], $cmd);
-            $this->dataHandler->process_cmdmap();
+            $uid = $dataHandler->substNEWwithIDs[$tempUid];
+            $cmd['tt_content'][$uid]['move'] = $content['uidPid'];
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], $cmd);
+            $dataHandler->process_cmdmap();
         }
     }
 
     /**
-     * @throws InsufficientFolderAccessPermissionsException
+     * @throws AiSuiteException
+     * @throws InsufficientFolderReadPermissionsException
      */
-    public function addImage(string $imageUrl, string $imageTitle): int
+    public function addImage(string $imageUrl, string $imageTitle, string $regenerateReturnUrl = ''): int
     {
         $fileExtension = !empty(pathinfo($imageUrl, PATHINFO_EXTENSION)) ? pathinfo($imageUrl, PATHINFO_EXTENSION) : 'png';
         $title = empty($imageTitle) ? 'ai-generated-image-' . time() : $imageTitle;
 
-        $backendUser = BackendUserUtility::getBackendUser();
         $defaultFolder = null;
-        if(BackendUserUtility::isAdmin()) {
+        if($this->backendUserService->getBackendUser()->isAdmin()) {
             $storage = $this->storageRepository->getDefaultStorage();
             $defaultFolder = $storage->getDefaultFolder();
         } else {
-            $availableFileMounts = $backendUser->getFileMountRecords();
+            $availableFileMounts = $this->backendUserService->getBackendUser()->getFileMountRecords();
             if (count($availableFileMounts) === 0) {
-                throw new InsufficientFolderAccessPermissionsException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.addImage.noFileMountsAvailable'));
+                throw new AiSuiteException('Content/SaveContent','aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
             }
             foreach ($availableFileMounts as $fileMount) {
-                $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['base'] . ':' . $fileMount['path']);
+                $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['identifier']);
                 foreach ($storage->getFileMounts() as $storageFileMount) {
-                    if ($storageFileMount['base'] . ':' . $storageFileMount['path'] === $fileMount['base'] . ':' . $fileMount['path']) {
+                    if ($storageFileMount['identifier'] === $fileMount['identifier']) {
                         $defaultFolder = $storageFileMount['folder'];
                         break;
                     }
                 }
             }
             if ($defaultFolder === null) {
-                throw new InsufficientFolderAccessPermissionsException(LocalizationUtility::translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.addImage.noFolderAvailable'));
+                throw new AiSuiteException('Content/SaveContent','aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
             }
         }
-        if ($this->extConf['mediaStorageFolder'] !== '') {
+        if (!empty($this->extConf['mediaStorageFolder'])) {
             try {
                 $aiImagesFolder = $defaultFolder->getSubfolder($this->extConf['mediaStorageFolder']);
             } catch (\Exception $e) {

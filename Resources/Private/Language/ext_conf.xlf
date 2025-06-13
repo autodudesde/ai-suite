@@ -15,6 +15,18 @@
             <trans-unit id="openTranslatedRecordInEditMode" resname="openTranslatedRecordInEditMode">
                 <source>Open translated record in edit mode</source>
             </trans-unit>
+            <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
+                <source>Translate FlexForm fields</source>
+            </trans-unit>
+            <trans-unit id="updateDeeplGlossaries" resname="updateDeeplGlossaries">
+                <source>Update DeepL glossaries</source>
+            </trans-unit>
+            <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
+                <source>Use the following library for "Einfache Sprache" translations</source>
+            </trans-unit>
+            <trans-unit id="disableTranslationFunctionality" resname="disableTranslationFunctionality">
+                <source>Disable whole translation functionality (USE WITH CAUTION!)</source>
+            </trans-unit>
             <trans-unit id="openAiApiKey" resname="openAiApiKey">
                 <source>Enter your OpenAI API key</source>
             </trans-unit>
@@ -38,6 +50,15 @@
             </trans-unit>
             <trans-unit id="midjourneyId" resname="midjourneyId">
                 <source>Enter your Midjourney ID</source>
+            </trans-unit>
+            <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
+                <source>Enable Basic Authentication</source>
+            </trans-unit>
+            <trans-unit id="basicAuthUser" resname="basicAuthUser">
+                <source>Username</source>
+            </trans-unit>
+            <trans-unit id="basicAuthPass" resname="basicAuthPass">
+                <source>Password</source>
             </trans-unit>
 		</body>
 	</file>

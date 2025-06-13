@@ -7,21 +7,20 @@
 
 <f:section name="Content">
 
-    <section class="container">
+    <section>
         <h2 class="text-gradient">
-            <f:translate key="tx_aisuite.module.pageStructure.headline"/>
+            <f:translate key="tx_aisuite.module.pageStructure.headline" extensionName="ai_suite"/>
         </h2>
 
-        <f:form action="validatePageStructureResult" name="input" object="{input}" enctype="multipart/form-data" class="with-spinner">
-            <f:render partial="PageStructure/AllProperties" arguments="{_all}" />
-            <f:form.hidden property="textGenerationLibraries" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
-            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+        <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree')}" name="input" enctype="multipart/form-data" class="with-spinner">
 
-            <div class="row prompt-settings mt-3">
+            <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
+            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+            <div class="prompt-settings mt-3">
                 <div class="card card-size-large active">
                     <div class="card-header">
                         <h3 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" extensionName="ai_suite"/>
                         </h3>
                         <br />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
@@ -30,18 +29,19 @@
                         </div>
                     </div>
                 </div>
-                <f:render partial="PageStructure/PagesSelect" arguments="{_all}" />
+                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                <div class="language-selection mb-3">
+                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
+                </div>
                 <div class="p-0">
                     <button type="submit" class="btn btn-primary">
                         <core:icon identifier="actions-file-add" size="small"/>
-                        <f:translate key="tx_aisuite.module.pageStructure.submit"/>
+                        <f:translate key="tx_aisuite.module.pageStructure.submit" extensionName="ai_suite"/>
                     </button>
                 </div>
             </div>
-        </f:form>
-
-        <f:variable name="spinnerMessage" value="{f:translate(key: 'tx_aisuite.module.general.spinner.contentCreation')}" />
-        <f:render partial="Spinner" arguments="{message: '{spinnerMessage}'}" />
+        </form>
+        <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
     </section>
 
 </f:section>

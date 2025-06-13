@@ -2,9 +2,11 @@ define([
     "TYPO3/CMS/AiSuite/Helper/Image/GenerationHandling",
     "TYPO3/CMS/AiSuite/Helper/General"
 ], function(GenerationHandling, General) {
-    init();
+    function GeneratImageFilelist() {
+        this.init();
+    }
 
-    function init() {
+    GeneratImageFilelist.prototype.init = function() {
         if(General.isUsable(document.querySelector('.t3js-ai-suite-image-generation-filelist-add-btn'))) {
             document.querySelector('.t3js-ai-suite-image-generation-filelist-add-btn').addEventListener("click", function(ev) {
                 ev.preventDefault();
@@ -13,10 +15,11 @@ define([
                     imagePrompt: '',
                     imageAiModel: '',
                     uuid: ev.target.getAttribute('data-uuid'),
-                    pageId: ev.target.getAttribute('data-page-id')
+                    langIsoCode: '',
                 };
                 GenerationHandling.showGeneralImageSettingsModal(data, 'FileList');
             });
         }
     }
+    return new GeneratImageFilelist();
 });

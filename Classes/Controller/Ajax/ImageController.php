@@ -14,23 +14,23 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\PromptTemplateUtility;
-use AutoDudes\AiSuite\Utility\SiteUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class ImageController extends AbstractAjaxController
 {
@@ -39,11 +39,28 @@ class ImageController extends AbstractAjaxController
     protected Filesystem $filesystem;
 
     public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        LoggerInterface $logger,
         PageContentFactory $pageContentFactory,
         ResourceFactory $fileFactory,
         Filesystem $filesystem
     ) {
-        parent::__construct();
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $logger
+        );
         $this->pageContentFactory = $pageContentFactory;
         $this->fileFactory = $fileFactory;
         $this->filesystem = $filesystem;
@@ -54,14 +71,15 @@ class ImageController extends AbstractAjaxController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::IMAGE, 'createImage', ['image']);
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'));
+            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             return new HtmlResponse($librariesAnswer->getResponseData()['message']);
         }
 
-        $params['promptTemplates'] = PromptTemplateUtility::getAllPromptTemplates('imageWizard');
-        $params['imageGenerationLibraries'] = LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
+        $params['promptTemplates'] = $this->promptTemplateService->getAllPromptTemplates('imageWizard');
+        $params['imageGenerationLibraries'] = $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries']);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
-        $params['uuid'] = UuidUtility::generateUuid();
+        $params['uuid'] = $this->uuidService->generateUuid();
+        $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         $output = $this->getContentFromTemplate(
             $request,
             'WizardSlideOne',
@@ -72,21 +90,15 @@ class ImageController extends AbstractAjaxController
         return new HtmlResponse($output);
     }
 
-    /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
-     */
     public function getImageWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(!empty($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -110,7 +122,6 @@ class ImageController extends AbstractAjaxController
             'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
             'table' => $request->getParsedBody()['table'] ?? '',
             'position' => $request->getParsedBody()['position'] ?? '',
-            'pageId' => $request->getParsedBody()['pageId'],
             'uuid' => $request->getParsedBody()['uuid']
         ];
         $output = $this->getContentFromTemplate(
@@ -129,24 +140,17 @@ class ImageController extends AbstractAjaxController
             )
         );
         return $response;
-
     }
 
-    /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
-     */
     public function getImageWizardSlideThreeAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(isset($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -191,21 +195,15 @@ class ImageController extends AbstractAjaxController
         return $response;
     }
 
-    /**
-     * @throws SiteNotFoundException
-     * @throws AspectNotFoundException
-     */
     public function regenerateImageAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
-        try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $parsedBody = $request->getParsedBody();
+        if(isset($parsedBody['langIsoCode'])) {
+            $langIsoCode = $parsedBody['langIsoCode'];
+        } else {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         }
-
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -230,6 +228,7 @@ class ImageController extends AbstractAjaxController
             'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'],
             'table' => $request->getParsedBody()['table'],
             'pageId' => $request->getParsedBody()['pageId'],
+            'languageId' => $parsedBody['languageId'],
             'fieldName' => $request->getParsedBody()['fieldName'],
             'position' => $request->getParsedBody()['position'],
             'uuid' => $request->getParsedBody()['uuid']

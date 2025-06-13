@@ -19,43 +19,51 @@ use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
-use AutoDudes\AiSuite\Utility\ModelUtility;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class SendRequestService implements SingletonInterface
 {
     protected RequestFactory $requestFactory;
     protected RequestsRepository $requestsRepository;
     protected SettingsFactory $settingsFactory;
-    protected array $extConf;
+    protected ModelService $modelService;
+    protected TranslationService $translationService;
     protected LoggerInterface $logger;
+
+    protected array $extConf;
 
     public function __construct(
         RequestFactory $requestFactory,
         RequestsRepository $requestsRepository,
         SettingsFactory $settingsFactory,
+        ModelService $modelService,
+        TranslationService $translationService,
         LoggerInterface $logger
     ) {
         $this->requestFactory = $requestFactory;
         $this->requestsRepository = $requestsRepository;
         $this->settingsFactory = $settingsFactory;
-        $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
+        $this->modelService = $modelService;
+        $this->translationService = $translationService;
         $this->logger = $logger;
+
+        $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
 
     public function sendRequest(ServerRequest $serverRequest): ClientAnswer
     {
         try {
+            $data = $serverRequest->getDataForRequest();
+            $endpoint = $serverRequest->getEndpoint();
             $request = $this->requestFactory->request(
-                $serverRequest->getEndpoint(),
+                $endpoint,
                 'POST',
-                $serverRequest->getDataForRequest()
+                $data
             );
             $requestContent = json_decode($request->getBody()->getContents(), true);
             if ($requestContent === null) {
@@ -96,14 +104,14 @@ class SendRequestService implements SingletonInterface
                 [
                     'library_types' => $libraryTypes,
                     'target_endpoint' => $targetEndpoint,
-                    'keys' => ModelUtility::fetchKeysByModelType($this->extConf, $keyModelTypes)
+                    'keys' => $this->modelService->fetchKeysByModelType($this->extConf, $keyModelTypes)
                 ]
             )
         );
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error(LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite'));
-            return $this->buildErrorAnswer('<div class="alert alert-danger" role="alert">' . LocalizationUtility::translate('aiSuite.module.errorFetchingLibraries.title', 'ai_suite') . '</div>');
+            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
+            return $this->buildErrorAnswer('<div class="alert alert-danger" role="alert">' . $this->translationService->translate('aiSuite.module.errorFetchingLibraries.title') . '</div>');
         }
         return $librariesAnswer;
     }
@@ -114,7 +122,7 @@ class SendRequestService implements SingletonInterface
             foreach ($models as $model) {
                 $modelTypes[] = $model;
             }
-            $additionalData['keys'] = ModelUtility::fetchKeysByModel($this->extConf, $modelTypes);
+            $additionalData['keys'] = $this->modelService->fetchKeysByModel($this->extConf, $modelTypes);
         }
         $answer = $this->sendRequest(
             new ServerRequest($this->extConf, $targetEndpoint, $additionalData, $prompt, $langIsoCode, $models)
@@ -122,8 +130,17 @@ class SendRequestService implements SingletonInterface
         if ($answer->getType() === 'Error') {
             return $answer;
         }
-        if (array_key_exists('free_requests', $answer->getResponseData()) && array_key_exists('free_requests', $answer->getResponseData())) {
-            $this->requestsRepository->setRequests($answer->getResponseData()['free_requests'], $answer->getResponseData()['paid_requests']);
+        if (array_key_exists('free_requests', $answer->getResponseData()) &&
+            array_key_exists('free_requests', $answer->getResponseData()) &&
+            array_key_exists('abo_requests', $answer->getResponseData())
+        ) {
+            $this->requestsRepository->setRequests(
+                $answer->getResponseData()['free_requests'],
+                $answer->getResponseData()['paid_requests'],
+                $answer->getResponseData()['abo_requests'],
+                $answer->getResponseData()['model_type'] ?? '',
+                $this->extConf['aiSuiteApiKey']
+            );
             BackendUtility::setUpdateSignal('updateTopbar');
         }
         return $answer;

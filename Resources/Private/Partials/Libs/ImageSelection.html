@@ -1,7 +1,7 @@
 
 <div class="row image-suggestions mt-2">
     <h3 class="text-gradient">
-        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageSuggestionsHeader" />
+        <f:translate key="AiSuite.imageSuggestionsHeader" extensionName="ai_suite"/>
     </h3>
     <f:if condition="{imageSuggestions -> f:count()} == 1">
         <f:variable name="autoSelectImage" value="true" />
@@ -12,7 +12,7 @@
                 type="checkbox"
                 id="{table}-{position}-{fieldName}-image-{it.cycle}"
                 class="input-hidden mx-1 image-selection"
-                name="fileData[content][contentElementData][{table}][{position}][{fieldName}][newImageUrl]"
+                name="fileData[contentElementData][{table}][{position}][{fieldName}][newImageUrl]"
                 value="{suggestion.url}"
                 data-selection-group="{table}-{position}-{fieldName}-image"
                 data-url="{suggestion.url}"

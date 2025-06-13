@@ -13,18 +13,40 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Http\Response;
 
 class TranslationController extends AbstractAjaxController
 {
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        LoggerInterface $logger,
+    ) {
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $logger
+        );
     }
 
     public function librariesAction(ServerRequestInterface $request): ResponseInterface
@@ -49,9 +71,9 @@ class TranslationController extends AbstractAjaxController
                 [
                     'success' => true,
                     'output' => [
-                        'libraries' => LibraryUtility::prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
+                        'libraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                         'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
-                        'uuid' => UuidUtility::generateUuid(),
+                        'uuid' => $this->uuidService->generateUuid(),
                     ],
                 ]
             )
@@ -68,7 +90,7 @@ class TranslationController extends AbstractAjaxController
                     'success' => true,
                     'output' => [
                         'permissions' => [
-                            'enable_translation' => BackendUserUtility::checkPermissions('tx_aisuite_features:enable_translation'),
+                            'enable_translation' => $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation'),
                         ],
                     ],
                 ]

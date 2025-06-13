@@ -4,60 +4,88 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
+use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MetadataService;
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
-use AutoDudes\AiSuite\Utility\LibraryUtility;
-use AutoDudes\AiSuite\Utility\SiteUtility;
-use AutoDudes\AiSuite\Utility\UuidUtility;
-use B13\Container\Exception;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Core\Site\SiteFinder;
 
 class MetadataController extends AbstractAjaxController
 {
     protected MetadataService $metadataService;
+    protected PagesRepository $pagesRepository;
+    protected SiteFinder $siteFinder;
 
     protected array $metadataAdditionalFields = [];
 
-    public function __construct(MetadataService $metadataService)
-    {
-        parent::__construct();
+    public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        LoggerInterface $logger,
+        MetadataService $metadataService,
+        PagesRepository $pagesRepository,
+        SiteFinder $siteFinder
+    ){
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $logger
+        );
         $this->metadataService = $metadataService;
+        $this->pagesRepository = $pagesRepository;
+        $this->siteFinder = $siteFinder;
         $this->metadataAdditionalFields = [
             'seo_title' => [
-                'og_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Open Graph Title']),
-                'twitter_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Twitter Title'])
+                'og_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Title']),
+                'twitter_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Twitter Title'])
             ],
             'og_title' => [
-                'seo_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['SEO Title']),
-                'twitter_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Twitter Title'])
+                'seo_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['SEO Title']),
+                'twitter_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Twitter Title'])
             ],
             'twitter_title' => [
-                'seo_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['SEO Title']),
-                'og_title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Open Graph Title'])
+                'seo_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['SEO Title']),
+                'og_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Title'])
             ],
             'description' => [
-                'og_description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Open Graph Description']),
-                'twitter_description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Twitter Description'])
+                'og_description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Description']),
+                'twitter_description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Twitter Description'])
             ],
             'og_description' => [
-                'description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Description']),
-                'twitter_description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Twitter Description'])
+                'description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Description']),
+                'twitter_description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Twitter Description'])
             ],
             'twitter_description' => [
-                'description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Description']),
-                'og_description' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Open Graph Description'])
+                'description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Description']),
+                'og_description' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Description'])
             ],
             'title' => [
-                'alternative' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Alternative']),
+                'alternative' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Alternative']),
             ],
             'alternative' => [
-                'title' => LocalizationUtility::translate('aiSuite.modal.metadata.useFor', 'ai_suite', ['Title']),
+                'title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Title']),
             ],
         ];
     }
@@ -78,12 +106,15 @@ class MetadataController extends AbstractAjaxController
             return $response;
         }
         if($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
-            $rootPageId = $request->getAttribute('site')->getRootPageId();
-            $searchableWebMounts = BackendUserUtility::getSearchableWebmounts($rootPageId, 10);
-            $params['availableNewsDetailPlugins'] = $this->metadataService->getAvailableNewsDetailPlugins($searchableWebMounts, (int)$request->getParsedBody()['languageId']);
+            $rootPageId = $this->siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId'])->getRootPageId();
+            $searchableWebMounts = $this->backendUserService->getSearchableWebmounts($rootPageId, 10);
+            $params['availableNewsDetailPlugins'] = $this->pagesRepository->getAvailableNewsDetailPlugins($searchableWebMounts, (int)$request->getParsedBody()['languageId']);
+        }
+        if($request->getParsedBody()['table'] === 'sys_file_metadata') {
+            $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         }
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-        if($request->getParsedBody()['table'] !== 'sys_file_metadata') {
+        if($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
                 return $library['name'] !== 'Vision';
             });
@@ -92,9 +123,9 @@ class MetadataController extends AbstractAjaxController
                 return $library['name'] === 'Vision';
             });
         }
-        $params['textGenerationLibraries'] = LibraryUtility::prepareLibraries($textGenerationLibraries);
+        $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
-        $params['uuid'] = UuidUtility::generateUuid();
+        $params['uuid'] = $this->uuidService->generateUuid();
         $output = $this->getContentFromTemplate(
             $request,
             'WizardSlideOne',
@@ -121,13 +152,6 @@ class MetadataController extends AbstractAjaxController
     {
         $response = new Response();
 
-        try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
-        }
-
         $answer = $this->requestService->sendDataRequest(
             'createMetadata',
             [
@@ -136,7 +160,7 @@ class MetadataController extends AbstractAjaxController
                 'request_content' => $this->metadataService->fetchContent($request)
             ],
             '',
-            $langIsoCode,
+            $request->getParsedBody()['langIsoCode'],
             [
                 'text' => $request->getParsedBody()['textAiModel'],
             ]
@@ -145,6 +169,10 @@ class MetadataController extends AbstractAjaxController
             $this->logError($answer->getResponseData()['message'], $response, 503);
             return $response;
         }
+        $additionalFields = $this->metadataAdditionalFields[$request->getParsedBody()['fieldName']] ?? [];
+        if($request->getParsedBody()['table'] === 'sys_file_metadata' && $request->getParsedBody()['fieldName'] === 'description') {
+            $additionalFields = [];
+        }
         $params = [
             'textAiModel' => $request->getParsedBody()['textAiModel'],
             'metadataSuggestions' => $answer->getResponseData()['metadataResult'],
@@ -152,7 +180,7 @@ class MetadataController extends AbstractAjaxController
             'table' => $request->getParsedBody()['table'] ?? '',
             'id' => $request->getParsedBody()['id'],
             'uuid' => $request->getParsedBody()['uuid'],
-            'additionalFields' => $this->metadataAdditionalFields[$request->getParsedBody()['fieldName']] ?? []
+            'additionalFields' => $additionalFields
         ];
         $output = $this->getContentFromTemplate(
             $request,

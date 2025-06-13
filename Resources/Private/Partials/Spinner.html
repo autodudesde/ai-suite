@@ -1,11 +1,12 @@
 <div class="spinner-overlay">
     <div class="spinner"></div>
     <p class="message">
-        {message}
+
+        <f:translate key="{messageKey}" extensionName="ai_suite"/>
     </p>
     <div class="cancel">
         <button class="btn btn-secondary">
-            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.spinner.cancel"/>
+            <f:translate key="tx_aisuite.module.spinner.cancel" extensionName="ai_suite"/>
         </button>
     </div>
     <p class="status"></p>

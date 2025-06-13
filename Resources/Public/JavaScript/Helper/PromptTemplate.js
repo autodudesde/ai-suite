@@ -1,8 +1,8 @@
 define([], function() {
-    /**
-     * @param {string} nameAttribute
-     */
-    function loadPromptTemplates(nameAttribute) {
+    function PromptTemplate() {
+
+    }
+    PromptTemplate.prototype.loadPromptTemplates = function(nameAttribute) {
         let promptTemplates = document.querySelector('div[data-module-id="aiSuite"] select[name="promptTemplates"]');
         if(promptTemplates !== null) {
             promptTemplates.addEventListener('change', function (event) {
@@ -10,7 +10,5 @@ define([], function() {
             });
         }
     }
-    return {
-        loadPromptTemplates: loadPromptTemplates
-    };
+    return new PromptTemplate();
 });

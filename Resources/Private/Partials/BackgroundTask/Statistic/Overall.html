@@ -1,0 +1,31 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:f="http://www.w3.org/1999/html"
+    data-namespace-typo3-fluid="true"
+>
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">
+            <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.overall" extensionName="ai_suite"/>
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <f:render section="columnBlock" arguments="{field: taskStatistics.total.total, labelSuffix: 'total', textClass: ''}" />
+            <f:render section="columnBlock" arguments="{field: taskStatistics.total.finished, labelSuffix: 'finished', textClass: 'text-success'}" />
+            <f:render section="columnBlock" arguments="{field: taskStatistics.total.pending, labelSuffix: 'pending', textClass: 'text-info'}" />
+            <f:render section="columnBlock" arguments="{field: taskStatistics.total.taskError, labelSuffix: 'error', textClass: 'text-danger'}" />
+        </div>
+    </div>
+</div>
+</html>
+
+<f:section name="columnBlock">
+    <div class="col-md-3">
+        <div class="text-center mb-3">
+            <h4 class="mb-1 {textClass}">
+                <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.{labelSuffix}" extensionName="ai_suite"/>
+            </h4>
+            <span class="h2 d-block {textClass}">{field}</span>
+        </div>
+    </div>
+</f:section>

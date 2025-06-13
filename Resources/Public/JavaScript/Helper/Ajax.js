@@ -5,7 +5,11 @@ define([
     Notification,
     AjaxRequest
 ) {
-    function sendStatusAjaxRequest(postData) {
+    let Ajax = function() {
+
+    }
+
+    Ajax.prototype.sendStatusAjaxRequest = function(postData) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls['aisuite_generation_status'])
             .post(
                 postData
@@ -23,7 +27,7 @@ define([
                 return null;
             });
     }
-    function sendAjaxRequest(endpoint, postData, returnJson = false) {
+    Ajax.prototype.sendAjaxRequest = function(endpoint, postData, returnJson = false) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls[endpoint])
             .post(
                 postData
@@ -47,7 +51,7 @@ define([
                 return null;
             });
     }
-    function fetchLibraries(endpoint) {
+    Ajax.prototype.fetchLibraries = function(endpoint) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls[endpoint])
             .post({})
             .then(async function (response) {
@@ -65,9 +69,5 @@ define([
                 return null;
             });
     }
-    return {
-        sendStatusAjaxRequest: sendStatusAjaxRequest,
-        sendAjaxRequest: sendAjaxRequest,
-        fetchLibraries: fetchLibraries
-    };
+    return new Ajax();
 });

@@ -5,12 +5,13 @@ define([
     MultiStepWizard,
     MidjourneySlides
 ) {
-    function addImageGenerationWizard(data, showSpinner, showGeneralImageSettingsModal) {
+
+    let MidjourneyContentElement = function() {}
+
+    MidjourneyContentElement.prototype.addImageGenerationWizard = function(data, showSpinner, showGeneralImageSettingsModal) {
         MidjourneySlides.slideOne(data, showSpinner, showGeneralImageSettingsModal);
         MidjourneySlides.slideTwoContentElement(data, showSpinner);
         MultiStepWizard.show();
     }
-    return {
-        addImageGenerationWizard
-    };
+    return new MidjourneyContentElement;
 });

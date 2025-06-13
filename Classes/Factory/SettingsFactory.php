@@ -12,17 +12,16 @@
 
 namespace AutoDudes\AiSuite\Factory;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Log\LogManager;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SettingsFactory
 {
     protected ExtensionConfiguration $extensionConfiguration;
+    protected BackendUserService $backendUserService;
     protected LoggerInterface $logger;
 
     protected array $extConf;
@@ -31,26 +30,26 @@ class SettingsFactory
      * @throws ExtensionConfigurationPathDoesNotExistException
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      */
-    public function __construct()
-    {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class);
+    public function __construct(
+        ExtensionConfiguration $extensionConfiguration,
+        BackendUserService $backendUserService,
+        LoggerInterface $logger
+    ) {
+        $this->extensionConfiguration = $extensionConfiguration;
+        $this->backendUserService = $backendUserService;
+        $this->logger = $logger;
+
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
-        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
     public function mergeExtConfAndUserGroupSettings(): array
     {
         try {
-            if(BackendUserUtility::isAdmin()) {
+            if($this->backendUserService->getBackendUser()->isAdmin()) {
                 return $this->extConf;
             }
             foreach ($this->extConf as $key => $value) {
-                $groupKeyValue = BackendUserUtility::checkGroupSpecificInputs($key);
-                if($groupKeyValue === '0' || $groupKeyValue === '1') {
-                    $this->extConf[$key] = (int)$groupKeyValue;
-                } else {
-                    $this->extConf[$key] = $groupKeyValue ?: $value;
-                }
+                $this->extConf[$key] = $this->backendUserService->checkGroupSpecificInputs($key) ?: ($value ?? '');
             }
             return $this->extConf;
         } catch (\Exception $e) {

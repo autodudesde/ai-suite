@@ -1,0 +1,103 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<div class="accordion accordion-background-tasks" id="accordionBackgroundTasksPage" data-type="page">
+    <f:for each="{backgroundTasks}" as="backgroundTask" iteration="it">
+        <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}">
+            <h2 class="accordion-header mb-0">
+                <button class="accordion-button collapsed w-100 text-start position-relative" type="button" data-bs-toggle="collapse" data-bs-target="#accordion{backgroundTask.uuid}" aria-expanded="false" aria-controls="accordion{backgroundTask.uuid}">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="badge badge-{backgroundTask.status}">{backgroundTask.status}</span>
+                            <span class="title">{backgroundTask.title} (PID: {backgroundTask.table_uid})</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="badge badge-info mx-2">
+                                <f:if condition="{backgroundTask.column} === 'description'">
+                                    <f:then>
+                                        <f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:pages.{backgroundTask.column}" />
+                                    </f:then>
+                                    <f:else>
+                                        <f:translate key="LLL:EXT:seo/Resources/Private/Language/locallang_tca.xlf:pages.{backgroundTask.column}" />
+                                    </f:else>
+                                </f:if>
+                            </span>
+                            <span class="delete-accordion-item" data-uuid="{backgroundTask.uuid}"><core:icon identifier="actions-delete" size="default" /></span>
+                            <f:if condition="{backgroundTask.status} == failed">
+                                <div class="tooltip">
+                                    <core:icon identifier="actions-exclamation-triangle" size="default" />
+                                    <span class="tooltiptext p-3">{backgroundTask.error}</span>
+                                </div>
+                            </f:if>
+                            <f:if condition="{backgroundTask.status} == 'finished'">
+                                <span class="open-accordion-item"><core:icon identifier="actions-chevron-down" size="default" /></span>
+                            </f:if>
+                        </div>
+                    </div>
+                </button>
+            </h2>
+            <f:if condition="{backgroundTask.status} == 'finished'">
+                <div id="accordion{backgroundTask.uuid}" class="accordion-collapse collapse" data-bs-parent="#accordionBackgroundTasksPage">
+                    <div class="accordion-body p-3 position-relative">
+                        <div class="page-meta-content-info badge badge-info"
+                             data-table="pages"
+                             data-uid="{backgroundTask.table_uid}"
+                        >
+                            <core:icon identifier="actions-document-info" size="small" /> Info
+                        </div>
+                        <h3 class="my-2">
+                            <f:if condition="{backgroundTask.column} === 'description'">
+                                <f:then>
+                                    <strong>"<f:translate key="LLL:EXT:core/Resources/Private/Language/locallang_tca.xlf:pages.{backgroundTask.column}" />"</strong> ({backgroundTask.column}):
+                                </f:then>
+                                <f:else>
+                                    <strong>"<f:translate key="LLL:EXT:seo/Resources/Private/Language/locallang_tca.xlf:pages.{backgroundTask.column}" />"</strong> ({backgroundTask.column}):
+                                </f:else>
+                            </f:if>
+                        </h3>
+                        <input
+                            type="text"
+                            class="w-100 mb-4 p-2 metadata-value"
+                            data-page-uid="{backgroundTask.table_uid}"
+                            data-column="{backgroundTask.column}"
+                            data-uuid="{backgroundTask.uuid}"
+                            value="{backgroundTask.columnValue}"
+                        />
+                        <div class="ai-suite-metadata-generation-wizard">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="text-gradient">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+                                    </h2>
+                                </div>
+                            </div>
+                            <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: backgroundTask.metadataSuggestions, fieldName: backgroundTask.column, table: 'pages', position: it.index}" />
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <button class="mb-3 mt-1 btn btn-primary w-100 save-accordion-item" data-uuid="{backgroundTask.uuid}">
+                                        <core:icon identifier="actions-check" size="small" />
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </f:if>
+        </div>
+    </f:for>
+    <div id="noBackgroundTasks" class="alert alert-info" {f:if(condition: '{backgroundTasks -> f:count()} == 0', then: 'style="display:block;"', else: 'style="display:none;"')}>
+        <div class="media">
+            <div class="media-left">
+                    <span class="icon-emphasized">
+                       <core:icon identifier="actions-info" size="small" />
+                    </span>
+            </div>
+            <div class="media-body">
+                <div class="alert-title">Info</div>
+                <p class="alert-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" /></p>
+            </div>
+        </div>
+    </div>
+</div>
+

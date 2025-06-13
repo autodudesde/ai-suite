@@ -2,7 +2,7 @@
 
 namespace AutoDudes\AiSuite\Hooks;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 
 class WizardItemsHook implements NewContentElementWizardHookInterface
@@ -18,9 +18,16 @@ class WizardItemsHook implements NewContentElementWizardHookInterface
         'form',
     ];
 
+    public function __construct(
+        protected BackendUserService $backendUserService
+    )
+    {
+
+    }
+
     public function manipulateWizardItems(&$wizardItems, &$parentObject)
     {
-        if(!BackendUserUtility::checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
+        if(!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_content_element_generation')) {
             return;
         }
         $addedAiSuiteWizardItems = [];

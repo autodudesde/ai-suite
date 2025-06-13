@@ -1,52 +1,72 @@
 <?php
 defined('TYPO3') || die();
 
-use AutoDudes\AiSuite\Controller\AgenciesController;
-use AutoDudes\AiSuite\Controller\AiSuiteController;
-use AutoDudes\AiSuite\Controller\ContentController;
-use AutoDudes\AiSuite\Controller\PagesController;
-use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
-use AutoDudes\AiSuite\Controller\PromptTemplateController;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
-
-ExtensionUtility::registerModule(
-    'AiSuite',
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule(
     'web',
     'AiSuite',
     '',
+    '',
     [
-        AiSuiteController::class => 'dashboard',
-        ContentController::class => 'createContent, requestContent, createPageContent',
-        PagesController::class => 'overview, editMetadata, pageStructure, validatePageStructureResult, createValidatedPageStructure',
-        AgenciesController::class => 'overview, translateXlf, validateXlfResult, writeXlf',
-        PromptTemplateController::class => 'overview, updateServerPromptTemplates, manageCustomPromptTemplates, activate, deactivate, delete'
-    ],
-    [
+        'routeTarget' => \AutoDudes\AiSuite\Controller\AiSuiteController::class . '::handleRequest',
         'access' => 'user,group',
-        'icon'   => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
-        'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
-    ],
+        'name' => 'web_AiSuite',
+        'icon' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+        'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf'
+    ]
 );
 
-$pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule(
+    'file',
+    'AiSuite',
+    '',
+    '',
+    [
+        'routeTarget' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+        'access' => 'user,group',
+        'name' => 'file_AiSuite',
+        'icon' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
+        'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf',
+    ]
+);
+
+
+$pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
 if (empty($pageRenderer->getCharSet())) {
     $pageRenderer->setCharSet('utf-8');
 }
 
-ExtensionManagementUtility::allowTableOnStandardPages('tx_aisuite_domain_model_custom_prompt_template');
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::allowTableOnStandardPages('tx_aisuite_domain_model_custom_prompt_template');
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
+    'ai_suite',
+    'setup',
+    '@import "EXT:ai_suite/Configuration/TypoScript/setup.typoscript"'
+);
 
 $lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = [
     'header' => $lll . 'aiSuite.customPermOptions.headerAiSuiteFeatures',
     'items' => [
+        'enable_rte_aiplugin' => [
+            $lll . 'aiSuite.customPermOptions.enableRteAiPlugin',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableRteAiPluginDescription',
+        ],
+        'enable_rte_aieasylanguageplugin' => [
+            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription',
+        ],
         'enable_translation' => [
             $lll . 'aiSuite.customPermOptions.enableTranslation',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableTranslationDescription',
+        ],
+        'enable_translation_deepl_sync' => [
+            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSync',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSyncDescription',
         ],
         'enable_image_generation' => [
             $lll . 'aiSuite.customPermOptions.enableImageGeneration',
@@ -72,6 +92,21 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             $lll . 'aiSuite.customPermOptions.enableMetadataGeneration',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableMetadataGenerationDescription',
+        ],
+        'enable_massaction_generation' => [
+            $lll . 'aiSuite.customPermOptions.enableMassActionGeneration',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableMassActionGenerationDescription',
+        ],
+        'enable_background_task_handling' => [
+            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandling',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription',
+        ],
+        'enable_toolbar_stats_item' => [
+            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItem',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItemDescription',
         ],
     ],
 ];
@@ -110,6 +145,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
         ],
         'Deepl' => [
             $lll . 'aiSuite.customPermOptions.modelDeepl',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
+        'AiSuiteTextUltimate' => [
+            $lll . 'aiSuite.customPermOptions.modelAiSuiteTextUltimate',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.modelDescription',
         ],

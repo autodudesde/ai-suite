@@ -14,8 +14,7 @@
                 </div>
                 <div class="card-body">
                     <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
-                    <div class="row prompt-settings mt-3">
+                    <div class="prompt-settings mt-3">
                         <div class="card card-size-large active">
                             <div class="card-header">
                                 <h3 class="text-gradient">
@@ -31,6 +30,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
+                    <div id="languageSelection" class="my-3">
+                        <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'langIsoCode', selected: ''}" />
                     </div>
                     <div class="card-footer px-0">
                         <button type="button" class="btn btn-primary"

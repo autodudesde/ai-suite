@@ -1,7 +1,7 @@
 
 <div class="row metadata-suggestions mt-2">
     <h3 class="text-gradient">
-        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataSuggestionsHeader" />
+        <f:translate key="AiSuite.metadataSuggestionsHeader" extensionName="ai_suite"/>
     </h3>
     <f:for each="{metadataSuggestions}" as="suggestion" iteration="it">
         <div class="col-12 col-md-6 my-3 position-relative">
@@ -11,13 +11,13 @@
                 value="{suggestion}"
                 data-metadata="{suggestion}"
                 class="mx-1 metadata-selection"
-                id="{table}-{it.cycle}-{fieldName}-metadata-{it.cycle}"
-                data-selection-group="{table}-{fieldName}-metadata"
+                id="{table}-{it.cycle}-{fieldName}-metadata-{position}-{it.cycle}"
+                data-selection-group="{table}-{fieldName}-metadata-{position}"
             >
             <label class="d-inline-flex justify-content-start align-items-center ce-metadata-selection"
-                   data-selection-group="{table}-{fieldName}-metadata"
-                   data-selection-id="{table}-{fieldName}-metadata-{it.cycle}"
-                   for="{table}-{it.cycle}-{fieldName}-metadata-{it.cycle}"
+                   data-selection-group="{table}-{fieldName}-metadata-{position}"
+                   data-selection-id="{table}-{fieldName}-metadata-{position}-{it.cycle}"
+                   for="{table}-{it.cycle}-{fieldName}-metadata-{position}-{it.cycle}"
                    style="font-size: 0.85rem;"
             >
                 {suggestion}

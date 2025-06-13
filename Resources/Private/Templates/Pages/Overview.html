@@ -1,16 +1,14 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
-      {namespace core=TYPO3\CMS\Core\ViewHelpers}
-      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
 
 <f:layout name="Module"/>
 
 <f:section name="Content">
     <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.title"/>
+        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.title" extensionName="ai_suite"/>
     </h1>
     <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.description"/>
+        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.description" extensionName="ai_suite"/>
     </p>
 
     <section class="card-container">
@@ -19,15 +17,16 @@
             icon: 'content-menu-pages',
             cardname: 'createPagetree',
             controller: 'Pages',
-            action: 'pageStructure',
-            status: 'active'
+            route: 'ai_suite_page_create_pagetree',
+            status: 'active',
+            params: params
         }" />
 
         <f:render partial="DashboardCards/DynamicCard" arguments="{
             icon: 'apps-pagetree-page-content-from-page-hideinmenu',
             cardname: 'createPagetreeWithContent',
             controller: 'Pages',
-            action: 'overview',
+            route: 'ai_suite_page',
             status: 'comming-soon'
         }" />
     </section>

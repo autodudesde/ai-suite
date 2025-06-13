@@ -2,6 +2,7 @@
 
 defined('TYPO3') || die('Access denied.');
 
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController::class] = [
     'className' => \AutoDudes\AiSuite\Controller\ContentElement\NewContentElementController::class,
 ];
@@ -18,6 +19,8 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('container')) {
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][1715536019] = \AutoDudes\AiSuite\Backend\ToolbarItems\RequestsToolbarItem::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1715536020] = \AutoDudes\AiSuite\Providers\PagesContextMenuProvider::class;
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms']['db_new_content_el']['wizardItemsHook']['addAiSuiteElements']
     = \AutoDudes\AiSuite\Hooks\WizardItemsHook::class;
@@ -45,6 +48,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Recordlist\RecordList\DatabaseRecordList::class] = [
     'className' => \AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class,
 ];
+
+if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('container')) {
+    if (class_exists(\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook::class] = [
+            'className' => \AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook::class,
+        ];
+    }
+}
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410677] = [
     'nodeName' => 'aiSeoMetaDescription',
@@ -94,6 +105,24 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410688] = [
     'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\FileList\AiSysFileTitle::class
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410689] = [
+    'nodeName' => 'aiSysFileReferenceAlternative',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative::class
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410690] = [
+    'nodeName' => 'aiSysFileReferenceTitle',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle::class
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410691] = [
+    'nodeName' => 'aiSysFileDescription',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\FileList\AiSysFileDescription::class
+];
+
 if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410684] = [
         'nodeName' => 'aiNewsMetaDescription',
@@ -106,4 +135,25 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
         'priority' => 30,
         'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsAlternativeTitle::class
     ];
+}
+
+try {
+    $extensionConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('ai_suite');
+    if(!array_key_exists('disableTranslationFunctionality', $extensionConfiguration) ||
+        (array_key_exists('disableTranslationFunctionality', $extensionConfiguration) && (bool)$extensionConfiguration['disableTranslationFunctionality'] === false))
+    {
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
+            'className' => \AutoDudes\AiSuite\Controller\Page\LocalizationController::class,
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class] = [
+            'className' => \AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class,
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
+            = \AutoDudes\AiSuite\Hooks\TranslationHook::class;
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+            'templates.typo3/cms-backend.1720458914000 = autodudes/ai-suite:Resources/Private/'
+        );
+    }
+} catch (\Throwable $e) {
+
 }

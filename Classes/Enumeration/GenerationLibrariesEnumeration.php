@@ -25,5 +25,4 @@ final class GenerationLibrariesEnumeration
 
     public const CONTENT = 'text,image';
     public const RTE_CONTENT = 'text';
-    public const REQUESTS_STATE = '';
 }

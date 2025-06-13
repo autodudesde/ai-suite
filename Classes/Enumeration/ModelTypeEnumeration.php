@@ -29,4 +29,6 @@ final class ModelTypeEnumeration
     public const MIDJOURNEY = 'midjourneyApiKey,midjourneyId';
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';
     public const DEEPL = 'deeplApiKey,deeplApiMode';
+    public const DEEPLGLOSSARYMANAGER = 'deeplApiKey,deeplApiMode';
+    public const AISUITETEXTULTIMATE = '';
 }

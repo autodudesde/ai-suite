@@ -1,35 +1,55 @@
 define([
-    "TYPO3/CMS/Backend/Notification",
-    "TYPO3/CMS/AiSuite/Helper/General",
-    "TYPO3/CMS/AiSuite/Helper/Generation",
-    "TYPO3/CMS/AiSuite/Helper/Sortable",
-], function(Notification, General, Generation, Sortable) {
+    'jquery',
+    'TYPO3/CMS/Backend/Notification',
+    'TYPO3/CMS/AiSuite/Helper/General',
+    'TYPO3/CMS/AiSuite/Helper/Generation',
+    'TYPO3/CMS/AiSuite/Helper/Sortable',
+    'TYPO3/CMS/AiSuite/Helper/PromptTemplate'
+], function($, Notification, General, Generation, Sortable, PromptTemplate) {
+    'use strict';
 
-    addEventListener();
-    function addEventListener() {
-        addEventListenerGeneratePageStructure();
-        Generation.addFormSubmitEventListener('tx_aisuite_web_aisuiteaisuite[input][plainPrompt]');
+    /**
+     * Validation Constructor
+     *
+     * @constructor
+     */
+    function PagesValidation() {
+        this.addEventListener();
     }
 
-    function addEventListenerGeneratePageStructure() {
+    /**
+     * Add event listeners
+     */
+    PagesValidation.prototype.addEventListener = function() {
+        this.addEventListenerGeneratePageStructure();
+        Generation.addFormSubmitEventListener('plainPrompt');
+        PromptTemplate.loadPromptTemplates('plainPrompt');
+        Generation.languageSelectionEventListener();
+    };
+
+    /**
+     * Add event listener for page structure generation
+     */
+    PagesValidation.prototype.addEventListenerGeneratePageStructure = function() {
         // generate array out of sortable items and submit form
-        let pageStructureSubmitButton = document.querySelector('div[data-module-id="aiSuite"] form.page-structure-create span.submit-page-structure');
+        var pageStructureSubmitButton = document.querySelector('div[data-module-id="aiSuite"] form.page-structure-create span.submit-page-structure');
         if (General.isUsable(pageStructureSubmitButton)) {
             pageStructureSubmitButton.addEventListener('click', function (event) {
                 event.preventDefault();
-                let sortableItems = Array.from(document.querySelectorAll('div[data-module-id="aiSuite"] .sortable-wrap > .nested-sortable > .list-group-item'));
-                let result = Sortable.findItemsInSortable(sortableItems);
-                document.querySelector('input[name="tx_aisuite_web_aisuiteaisuite[selectedPageTreeContent]"]').value = JSON.stringify(result);
-                let selectedPage = document.querySelector('form.page-structure-create input.searchableInputProperty[name="tx_aisuite_web_aisuiteaisuite[input][startStructureFromPid]"]').value;
-                if(selectedPage === '0') {
+                var sortableItems = Array.from(document.querySelectorAll('div[data-module-id="aiSuite"] .sortable-wrap > .nested-sortable > .list-group-item'));
+                var result = Sortable.findItemsInSortable(sortableItems);
+                document.querySelector('input[name="selectedPageTreeContent"]').value = JSON.stringify(result);
+                var selectedPage = document.querySelector('form.page-structure-create input.searchableInputProperty[name="startStructureFromPid"]').value;
+                if(selectedPage === '') {
                     Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageTitle'], TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageMessage'], 8);
                 } else {
-                    Generation.showFormSpinner();
+                    Generation.showSpinner();
                     document.querySelector('div[data-module-id="aiSuite"] form.page-structure-create').submit();
                 }
             });
         }
-    }
+    };
+
+    // Return a new instance
+    return new PagesValidation();
 });
-
-

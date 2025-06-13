@@ -18,7 +18,7 @@ define([
                     text: TYPO3.lang['aiSuite.module.modal.saveAnyway'],
                     active: true,
                     trigger: function() {
-                        Generation.showFormSpinner();
+                        Generation.showSpinner();
                         form.submit();
                         Modal.dismiss();
                     }
@@ -36,6 +36,7 @@ define([
                 ev.preventDefault();
                 let data = {
                     pageId: ev.target.getAttribute('data-page-id'),
+                    languageId: ev.target.getAttribute('data-language-id'),
                     table: ev.target.getAttribute('data-table'),
                     position: ev.target.getAttribute('data-position'),
                     fieldName: ev.target.getAttribute('data-fieldname'),

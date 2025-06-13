@@ -17,7 +17,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
-use AutoDudes\AiSuite\Utility\BackendUserUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
@@ -44,7 +44,7 @@ class RichTextElementService
 
     protected array $rteConfiguration = [];
 
-    public function __construct(array $data, EventDispatcherInterface $eventDispatcher = null)
+    public function __construct(array $data = [], EventDispatcherInterface $eventDispatcher = null)
     {
         $this->data = $data;
         $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::makeInstance(EventDispatcherInterface::class);
@@ -268,7 +268,7 @@ class RichTextElementService
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
         if (empty($configuration['language'])) {
-            $userLang = (string)(BackendUserUtility::getBackendUser()->user['lang'] ?: 'en');
+            $userLang = (string)($GLOBALS['BE_USER']->user['lang'] ?: 'en');
             $configuration['language'] = $userLang === 'default' ? 'en' : $userLang;
         }
         $configuration['contentsLanguage'] = $this->getLanguageIsoCodeOfContent();

@@ -8,7 +8,7 @@ use TYPO3\CMS\Core\Configuration\Event\AfterTcaCompilationEvent;
 
 class AfterTcaCompilationEventListener
 {
-    private array $exclusionTabList = [
+    public const EXCLUDE_TAB_LIST = [
         'news',
         'container',
         'data',
@@ -17,9 +17,9 @@ class AfterTcaCompilationEventListener
         'special',
         'plugins',
         'social',
-        'form',
+        'forms',
     ];
-    private array $exclusionCTypeList = [
+    public const EXCLUDE_CTYPE_LIST = [
         'csv',
         'external_media',
         'menu_card_list',
@@ -36,8 +36,12 @@ class AfterTcaCompilationEventListener
 
         $cTypes = [];
         foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
-            if (array_key_exists('0', $val) && array_key_exists('1', $val) && array_key_exists('3', $val)) {
-                if (!in_array($val['3'], $this->exclusionTabList) && !in_array($val['1'], $this->exclusionCTypeList) && $val['1'] !== '--div--') {
+            if (array_key_exists('label', $val) && array_key_exists('value', $val) && array_key_exists('group', $val)) {
+                if (!in_array($val['group'], self::EXCLUDE_TAB_LIST) && !in_array($val['value'], self::EXCLUDE_CTYPE_LIST) && $val['value'] !== '--div--') {
+                    $cTypes[] = [$val['0'], $val['1']];
+                }
+            } elseif (array_key_exists('0', $val) && array_key_exists('1', $val) && array_key_exists('3', $val)) {
+                if (!in_array($val['3'], self::EXCLUDE_TAB_LIST) && !in_array($val['1'], self::EXCLUDE_CTYPE_LIST) && $val['1'] !== '--div--') {
                     $cTypes[] = [$val['0'], $val['1']];
                 }
             }

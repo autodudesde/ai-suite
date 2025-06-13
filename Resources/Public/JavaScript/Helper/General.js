@@ -1,8 +1,12 @@
 define([], function() {
-    function isUsable(element) {
+    function General() {
+
+    }
+
+    General.prototype.isUsable = function(element) {
         return element !== null && element !== undefined;
     }
-    function sanitizeFileName(fileName) {
+    General.prototype.sanitizeFileName = function(fileName) {
         fileName = fileName.toLowerCase();
 
         const tempArr = fileName.split(".");
@@ -45,8 +49,5 @@ define([], function() {
 
         return fileName;
     }
-    return {
-        isUsable: isUsable,
-        sanitizeFileName: sanitizeFileName
-    };
+    return new General();
 });

@@ -4,10 +4,14 @@ define([
     "TYPO3/CMS/AiSuite/Helper/Image/ResponseHandling"
 ], function(General, Ajax, ResponseHandling) {
 
-    let intervalId = null;
-    function fetchStatus(data, modal) {
+    // let intervalId = null;
+    function StatusHandling() {
+        this.intervalId = null;
+    }
+    StatusHandling.prototype.fetchStatus = function(data, modal) {
+        const self = this;
         return new Promise((resolve, reject) => {
-            intervalId = setInterval(async () => {
+            self.intervalId = setInterval(async () => {
                 let statusRes = await Ajax.sendStatusAjaxRequest(data);
                 if(General.isUsable(statusRes) === false) {
                     resolve();
@@ -18,9 +22,10 @@ define([
         });
     }
 
-    function fetchStatusContentElement(data, intervalId) {
+    StatusHandling.prototype.fetchStatusContentElement = function(data, intervalId) {
+        const self = this;
         return new Promise((resolve, reject) => {
-            intervalId = setInterval(async () => {
+            self.intervalId = setInterval(async () => {
                 let statusRes = await Ajax.sendStatusAjaxRequest(data);
                 if (General.isUsable(statusRes) === false) {
                     resolve();
@@ -30,12 +35,8 @@ define([
             }, 2500);
         });
     }
-    function stopInterval() {
-        clearInterval(intervalId);
+    StatusHandling.prototype.stopInterval = function() {
+        clearInterval(this.intervalId);
     }
-    return {
-        fetchStatus,
-        fetchStatusContentElement,
-        stopInterval
-    };
+    return new StatusHandling();
 });

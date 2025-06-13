@@ -6,6 +6,14 @@ aiSuiteServer = https://api.autodudes.de/
 mediaStorageFolder =
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openTranslatedRecordInEditMode
 openTranslatedRecordInEditMode = 1
+# cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
+translateFlexFormFields = 1
+# cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:updateDeeplGlossaries
+updateDeeplGlossaries = 1
+# cat=Translation; type=options[OpenAI=ChatGPT,Claude=Anthropic,Meta Llama-3.3 (70B-Instruct)=AiSuiteTextUltimate]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
+easyLanguageLibrary = ChatGPT
+# cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:disableTranslationFunctionality
+disableTranslationFunctionality = 0
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
 openAiApiKey =
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:anthropicApiKey
@@ -20,4 +28,10 @@ deeplApiMode =
 midjourneyApiKey =
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyId
 midjourneyId =
+# cat=HTTP Basic Auth; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthEnable
+basicAuth.enable = 0
+# cat=HTTP Basic Auth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthUser
+basicAuth.user =
+# cat=HTTP Basic Auth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthPass
+basicAuth.pass =
 

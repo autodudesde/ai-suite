@@ -12,28 +12,51 @@
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
-use AutoDudes\AiSuite\Utility\SiteUtility;
+use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\PromptTemplateService;
+use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\UuidService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Exception;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Http\Response;
 
 class StatusController extends AbstractAjaxController
 {
-    public function __construct()
-    {
-        parent::__construct();
+    public function __construct(
+        BackendUserService $backendUserService,
+        SendRequestService $requestService,
+        PromptTemplateService $promptTemplateService,
+        LibraryService $libraryService,
+        UuidService $uuidService,
+        SiteService $siteService,
+        TranslationService $translationService,
+        LoggerInterface $logger,
+    ) {
+        parent::__construct(
+            $backendUserService,
+            $requestService,
+            $promptTemplateService,
+            $libraryService,
+            $uuidService,
+            $siteService,
+            $translationService,
+            $logger
+        );
     }
 
     public function getStatusAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
 
-        try {
-            $langIsoCode = SiteUtility::getLangIsoCode((int)$request->getParsedBody()['pageId']);
-        } catch (Exception $exception) {
-            $this->logError($exception->getMessage(), $response, 503);
-            return $response;
+        $backendUser = $this->backendUserService->getBackendUser();
+        if($backendUser->user['lang'] === 'default') {
+            $langIsoCode = 'en';
+        } else {
+            $langIsoCode = $backendUser->user['lang'];
         }
 
         $answer = $this->requestService->sendDataRequest(

@@ -1,32 +1,21 @@
-<div class="row text-generation-library library mt-2">
+<div class="text-generation-library library mt-2">
     <div class="card card-size-large active mb-0">
         <div class="card-header">
             <h3 class="text-gradient">
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.textGenerationLibrary" />
+                <f:translate key="AiSuite.textGenerationLibrary" extensionName="ai_suite"/>
             </h3>
             <f:if condition="{textGenerationLibraries -> f:count()} > 0">
                 <f:then>
-                    <f:for each="{textGenerationLibraries}" as="library" iteration="it">
-                        <div class="col-12 my-3">
-                            <input
-                                type="radio"
-                                id="text-generation-library-{library.model_identifier}"
-                                class="input-hidden mx-1 text-generation-library-selection"
-                                name="libraries[textGenerationLibrary]"
-                                value="{library.model_identifier}"
-                                {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
-                            {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
-                            />
-                            <label for="text-generation-library-{library.model_identifier}">
-                                <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
-                            </label>
-                        </div>
-                    </f:for>
+                    <div class="flex-row d-flex justify-content-between flex-wrap">
+                        <f:for each="{textGenerationLibraries}" as="library" iteration="it">
+                            <f:render partial="Libs/LibraryLabel" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable, type: 'text'}" />
+                        </f:for>
+                    </div>
                 </f:then>
                 <f:else>
                     <div class="col-12 my-3">
                         <div class="alert alert-warning" role="alert">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.noLibrariesAvailable" />
+                            <f:translate key="AiSuite.noLibrariesAvailable" extensionName="ai_suite"/>
                         </div>
                     </div>
                 </f:else>
