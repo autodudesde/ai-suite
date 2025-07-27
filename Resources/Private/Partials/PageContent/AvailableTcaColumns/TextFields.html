@@ -1,32 +1,34 @@
 
 <f:if condition="{textFields -> f:count()} > 0">
-    <strong class="ps-0 pt-3 pb-2">
+    <label class="panel-title fw-bold mb-2">
         <f:translate key="aiSuite.module.availableInputFields" extensionName="ai_suite"/>
-    </strong>
-    <f:for each="{textFields}" key="fieldName" as="data" iteration="it">
-        <div class="col-12 col-md-6 ps-0">
-            <f:if condition="{selectedTcaColumns.{table}.text.{fieldName}}">
-                <f:then>
-                    <input type="checkbox"
-                        class="request-field-checkbox"
-                        name="selectedTcaColumns[{table}][text][{fieldName}]"
-                        id="selectedTcaColumns[{table}][text][{fieldName}]"
-                        value="{data.renderType}"
-                        checked="checked"
-                    />
-                </f:then>
-                <f:else>
-                    <input type="checkbox"
-                        class="request-field-checkbox"
-                        name="selectedTcaColumns[{table}][text][{fieldName}]"
-                        id="selectedTcaColumns[{table}][text][{fieldName}]"
-                        value="{data.renderType}"
-                    />
-                </f:else>
-            </f:if>
-            <label class="mb-1" for="selectedTcaColumns[{table}][text][{fieldName}]">{data.label}</label>
-        </div>
-    </f:for>
+    </label>
+    <div class="d-flex flex-wrap">
+        <f:for each="{textFields}" key="fieldName" as="data" iteration="it">
+            <div class="d-flex align-items-center mb-2" style="flex: 0 0 calc(50% - 1rem);">
+                <f:if condition="{selectedTcaColumns.{table}.text.{fieldName}}">
+                    <f:then>
+                        <input type="checkbox"
+                            class="request-field-checkbox me-2"
+                            name="selectedTcaColumns[{table}][text][{fieldName}]"
+                            id="selectedTcaColumns[{table}][text][{fieldName}]"
+                            value="{data.renderType}"
+                            checked="checked"
+                        />
+                    </f:then>
+                    <f:else>
+                        <input type="checkbox"
+                            class="request-field-checkbox me-2"
+                            name="selectedTcaColumns[{table}][text][{fieldName}]"
+                            id="selectedTcaColumns[{table}][text][{fieldName}]"
+                            value="{data.renderType}"
+                        />
+                    </f:else>
+                </f:if>
+                <label class="mb-0" for="selectedTcaColumns[{table}][text][{fieldName}]">{data.label}</label>
+            </div>
+        </f:for>
+    </div>
 </f:if>
 
 

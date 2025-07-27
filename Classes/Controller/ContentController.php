@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class ContentController extends AbstractBackendController
@@ -66,6 +67,7 @@ class ContentController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         UuidService $uuidService,
         ContentService     $contentService,
         RichTextElementService $richTextElementService,
@@ -85,7 +87,8 @@ class ContentController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
         $this->uuidService = $uuidService;
         $this->contentService = $contentService;

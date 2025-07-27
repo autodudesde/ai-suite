@@ -1,27 +1,23 @@
-<div class="text-generation-library library mt-2">
-    <div class="card card-size-large active mb-0">
-        <div class="card-header">
-            <h3 class="text-gradient">
-                <f:translate key="AiSuite.textGenerationLibrary" extensionName="ai_suite"/>
-            </h3>
-            <f:if condition="{textGenerationLibraries -> f:count()} > 0">
-                <f:then>
-                    <div class="flex-row d-flex justify-content-between flex-wrap">
-                        <f:for each="{textGenerationLibraries}" as="library" iteration="it">
-                            <f:render partial="Libs/LibraryLabel" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable, type: 'text'}" />
-                        </f:for>
-                    </div>
-                </f:then>
-                <f:else>
-                    <div class="col-12 my-3">
-                        <div class="alert alert-warning" role="alert">
-                            <f:translate key="AiSuite.noLibrariesAvailable" extensionName="ai_suite"/>
-                        </div>
-                    </div>
-                </f:else>
-            </f:if>
-        </div>
-    </div>
+<div class="generation-library text-generation-library library mt-2">
+    <label class="control-label fw-bold mb-2">
+        <f:translate key="AiSuite.textGenerationLibrary" extensionName="ai_suite"/>
+    </label>
+    <f:if condition="{textGenerationLibraries -> f:count()} > 0">
+        <f:then>
+            <div class="flex-row d-flex justify-content-between flex-wrap library-wrapper">
+                <f:for each="{textGenerationLibraries}" as="library" iteration="it">
+                    <f:render partial="Libs/LibraryLabel" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable, type: 'text'}" />
+                </f:for>
+            </div>
+        </f:then>
+        <f:else>
+            <div class="col-12 my-3">
+                <div class="alert alert-warning" role="alert">
+                    <f:translate key="AiSuite.noLibrariesAvailable" extensionName="ai_suite"/>
+                </div>
+            </div>
+        </f:else>
+    </f:if>
 </div>
 
 

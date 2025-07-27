@@ -1,14 +1,13 @@
 <f:if condition="{imageFields -> f:count()} > 0">
-    <f:asset.css identifier="wizardSlideTwoCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css" />
     <f:for each="{imageFields}" key="fieldName" as="fieldData" iteration="it">
-        <div class="form-group" id="generated-images-{fieldName}">
-            <label for="generated-images-{fieldName}">
+        <div class="form-group mb-3" id="generated-images-{fieldName}">
+            <label for="generated-images-{fieldName}" class="form-label">
                 <f:format.case mode="capital">{fieldData.label}</f:format.case>
-            </label><br />
+            </label>
             <f:if condition="{fieldData.imageAmountExceeded}">
                 <f:then>
                     <span
-                        class="mb-3 mt-1 btn btn-default create-image-amount-exceeded"
+                        class="mb-3 mt-1 btn btn-default create-image-amount-exceeded d-block"
                         data-table="{table}"
                         data-page-id="{pageId}"
                         data-position="{position}"
@@ -22,28 +21,28 @@
                     <div class="ai-suite-image-generation-wizard" id="wizardSlideTwo">
                         <f:if condition="{fieldData.urls}">
                             <f:then>
-                                <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: fieldData.urls, fieldName: fieldName, table: table, itemLabel: itemLabel, position: position}" />
-                                <f:render partial="Libs/ImageTitleSelection" arguments="{imageTitleSuggestions: fieldData.imageTitles, fieldName: fieldName, table: table, position: position}" />
+                                <div class="d-flex gap-3">
+                                    <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: fieldData.urls, fieldName: fieldName, table: table, itemLabel: itemLabel, position: position}" />
+                                    <f:render partial="Libs/ImageTitleSelection" arguments="{imageTitleSuggestions: fieldData.imageTitles, fieldName: fieldName, table: table, position: position}" />
+                                </div>
                             </f:then>
                             <f:else>
                                 <f:render partial="Libs/ImagePreSelection" arguments="{imageSuggestions: fieldData, fieldName: fieldName, table: table, itemLabel: itemLabel, position: position, pageId: pageId, uuid: uuid, sysLanguageUid: sysLanguageUid}" />
                             </f:else>
                         </f:if>
                     </div>
-                    <div class="row mt-3 mb-3">
-                        <div class="col-6">
-                    <span
-                        class="mb-3 mt-1 btn btn-default create-content-update-image"
-                        data-table="{table}"
-                        data-page-id="{pageId}"
-                        data-language-id="{sysLanguageUid}"
-                        data-position="{position}"
-                        data-fieldname="{fieldName}"
-                    >
-                        <core:icon identifier="actions-refresh" size="small" />
-                        <f:translate key="AiSuite.regenerateSuggestions" extensionName="ai_suite"/> ({fieldName})
-                    </span>
-                        </div>
+                    <div class="btn-group my-3">
+                        <button
+                            class="btn btn-default create-content-update-image"
+                            data-table="{table}"
+                            data-page-id="{pageId}"
+                            data-language-id="{sysLanguageUid}"
+                            data-position="{position}"
+                            data-fieldname="{fieldName}"
+                        >
+                            <core:icon identifier="actions-refresh" size="small" />
+                            <f:translate key="AiSuite.regenerateSuggestions" extensionName="ai_suite"/> ({fieldName})
+                        </button>
                     </div>
                 </f:else>
             </f:if>

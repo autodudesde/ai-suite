@@ -33,7 +33,7 @@ use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class ImageController extends AbstractAjaxController
@@ -51,6 +51,7 @@ class ImageController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         PageContentFactory $pageContentFactory,
         ResourceFactory $fileFactory,
         Filesystem $filesystem
@@ -63,7 +64,8 @@ class ImageController extends AbstractAjaxController
             $uuidService,
             $siteService,
             $translationService,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->pageContentFactory = $pageContentFactory;
         $this->fileFactory = $fileFactory;

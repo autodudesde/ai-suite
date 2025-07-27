@@ -68,23 +68,30 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(\AutoDudes\AiSuite\Hooks\TranslationHook::class)
         ->public();
 
+    $services->set(\AutoDudes\AiSuite\Service\MetadataService::class)
+        ->public();
+    $services->set(\AutoDudes\AiSuite\Service\TranslationService::class)
+        ->public();
+    $services->set(\AutoDudes\AiSuite\Domain\Repository\PagesRepository::class)
+        ->public();
+
     $services->set(\AutoDudes\AiSuite\EventListener\FileControlsEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Form\\Event\\CustomFileControlsEvent',
+            'event' => \TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent::class,
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\ModifyNewContentElementWizardItemsEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Controller\\Event\\ModifyNewContentElementWizardItemsEvent',
+            'event' => \TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent::class,
             'identifier' => 'tx-ai-suite/modify-new-content-element-wizard-items-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Core\\Configuration\\Event\\AfterTcaCompilationEvent',
+            'event' => \TYPO3\CMS\Core\Configuration\Event\AfterTcaCompilationEvent::class,
             'identifier' => 'tx-ai-suite/after-tca-compilation-event-listener'
         ]);
 
@@ -98,14 +105,42 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(\AutoDudes\AiSuite\EventListener\ModifyButtonBarEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\Backend\\Template\\Components\\ModifyButtonBarEvent',
+            'event' => \TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent::class,
             'identifier' => 'tx-ai-suite/modify-button-bar-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\BeforePrepareConfigurationForEditorEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => 'TYPO3\\CMS\\RteCKEditor\\Form\\Element\\Event\\BeforePrepareConfigurationForEditorEvent',
+            'event' => \TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent::class,
             'identifier' => 'tx-ai-suite/before-prepare-configuration-for-editor-event-listener'
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\ModifyPageLayoutContentEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => TYPO3\CMS\Backend\Controller\Event\ModifyPageLayoutContentEvent::class,
+            'identifier' => 'tx-ai-suite/modify-page-layout-event-listener'
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\PageTreeTranslationStatusEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent::class,
+            'identifier' => 'tx-ai-suite/page-tree-translation-status'
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\PageTreeTranslationStatusEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent::class,
+            'identifier' => 'tx-ai-suite/page-tree-translation-status'
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\RenderAdditionalContentToRecordListEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Recordlist\Event\RenderAdditionalContentToRecordListEvent::class,
+            'identifier' => 'tx-ai-suite/render-additional-content-to-record-list-event-listener'
         ]);
 };

@@ -12,8 +12,11 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
@@ -30,6 +33,7 @@ class ModifyButtonBarEventListener
     protected GlossarRepository $glossarRepository;
 
     protected ExtensionConfiguration $extensionConfiguration;
+    protected FlashMessageService $flashMessageService;
 
     protected array $extConf = [];
 
@@ -43,7 +47,8 @@ class ModifyButtonBarEventListener
         UuidService $uuidService,
         TranslationService $translationService,
         GlossarRepository $glossarRepository,
-        ExtensionConfiguration $extensionConfiguration
+        ExtensionConfiguration $extensionConfiguration,
+        FlashMessageService $flashMessageService
     ) {
         $this->pageRenderer = $pageRenderer;
         $this->iconFactory = $iconFactory;
@@ -55,6 +60,8 @@ class ModifyButtonBarEventListener
         $this->translationService = $translationService;
         $this->glossarRepository = $glossarRepository;
         $this->extensionConfiguration = $extensionConfiguration;
+        $this->flashMessageService = $flashMessageService;
+
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
 
@@ -138,12 +145,35 @@ class ModifyButtonBarEventListener
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/page-localization.js');
             }
-            if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' || $request->getUri()->getPath() === $entryPoint . '/record/edit' &&
-                $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')) {
+            $returnUrl = $request->getQueryParams()['returnUrl'] ?? '';
+            if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' ||
+                $request->getUri()->getPath() === $entryPoint . '/record/edit' &&
+                !str_starts_with($returnUrl, '/typo3/record/info') &&
+                $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')
+            ) {
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
+            }
+        }
+        if (($request->getUri()->getPath() === $entryPoint . '/module/web/list' ||
+            $request->getUri()->getPath() === $entryPoint . '/module/web/layout')) {
+
+            $pageUid = $request->getQueryParams()['id'] ?? 0;
+            $result = $this->translationService->processFinishedTranslationTasksForPage((int)$pageUid);
+
+            if($result['processedCount'] > 0) {
+                BackendUtility::setUpdateSignal('updatePageTree', $pageUid);
+                $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
+                    JavaScriptModuleInstruction::create('@autodudes/ai-suite/translation/reload-page.js')
+                        ->instance([
+                            'success' => $result['success'],
+                            'notificationTitle' => $result['success'] ? 'Translation Tasks Processed' : 'Translation Task Error',
+                            'notificationMessage' => $result['message']
+                        ])
+                );
             }
         }
     }

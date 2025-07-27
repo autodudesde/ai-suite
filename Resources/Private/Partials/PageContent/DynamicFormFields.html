@@ -4,12 +4,12 @@
 
 <div class="">
     <f:for each="{contentElementData}" key="table" as="data">
-        <div class="col-12 mb-3" id="{table}">
+        <div class="panel panel-default mb-3" id="{table}">
             <f:if condition="{table} == 'tt_content'">
                 <f:then>
-                    <h3>
+                    <div class="panel-heading">
                         <button
-                            class="fields-button"
+                            class="btn btn-link panel-title fw-bold text-decoration-none fields-button"
                             type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#fields-{table}"
@@ -20,10 +20,10 @@
                             {data.label}
                             <core:icon identifier="actions-chevron-up" size="small" />
                         </button>
-                    </h3>
+                    </div>
                     <div
                         id="fields-{table}"
-                        class="row collapse show"
+                        class="panel-body collapse show"
                         data-bs-parent="#{table}"
                     >
                         <f:if condition="{data.0.text}">
@@ -36,40 +36,46 @@
                 </f:then>
                 <f:else>
                     {f:variable(name: 'count', value: 0)}
-                    <h3>
-                        {data.label}
-                    </h3>
-                    <f:for each="{data}" key="position" as="childData">
-                        <f:if condition="{aiSuite:isArray(data: childData)}">
-                            <h4>
-                                <button
-                                    class="fields-button"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#fields-{table}-{position}"
-                                    data-bs-parent="#{table}"
-                                    aria-expanded="true"
-                                    aria-controls="fields-{table}-{position}"
-                                >
-                                    {data.label} {count +1}
-                                    <core:icon identifier="actions-chevron-up" size="small" />
-                                </button>
-                            </h4>
-                            <div
-                                id="fields-{table}-{position}"
-                                class="row collapse show"
-                                data-bs-parent="#{table}"
-                            >
-                                <f:if condition="{childData.text}">
-                                    <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: childData.text, table: table, position: count}" />
-                                </f:if>
-                                <f:if condition="{childData.image}">
-                                    <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: childData.image, table: table, itemLabel: data.label, position: count, pageId: content.pid, imageAi: initialImageAi, uuid: uuid}" />
-                                </f:if>
-                            </div>
-                            {f:variable(name: 'count', value: '{count + 1}')}
-                        </f:if>
-                    </f:for>
+                    <div class="panel-heading">
+                        <label class="panel-title fw-bold">
+                            {data.label}
+                        </label>
+                    </div>
+                    <div class="panel-body">
+                        <f:for each="{data}" key="position" as="childData">
+                            <f:if condition="{aiSuite:isArray(data: childData)}">
+                                <div class="panel panel-default mb-2">
+                                    <div class="panel-heading">
+                                        <button
+                                            class="btn btn-link panel-title fw-bold text-decoration-none fields-button"
+                                            type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#fields-{table}-{position}"
+                                            data-bs-parent="#{table}"
+                                            aria-expanded="true"
+                                            aria-controls="fields-{table}-{position}"
+                                        >
+                                            {data.label} {count +1}
+                                            <core:icon identifier="actions-chevron-up" size="small" />
+                                        </button>
+                                    </div>
+                                    <div
+                                        id="fields-{table}-{position}"
+                                        class="panel-body collapse show"
+                                        data-bs-parent="#{table}"
+                                    >
+                                        <f:if condition="{childData.text}">
+                                            <f:render partial="PageContent/DynamicFormFields/TextFields" arguments="{textFields: childData.text, table: table, position: count}" />
+                                        </f:if>
+                                        <f:if condition="{childData.image}">
+                                            <f:render partial="PageContent/DynamicFormFields/ImageFields" arguments="{imageFields: childData.image, table: table, itemLabel: data.label, position: count, pageId: content.pid, imageAi: initialImageAi, uuid: uuid}" />
+                                        </f:if>
+                                    </div>
+                                </div>
+                                {f:variable(name: 'count', value: '{count + 1}')}
+                            </f:if>
+                        </f:for>
+                    </div>
                 </f:else>
             </f:if>
         </div>

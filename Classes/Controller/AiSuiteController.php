@@ -35,6 +35,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class AiSuiteController extends AbstractBackendController
@@ -57,6 +58,7 @@ class AiSuiteController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         RequestsRepository $requestsRepository,
         SettingsFactory $settingsFactory,
         LoggerInterface $logger
@@ -74,6 +76,7 @@ class AiSuiteController extends AbstractBackendController
             $siteService,
             $translationService,
             $sessionService,
+            $eventDispatcher,
         );
         $this->settingsFactory = $settingsFactory;
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();

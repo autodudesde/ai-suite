@@ -1,52 +1,35 @@
 <html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
-    <f:asset.css identifier="wizardSlideOneCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-one.css" />
-
-    <div class="ai-suite" id="wizardSlideOne">
-        <div class="card-container">
-            <div>
-                <div class="card-header">
-                    <div class="card-header-body">
-                        <h2 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneHeader" />
-                        </h2>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                    <div class="prompt-settings mt-3">
-                        <div class="card card-size-large active">
-                            <div class="card-header">
-                                <h3 class="text-gradient">
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardPromptHeader" />
-                                </h3>
-                                <br />
-                                <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                                <div class="mt-2">
-                                    <label for="imageGenerationPrompt" class="mt-3">
-                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneImagePrompt" />
-                                    </label>
-                                    <textarea class="p-2 w-100" id="imageGenerationPrompt" required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
-                    <div id="languageSelection" class="my-3">
-                        <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'langIsoCode', selected: ''}" />
-                    </div>
-                    <div class="card-footer px-0">
-                        <button type="button" class="btn btn-primary"
-                                data-uuid="{uuid}"
-                                data-inline="1" value="blank"
-                                data-identifier="aiSuiteGenerateImage"
-                                id="aiSuiteGenerateImageBtn"
-                        >
-                            <core:icon identifier="actions-add" size="small" />
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneButton" />
-                        </button>
-                    </div>
-                </div>
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
+    <div class="panel panel-default wizard-slide" id="wizardSlideOne">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneHeader" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <f:render partial="Libs/SelectImageGenerationLibrary" arguments="{imageGenerationLibraries: imageGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+            <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
+            <div class="form-sectin mb-3">
+                <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+                <label class="control-label fw-bold mb-2">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardPromptHeader" />
+                </label>
+                <textarea class="form-control" id="imageGenerationPrompt" rows="6" required></textarea>
+            </div>
+            <div class="form-group" id="languageSelection">
+                <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'langIsoCode', selected: ''}" />
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary"
+                        data-uuid="{uuid}"
+                        data-inline="1" value="blank"
+                        data-identifier="aiSuiteGenerateImage"
+                        id="aiSuiteGenerateImageBtn"
+                >
+                    <core:icon identifier="actions-add" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardSlideOneButton" />
+                </button>
             </div>
         </div>
     </div>

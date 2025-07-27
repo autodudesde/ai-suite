@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "12.12.0",
+    "version": "12.12.1",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -76,6 +76,7 @@
         "typo3/cms-indexed-search": "^12.4.11",
         "typo3/cms-filemetadata": "^12.4.11",
         "typo3/cms-form": "^12.4.11",
+        "typo3/cms-workspaces": "^12.4.11",
         "typo3/coding-standards": "^0.7"
     },
     "minimum-stability": "dev",

@@ -12,7 +12,7 @@
 
 namespace AutoDudes\AiSuite\Controller;
 
-
+use AutoDudes\AiSuite\Events\AfterAiSuiteModuleInitalizeEvent;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 class AbstractBackendController
 {
@@ -45,6 +46,7 @@ class AbstractBackendController
     protected SiteService $siteService;
     protected TranslationService $translationService;
     protected SessionService $sessionService;
+    protected EventDispatcher $eventDispatcher;
     protected ServerRequestInterface $request;
     protected ModuleTemplate $view;
 
@@ -61,6 +63,7 @@ class AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
     ) {
         $this->moduleTemplateFactory = $moduleTemplateFactory;
         $this->iconFactory = $iconFactory;
@@ -74,6 +77,7 @@ class AbstractBackendController
         $this->siteService = $siteService;
         $this->translationService = $translationService;
         $this->sessionService = $sessionService;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function injectModuleTemplateFactory(ModuleTemplateFactory $moduleTemplateFactory): void
@@ -95,6 +99,8 @@ class AbstractBackendController
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+
+        $this->eventDispatcher->dispatch(new AfterAiSuiteModuleInitalizeEvent($this->request, $this->pageRenderer));
     }
 
     /**
@@ -104,9 +110,9 @@ class AbstractBackendController
     {
         $buttonBar = $this->view->getDocHeaderComponent()->getButtonBar();
         $buttonBar->addButton($this->buildButton('actions-menu', 'tx_aisuite.module.actionmenu.dashboard', 'btn-md btn-primary rounded', 'ai_suite_dashboard'));
-        $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-secondary mx-2 rounded', 'ai_suite_page'));
+        $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-default rounded', 'ai_suite_page'));
         $buttonBar->addButton($this->buildButton('content-store', 'tx_aisuite.module.actionmenu.agencies', 'btn-md btn-default rounded', 'ai_suite_agencies'));
-        $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default mx-2 rounded', 'ai_suite_prompt'));
+        $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default rounded', 'ai_suite_prompt'));
         if($this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
             $buttonBar->addButton($this->buildButton('actions-duplicate', 'tx_aisuite.module.actionmenu.massAction', 'btn-md btn-default rounded', 'ai_suite_massaction'));
         }
@@ -116,7 +122,7 @@ class AbstractBackendController
                 $additonalParams['backgroundTaskFilter'] = $this->sessionService->getBackgroundTaskFilter();
                 $additonalParams['clickAndSave'] = $this->sessionService->getClickAndSaveState();
             }
-            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'tx_aisuite.module.actionmenu.backgroundTask', 'btn-md btn-default mx-2 rounded', 'ai_suite_backgroundtask', $additonalParams));
+            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'tx_aisuite.module.actionmenu.backgroundTask', 'btn-md btn-default rounded', 'ai_suite_backgroundtask', $additonalParams));
         }
     }
 

@@ -1,42 +1,43 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 {namespace core=TYPO3\CMS\Core\ViewHelpers}
 
-<div class="card card-size-medium {status}">
-    <div class="card-header">
-        <f:if condition="{icon}">
-            <div class="card-icon">
-                <core:icon identifier="{icon}" size="large"/>
+<div class="panel panel-default flex-fill {status}">
+    <div class="panel-heading">
+        <label class="panel-title fw-bold">
+            <f:if condition="{icon}">
+                <core:icon identifier="{icon}" />
+            </f:if>
+            {title}<f:translate key="tx_aisuite.module.dashboard.card.{cardname}.title" extensionName="ai_suite"/>
+        </label>
+    </div>
+    <div class="panel-body">
+        <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle', extensionName: 'ai_suite')}"/>
+        <f:if condition="{subtitle}">
+            <div class="mb-2">
+                <label class="text-muted">{subtitle}</label>
             </div>
         </f:if>
-        <div class="card-header-body">
-            <h3 class="card-title">{title}<f:translate key="tx_aisuite.module.dashboard.card.{cardname}.title" extensionName="ai_suite"/></h3>
-            <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle', extensionName: 'ai_suite')}"/>
-            <f:if condition="{subtitle}">
-                <span class="card-subtitle">
-                    {subtitle}
-                </span>
-            </f:if>
-            <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description', extensionName: 'ai_suite')}"/>
-            <f:if condition="{description}">
-                <div class="card-longdesc">
-                    <p>
-                        {description}
-                    </p>
-                </div>
-            </f:if>
-            <br>
+        
+        <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description', extensionName: 'ai_suite')}"/>
+        <f:if condition="{description}">
+            <div class="mb-3">
+                <p>{description}</p>
+            </div>
+        </f:if>
+        
+        <div class="panel-actions">
             <f:if condition="{status} == 'active'">
                 <f:then>
                     <f:variable name="routeLink">{f:be.uri(route: route)}</f:variable>
                     <f:if condition="{params}">
                         <f:variable name="routeLink">{f:be.uri(route: route, parameters: params)}</f:variable>
                     </f:if>
-                    <a href="{routeLink}" class="btn btn-secondary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel', extensionName: 'ai_suite')}">
+                    <a href="{routeLink}" class="btn btn-primary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel', extensionName: 'ai_suite')}">
                         <f:translate key="tx_aisuite.module.dashboard.card.{cardname}.linklabel" extensionName="ai_suite"/>
                     </a>
                 </f:then>
                 <f:else if="{status} == 'comming-soon'">
-                    <span class="comming-soon">
+                    <span class="badge badge-info">
                         <f:translate key="tx_aisuite.module.dashboard.card.comming-soon" extensionName="ai_suite"/>
                     </span>
                 </f:else>

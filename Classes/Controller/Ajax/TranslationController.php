@@ -24,8 +24,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class TranslationController extends AbstractAjaxController
@@ -39,6 +41,7 @@ class TranslationController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
     ) {
         parent::__construct(
             $backendUserService,
@@ -48,7 +51,8 @@ class TranslationController extends AbstractAjaxController
             $uuidService,
             $siteService,
             $translationService,
-            $logger
+            $logger,
+            $eventDispatcher
         );
     }
 
@@ -99,6 +103,64 @@ class TranslationController extends AbstractAjaxController
                 ]
             )
         );
+        return $response;
+    }
+
+    public function getTranslationWizardSlideOneAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $params = $request->getParsedBody();
+        $pageId = (int)($params['pageId']);
+
+        try {
+            $translationProvider = GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
+            $sysLanguages = $translationProvider->getSystemLanguages($pageId);
+            $availableSourceLanguages = array_values(
+                array_filter($sysLanguages, static function (array $languageRecord): bool {
+                    return (int)$languageRecord['uid'] === 0;
+                })
+            );
+            $availableTargetLanguages = $this->translationService->getAvailableTargetLanguages($sysLanguages, $pageId);
+            $librariesAnswer = $this->requestService->sendLibrariesRequest(
+                GenerationLibrariesEnumeration::TRANSLATE,
+                'translate',
+                ['text']
+            );
+
+            if ($librariesAnswer->getType() === 'Error') {
+                $this->logError($librariesAnswer->getResponseData()['message'], $response);
+                return $response;
+            }
+
+            $libraries = $this->libraryService->prepareLibraries(
+                $librariesAnswer->getResponseData()['textGenerationLibraries']
+            );
+
+            $content = $this->getContentFromTemplate(
+                $request,
+                'WizardSlideOne',
+                'EXT:ai_suite/Resources/Private/Templates/Ajax/Translation/',
+                'Translation',
+                [
+                    'availableSourceLanguages' => $availableSourceLanguages,
+                    'availableTargetLanguages' => $availableTargetLanguages,
+                    'translationLibraries' => $libraries,
+                    'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
+                    'pageId' => $pageId
+                ]
+            );
+
+            $response->getBody()->write(
+                json_encode([
+                    'success' => true,
+                    'output' => $content,
+                    'uuid' => $this->uuidService->generateUuid()
+                ])
+            );
+        } catch (\Exception $e) {
+            $this->logError('Error loading translation wizard slide one: ' . $e->getMessage(), $response);
+        }
+
         return $response;
     }
 }

@@ -1,0 +1,37 @@
+.ai-suite-whole-page-translation-wizard {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.ai-suite-whole-page-translation-wizard .form-group {
+    margin-bottom: 1rem;
+}
+
+.ai-suite-whole-page-translation-wizard .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.ai-suite-whole-page-translation-wizard .form-select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.ai-suite-whole-page-translation-wizard .alert {
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.ai-suite-whole-page-translation-wizard .alert ul {
+    margin: 0.5rem 0 0 0;
+    padding-left: 1rem;
+}
+
+.ai-suite-whole-page-translation-wizard .alert li {
+    margin-bottom: 0.25rem;
+}

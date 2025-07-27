@@ -16,7 +16,8 @@ class SessionService implements SingletonInterface
     private const AI_SUITE_ROUTES = [
         'ajax_aisuite_massaction_pages_prepare' => 'ai_suite_massaction_pages_prepare',
         'ajax_aisuite_massaction_filereferences_prepare' => 'ai_suite_massaction_filereferences_prepare',
-        'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare'
+        'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare',
+        'ajax_aisuite_massaction_pages_translation_prepare' => 'ai_suite_massaction_pages_translation_prepare',
     ];
 
     private const AI_SUITE_FILELIST_FOLDER_ID = 'ai_suite_filelist_folder_id';

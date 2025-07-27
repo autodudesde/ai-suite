@@ -4,23 +4,24 @@
     xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 >
-<div class="list-group nested-sortable">
-    <div class="ai-suite mt-4" id="massActionFilesPrepareExecute">
-        <hr />
-        <h2 class="my-4">
-            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.foundFilesAndMetadata" extensionName="ai_suite" />
-        </h2>
-        <f:if condition="{files -> f:count()} > 0">
-            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <p class="my-4 position-relative">
-                <label for="toggleFileSelection">
+<div class="ai-suite" id="massActionFilesPrepareExecute">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <label class="panel-title fw-bold">
+                <core:icon identifier="apps-filetree-folder-media" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.foundFilesAndMetadata" extensionName="ai_suite" />
+            </label>
+        </div>
+        <div class="panel-body">
+            <f:if condition="{files -> f:count()} > 0">
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <label class="mb-3 d-flex gap-2 fw-bold">
                     <input type="checkbox" id="toggleFileSelection" value="1" />
-                    <span class="px-4">
+                    <span>
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
                     </span>
                 </label>
-            </p>
-            <div id="sortable-files" class="sortable-wrap">
+                <div id="sortable-files" class="sortable-wrap list-group nested-sortable">
                 <f:for each="{files}" as="file" key="fileUid">
                     <div class="list-group-item nested">
                         <div class="d-flex w-100">
@@ -29,51 +30,49 @@
                                     <f:image src="{fileUid}" width="100px"  />
                                 </label>
                             </div>
-                            <div class="file-meta-content">
+                            <div class="file-meta-content d-flex flex-column w-100">
                                 <f:variable name="taskStatus">{aiSuite:inArray(needle: file.uid, haystack: alreadyPendingFiles)}</f:variable>
                                 <div class="file-meta-content-info badge badge-info"
                                      data-table="sys_file_metadata"
                                      data-uid="{file.uid}"
                                 >
-                                    <core:icon identifier="actions-document-info" size="small" /> Info
+                                    <core:icon identifier="actions-document-info" size="small" /> <f:translate key="tx_aisuite.status.info" extensionName="ai_suite"/>
                                 </div>
-                                <p class="title">
-                                    <label for="file-selection[{file.uid}]">
-                                        <f:if condition="{taskStatus} != ''">
-                                            <f:then>
-                                                <span class="badge badge-{taskStatus}">{taskStatus}</span>
-                                            </f:then>
-                                            <f:else if="{file.size} > {maxAllowedFileSize}">
-                                                <span class="badge badge-warning">
-                                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.imageSizeTooLargeBadge" />
-                                                </span>
-                                            </f:else>
-                                            <f:else>
-                                                <input
-                                                    type="checkbox"
-                                                    name="file-selection[{file.uid}]"
-                                                    id="file-selection[{file.uid}]"
-                                                    value="{file.uid}"
-                                                    data-sys-file-uid="{file.uid_local}"
-                                                >
-                                            </f:else>
-                                        </f:if>
-                                        <span class="px-4">{file.name}</span>
-                                        <f:if condition="{file.size} > {maxAllowedFileSize}">
-                                            <div class="size-info">
-                                                <core:icon identifier="actions-exclamation-triangle" size="small" />
-                                                <span class="error-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.imageSizeTooLarge" extensionName="ai_suite"/></span>
-                                            </div>
-                                        </f:if>
-                                    </label>
-                                </p>
+                                <label class="d-flex gap-2 fw-bold mb-3" for="file-selection[{file.uid}]">
+                                    <f:if condition="{taskStatus} != ''">
+                                        <f:then>
+                                            <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                                        </f:then>
+                                        <f:else if="{file.size} > {maxAllowedFileSize}">
+                                            <span class="badge badge-warning">
+                                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.imageSizeTooLargeBadge" />
+                                            </span>
+                                        </f:else>
+                                        <f:else>
+                                            <input
+                                                type="checkbox"
+                                                name="file-selection[{file.uid}]"
+                                                id="file-selection[{file.uid}]"
+                                                value="{file.uid}"
+                                                data-sys-file-uid="{file.uid_local}"
+                                            >
+                                        </f:else>
+                                    </f:if>
+                                    <span>{file.name}</span>
+                                    <f:if condition="{file.size} > {maxAllowedFileSize}">
+                                        <div class="size-info">
+                                            <core:icon identifier="actions-exclamation-triangle" size="small" />
+                                            <span class="error-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.imageSizeTooLarge" extensionName="ai_suite"/></span>
+                                        </div>
+                                    </f:if>
+                                </label>
                                 <f:if condition="{taskStatus} === ''">
                                     <div class="filelist-input title {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'title\'', then: 'd-block', else: 'd-none')}">
-                                        <label>Title</label>
+                                        <label><f:translate key="tx_aisuite.form.label.title" extensionName="ai_suite"/></label>
                                         <input class="w-100 file-metadata-field" name="files[{file.uid}][title]" value="{file.title}" />
                                     </div>
                                     <div class="filelist-input alternative {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'alternative\'', then: 'd-block', else: 'd-none')}">
-                                        <label>Alternative Text</label>
+                                        <label><f:translate key="tx_aisuite.form.label.alternativeText" extensionName="ai_suite"/></label>
                                         <input class="w-100 file-metadata-field" name="files[{file.uid}][alternative]" value="{file.alternative}" />
                                     </div>
                                 </f:if>
@@ -81,10 +80,10 @@
                         </div>
                     </div>
                 </f:for>
-            </div>
-        </f:if>
-        <f:if condition="{unsupportedFiles -> f:count()} > 0">
-            <div id="sortable-files" class="sortable-wrap">
+                </div>
+            </f:if>
+            <f:if condition="{unsupportedFiles -> f:count()} > 0">
+                <div id="sortable-files" class="sortable-wrap list-group nested-sortable">
                 <f:for each="{unsupportedFiles}" as="unsupportedFile" key="unsupportedFileUid">
                     <div class="list-group-item nested">
                         <div class="d-flex w-100">
@@ -93,41 +92,40 @@
                                     <f:image src="{unsupportedFileUid}" width="100px"  />
                                 </label>
                             </div>
-                            <div class="file-meta-content">
+                            <div class="file-meta-content d-flex flex-column w-100">
                                 <div class="file-meta-content-info badge badge-info"
                                      data-table="sys_file_metadata"
                                      data-uid="{unsupportedFile.uid}"
                                 >
-                                    <core:icon identifier="actions-document-info" size="small" /> Info
+                                    <core:icon identifier="actions-document-info" size="small" /> <f:translate key="tx_aisuite.status.info" extensionName="ai_suite"/>
                                 </div>
-                                <p class="title">
-                                    <label>
-                                        <span class="badge"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.file.unsupportedImageFormat" /></span>
-                                        <span class="px-4">{unsupportedFile.name}</span>
-                                    </label>
-                                </p>
+                                <label class="d-flex gap-2 fw-bold mb-3">
+                                    <span class="badge"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.file.unsupportedImageFormat" /></span>
+                                    <span>{unsupportedFile.name}</span>
+                                </label>
                             </div>
                         </div>
                     </div>
                 </f:for>
-            </div>
-        </f:if>
-        <f:if condition="{files -> f:count()} > 0">
-            <div class="d-flex">
-                <button class="btn btn-primary mt-4" type="submit" id="filesExecuteFormSubmitBtn">
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.executeBtn" extensionName="ai_suite" />
-                </button>
-                <button class="btn btn-primary mt-4 mx-2" type="submit" id="filesSaveMetadataSubmitBtn">
-                    <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.saveMetadataBtn" extensionName="ai_suite" /></f:format.raw>
-                </button>
-            </div>
-            <p class="calculated-requests"></p>
-        </f:if>
-        <f:if condition="{files -> f:count()} == 0 && {unsupportedFiles -> f:count()} == 0">
-            <div class="my-4">
-                <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.module.massAction.noFilesFound'}"/>
-            </div>
-        </f:if>
+                </div>
+            </f:if>
+            <f:if condition="{files -> f:count()} > 0">
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="filesExecuteFormSubmitBtn">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.executeBtn" extensionName="ai_suite" />
+                    </button>
+                    <button class="btn btn-primary mt-4 mx-2" type="submit" id="filesSaveMetadataSubmitBtn">
+                        <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.saveMetadataBtn" extensionName="ai_suite" /></f:format.raw>
+                    </button>
+                </div>
+                <p class="calculated-requests"></p>
+            </f:if>
+            <f:if condition="{files -> f:count()} == 0 && {unsupportedFiles -> f:count()} == 0">
+                <div class="my-4">
+                    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.module.massAction.noFilesFound'}"/>
+                </div>
+            </f:if>
+        </div>
     </div>
 </div>
 </html>

@@ -26,6 +26,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class CkeditorController extends AbstractAjaxController
@@ -41,6 +42,7 @@ class CkeditorController extends AbstractAjaxController
         TranslationService $translationService,
         ExtensionConfiguration $extensionConfiguration,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher
     ) {
         parent::__construct(
             $backendUserService,
@@ -50,7 +52,8 @@ class CkeditorController extends AbstractAjaxController
             $uuidService,
             $siteService,
             $translationService,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->extensionConfiguration = $extensionConfiguration;
     }

@@ -1,56 +1,50 @@
 <html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
-    <f:asset.css identifier="wizardSlideOneCss" href="EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-two.css" />
-    <div id="wizardSlideTwo" class="ai-suite-metadata-generation-wizard">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <h2 class="text-gradient">
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
-                    </h2>
-                </div>
-            </div>
-            <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: metadataSuggestions, fieldName: fieldName, table: table, position: 0}" />
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
+    <div class="panel panel-default wizard-slide" id="wizardSlideTwo">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+            </h3>
         </div>
-        <div class="container">
+        <div class="panel-body">
+            <f:render partial="Libs/MetadataSuggestionSelection" arguments="{metadataSuggestions: metadataSuggestions, fieldName: fieldName, table: table, position: 0}" />
             <f:if condition="{additionalFields -> f:count()} > 0">
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h3 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metadataAdditionalFields" />
-                        </h3>
+                <div class="form-section mt-2 mb-3 p-3">
+                    <label class="control-label fw-bold mb-3">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metadataAdditionalFields" />
+                    </label>
+                    <div class="row">
+                        <f:for each="{additionalFields}" key="useForField" as="useForLabel" iteration="it">
+                            <div class="col-sm-6">
+                                <div class="form-check">
+                                    <input
+                                        type="checkbox"
+                                        name="useFor[{useForField}]"
+                                        value="{useForField}"
+                                        class="form-check-input use-for-selection"
+                                        id="useFor-{useForField}"
+                                    >
+                                    <label class="form-check-label mx-2" for="useFor-{useForField}">
+                                        {useForLabel}
+                                    </label>
+                                </div>
+                            </div>
+                        </f:for>
                     </div>
-                    <f:for each="{additionalFields}" key="useForField" as="useForLabel" iteration="it">
-                        <div class="col-12 col-md-6 my-3 position-relative">
-                            <input
-                                type="checkbox"
-                                name="useFor[{useForField}]"
-                                value="{useForField}"
-                                class="mx-1 use-for-selection"
-                                id="useFor-{useForField}"
-                            >
-                            <label class="d-inline-flex justify-content-start align-items-center use-for"
-                                   for="useFor-{useForField}"
-                                   style="font-size: 0.85rem;"
-                            >
-                                {useForLabel}
-                            </label>
-                        </div>
-                    </f:for>
                 </div>
             </f:if>
-        <div class="row mt-3">
-            <div class="col-6">
-                <button class="mb-3 mt-1 btn btn-default w-100" id="aiSuiteBackToPreviousSlideBtn">
-                    <core:icon identifier="actions-refresh" size="small" />
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
-                </button>
-            </div>
-            <div class="col-6">
-                <button class="mb-3 mt-1 btn btn-primary w-100" id="aiSuiteSaveMetadataBtn">
-                    <core:icon identifier="actions-check" size="small" />
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
-                </button>
+            <div class="form-group">
+                <div class="btn-group gap-2" role="group">
+                    <button class="btn btn-default" id="aiSuiteBackToPreviousSlideBtn">
+                        <core:icon identifier="actions-refresh" size="small" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                    </button>
+                    <button class="btn btn-primary" id="aiSuiteSaveMetadataBtn">
+                        <core:icon identifier="actions-check" size="small" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                    </button>
+                </div>
             </div>
         </div>
     </div>

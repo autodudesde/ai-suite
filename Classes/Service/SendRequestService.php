@@ -72,13 +72,13 @@ class SendRequestService implements SingletonInterface
             return new ClientAnswer($requestContent, $requestContent['type']);
         } catch (ClientException|ServerException $exception) {
             $this->logger->error($exception->getMessage());
-            return $this->buildErrorAnswer('AI Suite server endpoint is currently not available.');
+            return $this->buildErrorAnswer($this->translationService->translate('tx_aisuite.error.server.notAvailable'));
         } catch (AiSuiteServerException $exception) {
             $this->logger->error($exception->getMessage());
             return $this->buildErrorAnswer($exception->getMessage());
         } catch (\Exception $exception) {
             $this->logger->error($exception->getMessage());
-            return $this->buildErrorAnswer('Unexpected AI Suite server endpoint error');
+            return $this->buildErrorAnswer($this->translationService->translate('tx_aisuite.error.server.unexpected'));
         }
     }
 

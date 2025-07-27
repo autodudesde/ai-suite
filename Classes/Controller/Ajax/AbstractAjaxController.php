@@ -12,6 +12,7 @@
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
+use AutoDudes\AiSuite\Events\BeforeAiSuiteAjaxTemplateRenderEvent;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
@@ -25,6 +26,7 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 abstract class AbstractAjaxController
 {
@@ -36,6 +38,7 @@ abstract class AbstractAjaxController
     protected SiteService $siteService;
     protected TranslationService $translationService;
     protected LoggerInterface $logger;
+    protected EventDispatcher $eventDispatcher;
 
     public function __construct(
         BackendUserService $backendUserService,
@@ -45,7 +48,8 @@ abstract class AbstractAjaxController
         UuidService $uuidService,
         SiteService $siteService,
         TranslationService $translationService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventDispatcher $eventDispatcher
     )
     {
         $this->backendUserService = $backendUserService;
@@ -56,6 +60,7 @@ abstract class AbstractAjaxController
         $this->siteService = $siteService;
         $this->translationService = $translationService;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
     protected function getContentFromTemplate(
         ServerRequestInterface $request,
@@ -65,6 +70,12 @@ abstract class AbstractAjaxController
         array $params = [],
         bool $useModuleTemplate = true
     ) {
+        $params['inlineStyles'] = file_get_contents(GeneralUtility::getFileAbsFileName('EXT:ai_suite/Resources/Public/Css/Ajax/wizard-general.css'));
+
+        $event = new BeforeAiSuiteAjaxTemplateRenderEvent($request, $params);
+        $this->eventDispatcher->dispatch($event);
+        $params = $event->getParams();
+
         $partialRootPaths = ['EXT:ai_suite/Resources/Private/Partials/'];
         $templateRootPaths = [$templateRootPath];
         $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);

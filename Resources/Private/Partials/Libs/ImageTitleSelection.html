@@ -1,38 +1,32 @@
-
-<div class="row image-title-suggestions mt-2">
-    <h3 class="text-gradient">
+<div class="suggestions image-title-suggestions w-100">
+    <label class="control-label fw-bold mb-2">
         <f:translate key="AiSuite.imageTitleSuggestionsHeader" extensionName="ai_suite"/>
-    </h3>
+    </label>
     <f:for each="{imageTitleSuggestions}" as="suggestion" iteration="it">
-        <div class="col-12 col-md-6 my-3 position-relative">
+        <label class="form-check d-flex align-items-center" for="{table}-{position}-{fieldName}-image_title-{it.cycle}">
             <input
-                type="checkbox"
+                type="radio"
                 name="fileData[contentElementData][{table}][{position}][{fieldName}][imageTitle]"
                 value="{suggestion}"
                 data-image-title="{suggestion}"
-                class="mx-1 image-title-selection"
+                class="form-check-input image-title-selection"
                 id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
-                data-selection-group="{table}-{position}-{fieldName}-image_title"
             >
-            <label class="d-inline-flex justify-content-start align-items-center ce-image-title-selection"
-                   data-selection-group="{table}-{position}-{fieldName}-image_title"
-                   data-selection-id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
-                   for="{table}-{position}-{fieldName}-image_title-{it.cycle}"
-                   style="font-size: 0.85rem;"
-            >
+            <span class="form-check-label ce-image-title-selection">
                 {suggestion}
-            </label>
-        </div>
+            </span>
+        </label>
     </f:for>
-    <div class="col-12 col-md-6 my-3 position-relative image-title-wrapper">
+    <div class="form-group">
         <input
             type="text"
             name="fileData[contentElementData][{table}][{position}][{fieldName}][imageTitleFreeText]"
             value=""
             placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleFreeTextPlaceholder')}"
-            class="image-title-free-text-input"
+            class="form-control"
             id="{table}-{position}-{fieldName}-image_title-free_text"
         >
     </div>
 </div>
+
 

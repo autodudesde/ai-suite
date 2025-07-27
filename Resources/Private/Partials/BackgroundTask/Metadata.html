@@ -1,64 +1,80 @@
 <html
     xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-<div class="accordion accordion-background-tasks" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
-    <div class="delete-all-wrapper mb-2 justify-content-between" style="display: none;">
-        <div>
-            <button class="btn btn-default refresh-tasks" data-type="{type}">
-                <core:icon identifier="actions-refresh" size="small" />
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.refresh" />
-            </button>
-        </div>
+
+<div class="background-tasks-wrapper" id="accordionBackgroundTasks{type}" data-type="{type}" style="display: none;">
+    <div class="d-flex justify-content-between mb-3 action-buttons-wrapper" style="display: none;">
+        <button class="btn btn-default refresh-tasks" data-type="{type}">
+            <core:icon identifier="actions-refresh" size="small" />
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.refresh" />
+        </button>
         <button class="btn btn-danger delete-all-accordion-items" data-type="{type}">
             <core:icon identifier="actions-delete" size="small" />
             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.deleteAll" />
         </button>
     </div>
+
     <f:for each="{backgroundTasks}" as="columnsTask" key="column" iteration="columnIt">
-        <div class="accordion-column mb-3" data-column="{column}">
-            <div class="column-header-wrapper d-flex align-items-center justify-content-between"
-                 data-bs-toggle="collapse"
-                 data-bs-target="#columnCollapse{type}{columnIt.index}"
-                 aria-expanded="true"
-                 aria-controls="columnCollapse{type}{columnIt.index}"
-            >
-                <h3 class="column-header mb-0 flex-grow-1">
-                    <f:if condition="{type} == 'Page'">
-                        <f:then>
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" /> ({column})
-                        </f:then>
-                        <f:else>
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" /> ({column})
-                        </f:else>
-                    </f:if>
-                </h3>
-                <div class="d-flex align-items-center">
-                    <f:if condition="{columnsTask -> f:count()} == 50">
-                        <button class="btn btn-default load-more-tasks mx-2" data-type="{type}">
-                            <core:icon identifier="actions-database-reload" size="small" />
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMore" />
-                        </button>
-                    </f:if>
-                    <span class="badge mx-2 column-task-count">{columnsTask -> f:count()}</span>
-                    <span class="toggle-icon"><core:icon identifier="actions-chevron-up" size="medium" /></span>
+        <div class="panel panel-default mb-3" data-column="{column}">
+            <div class="panel-heading" role="tab">
+                <div class="panel-heading-row">
+                    <button class="panel-button w-100 text-start pe-none" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#columnCollapse{type}{columnIt.index}"
+                            aria-expanded="true"
+                            aria-controls="columnCollapse{type}{columnIt.index}">
+                        <div class="panel-title d-flex align-items-center justify-content-between">
+                            <h3 class="mb-0">
+                                <f:if condition="{type} == 'Page'">
+                                    <f:then>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" /> ({column})
+                                    </f:then>
+                                    <f:else>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" /> ({column})
+                                    </f:else>
+                                </f:if>
+                            </h3>
+                            <div class="d-flex align-items-center">
+                                <f:if condition="{columnsTask -> f:count()} == 50">
+                                    <a href="#" class="btn btn-sm btn-default load-more-tasks me-2 pe-auto" data-type="{type}">
+                                        <core:icon identifier="actions-database-reload" size="small" />
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMore" />
+                                    </a>
+                                </f:if>
+                                <span class="badge badge-secondary me-2 column-task-count">{columnsTask -> f:count()}</span>
+                                <span class="caret pe-auto"></span>
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </div>
-            <div class="collapse show" id="columnCollapse{type}{columnIt.index}">
-                <f:if condition="{columnsTask -> f:count()} == 50">
-                    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.backgroundTasks.loadMoreHint.title', messageKey: 'AiSuite.backgroundTasks.loadMoreHint.message'}"/>
-                </f:if>
-                <div class="column-content">
+            <div class="collapse show panel-collapse" id="columnCollapse{type}{columnIt.index}"
+                 data-bs-parent="#accordionBackgroundTasks{type}"
+                 data-persist-collapse-state="true" role="tabpanel">
+                <div class="panel-body">
+                    <f:if condition="{columnsTask -> f:count()} == 50">
+                        <f:be.infobox title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMoreHint.title')}"
+                                      state="{f:constant(name: 'TYPO3\CMS\Fluid\ViewHelpers\Be\InfoboxViewHelper::STATE_INFO')}"
+                                      iconName="actions-info">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.loadMoreHint.message" />
+                        </f:be.infobox>
+                    </f:if>
                     <f:for each="{columnsTask}" as="backgroundTask" iteration="it">
-                        <div class="accordion-item mb-2" data-uuid="{backgroundTask.uuid}" data-column="{column}">
-                            <f:render partial="BackgroundTask/Type/{type}" arguments="{backgroundTask: backgroundTask, column: column, position: it.index}" />
-                        </div>
+                        <f:render partial="BackgroundTask/TaskItem" arguments="{task: backgroundTask, column: column, type: type, position: it.index, columnIndex: columnIt.index}" />
                     </f:for>
                 </div>
             </div>
         </div>
     </f:for>
-    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.backgroundTasks.noTasksInfo', id: 'noBackgroundTasks'}"/>
+    <div id="noBackgroundTasks">
+        <f:be.infobox title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.info')}"
+                      state="{f:constant(name: 'TYPO3\CMS\Fluid\ViewHelpers\Be\InfoboxViewHelper::STATE_INFO')}"
+                      iconName="actions-info">
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.backgroundTasks.noTasksInfo" />
+        </f:be.infobox>
+    </div>
 </div>
 </html>

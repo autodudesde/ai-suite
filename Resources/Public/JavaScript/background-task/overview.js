@@ -17,11 +17,11 @@ class Overview {
         this.activeView = 'Page';
 
         this.selectionHandler();
+        this.addFilterEventListener();
         this.addDeleteEventListener();
         this.addDeleteAllEventListener();
         this.addSaveEventListener();
         this.addViewEventListener();
-        this.addFilterEventListener();
         this.addInfoWindowEventListener();
         this.addClickAndSaveEventListener();
         this.addErrorTooltipEventListener();
@@ -48,7 +48,7 @@ class Overview {
                 clickAndSaveCheckbox.checked = this.clickAndSave;
             }
         }
-        const accordionItems = document.querySelectorAll('#accordionBackgroundTasks' + this.activeView + ' .accordion-item').length || 0;
+        const accordionItems = document.querySelectorAll('#accordionBackgroundTasks' + this.activeView + ' .panel').length || 0;
         document.querySelector('#accordionBackgroundTasks' + this.activeView).style.display = 'block';
         const noBackgroundTasks = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' #noBackgroundTasks');
         if(noBackgroundTasks) {
@@ -58,7 +58,7 @@ class Overview {
                 noBackgroundTasks.style.display = 'none';
             }
         }
-        const firstAccordionItem = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .accordion-item .open-accordion-item');
+        const firstAccordionItem = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .panel .open-accordion-item');
         if (firstAccordionItem) {
             firstAccordionItem.click();
         }
@@ -70,27 +70,26 @@ class Overview {
         document.querySelector('#backgroundTaskFilter').addEventListener('change', function(ev) {
             let filterValue = ev.target.value;
             self.updateBackgroundTaskUrl();
-            document.querySelectorAll('.accordion-background-tasks').forEach(function(element) {
+            document.querySelectorAll('.background-tasks-wrapper').forEach(function(element) {
                 if(element.dataset.type === filterValue) {
                     element.style.display = 'block';
-                    let accordionItems = element.querySelectorAll('.accordion-item').length || 0;
+                    let accordionItems = element.querySelectorAll('.panel').length || 0;
                     if(accordionItems === 0) {
                         element.querySelector('#noBackgroundTasks').style.display = 'block';
-                        element.querySelector('.delete-all-wrapper').style.display = 'none';
+                        element.querySelector('.action-buttons-wrapper').style.display = 'none';
                     } else {
-                        const firstAccordionItem = element.querySelector('.accordion-item');
-                        if(firstAccordionItem && firstAccordionItem.querySelector('button.accordion-button').classList.contains('collapsed')) {
+                        const firstAccordionItem = element.querySelector('.panel');
+                        if(firstAccordionItem && firstAccordionItem.querySelector('button.panel-button').classList.contains('collapsed')) {
                             const openButton = firstAccordionItem.querySelector('.open-accordion-item');
                             if (openButton) {
                                 openButton.click();
                             }
                         }
                         element.querySelector('#noBackgroundTasks').style.display = 'none';
-                        element.querySelector('.delete-all-wrapper').style.display = 'flex';
+                        element.querySelector('.action-buttons-wrapper').style.display = 'flex';
                     }
                 } else {
                     element.style.display = 'none';
-                    element.querySelector('#noBackgroundTasks').style.display = 'none';
                 }
             });
             self.activeView = filterValue;
@@ -102,7 +101,7 @@ class Overview {
         document.querySelectorAll('.delete-accordion-item').forEach(function(element) {
             element.addEventListener('click', function(ev) {
                 ev.preventDefault();
-                let accordionBackgroundTasksElement = ev.target.closest('.accordion-background-tasks');
+                let accordionBackgroundTasksElement = ev.target.closest('.background-tasks-wrapper');
                 let uuid = ev.target.dataset.uuid;
                 let column = ev.target.dataset.column;
                 Modal.confirm('Warning', TYPO3.lang['AiSuite.backgroundTasks.deleteModalTitle'], Severity.warning, [
@@ -114,20 +113,20 @@ class Overview {
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess']);
 
-                                const accordionItem = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"]');
-                                const columnSection = accordionItem.closest('.accordion-column');
+                                const accordionItem = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"]');
+                                const columnSection = accordionItem.closest('.panel-body');
                                 accordionItem.remove();
 
-                                if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
-                                    columnSection.remove();
+                                if (columnSection && columnSection.querySelectorAll('.panel').length === 0) {
+                                    columnSection.closest('.panel').remove();
                                 } else if (columnSection) {
-                                    const taskCount = columnSection.querySelectorAll('.accordion-item').length;
-                                    columnSection.querySelector('.column-task-count').textContent = taskCount;
+                                    const taskCount = columnSection.querySelectorAll('.panel').length;
+                                    columnSection.closest('.panel').querySelector('.column-task-count').textContent = taskCount;
                                 }
 
-                                if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
+                                if(accordionBackgroundTasksElement.querySelectorAll('.panel').length === 0) {
                                     accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
-                                    accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
+                                    accordionBackgroundTasksElement.querySelector('.action-buttons-wrapper').style.display = 'none';
                                 }
                                 self.checkLoadMore(columnSection);
                                 self.updateDeleteAllButtonVisibility();
@@ -154,7 +153,7 @@ class Overview {
                 let uuids = [];
                 let columns = [];
 
-                accordionBackgroundTasksElement.querySelectorAll('.accordion-item').forEach(function(item) {
+                accordionBackgroundTasksElement.querySelectorAll('.panel').forEach(function(item) {
                     uuids.push(item.dataset.uuid);
                     columns.push(item.dataset.column);
                 });
@@ -171,14 +170,11 @@ class Overview {
                             let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: uuids, columns: columns});
                             if (General.isUsable(res)) {
                                 Notification.success(res.count + TYPO3.lang['AiSuite.notification.deleteAllSuccess']);
-                                accordionBackgroundTasksElement.querySelectorAll('.accordion-item').forEach(function(item) {
+                                accordionBackgroundTasksElement.querySelectorAll('.panel').forEach(function(item) {
                                     item.remove();
                                 });
-                                accordionBackgroundTasksElement.querySelectorAll('.accordion-column').forEach(function(column) {
-                                    column.remove();
-                                });
                                 accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
-                                accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
+                                accordionBackgroundTasksElement.querySelector('.action-buttons-wrapper').style.display = 'none';
                             }
                             Modal.dismiss();
                             document.querySelector('a.btn.btn-md[title="TaskEngine"]').click();
@@ -199,31 +195,35 @@ class Overview {
         document.querySelectorAll('.save-accordion-item').forEach(function(element) {
             element.addEventListener('click', async function(ev) {
                 ev.preventDefault();
-                let accordionBackgroundTasksElement = ev.target.closest('.accordion-background-tasks');
+                let accordionBackgroundTasksElement = ev.target.closest('.background-tasks-wrapper');
                 let uuid = ev.target.dataset.uuid;
                 let column = ev.target.dataset.column;
-                let inputValue = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"] input.metadata-value').value;
-                let title = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"] .accordion-header .title').innerText;
+                let inputValue = document.querySelector('.panel[data-uuid="'+uuid+'"] .panel-body[data-column="'+column+'"] input.metadata-value').value;
+                if(inputValue.trim() === '') {
+                    Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noMetadataInputTitle'], TYPO3.lang['aiSuite.module.notification.modal.noMetadataInputMessage']);
+                    return;
+                }
+                let title = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"] .task-title').innerText;
                 let res = await Ajax.sendAjaxRequest('aisuite_background_task_save', {uuid: uuid, column: column, inputValue: inputValue});
                 if (General.isUsable(res)) {
                     Notification.success(TYPO3.lang['AiSuite.notification.saveSuccess'], inputValue + ' (' + title + ')');
 
-                    const accordionItem = document.querySelector('.accordion-item[data-uuid="'+uuid+'"][data-column="'+column+'"]');
-                    const columnSection = accordionItem.closest('.accordion-column');
+                    const accordionItem = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"]');
+                    const columnSection = accordionItem.closest('.panel-body');
                     accordionItem.remove();
 
-                    if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
-                        columnSection.remove();
+                    if (columnSection && columnSection.querySelectorAll('.panel').length === 0) {
+                        columnSection.closest('.panel').remove();
                     } else if (columnSection) {
-                        const taskCount = columnSection.querySelectorAll('.accordion-item').length;
-                        columnSection.querySelector('.column-task-count').textContent = taskCount;
+                        const taskCount = columnSection.querySelectorAll('.panel').length;
+                        columnSection.closest('.panel').querySelector('.column-task-count').textContent = taskCount;
                     }
 
-                    if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
+                    if(accordionBackgroundTasksElement.querySelectorAll('.panel').length === 0) {
                         accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
-                        accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
+                        accordionBackgroundTasksElement.querySelector('.action-buttons-wrapper').style.display = 'none';
                     } else {
-                        const firstAccordionItem = accordionBackgroundTasksElement.querySelector('.accordion-item');
+                        const firstAccordionItem = accordionBackgroundTasksElement.querySelector('.panel');
                         if(firstAccordionItem) {
                             firstAccordionItem.querySelector('.open-accordion-item')?.click();
                         }
@@ -237,19 +237,28 @@ class Overview {
 
     selectionHandler() {
         const self = this;
-        document.querySelectorAll('label.ce-metadata-selection').forEach(function(element) {
-            element.addEventListener('click', function(ev) {
-                let selectionGroup = ev.target.dataset.selectionGroup;
-                let selectionId = ev.target.dataset.selectionId;
-                document.querySelectorAll('input[data-selection-group="'+selectionGroup+'"]').forEach(function(inputField) {
-                    if(inputField.id !== selectionId) {
-                        inputField.checked = false;
+        document.querySelectorAll('input.metadata-selection').forEach(function(radioInput) {
+            radioInput.addEventListener('change', function(ev) {
+                const groupName = ev.target.name;
+
+                document.querySelectorAll(`input[name="${groupName}"]`).forEach(function(inputField) {
+                    const formCheck = inputField.closest('.form-check');
+                    if (formCheck) {
+                        formCheck.classList.remove('checked');
                     }
                 });
-                let metadataValueElement = ev.target.closest('.accordion-body').querySelector('.metadata-value');
-                metadataValueElement.value = element.innerText.trim();
+
+                const selectedFormCheck = ev.target.closest('.form-check');
+                if (selectedFormCheck) {
+                    selectedFormCheck.classList.add('checked');
+                }
+
+                let metadataValueElement = ev.target.closest('.panel-body').querySelector('.metadata-value');
+                const suggestionText = ev.target.closest('label').querySelector('.form-check-label').textContent.trim();
+                metadataValueElement.value = suggestionText;
+
                 if(self.clickAndSave) {
-                    const accordionItem = metadataValueElement.closest('.accordion-item');
+                    const accordionItem = metadataValueElement.closest('.panel');
                     accordionItem.querySelector('.save-accordion-item').click();
                 }
             });
@@ -271,18 +280,6 @@ class Overview {
         const self = this;
         document.querySelector('#clickAndSave').addEventListener('click', function() {
             self.clickAndSave = !self.clickAndSave;
-            // self.saveClickAndSaveState(self.clickAndSave);
-        });
-        document.querySelector('#clickAndSaveInfo .info-icon').addEventListener('click', function() {
-            Modal.confirm('Info', TYPO3.lang['AiSuite.module.massAction.clickAndSave.tooltip'], Severity.info, [
-                {
-                    text: 'OK',
-                    active: true,
-                    trigger: function() {
-                        Modal.dismiss();
-                    }
-                }
-            ]);
         });
     }
 
@@ -291,10 +288,10 @@ class Overview {
             const accordionElement = document.querySelector('#accordionBackgroundTasks' + view);
             if (!accordionElement) return;
 
-            const deleteAllWrapper = accordionElement.querySelector('.delete-all-wrapper');
+            const deleteAllWrapper = accordionElement.querySelector('.action-buttons-wrapper');
             if (!deleteAllWrapper) return;
 
-            if (accordionElement.querySelectorAll('.accordion-item').length > 0) {
+            if (accordionElement.querySelectorAll('.panel').length > 0) {
                 deleteAllWrapper.style.display = 'flex';
             } else {
                 deleteAllWrapper.style.display = 'none';
@@ -304,12 +301,12 @@ class Overview {
 
     addErrorTooltipEventListener() {
         const self = this;
-        document.querySelectorAll('.accordion-header .error-info').forEach(function(element) {
+        document.querySelectorAll('.panel-heading .error-info').forEach(function(element) {
             element.style.cursor = 'pointer';
             element.addEventListener('click', function(ev) {
                 ev.preventDefault();
                 const errorMessage = element.querySelector('.error-message').textContent;
-                const accordionItem = element.closest('.accordion-item');
+                const accordionItem = element.closest('.panel');
                 const uuid = accordionItem.dataset.uuid;
                 const column = accordionItem.dataset.column;
 
@@ -325,7 +322,7 @@ class Overview {
                                 TYPO3.lang['AiSuite.errorDetails.pleaseWait'] || 'Please wait'
                             );
 
-                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid, column: column});
+                            let res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid});
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
                                 window.location.reload();
@@ -347,20 +344,20 @@ class Overview {
                             if (General.isUsable(res)) {
                                 Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess'] || 'Task deleted successfully');
 
-                                const columnSection = accordionItem.closest('.accordion-column');
+                                const columnSection = accordionItem.closest('.panel-body');
                                 accordionItem.remove();
 
-                                if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0) {
-                                    columnSection.remove();
+                                if (columnSection && columnSection.querySelectorAll('.panel').length === 0) {
+                                    columnSection.closest('.panel').remove();
                                 } else if (columnSection) {
-                                    const taskCount = columnSection.querySelectorAll('.accordion-item').length;
-                                    columnSection.querySelector('.column-task-count').textContent = taskCount;
+                                    const taskCount = columnSection.querySelectorAll('.panel').length;
+                                    columnSection.closest('.panel').querySelector('.column-task-count').textContent = taskCount;
                                 }
 
                                 const accordionBackgroundTasksElement = document.querySelector('#accordionBackgroundTasks' + self.activeView);
-                                if(accordionBackgroundTasksElement.querySelectorAll('.accordion-item').length === 0) {
+                                if(accordionBackgroundTasksElement.querySelectorAll('.panel').length === 0) {
                                     accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
-                                    accordionBackgroundTasksElement.querySelector('.delete-all-wrapper').style.display = 'none';
+                                    accordionBackgroundTasksElement.querySelector('.action-buttons-wrapper').style.display = 'none';
                                 }
                                 self.updateDeleteAllButtonVisibility();
                             } else {
@@ -407,7 +404,7 @@ class Overview {
     checkLoadMore(columnSection) {
         const loadMoreButton = columnSection.querySelector('button.load-more-tasks');
         setTimeout(() => {
-            if (columnSection && columnSection.querySelectorAll('.accordion-item').length === 0 && loadMoreButton) {
+            if (columnSection && columnSection.querySelectorAll('.panel').length === 0 && loadMoreButton) {
                 loadMoreButton.click();
             }
         }, 300);

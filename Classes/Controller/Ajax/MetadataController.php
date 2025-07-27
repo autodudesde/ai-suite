@@ -22,7 +22,7 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
-use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class MetadataController extends AbstractAjaxController
@@ -42,6 +42,7 @@ class MetadataController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         MetadataService $metadataService,
         PagesRepository $pagesRepository,
         SiteFinder $siteFinder
@@ -54,7 +55,8 @@ class MetadataController extends AbstractAjaxController
             $uuidService,
             $siteService,
             $translationService,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->metadataService = $metadataService;
         $this->pagesRepository = $pagesRepository;

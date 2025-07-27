@@ -4,29 +4,51 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-duplicate" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionSection.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="d-flex flex-wrap gap-3 align-items-stretch">
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-duplicate',
+                                cardname: 'massActionPages',
+                                controller: 'MassAction',
+                                route: 'ai_suite_massaction_pages_prepare',
+                                params: {id: pid},
+                                status: 'active'
+                            }" />
+                        </div>
 
-    <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.massActionSection.title" extensionName="ai_suite"/>
-    </h1>
-
-    <section class="card-container">
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'actions-duplicate',
-            cardname: 'massActionPages',
-            controller: 'MassAction',
-            route: 'ai_suite_massaction_pages_prepare',
-            params: {id: pid},
-            status: 'active'
-        }" />
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'actions-duplicate',
-            cardname: 'massActionFileReferences',
-            controller: 'MassAction',
-            route: 'ai_suite_massaction_filereferences_prepare',
-            params: {id: pid},
-            status: 'active'
-        }" />
-    </section>
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-duplicate',
+                                cardname: 'massActionFileReferences',
+                                controller: 'MassAction',
+                                route: 'ai_suite_massaction_filereferences_prepare',
+                                params: {id: pid},
+                                status: 'active'
+                            }" />
+                        </div>
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-localize',
+                                cardname: 'massActionPagesTranslation',
+                                controller: 'MassAction',
+                                route: 'ai_suite_massaction_pages_translation_prepare',
+                                params: {id: pid},
+                                status: 'active'
+                            }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </f:section>

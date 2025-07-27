@@ -1,5 +1,5 @@
 <div class="d-flex flex-column">
-    <strong>{library.name}</strong> {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '(only paid)')}
+    <strong>{library.name}</strong> {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '{f:translate(key: \'tx_aisuite.status.onlyPaid\', extensionName:\'ai_suite\')}')}
     <f:if condition="{library.weight}">
         <span class="request-amount">
             <f:if condition="{library.weight} == 1">

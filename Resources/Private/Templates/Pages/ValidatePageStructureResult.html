@@ -7,68 +7,65 @@
 
 <f:section name="Content">
 
-    <section>
-        <h2 class="text-gradient">
-            <f:translate key="aiSuite.module.validateAiResult" extensionName="ai_suite"/>
-        </h2>
-
-        <f:if condition="{aiResult}">
-            <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree_create')}" name="input" enctype="multipart/form-data" class="page-structure-create">
-                <f:render partial="Libs/Sortable/Sortable" arguments="{sortableList: aiResult.children}" />
-                <div class="mt-2 p-0">
-                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
-                </div>
-                <div class="language-selection mb-3">
-                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
-                </div>
-                <input type="hidden" name="selectedPageTreeContent" value="" />
-                <div class="form-group">
-                    <span class="btn btn-primary submit-page-structure">
-                        <core:icon identifier="actions-file-add" size="small"/>
-                        <f:translate key="tx_aisuite.module.validatePageStructure.submit" extensionName="ai_suite"/>
-                    </span>
-                </div>
-            </form>
-            <br />
-            <hr />
-            <br />
-        </f:if>
-
-        <h2 class="text-gradient">
-            <f:translate key="aiSuite.module.requestStructureAgain" extensionName="ai_suite"/>
-        </h2>
-        <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree')}" name="input" enctype="multipart/form-data" class="with-spinner">
-            <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
-            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <div class="prompt-settings mt-3">
-                <div class="card card-size-large active">
-                    <div class="card-header">
-                        <h3 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.contentElementPromptHeader" extensionName="ai_suite"/>
-                        </h3>
-                        <br />
-                        <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                        <div class="mt-3">
-                            <label for="plainPrompt">
-                                <f:translate key="tx_aisuite.module.general.prompt" extensionName="ai_suite"/>
-                            </label><br />
-                            <textarea name="plainPrompt" class="form-control plainPrompt">{prompt}</textarea>
-                        </div>
+    <div class="row">
+        <div class="col-12">
+            <f:if condition="{aiResult}">
+                <div class="panel panel-default mb-4">
+                    <div class="panel-heading">
+                        <label class="panel-title fw-bold">
+                            <core:icon identifier="actions-document-edit" size="small" />
+                            <f:translate key="aiSuite.module.validateAiResult" extensionName="ai_suite"/>
+                        </label>
+                    </div>
+                    <div class="panel-body">
+                        <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree_create')}" name="input" enctype="multipart/form-data" class="page-structure-create">
+                            <f:render partial="Libs/Sortable/Sortable" arguments="{sortableList: aiResult.children}" />
+                            <div class="mt-2">
+                                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                            </div>
+                            <div class="language-selection mb-3">
+                                <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
+                            </div>
+                            <input type="hidden" name="selectedPageTreeContent" value="" />
+                            <div class="form-group">
+                                <span class="btn btn-primary submit-page-structure">
+                                    <core:icon identifier="actions-file-add" size="small"/>
+                                    <f:translate key="tx_aisuite.module.validatePageStructure.submit" extensionName="ai_suite"/>
+                                </span>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
-                <div class="language-selection row mb-3">
-                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
+            </f:if>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-refresh" />
+                        <f:translate key="aiSuite.module.requestStructureAgain" extensionName="ai_suite"/>
+                    </label>
                 </div>
-                <div class="p-0">
-                    <button type="submit" class="btn btn-primary">
-                        <core:icon identifier="actions-file-add" size="small"/>
-                        <f:translate key="tx_aisuite.module.pageStructure.submit" extensionName="ai_suite"/>
-                    </button>
+                <div class="panel-body">
+                    <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree')}" name="input" enctype="multipart/form-data" class="with-spinner">
+                        <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
+                        <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                        <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+                        <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt}" />
+                        <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                        <div class="language-selection row mb-3">
+                            <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <core:icon identifier="actions-file-add" size="small"/>
+                                <f:translate key="tx_aisuite.module.pageStructure.submit" extensionName="ai_suite"/>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
-    </section>
+        </div>
+    </div>
     <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
 
 </f:section>

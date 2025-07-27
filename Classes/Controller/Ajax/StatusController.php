@@ -24,7 +24,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class StatusController extends AbstractAjaxController
@@ -38,6 +38,7 @@ class StatusController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
     ) {
         parent::__construct(
             $backendUserService,
@@ -47,7 +48,8 @@ class StatusController extends AbstractAjaxController
             $uuidService,
             $siteService,
             $translationService,
-            $logger
+            $logger,
+            $eventDispatcher
         );
     }
 

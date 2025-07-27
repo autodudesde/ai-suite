@@ -49,4 +49,16 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/Vision.svg',
     ],
+    'tx-aisuite-translate-action-finished' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/actions-translate-finished.svg',
+    ],
+    'tx-aisuite-translate-action-pending' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/actions-translate-pending.svg',
+    ],
+    'tx-aisuite-translate-action-error' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/actions-translate-error.svg',
+    ],
 ];

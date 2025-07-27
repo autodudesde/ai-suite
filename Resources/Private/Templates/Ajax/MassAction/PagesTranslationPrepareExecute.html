@@ -1,0 +1,43 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+    {namespace core=TYPO3\CMS\Core\ViewHelpers}
+    <div class="ai-suite" id="massActionPagesTranslationPrepareExecute">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <label class="panel-title fw-bold">
+                    <core:icon identifier="actions-localize" />
+                    <f:translate key="AiSuite.module.massAction.foundPagesForTranslation" extensionName="ai_suite"/>
+                </label>
+            </div>
+            <div class="panel-body">
+                <f:if condition="{pages -> f:count()} > 0">
+                    <f:then>
+                        <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textTranslationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+
+                <label class="mb-3 d-flex gap-2 fw-bold">
+                    <input type="checkbox" id="togglePageTranslationSelection" value="1" />
+                    <span>
+                        <f:translate key="AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
+                    </span>
+                </label>
+
+                        <div id="sortable-pages-translation">
+                            <f:render partial="MassAction/PageTranslationTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, translationScope: translationScope}" />
+                        </div>
+
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="pagesTranslationExecuteFormSubmitBtn">
+                        <f:translate key="AiSuite.module.massAction.translation.executeBtn" extensionName="ai_suite"/>
+                    </button>
+                </div>
+                        <p class="calculated-requests"></p>
+                    </f:then>
+                    <f:else>
+                        <p>
+                            <f:translate key="AiSuite.module.massAction.translation.noPagesFound" extensionName="ai_suite"/>
+                        </p>
+                    </f:else>
+                </f:if>
+            </div>
+        </div>
+    </div>
+</html>

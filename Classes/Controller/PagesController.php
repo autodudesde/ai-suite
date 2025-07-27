@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class PagesController extends AbstractBackendController
@@ -55,6 +56,7 @@ class PagesController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         PageStructureFactory $pageStructureFactory,
         PagesRepository $pagesRepository,
         LoggerInterface $logger
@@ -71,7 +73,8 @@ class PagesController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
         $this->pageStructureFactory = $pageStructureFactory;
         $this->pagesRepository = $pagesRepository;

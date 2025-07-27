@@ -101,15 +101,21 @@ class FileReferencePrepare {
                             let currentFileReferences = {};
                             let handledFileReferences = {};
                             Generation.showSpinner();
-                            let formData = new FormData();
-                            formData.append('massActionFileReferencesExecute[parentUuid]', self.parentUuid);
-                            formData.append('massActionFileReferencesExecute[column]', document.querySelector('select[name="massActionFileReferencesPrepare[column]"]').value);
-                            formData.append('massActionFileReferencesExecute[sysLanguage]', document.querySelector('select[name="massActionFileReferencesPrepare[sysLanguage]"]').value);
-                            formData.append('massActionFileReferencesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
+                            const baseFormData = {
+                                parentUuid: self.parentUuid,
+                                column: document.querySelector('select[name="massActionFileReferencesPrepare[column]"]').value,
+                                sysLanguage: document.querySelector('select[name="massActionFileReferencesPrepare[sysLanguage]"]').value,
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                            };
                             for (let key in selectedFileReferences) {
                                 if(counter === 3) {
                                     try {
                                         handledFileReferences = { ...handledFileReferences, ...currentFileReferences };
+                                        let formData = new FormData();
+                                        formData.append('massActionFileReferencesExecute[parentUuid]', baseFormData.parentUuid);
+                                        formData.append('massActionFileReferencesExecute[column]', baseFormData.column);
+                                        formData.append('massActionFileReferencesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                        formData.append('massActionFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
                                         formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
                                         await self.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
                                         counter = 0;
@@ -122,6 +128,11 @@ class FileReferencePrepare {
                                 counter++;
                             }
                             if(Object.keys(currentFileReferences).length > 0) {
+                                let formData = new FormData();
+                                formData.append('massActionFileReferencesExecute[parentUuid]', baseFormData.parentUuid);
+                                formData.append('massActionFileReferencesExecute[column]', baseFormData.column);
+                                formData.append('massActionFileReferencesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                formData.append('massActionFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
                                 formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
                                 await self.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
                             }

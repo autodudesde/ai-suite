@@ -1,16 +1,16 @@
 <f:if condition="{imageGenerationLibraries -> f:count()} > 0">
     <div class="image-settings">
-        <div class="card card-size-large active mt-3 mb-0 image-settings-midjourney">
-            <div class="card-header">
-                <h3 class="text-gradient">
-                    <f:translate key="AiSuite.imageSettings.midjourney" extensionName="ai_suite"/>
-                </h3>
-                <div class="row">
-                    <div class="col-md-6 my-1">
-                        <label for="midjourneyVersion">
+        <div class="form-section image-settings-midjourney mb-3 rounded-2" style="display: none;">
+            <label class="control-label fw-bold mb-2">
+                <f:translate key="AiSuite.imageSettings.midjourney" extensionName="ai_suite"/>
+            </label>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <label for="midjourneyVersion" class="control-label">
                             <f:translate key="AiSuite.imageSettings.midjourney.version" extensionName="ai_suite"/>
-                        </label><br />
-                        <select id="midjourneyVersion" name="midjourneyVersion" class="form-control mb-3" data-prefix="--v">
+                        </label>
+                        <select id="midjourneyVersion" name="midjourneyVersion" class="form-control" data-prefix="--v">
                             <option value="6.1" {f:if(condition: '{additionalImageSettings.v} == "6.1"', then: 'selected="selected"')}>6.1 (Default)</option>
                             <option value="6.0" {f:if(condition: '{additionalImageSettings.v} == "6.0"', then: 'selected="selected"')}>6.0</option>
                             <option value="5.2" {f:if(condition: '{additionalImageSettings.v} == "5.2"', then: 'selected="selected"')}>5.2</option>
@@ -18,11 +18,13 @@
                             <option value="5.0" {f:if(condition: '{additionalImageSettings.v} == "5.0"', then: 'selected="selected"')}>5.0</option>
                         </select>
                     </div>
-                    <div class="col-md-6 my-1">
-                        <label for="midjourneyAspectRatio">
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group mb-3">
+                        <label for="midjourneyAspectRatio" class="control-label">
                             <f:translate key="AiSuite.imageSettings.midjourney.aspectRatio" extensionName="ai_suite"/>
-                        </label><br />
-                        <select id="midjourneyAspectRatio" name="midjourneyAspectRatio" class="form-control mb-3" data-prefix="--ar">
+                        </label>
+                        <select id="midjourneyAspectRatio" name="midjourneyAspectRatio" class="form-control" data-prefix="--ar">
                             <option value="1:1" {f:if(condition: '{additionalImageSettings.ar} == "1:1"', then: 'selected="selected"')}>1:1 (Default)</option>
                             <option value="2:3" {f:if(condition: '{additionalImageSettings.ar} == "2:3"', then: 'selected="selected"')}>2:3</option>
                             <option value="3:2" {f:if(condition: '{additionalImageSettings.ar} == "3:2"', then: 'selected="selected"')}>3:2</option>
@@ -35,22 +37,27 @@
                             <option value="21:9" {f:if(condition: '{additionalImageSettings.ar} == "21:9"', then: 'selected="selected"')}>21:9</option>
                         </select>
                     </div>
-                    <div class="col-md-6 my-1">
-                        <label for="midjourneyNo">
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="midjourneyNo" class="control-label">
                             <f:translate key="AiSuite.imageSettings.midjourney.no" extensionName="ai_suite"/>
-                        </label><br />
-                        <input type="text" class="w-100 px-2 py-1" id="midjourneyNo" name="midjourneyNo" value="{additionalImageSettings.no}" data-prefix="--no" />
+                        </label>
+                        <input type="text" class="form-control" id="midjourneyNo" name="midjourneyNo" value="{additionalImageSettings.no}" data-prefix="--no" />
                     </div>
-                    <div class="col-md-6 my-1">
-                        <label for="midjourneySref">
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="midjourneySref" class="control-label">
                             <f:translate key="AiSuite.imageSettings.midjourney.sref" extensionName="ai_suite"/>
-                        </label><br />
-                        <input type="text" class="w-100 px-2 py-1" id="midjourneySref" name="midjourneySref" value="{additionalImageSettings.sref}" data-prefix="--sref"/>
+                        </label>
+                        <input type="text" class="form-control" id="midjourneySref" name="midjourneySref" value="{additionalImageSettings.sref}" data-prefix="--sref"/>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </f:if>
 
 

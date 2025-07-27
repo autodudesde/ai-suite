@@ -1,28 +1,38 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      data-namespace-typo3-fluid="true">
-      {namespace core=TYPO3\CMS\Core\ViewHelpers}
-      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
 
-<f:layout name="Module"/>
+<f:layout name="Module" />
 
 <f:section name="Content">
-    <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.title" extensionName="ai_suite"/>
-    </h1>
-    <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.description" extensionName="ai_suite"/>
-    </p>
-
-    <section class="card-container">
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'actions-translate',
-            cardname: 'translateXlfFile',
-            controller: 'Agencies',
-            route: 'ai_suite_agencies_translate_xlf',
-            status: 'active'
-        }" />
-
-    </section>
-
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-rocket" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.agencySection.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="mb-3">
+                        <p>
+                            <f:translate key="tx_aisuite.module.dashboard.card.agencySection.description" extensionName="ai_suite"/>
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3 align-items-stretch">
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-translate',
+                                cardname: 'translateXlfFile',
+                                controller: 'Agencies',
+                                route: 'ai_suite_agencies_translate_xlf',
+                                status: 'active'
+                            }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </f:section>

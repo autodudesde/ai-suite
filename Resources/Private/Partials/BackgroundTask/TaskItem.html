@@ -1,0 +1,31 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="panel panel-default mb-2" data-uuid="{task.uuid}" data-column="{column}">
+    <div class="panel-heading" role="tab">
+        <div class="panel-heading-row">
+            <button class="panel-button collapsed w-100 text-start pe-none" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#task{task.uuid}"
+                    aria-expanded="false"
+                    aria-controls="task{task.uuid}">
+                <div class="panel-title d-flex align-items-center justify-content-between w-100 pe-none">
+                    <f:render partial="BackgroundTask/TaskHeader" arguments="{task: task, column: column, type: type}" />
+                    <f:render partial="BackgroundTask/TaskActions" arguments="{task: task, column: column, type: type}" />
+                </div>
+            </button>
+        </div>
+    </div>
+    <f:if condition="{task.status} == 'finished'">
+        <div class="collapse panel-collapse finished-item" id="task{task.uuid}"
+             data-bs-parent="#columnCollapse{type}{columnIndex}"
+             data-persist-collapse-state="true" role="tabpanel">
+            <div class="panel-body" data-column="{column}">
+                <f:render partial="BackgroundTask/TaskContent" arguments="{task: task, column: column, type: type, position: position}" />
+            </div>
+        </div>
+    </f:if>
+</div>
+</html>
