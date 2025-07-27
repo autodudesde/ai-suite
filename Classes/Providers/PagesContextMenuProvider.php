@@ -61,6 +61,15 @@ class PagesContextMenuProvider extends AbstractProvider
                     'iconIdentifier' => 'actions-duplicate',
                     'callbackAction' => 'contextMenuLink',
                 ],
+                'divider1' => [
+                    'type' => 'divider',
+                ],
+                'translateWholePage' => [
+                    'type' => 'item',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translateWholePage',
+                    'iconIdentifier' => 'actions-localize',
+                    'callbackAction' => 'translateWholePage',
+                ],
             ],
         ],
     ];
@@ -97,6 +106,9 @@ class PagesContextMenuProvider extends AbstractProvider
                 break;
             case 'filelistMetaMassAction':
                 $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_filelist_files_prepare', ['id' => $this->identifier])->__toString();
+                break;
+            case 'translateWholePage':
+                // No specific module URL needed for whole page translation
                 break;
         }
         return [
@@ -159,6 +171,9 @@ class PagesContextMenuProvider extends AbstractProvider
             case 'filelistMetaMassAction':
                 $canRender = $this->canFilelistMassAction();
                 break;
+            case 'translateWholePage':
+                $canRender = $this->canTranslateWholePage();
+                break;
         }
         return $canRender;
     }
@@ -169,7 +184,7 @@ class PagesContextMenuProvider extends AbstractProvider
      */
     protected function canShowAiSuite(): bool
     {
-        return $this->canPageMassAction() || $this->canFileReferencesMassAction() || $this->canFilelistMassAction();
+        return $this->canPageMassAction() || $this->canFileReferencesMassAction() || $this->canFilelistMassAction() || $this->canTranslateWholePage();
     }
 
     protected function canPageMassAction(): bool
@@ -183,5 +198,10 @@ class PagesContextMenuProvider extends AbstractProvider
     protected function canFilelistMassAction(): bool
     {
         return $this->table === 'sys_file' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
+    }
+
+    protected function canTranslateWholePage(): bool
+    {
+        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation');
     }
 }

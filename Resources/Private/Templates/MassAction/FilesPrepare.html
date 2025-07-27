@@ -1,45 +1,50 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
 
-<f:layout name="Module" />
+<f:layout name="Module"/>
 
 <f:section name="Content">
     <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
 
-    <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.title" extensionName="ai_suite"/>
-    </h1>
-    <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.description" extensionName="ai_suite"/>
-    </p>
-    <p class="mb-4">
-        <h2>
-            <f:translate key="tx_aisuite.module.massActionFilelist.selectedDirectory" extensionName="ai_suite"/>:
-            <f:if condition="{directory} == ''">
-                <f:then>
-                    -
-                </f:then>
-                <f:else>
-                    {directory}
-                </f:else>
-            </f:if>
-        </h2>
-    </p>
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="apps-filetree-folder-media" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelist.description" extensionName="ai_suite"/>
+                    </p>
+                    <p>
+                        <strong>
+                            <f:translate key="tx_aisuite.module.massActionFilelist.selectedDirectory" extensionName="ai_suite"/>:
+                            <f:if condition="{directory} == ''">
+                                <f:then>
+                                    -
+                                </f:then>
+                                <f:else>
+                                    {directory}
+                                </f:else>
+                            </f:if>
+                        </strong>
+                    </p>
 
-    <form id="ai-suite-filelist-files" name="filesPrepareExecute" enctype="multipart/form-data">
-        <section>
-            <h2 class="mb-4">
-                <f:translate key="tx_aisuite.module.prepareFiles.title" extensionName="ai_suite"/>
-            </h2>
+                    <form id="ai-suite-filelist-files" name="filesPrepareExecute" enctype="multipart/form-data">
             <input type="hidden" name="options[directory]" id="directory" value="{directory}" />
             <input type="hidden" name="options[parentUuid]" id="parentUuid" value="{parentUuid}" />
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
                         <div class="form-group">
-                            <label>
+                            <label class="fw-bold mb-2">
                                 <f:translate key="tx_aisuite.module.preparePages.column" extensionName="ai_suite" />
                             </label>
-                            <br />
                             <select class="form-select" id="column" name="options[column]">
                                 <f:for each="{columns}" as="column" key="value">
                                     <f:if condition="{preSelection} && {preSelection.column} == {value}">
@@ -58,10 +63,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <div class="form-group">
-                            <label>
+                            <label class="fw-bold mb-2">
                                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.selectSysLanguage" extensionName="ai_suite"/>
                             </label>
-                            <br />
                             <select name="options[sysLanguage]" class="form-select" id="sysLanguage">
                                 <f:for each="{sysLanguages}" as="sysLanguage" key="value">
                                     <f:if condition="{preSelection} && {preSelection.sysLanguage} == {value}">
@@ -77,39 +81,35 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 d-flex align-items-center pt-3">
-                    <div class="form-group">
-                        <label class="position-relative">
-                            <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
-                                <f:then>
-                                    <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
-                                </f:then>
-                                <f:else>
-                                    <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
-                                </f:else>
-                            </f:if>
-                            <span class="px-4">
-                                <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
-                            </span>
-                        </label>
-                    </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <label class="fw-bold d-flex gap-2 mb-4">
+                        <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
+                            <f:then>
+                                <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
+                            </f:then>
+                            <f:else>
+                                <input type="checkbox" name="options[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
+                            </f:else>
+                        </f:if>
+                        <span>
+                            <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
+                        </span>
+                    </label>
                 </div>
-                <div class="col-md-3 d-flex align-items-center pt-3">
-                    <div class="form-group">
-                        <label class="position-relative">
-                            <f:if condition="{preSelection} && {preSelection.showOnlyUsed}">
-                                <f:then>
-                                    <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1" checked="checked"/>
-                                </f:then>
-                                <f:else>
-                                    <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1"/>
-                                </f:else>
-                            </f:if>
-                            <span class="px-4">
-                                <f:translate key="tx_aisuite.module.prepareFiles.showOnlyUsed" extensionName="ai_suite"/>
-                            </span>
-                        </label>
-                    </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <label class="fw-bold d-flex gap-2 mb-4">
+                        <f:if condition="{preSelection} && {preSelection.showOnlyUsed}">
+                            <f:then>
+                                <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1" checked="checked"/>
+                            </f:then>
+                            <f:else>
+                                <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1"/>
+                            </f:else>
+                        </f:if>
+                        <span>
+                            <f:translate key="tx_aisuite.module.prepareFiles.showOnlyUsed" extensionName="ai_suite"/>
+                        </span>
+                    </label>
                 </div>
             </div>
             <div class="row">
@@ -117,9 +117,12 @@
                     <input type="submit" class="btn btn-primary" value="{f:translate(key: 'tx_aisuite.module.preparePages.showPrepareResults', extensionName: 'ai_suite')}" />
                 </div>
             </div>
-        </section>
-    </form>
-    <section id="resultsToExecute" class="mt-3">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="resultsToExecute">
         <f:render partial="MassAction/FileListTask" arguments="{_all}"/>
     </section>
     <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.massActionPages'}" />

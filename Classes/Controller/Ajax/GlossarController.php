@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class GlossarController extends AbstractAjaxController
@@ -48,6 +49,7 @@ class GlossarController extends AbstractAjaxController
         TranslationService    $translationService,
         ViewFactoryInterface  $viewFactory,
         LoggerInterface       $logger,
+        EventDispatcher       $eventDispatcher,
         GlossarService        $glossarService,
         DataHandler           $dataHandler,
     )
@@ -61,7 +63,8 @@ class GlossarController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->glossarService = $glossarService;
         $this->dataHandler = $dataHandler;

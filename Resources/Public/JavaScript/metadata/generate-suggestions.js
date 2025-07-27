@@ -57,13 +57,13 @@ class GenerateSuggestions {
             const res = await Ajax.sendAjaxRequest('aisuite_metadata_generation_slide_one', settings['postData']);
             slide.html(res.output);
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
-            let aiSuiteGenerateButton = modal.find('.modal-body button#aiSuiteGenerateMetadataBtn');
+            let aiSuiteGenerateButton = modal.find('.panel-body button#aiSuiteGenerateMetadataBtn');
             let postData = settings['postData'];
             aiSuiteGenerateButton.on('click', async function (ev) {
-                let textAiModel = modal.find('.modal-body input[name="libraries[textGenerationLibrary]"]:checked').val() ?? '';
-                let newsDetailPlugin = modal.find('.modal-body select#newsDetailPlugin');
-                let sysLanguageSelection = modal.find('.modal-body #languageSelection select');
-                if(modal.find('.modal-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
+                let textAiModel = modal.find('.panel-body input[name="libraries[textGenerationLibrary]"]:checked').val() ?? '';
+                let newsDetailPlugin = modal.find('.panel-body select#newsDetailPlugin');
+                let sysLanguageSelection = modal.find('.panel-body #languageSelection select');
+                if(modal.find('.panel-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
                     Notification.warning(TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelection'], TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
                 }

@@ -20,7 +20,7 @@
                 <be:link.newRecord
                     table="tx_aisuite_domain_model_custom_prompt_template"
                     returnUrl="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}"
-                    class="btn btn-secondary"
+                    class="btn btn-default"
                     pid="{pid}"
                 >
                     <core:icon identifier="actions-page-new" size="small"/>
@@ -30,7 +30,7 @@
                     <input type="text" id="search" name="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder', extensionName: 'ai_suite')}"/>
                     <input type="submit" value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit', extensionName: 'ai_suite')}" class="btn btn-primary"/>
                     <a href="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}"
-                       class="btn btn-secondary"
+                       class="btn btn-default"
                        title="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset', extensionName: 'ai_suite')}"
                     >
                         <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset" extensionName="ai_suite"/>
@@ -74,7 +74,7 @@
                     <f:for each="{customPromptTemplates}" as="template">
                         <tr>
                             <td width="20px">
-                                <f:image src="EXT:ai_suite/Resources/Public/Icons/Extension.svg" alt="Icon" width="18" height="18" />
+                                <core:icon identifier="tx-aisuite-extension" size="small" />
                             </td>
                             <td>
                                 <be:link.editRecord

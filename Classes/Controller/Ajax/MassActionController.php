@@ -33,12 +33,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class MassActionController extends AbstractAjaxController
@@ -72,6 +74,7 @@ class MassActionController extends AbstractAjaxController
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         Context $context,
         PageRepository $pageRepository,
         PagesRepository $pagesRepository,
@@ -91,7 +94,8 @@ class MassActionController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->context = $context;
         $this->pageRepository = $pageRepository;
@@ -158,7 +162,6 @@ class MassActionController extends AbstractAjaxController
                 $request,
                 'PagesPrepareExecute',
                 'EXT:ai_suite/Resources/Private/Templates/Ajax/MassAction/',
-                '',
                 $params
             );
             $response->getBody()->write(
@@ -359,7 +362,6 @@ class MassActionController extends AbstractAjaxController
                 $request,
                 'FileReferencesPrepareExecute',
                 'EXT:ai_suite/Resources/Private/Templates/Ajax/MassAction/',
-                '',
                 $params
             );
             $response->getBody()->write(
@@ -402,7 +404,7 @@ class MassActionController extends AbstractAjaxController
                 if ((int)$sysFileUid === 0) {
                     $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int)$sysFileReferenceUid);
                     if (count($fileReferenceRow) === 0 || !array_key_exists('uid_local', $fileReferenceRow[0])) {
-                        throw new \Exception('No file reference row found for sys file reference uid ' . $sysFileReferenceUid . '. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.');
+                        throw new \Exception($this->translationService->translate('tx_aisuite.error.fileReference.notFound', [$sysFileReferenceUid]));
                     }
                     $sysFileUid = (int)$fileReferenceRow[0]["uid_local"];
                 }
@@ -554,7 +556,6 @@ class MassActionController extends AbstractAjaxController
                 $serverRequest,
                 'FilelistFilesViewUpdate',
                 'EXT:ai_suite/Resources/Private/Templates/Ajax/MassAction/',
-                '',
                 $viewProperties
             );
             $response->getBody()->write(
@@ -752,4 +753,164 @@ class MassActionController extends AbstractAjaxController
         }
         return $response;
     }
+
+    public function pagesTranslationPrepareExecuteAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        try {
+            $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::TRANSLATE, 'translate', ['text']);
+            if ($librariesAnswer->getType() === 'Error') {
+                $response->getBody()->write(
+                    json_encode([
+                        'success' => false,
+                        'output' => $librariesAnswer->getResponseData()['message']
+                    ])
+                );
+                return $response;
+            }
+
+            $textTranslationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
+            $params['textTranslationLibraries'] = $this->libraryService->prepareLibraries($textTranslationLibraries);
+            $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
+
+            $massActionData = $request->getParsedBody()['massActionPagesTranslationPrepare'];
+            $sourceLanguageParts = explode('__', $massActionData['sourceLanguage']);
+            $targetLanguageParts = explode('__', $massActionData['targetLanguage']);
+
+            $foundPageUids = $this->pageRepository->getPageIdsRecursive(
+                [(int)$massActionData['startFromPid']],
+                (int)$massActionData['depth']
+            );
+
+            $params['sourceLanguage'] = $massActionData['sourceLanguage'];
+            $params['targetLanguage'] = $massActionData['targetLanguage'];
+            $params['translationScope'] = $massActionData['translationScope'];
+            $params['pages'] = $this->pagesRepository->fetchPagesForTranslation($foundPageUids, (int)$sourceLanguageParts[1], (int)$targetLanguageParts[1], $massActionData);
+
+            $pagesUids = array_column($params['pages'], 'uid');
+            if(count($pagesUids) > 0) {
+                $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntriesForTranslation($pagesUids, 'pages', (int)$targetLanguageParts[1]);
+                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
+                    $carry[$item['table_uid']] = $item['status'];
+                    return $carry;
+                }, []);
+            }
+
+            $output = $this->getContentFromTemplate(
+                $request,
+                'PagesTranslationPrepareExecute',
+                'EXT:ai_suite/Resources/Private/Templates/Ajax/MassAction/',
+                $params
+            );
+
+            $response->getBody()->write(
+                json_encode([
+                    'success' => true,
+                    'output' => [
+                        'parentUuid' => $this->uuidService->generateUuid(),
+                        'content' => $output,
+                    ],
+                ])
+            );
+        } catch (\Exception $e) {
+            $this->logger->error('Error while pagesTranslationPrepareExecuteAction: ' . $e->getMessage());
+            $response->getBody()->write(
+                json_encode([
+                    'success' => false,
+                    'error' => $this->translationService->translate('AiSuite.backgroundTasks.errorPagesTranslationPrepareExecuteAction')
+                ])
+            );
+        }
+        return $response;
+    }
+
+    public function pagesTranslationExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
+        $response = new Response();
+        $massActionData = $serverRequest->getParsedBody()['massActionPagesTranslationExecute'];
+        $pages = json_decode($massActionData['pages'], true);
+        $sourceLanguageParts = explode('__', $massActionData['sourceLanguage']);
+        $targetLanguageParts = explode('__', $massActionData['targetLanguage']);
+
+        $payload = [];
+        $bulkPayload = [];
+        $failedPages = [];
+
+        foreach ($pages as $pageUid => $pageData) {
+            try {
+                $translatableContent = $this->translationService->collectPageTranslatableContent(
+                    (int)$pageUid,
+                    (int)$sourceLanguageParts[1],
+                    $massActionData['translationScope'],
+                    (int)$targetLanguageParts[1]
+                );
+
+                if (empty($translatableContent)) {
+                    $failedPages[] = $pageUid;
+                    continue;
+                }
+
+                $uuid = $this->uuidService->generateUuid();
+                $bulkPayload[] = new BackgroundTask(
+                    'page-translation',
+                    'translation',
+                    $massActionData['parentUuid'],
+                    $uuid,
+                    $massActionData['translationScope'],
+                    'pages',
+                    'uid',
+                    $pageUid,
+                    (int)$targetLanguageParts[1]
+                );
+
+                $payload[] = [
+                    'source_page_uid' => $pageUid,
+                    'source_language' => $sourceLanguageParts[0],
+                    'target_language' => $targetLanguageParts[0],
+                    'translation_scope' => $massActionData['translationScope'],
+                    'translatable_content' => $translatableContent,
+                    'uuid' => $uuid,
+                ];
+            } catch (\Exception $e) {
+                $this->logger->error('Error while collecting translatable content for page ' . $pageUid . ': ' . $e->getMessage());
+                $failedPages[] = $pageUid;
+            }
+        }
+
+        if(count($payload) > 0) {
+            $answer = $this->requestService->sendDataRequest(
+                'createMassAction',
+                [
+                    'uuid' => $massActionData['parentUuid'],
+                    'payload' => $payload,
+                    'scope' => 'page-translation',
+                    'type' => 'translation'
+                ],
+                '',
+                '',
+                [
+                    'translate' => $massActionData['textAiModel']
+                ]
+            );
+
+            if ($answer->getType() === 'Error') {
+                $this->logError($answer->getResponseData()['message'], $response, 503);
+                return $response;
+            }
+            $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+        }
+
+        $response->getBody()->write(
+            json_encode([
+                'success' => true,
+                'output' => [
+                    'message' => $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.massAction.translation.processing', ['pages']),
+                    'failedPages' => $failedPages,
+                ],
+            ])
+        );
+        return $response;
+    }
+
+
 }

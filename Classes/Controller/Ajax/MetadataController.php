@@ -23,6 +23,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class MetadataController extends AbstractAjaxController
@@ -43,6 +44,7 @@ class MetadataController extends AbstractAjaxController
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         MetadataService $metadataService,
         PagesRepository $pagesRepository,
         SiteFinder $siteFinder
@@ -56,7 +58,8 @@ class MetadataController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->metadataService = $metadataService;
         $this->pagesRepository = $pagesRepository;
@@ -135,7 +138,6 @@ class MetadataController extends AbstractAjaxController
             $request,
             'WizardSlideOne',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Metadata/',
-            'EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-one.css',
             $params
         );
         $response->getBody()->write(
@@ -191,7 +193,6 @@ class MetadataController extends AbstractAjaxController
             $request,
             'WizardSlideTwo',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Metadata/',
-            'EXT:ai_suite/Resources/Public/Css/Ajax/Metadata/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(

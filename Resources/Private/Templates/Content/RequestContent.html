@@ -12,35 +12,41 @@
             <p>
                 <f:translate key="aiSuite.module.errorDuringResponse" extensionName="ai_suite"/>
             </p>
-            <a href="{regenerateActionUri}" class="btn btn-secondary mt-1">
+            <a href="{regenerateActionUri}" class="btn btn-default mt-1">
                 <core:icon identifier="actions-refresh" size="small" />
                 <f:translate key="tx_aisuite.module.error.try_again" extensionName="ai_suite"/>
             </a>
         </f:then>
         <f:else>
             <section class="overflow-x-hidden">
-                <h2 class="text-gradient">
-                    <f:translate key="tx_aisuite.module.PageContent.validate.headline" extensionName="ai_suite"/>
-                </h2>
-                <p>
-                    <f:translate key="tx_aisuite.module.PageContent.validate.explanation" extensionName="ai_suite"/>
-                </p>
-                <form method="POST" action="{f:be.uri(route: 'ai_suite_content_save', parameters: '{id: content.pid}')}" name="requestContent" enctype="multipart/form-data">
-                    <input type="hidden" name="content" value="{content -> f:format.json()}" class="form-control" />
-                    <input type="hidden" name="selectedTcaColumns" value="{selectedTcaColumns -> f:format.json()}" class="form-control" />
-                    <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
-
-                    <div class="form-group button-bar">
-                        <button type="submit" class="btn btn-primary">
-                            <core:icon identifier="actions-page-new" size="small"/>
-                            <f:translate key="tx_aisuite.module.PageContent.validate.addContent" extensionName="ai_suite"/>
-                        </button>
-                        <a href="{regenerateActionUri}" class="btn btn-secondary mx-3">
-                            <core:icon identifier="actions-refresh" size="small" />
-                            <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContent" extensionName="ai_suite"/>
-                        </a>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <label class="panel-title fw-bold">
+                            <core:icon identifier="actions-document-edit" size="small" />
+                            <f:translate key="tx_aisuite.module.PageContent.validate.headline" extensionName="ai_suite"/>
+                        </label>
                     </div>
-                </form>
+                    <div class="panel-body">
+                        <form method="POST" action="{f:be.uri(route: 'ai_suite_content_save', parameters: '{id: content.pid}')}" name="requestContent" enctype="multipart/form-data">
+                            <input type="hidden" name="content" value="{content -> f:format.json()}" />
+                            <input type="hidden" name="selectedTcaColumns" value="{selectedTcaColumns -> f:format.json()}" />
+                            <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
+
+                            <div class="form-group">
+                                <div class="btn-group gap-2" role="group">
+                                    <button type="submit" class="btn btn-primary">
+                                        <core:icon identifier="actions-page-new" size="small"/>
+                                        <f:translate key="tx_aisuite.module.PageContent.validate.addContent" extensionName="ai_suite"/>
+                                    </button>
+                                    <a href="{regenerateActionUri}" class="btn btn-default">
+                                        <core:icon identifier="actions-refresh" size="small" />
+                                        <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContent" extensionName="ai_suite"/>
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.default'}" />
             </section>
         </f:else>

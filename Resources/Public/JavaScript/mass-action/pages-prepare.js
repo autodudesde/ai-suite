@@ -102,15 +102,21 @@ class PagesPrepare {
                             let currentPages = {};
                             let handledPages = {};
                             Generation.showSpinner();
-                            let formData = new FormData();
-                            formData.append('massActionPagesExecute[parentUuid]', self.parentUuid);
-                            formData.append('massActionPagesExecute[column]', document.querySelector('select[name="massActionPagesPrepare[column]"]').value);
-                            formData.append('massActionPagesExecute[sysLanguage]', document.querySelector('select[name="massActionPagesPrepare[sysLanguage]"]').value);
-                            formData.append('massActionPagesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
+                            const baseFormData = {
+                                parentUuid: self.parentUuid,
+                                column: document.querySelector('select[name="massActionPagesPrepare[column]"]').value,
+                                sysLanguage: document.querySelector('select[name="massActionPagesPrepare[sysLanguage]"]').value,
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                            };
                             for (let key in selectedPages) {
                                 if(counter === 5) {
                                     try {
                                         handledPages = { ...handledPages, ...currentPages };
+                                        let formData = new FormData();
+                                        formData.append('massActionPagesExecute[parentUuid]', baseFormData.parentUuid);
+                                        formData.append('massActionPagesExecute[column]', baseFormData.column);
+                                        formData.append('massActionPagesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                        formData.append('massActionPagesExecute[textAiModel]', baseFormData.textAiModel);
                                         formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
                                         await self.sendPagesToExecute(formData, selectedPages, handledPages);
                                         counter = 0;
@@ -123,6 +129,11 @@ class PagesPrepare {
                                 counter++;
                             }
                             if(Object.keys(currentPages).length > 0) {
+                                let formData = new FormData();
+                                formData.append('massActionPagesExecute[parentUuid]', baseFormData.parentUuid);
+                                formData.append('massActionPagesExecute[column]', baseFormData.column);
+                                formData.append('massActionPagesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                formData.append('massActionPagesExecute[textAiModel]', baseFormData.textAiModel);
                                 formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
                                 await self.sendPagesToExecute(formData, selectedPages, handledPages);
                             }

@@ -3,51 +3,82 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
-    <h2 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
-    </h2>
-    <f:if condition="{taskStatistics}">
-        <section class="mb-5" id="backgroundTaskStatistics">
-            <f:render partial="BackgroundTask/Statistic/Overall" arguments="{taskStatistics: taskStatistics}" />
-            <f:render partial="BackgroundTask/Statistic/Detailed" arguments="{taskStatistics: taskStatistics}" />
-        </section>
-    </f:if>
-
-    <f:if condition="{backgroundTasks}">
-        <f:then>
-            <section>
-                <div id="clickAndSaveInfo" class="d-flex my-4 position-relative">
-                    <label for="clickAndSave">
-                        <input type="checkbox" name="clickAndSave" id="clickAndSave" />
-                        <strong>
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave" />
-                        </strong>
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" extensionName="ai_suite"/>
                     </label>
-                    <div class="info-icon">
-                        <core:icon identifier="actions-info" size="small" />
-                    </div>
                 </div>
-                <div class="filter my-3">
-                    <select id="backgroundTaskFilter" class="form-select">
-                        <option value="Page">
-                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.page" extensionName="ai_suite"/>
-                        </option>
-                        <option value="FileReference">
-                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileReference" extensionName="ai_suite"/>
-                        </option>
-                        <option value="FileMetadata">
-                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileMetadata" extensionName="ai_suite"/>
-                        </option>
-                    </select>
+                <div class="panel-body">
+                    <f:if condition="{taskStatistics}">
+                        <div class="mb-4" id="backgroundTaskStatistics">
+                            <f:render partial="BackgroundTask/Statistic/Overall" arguments="{taskStatistics: taskStatistics}" />
+                            <f:render partial="BackgroundTask/Statistic/Detailed" arguments="{taskStatistics: taskStatistics}" />
+                        </div>
+                    </f:if>
+
+                    <f:if condition="{backgroundTasks}">
+                        <f:then>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <label class="panel-title fw-bold">
+                                        <core:icon identifier="actions-system-list-open" />
+                                        <f:translate key="tx_aisuite.backgroundTaskSection.taskList" extensionName="ai_suite" default="Task List" />
+                                    </label>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="task-controls-wrapper mb-2">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-bold mb-2">
+                                                        <core:icon identifier="actions-filter" size="small" />
+                                                        <f:translate key="tx_aisuite.backgroundTaskSection.filter.label" extensionName="ai_suite" default="Filter Tasks" />
+                                                    </label>
+                                                    <select id="backgroundTaskFilter" class="form-select">
+                                                        <option value="Page">
+                                                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.page" extensionName="ai_suite"/>
+                                                        </option>
+                                                        <option value="FileReference">
+                                                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileReference" extensionName="ai_suite"/>
+                                                        </option>
+                                                        <option value="FileMetadata">
+                                                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileMetadata" extensionName="ai_suite"/>
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-bold mb-2">
+                                                        <core:icon identifier="actions-system-options-view" size="small" />
+                                                        <f:translate key="tx_aisuite.backgroundTaskSection.options.label" extensionName="ai_suite" default="Options" />
+                                                    </label>
+                                                    <label class="form-check d-flex align-items-center gap-2">
+                                                        <input type="checkbox" name="clickAndSave" id="clickAndSave" class="form-check-input" />
+                                                        <strong>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.clickAndSave" />
+                                                        </strong>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="backgroundTaskWrapper">
+                                        <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.page, type: 'Page'}" />
+                                        <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileReference, type: 'FileReference'}" />
+                                        <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileMetadata, type: 'FileMetadata'}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </f:then>
+                    </f:if>
                 </div>
-                <div id="backgroundTaskWrapper">
-                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.page, type: 'Page'}" />
-                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileReference, type: 'FileReference'}" />
-                    <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileMetadata, type: 'FileMetadata'}" />
-                </div>
-            </section>
-        </f:then>
-    </f:if>
+            </div>
+        </div>
+    </div>
 </f:section>
 
 </html>

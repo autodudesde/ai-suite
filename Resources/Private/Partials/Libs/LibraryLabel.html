@@ -7,7 +7,7 @@
     {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: 'disabled="true"')}
 {f:if(condition: '{library.checked} == TRUE', then: 'checked="checked"', else: '')}
 />
-<label class="d-flex flex-row align-items-center mb-3" style="width:48%;" for="{type}-generation-library-{library.model_identifier}">
+<label class="d-flex flex-row align-items-center mb-3" for="{type}-generation-library-{library.model_identifier}">
     <core:icon identifier="tx-aisuite-model-{library.model_identifier}" size="medium"/>
     <f:render partial="Libs/RequestAmount" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable}" />
     <div class="checked-icon">

@@ -27,6 +27,7 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class CkeditorController extends AbstractAjaxController
@@ -41,8 +42,9 @@ class CkeditorController extends AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
-        ExtensionConfiguration $extensionConfiguration,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
+        ExtensionConfiguration $extensionConfiguration,
     ) {
         parent::__construct(
             $backendUserService,
@@ -53,7 +55,8 @@ class CkeditorController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->extensionConfiguration = $extensionConfiguration;
     }

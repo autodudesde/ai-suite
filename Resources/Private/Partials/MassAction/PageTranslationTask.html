@@ -1,0 +1,154 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+>
+<div class="translation-tasks">
+    <!-- Header Row -->
+    <div class="d-flex align-items-center p-2 bg-light border-bottom">
+        <div style="width: 40px;"></div>
+        <div class="flex-fill"><strong><f:translate key="tx_aisuite.massAction.translation.header.page" extensionName="ai_suite" /></strong></div>
+        <div class="text-center" style="width: 150px;"><strong><f:translate key="tx_aisuite.massAction.translation.header.alreadyTranslated" extensionName="ai_suite" /></strong></div>
+        <f:if condition="{translationScope} == 'all'">
+            <f:then>
+                <div class="text-center" style="width: 150px;"><strong><f:translate key="tx_aisuite.massAction.translation.header.contentElements" extensionName="ai_suite" /></strong></div>
+                <div class="text-center" style="width: 150px;"><strong><f:translate key="tx_aisuite.massAction.translation.header.metadataFields" extensionName="ai_suite" /></strong></div>
+            </f:then>
+            <f:else>
+                <f:switch expression="{translationScope}">
+                    <f:case value="metadata">
+                        <div class="text-center" style="width: 150px;"><strong><f:translate key="tx_aisuite.massAction.translation.header.metadataFields" extensionName="ai_suite" /></strong></div>
+                    </f:case>
+                    <f:case value="content">
+                        <div class="text-center" style="width: 150px;"><strong><f:translate key="tx_aisuite.massAction.translation.header.contentElements" extensionName="ai_suite" /></strong></div>
+                    </f:case>
+                </f:switch>
+            </f:else>
+        </f:if>
+        <div style="width: 50px;"></div>
+    </div>
+
+    <f:for each="{tasks}" as="task">
+        <f:variable name="taskStatus">{aiSuite:inArray(needle: task.uid, haystack: alreadyPendingPages)}</f:variable>
+        <f:if condition="{translationScope} == 'all' || {task.isAlreadyTranslated}">
+            <div class="d-flex align-items-center p-2 border-bottom hover-highlight translation-task-item">
+                <div class="height-auto d-flex justify-content-start align-items-center" style="width: 40px;">
+                    <f:if condition="{taskStatus} == ''">
+                        <input type="checkbox"
+                               name="page-translation-selection"
+                               value="{task.uid}"
+                               data-slug="{task.slug}"
+                               data-title="{task.title}" />
+                    </f:if>
+                </div>
+                <div class="flex-fill">
+                    <div class="d-flex align-items-center">
+                        <div class="mx-2">
+                            <core:icon identifier="apps-pagetree-page-default" size="small" />
+                        </div>
+                        <div class="flex-fill">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="font-weight-bold">{task.title}</div>
+                                    <small class="text-muted">PID: {task.uid}</small>
+                                </div>
+                                <f:if condition="{taskStatus} != ''">
+                                    <div class="ml-2">
+                                        <f:switch expression="{taskStatus}">
+                                            <f:case value="pending">
+                                                <span class="badge badge-pending"><f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending" extensionName="ai_suite" /></span>
+                                            </f:case>
+                                            <f:case value="finished">
+                                                <span class="badge badge-finished"><f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished" extensionName="ai_suite" /></span>
+                                            </f:case>
+                                            <f:case value="task-error">
+                                                <span class="badge badge-task-error"><f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.error" extensionName="ai_suite" /></span>
+                                            </f:case>
+                                            <f:defaultCase>
+                                                <span class="badge badge-pending">{taskStatus}</span>
+                                            </f:defaultCase>
+                                        </f:switch>
+                                    </div>
+                                </f:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center" style="width: 150px;">
+                    <f:if condition="{task.isAlreadyTranslated}">
+                        <f:then>
+                            <span class="label label-success translated"
+                                  data-toggle="tooltip"
+                                  title="Page already translated in target language">
+                                <core:icon identifier="status-status-checked" size="small" />
+                            </span>
+                        </f:then>
+                        <f:else>
+                            <span class="label label-default not-translated"
+                                  data-toggle="tooltip"
+                                  title="Page not translated in target language">
+                                <core:icon identifier="status-status-permission-denied" size="small" />
+                            </span>
+                        </f:else>
+                    </f:if>
+                </div>
+
+                <f:if condition="{translationScope} == 'all'">
+                    <f:then>
+                        <div class="text-center content-elements" style="width: 150px;">
+                            <span class="label label-primary"
+                                  data-toggle="tooltip"
+                                  title="{task.contentElementsCount} content elements">
+                                {task.contentElementsCount}
+                            </span>
+                        </div>
+                        <div class="text-center metadata" style="width: 150px;">
+                            <span class="label label-info"
+                                  data-toggle="tooltip"
+                                  title="{task.pagePropertiesCount} metadata fields">
+                                {task.pagePropertiesCount}
+                            </span>
+                        </div>
+                    </f:then>
+                    <f:else>
+                        <f:switch expression="{translationScope}">
+                            <f:case value="metadata">
+                                <div class="text-center metadata" style="width: 150px;">
+                                    <span class="label label-info"
+                                          data-toggle="tooltip"
+                                          title="{task.pagePropertiesCount} metadata fields">
+                                        {task.pagePropertiesCount}
+                                    </span>
+                                </div>
+                            </f:case>
+                            <f:case value="content">
+                                <div class="text-center content-elements" style="width: 150px;">
+                                    <span class="label label-primary"
+                                          data-toggle="tooltip"
+                                          title="{task.contentElementsCount} content elements">
+                                        {task.contentElementsCount}
+                                    </span>
+                                </div>
+                            </f:case>
+                        </f:switch>
+                    </f:else>
+                </f:if>
+
+                <div style="width: 50px;">
+                    <button type="button"
+                            class="btn btn-default btn-xs page-translation-content-info"
+                            data-toggle="tooltip"
+                            data-placement="top"
+                            title="Translation Details"
+                            data-table="pages"
+                            data-uid="{task.uid}">
+                        <core:icon identifier="actions-info" size="small" />
+                    </button>
+                </div>
+            </div>
+        </f:if>
+    </f:for>
+</div>
+
+</html>

@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class BackgroundTaskController extends AbstractBackendController
@@ -60,6 +61,7 @@ class BackgroundTaskController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         RequestsRepository $requestsRepository,
         BackgroundTaskService $backgroundTaskService,
         LoggerInterface $logger,
@@ -78,6 +80,7 @@ class BackgroundTaskController extends AbstractBackendController
             $siteService,
             $translationService,
             $sessionService,
+            $eventDispatcher,
         );
         $this->requestsRepository = $requestsRepository;
         $this->backgroundTaskService = $backgroundTaskService;
@@ -121,11 +124,12 @@ class BackgroundTaskController extends AbstractBackendController
             $backgroundTasks = [
                 'page' => [],
                 'fileReference' => [],
-                'fileMetadata' => [],
+                'fileMetadata' => []
             ];
             $uuidStatus = [];
 
             $this->backgroundTaskService->prefillArrays($backgroundTasks, $uuidStatus);
+
             if(count($backgroundTasks['page']) > 0 || count($backgroundTasks['fileReference']) > 0 || count($backgroundTasks['fileMetadata']) > 0) {
                 $answer = $this->requestService->sendDataRequest(
                     'massActionStatus',

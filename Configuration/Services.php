@@ -67,4 +67,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
 
     $services->set(\AutoDudes\AiSuite\Hooks\TranslationHook::class)
         ->public();
+
+    $services->set(\AutoDudes\AiSuite\Service\MetadataService::class)
+        ->public();
+    $services->set(\AutoDudes\AiSuite\Service\TranslationService::class)
+        ->public();
+    $services->set(\AutoDudes\AiSuite\Domain\Repository\PagesRepository::class)
+        ->public();
 };

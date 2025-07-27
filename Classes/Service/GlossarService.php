@@ -84,6 +84,10 @@ class GlossarService implements SingletonInterface
                 foreach ($translationRecords[$defaultUid] as $languageId => $translationRecord) {
                     $translationInput = $translationRecord['input'] ?? '';
                     $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId, $pid);
+                    if(empty($targetLanguageIsoCode)) {
+                        $this->logger->warning('Empty target language isoCode for languageId: ' . $languageId . ', input: ' . $translationInput . ', pid: ' . $pid);
+                        continue;
+                    }
                     $combinationKey = $defaultLanguageIsoCode . '__' . $targetLanguageIsoCode;
                     $inputCombinations[$combinationKey][$defaultInput] = $translationInput;
                 }

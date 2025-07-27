@@ -3,58 +3,62 @@
     xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
     data-namespace-typo3-fluid="true"
 >
-<div class="card mb-4">
-    <div class="card-header d-flex justify-content-between align-items-center"
+<div class="panel panel-default mb-3">
+    <div class="panel-heading d-flex justify-content-between align-items-center"
          data-bs-toggle="collapse"
          data-bs-target="#detailedStatsCollapse"
          aria-expanded="false"
          aria-controls="detailedStatsCollapse"
          style="cursor: pointer;">
-        <h3 class="mb-0">
+        <label class="panel-title fw-bold">
+            <core:icon identifier="actions-options" />
             <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.detailed" extensionName="ai_suite"/>
-        </h3>
+        </label>
         <span class="toggle-icon">
             <core:icon identifier="actions-chevron-down" size="small" />
         </span>
     </div>
 
     <div class="collapse" id="detailedStatsCollapse">
-        <div class="card-body">
-            <div class="row">
+        <div class="panel-body">
+            <div class="d-flex flex-wrap gap-3 align-items-stretch">
                 <!-- Pages -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">
+                <div class="d-flex" style="flex: 0 0 calc(33.333% - 1rem);">
+                    <div class="panel panel-default flex-fill">
+                        <div class="panel-heading d-flex justify-content-between align-items-center">
+                            <label class="panel-title fw-bold">
+                                <core:icon identifier="content-menu-pages" />
                                 <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.pages" extensionName="ai_suite"/>
-                            </h4>
+                            </label>
                             <span class="badge badge-secondary">{taskStatistics.page.total}</span>
                         </div>
-                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.page}" />
+                        <f:render section="panelBody" arguments="{taskStatisticsDetails: taskStatistics.page}" />
                     </div>
                 </div>
                 <!-- File References -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">
+                <div class="d-flex" style="flex: 0 0 calc(33.333% - 1rem);">
+                    <div class="panel panel-default flex-fill">
+                        <div class="panel-heading d-flex justify-content-between align-items-center">
+                            <label class="panel-title fw-bold">
+                                <core:icon identifier="actions-file-image" />
                                 <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileReferences" extensionName="ai_suite"/>
-                            </h4>
+                            </label>
                             <span class="badge badge-secondary">{taskStatistics.fileReference.total}</span>
                         </div>
-                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.fileReference}" />
+                        <f:render section="panelBody" arguments="{taskStatisticsDetails: taskStatistics.fileReference}" />
                     </div>
                 </div>
                 <!-- File Metadata -->
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h4 class="mb-0">
+                <div class="d-flex" style="flex: 0 0 calc(33.333% - 1rem);">
+                    <div class="panel panel-default flex-fill">
+                        <div class="panel-heading d-flex justify-content-between align-items-center">
+                            <label class="panel-title fw-bold">
+                                <core:icon identifier="actions-file-image" />
                                 <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata" extensionName="ai_suite"/>
-                            </h4>
+                            </label>
                             <span class="badge badge-secondary">{taskStatistics.fileMetadata.total}</span>
                         </div>
-                        <f:render section="columnCardBody" arguments="{taskStatisticsDetails: taskStatistics.fileMetadata}" />
+                        <f:render section="panelBody" arguments="{taskStatisticsDetails: taskStatistics.fileMetadata}" />
                     </div>
                 </div>
             </div>
@@ -63,8 +67,8 @@
 </div>
 </html>
 
-<f:section name="columnCardBody">
-    <div class="card-body">
+<f:section name="panelBody">
+    <div class="panel-body">
         <div class="d-flex justify-content-between mb-2">
             <span class="text-success">
                 <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished" extensionName="ai_suite"/>
@@ -83,9 +87,9 @@
             </span>
             <span class="badge badge-danger">{taskStatisticsDetails.taskError}</span>
         </div>
-        <h5 class="mt-4 mb-2">
+        <div class="fw-bold mb-2">
             <f:translate key="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn" extensionName="ai_suite"/>
-        </h5>
+        </div>
         <div class="table-responsive">
             <table class="table table-sm">
                 <thead>

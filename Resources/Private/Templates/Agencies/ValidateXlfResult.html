@@ -7,29 +7,37 @@
 
 <f:section name="Content">
 
-    <section>
-        <h2 class="text-gradient">
-            <f:translate key="AiSuite.module.Agencies.translateXlf.header.validate" extensionName="ai_suite"/>
-        </h2>
-
-        <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_write_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
-            <input type="hidden" name="fileData" value="{fileData}" />
-            <f:for each="{originalValues}" key="sourceKey" as="sourceValue">
-                <div class="form-group mb-4">
-                    <label>{sourceValue.source}</label><br />
-                    <small>(ID: {sourceKey})</small><br />
-                    <input type="text" name="translations[{sourceKey}]" value="{sourceValue.translated}" class="form-control source-translated"/>
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-document-save" />
+                        <f:translate key="AiSuite.module.Agencies.translateXlf.header.validate" extensionName="ai_suite"/>
+                    </label>
                 </div>
-            </f:for>
+                <div class="panel-body">
+                    <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_write_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
+                        <input type="hidden" name="fileData" value="{fileData}" />
+                        <f:for each="{originalValues}" key="sourceKey" as="sourceValue">
+                            <div class="form-group mb-4">
+                                <label class="fw-bold">{sourceValue.source}</label>
+                                <small class="text-muted">(ID: {sourceKey})</small>
+                                <input type="text" name="translations[{sourceKey}]" value="{sourceValue.translated}" class="form-control source-translated"/>
+                            </div>
+                        </f:for>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <core:icon identifier="actions-document-save" size="small" />
-                    <f:translate key="AiSuite.module.Agencies.translateXlf.submit.validate" extensionName="ai_suite"/>
-                </button>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <core:icon identifier="actions-document-save" size="small" />
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.submit.validate" extensionName="ai_suite"/>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
-        <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
-    </section>
+        </div>
+    </div>
+    <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
 
 </f:section>

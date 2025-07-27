@@ -24,7 +24,7 @@
         "AutoDudes",
         "AI Suite"
     ],
-    "version": "13.5.2",
+    "version": "13.6.0",
     "support": {
         "issues": "https://github.com/autodudesde/ai-suite/issues"
     },
@@ -60,22 +60,23 @@
         }
     },
     "require-dev": {
-        "friendsoftypo3/content-blocks": "^1.0",
-        "bk2k/bootstrap-package": "^15.0",
-        "georgringer/news": "^12.0",
         "b13/container": "^3.0",
-        "ichhabrecht/content-defender": "^3.5",
+        "bk2k/bootstrap-package": "^15.0",
         "friendsofphp/php-cs-fixer": "^3.52",
+        "friendsoftypo3/content-blocks": "^1.0",
+        "georgringer/news": "^12.0",
         "helhum/typo3-console": "^8.2",
+        "ichhabrecht/content-defender": "^3.5",
         "phpstan/phpstan": "^1.10",
         "typo3/cms-beuser": "^13.4.1",
-        "typo3/cms-lowlevel": "^13.4.1",
-        "typo3/cms-tstemplate": "^13.4.1",
-        "typo3/cms-install": "^13.4.1",
-        "typo3/cms-impexp": "^13.4.1",
-        "typo3/cms-indexed-search": "^13.4.1",
         "typo3/cms-filemetadata": "^13.4.1",
         "typo3/cms-form": "^13.4.1",
+        "typo3/cms-impexp": "^13.4.1",
+        "typo3/cms-indexed-search": "^13.4.1",
+        "typo3/cms-install": "^13.4.1",
+        "typo3/cms-lowlevel": "^13.4.1",
+        "typo3/cms-tstemplate": "^13.4.1",
+        "typo3/cms-workspaces": "^13.4.1",
         "typo3/coding-standards": "^0.8"
     },
     "minimum-stability": "dev",

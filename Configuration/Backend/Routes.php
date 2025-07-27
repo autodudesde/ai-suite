@@ -120,6 +120,10 @@ return [
         'path' => '/aisuite/massaction/files-prepare',
         'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
     ],
+    'ai_suite_massaction_pages_translation_prepare' => [
+        'path' => '/aisuite/massaction/pages-translation-prepare',
+        'target' => \AutoDudes\AiSuite\Controller\MassActionController::class . '::handleRequest',
+    ],
     /**
      * Background task routes
      */

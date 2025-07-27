@@ -2,18 +2,18 @@
     <f:for each="{textFields}" key="fieldName" as="fieldData" iteration="it">
         <f:switch expression="{fieldData.renderType}">
             <f:case value="input">
-                <div class="form-group">
-                    <label for="{fieldName}">
+                <div class="form-group mb-3">
+                    <label for="{fieldName}" class="form-label">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
-                    </label><br />
+                    </label>
                     <input type="text" name="contentElementData[{table}][{position}][{fieldName}]" value="{fieldData.content}" class="form-control"/>
                 </div>
             </f:case>
             <f:case value="text">
-                <div class="form-group">
-                    <label for="{fieldName}">
+                <div class="form-group mb-3">
+                    <label for="{fieldName}" class="form-label">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
-                    </label><br />
+                    </label>
                     <f:if condition="{fieldData.rteConfig}">
                         <f:then>
                             <input type="hidden" name="contentElementData[{table}][{position}][{fieldName}]" value="{fieldData.content}" class="rte-content form-control"/>
@@ -35,10 +35,10 @@
                 </div>
             </f:case>
             <f:defaultCase>
-                <div class="form-group">
-                    <label for="{fieldName}">
+                <div class="form-group mb-3">
+                    <label for="{fieldName}" class="form-label">
                         <f:format.case mode="capital">{fieldData.label}</f:format.case>
-                    </label><br />
+                    </label>
                     <textarea name="contentElementData[{table}][{position}][{fieldName}]" class="form-control">{fieldData.content}</textarea>
                 </div>
             </f:defaultCase>

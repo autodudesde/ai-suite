@@ -1,5 +1,4 @@
 import { View, TextareaView, ButtonView, createDropdown, addListToDropdown, ViewModel } from '@ckeditor/ckeditor5-ui';
-import { icons } from '@ckeditor/ckeditor5-core';
 import { Collection } from '@ckeditor/ckeditor5-utils';
 import RadioView from "@autodudes/ai-suite/ckeditor/RadioView/radio-view.js";
 import SpinnerView from "@autodudes/ai-suite/ckeditor/SpinnerView/spinner-view.js";
@@ -7,8 +6,8 @@ import SpinnerView from "@autodudes/ai-suite/ckeditor/SpinnerView/spinner-view.j
 export default class ModalView extends View {
     constructor(editorLocale, libraries, promptTemplates) {
         super(editorLocale);
-
-        this.cancelButtonView = this._createButton( '', icons.cancel, 'ck-button-cancel' );
+        const iconCancel = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="M11.9 5.5 9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z"/></g></svg>';
+        this.cancelButtonView = this._createButton( '', iconCancel, 'ck-button-cancel' );
         this.cancelButtonView.delegate( 'execute' ).to( this, 'cancel' );
         this.promptInputView = this._createTextarea();
         this.promptInputView.delegate( 'execute' ).to( this, 'promptInputViewActive' );
@@ -58,7 +57,8 @@ export default class ModalView extends View {
             promptTemplateDisplay = 'none';
             this.dropdown = '';
         }
-        this.saveButtonView = this._createButton(TYPO3.lang['tx_aisuite.module.PageContent.submit'], icons.pencil, 'ck-button-save');
+        const iconPencil = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="m9.293 3.293-8 8A.997.997 0 0 0 1 12v3h3c.265 0 .52-.105.707-.293l8-8-3.414-3.414zM8.999 5l.5.5-5 5-.5-.5 5-5zM4 14H3v-1H2v-1l1-1 2 2-1 1zM13.707 5.707l1.354-1.354a.5.5 0 0 0 0-.707L12.354.939a.5.5 0 0 0-.707 0l-1.354 1.354 3.414 3.414z"/></g></svg>';
+        this.saveButtonView = this._createButton(TYPO3.lang['tx_aisuite.module.PageContent.submit'], iconPencil, 'ck-button-save');
         this.spinner = new SpinnerView(editorLocale, TYPO3.lang['tx_aisuite.module.general.contentGenerationInProcess']);
 
         this.setTemplate({

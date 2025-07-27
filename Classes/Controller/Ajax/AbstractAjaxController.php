@@ -12,6 +12,7 @@
 
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
+use AutoDudes\AiSuite\Events\BeforeAiSuiteAjaxTemplateRenderEvent;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
@@ -25,6 +26,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\View\ViewFactoryData;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 abstract class AbstractAjaxController
 {
@@ -37,6 +39,7 @@ abstract class AbstractAjaxController
     protected TranslationService $translationService;
     protected ViewFactoryInterface $viewFactory;
     protected LoggerInterface $logger;
+    protected EventDispatcher $eventDispatcher;
 
     public function __construct(
         BackendUserService $backendUserService,
@@ -47,7 +50,8 @@ abstract class AbstractAjaxController
         SiteService $siteService,
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        EventDispatcher $eventDispatcher
     )
     {
         $this->backendUserService = $backendUserService;
@@ -59,12 +63,12 @@ abstract class AbstractAjaxController
         $this->translationService = $translationService;
         $this->viewFactory = $viewFactory;
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
     protected function getContentFromTemplate(
         ServerRequestInterface $request,
         string $templateName,
         string $templateRootPath,
-        string $cssFilePath,
         array $params = []
     ): string {
         $viewFactoryData = new ViewFactoryData(
@@ -74,7 +78,12 @@ abstract class AbstractAjaxController
             request: $request,
         );
         $view = $this->viewFactory->create($viewFactoryData);
-        $params['inlineStyles'] = !empty($cssFilePath) ? file_get_contents(GeneralUtility::getFileAbsFileName($cssFilePath)) : '';
+        $params['inlineStyles'] = file_get_contents(GeneralUtility::getFileAbsFileName('EXT:ai_suite/Resources/Public/Css/Ajax/wizard-general.css'));
+
+        $event = new BeforeAiSuiteAjaxTemplateRenderEvent($request, $params);
+        $this->eventDispatcher->dispatch($event);
+        $params = $event->getParams();
+
         $view->assignMultiple($params);
         return $view->render($templateName);
     }

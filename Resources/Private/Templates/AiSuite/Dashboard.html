@@ -1,97 +1,135 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-{namespace core=TYPO3\CMS\Core\ViewHelpers}
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
 
 <f:layout name="Module" />
 
 <f:section name="Content">
-
-    <h1 class="mb-2">
+    <h1 class="mb-3 fw-semibold">
+        <core:icon identifier="tx-aisuite-extension" size="medium" />
         <f:translate key="tx_aisuite.module.dashboard.header" extensionName="ai_suite"/>
     </h1>
 
-    <f:link.external uri="https://www.autodudes.de/documentation/ai-suite/en/introduction" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
-        <core:icon identifier="actions-document-view" />
-        <f:translate key="aiSuite.module.openDocumentation" extensionName="ai_suite"/>
-    </f:link.external>
-    <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="mx-3 my-2 px-3 py-2 btn btn-primary">
-        <core:icon identifier="actions-file-video" />
-        <f:translate key="aiSuite.module.watchIntroductionVideo" extensionName="ai_suite"/>
-    </f:link.external>
-    <f:link.external uri="https://www.autodudes.de/en/account/login" target="_blank" class="my-2 px-3 py-2 btn btn-primary">
-        <core:icon identifier="actions-key" />
-        <f:translate key="aiSuite.module.manageLicense" extensionName="ai_suite"/>
-    </f:link.external>
-
-    <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0 && {aboRequests} >= 0">
-        <h2 class="mb-4">
-            <f:translate key="tx_aisuite.module.dashboard.creditState" extensionName="ai_suite"/>
-        </h2>
-        <p class="request-state">
-            <span class="badge badge-warning p-2">
-                <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite"/>: {freeRequests}
-            </span>
-            <span class="badge badge-warning p-2 mx-3">
-                 <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests}
-            </span>
-            <f:if condition="{modelType} != ''">
-                <span class="badge badge-warning p-2">
-                     <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
-                </span>
-            </f:if>
-        </p>
-    </f:if>
-
-    <h2 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.headerSections" extensionName="ai_suite"/>
-    </h2>
-
-    <section class="card-container">
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'content-menu-pages',
-            cardname: 'pagesSection',
-            controller: 'Pages',
-            route: 'ai_suite_page',
-            status: 'active'
-        }" />
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'actions-rocket',
-            cardname: 'agencySection',
-            controller: 'Agencies',
-            route: 'ai_suite_agencies',
-            status: 'active'
-        }" />
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'actions-message-dots',
-            cardname: 'managePromptTemplates',
-            controller: 'PromptTemplate',
-            route: 'ai_suite_prompt',
-            status: 'active'
-        }" />
-
-        <div class="card card-size-medium {status}">
-            <div class="card-header">
-                <div class="card-icon">
-                    <core:icon identifier="actions-lightbulb-on" size="large"/>
-                </div>
-                <div class="card-header-body">
-                    <h3 class="card-title">
-                        <f:translate key="aiSuite.module.feedbackTitle" extensionName="ai_suite"/>
-                    </h3>
-                    <div class="card-longdesc">
-                        <p>
-                            <f:translate key="aiSuite.module.feedbackDescription" extensionName="ai_suite"/>
-                        </p>
+    <div class="row d-flex align-items-stretch">
+        <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0 && {aboRequests} >= 0">
+            <div class="col-lg-6 d-flex">
+                <div class="panel panel-default flex-fill">
+                    <div class="panel-heading">
+                        <label class="panel-title fw-bold">
+                            <core:icon identifier="actions-store" />
+                            <f:translate key="tx_aisuite.module.dashboard.creditState" extensionName="ai_suite"/>
+                        </label>
                     </div>
-                    <br>
-                    <f:link.external uri="mailto:service@autodudes.de" target="_blank" class="btn btn-secondary">
-                        <f:translate key="aiSuite.module.feedbackBtn" extensionName="ai_suite"/>
-                    </f:link.external>
+                    <div class="panel-body">
+                        <div class="request-state d-flex gap-5 my-1">
+                        <span class="badge badge-warning">
+                            <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite"/>: {freeRequests}
+                        </span>
+                            <span class="badge badge-warning">
+                            <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests}
+                        </span>
+                            <f:if condition="{modelType} != ''">
+                            <span class="badge badge-warning">
+                                <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
+                            </span>
+                            </f:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </f:if>
+        <div class="col-lg-6 d-flex">
+            <div class="panel panel-default flex-fill">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-link" />
+                        <f:translate key="aiSuite.module.quickStart" extensionName="ai_suite" default="Quick Start" />
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="btn-group gap-3" role="group">
+                        <f:link.external uri="https://www.autodudes.de/documentation/ai-suite/en/introduction" target="_blank" class="btn btn-primary">
+                            <core:icon identifier="actions-document-view" />
+                            <f:translate key="aiSuite.module.openDocumentation" extensionName="ai_suite"/>
+                        </f:link.external>
+                        <f:link.external uri="https://www.youtube.com/watch?v=Yy0p5FH1P_M" target="_blank" class="btn btn-primary">
+                            <core:icon identifier="actions-file-video" />
+                            <f:translate key="aiSuite.module.watchIntroductionVideo" extensionName="ai_suite"/>
+                        </f:link.external>
+                        <f:link.external uri="https://www.autodudes.de/en/account/login" target="_blank" class="btn btn-primary">
+                            <core:icon identifier="actions-key" />
+                            <f:translate key="aiSuite.module.manageLicense" extensionName="ai_suite"/>
+                        </f:link.external>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
-    </section>
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-system-tree-search-open" />
+                        <f:translate key="tx_aisuite.module.dashboard.headerSections" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="d-flex flex-wrap gap-3 align-items-stretch">
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'content-menu-pages',
+                                cardname: 'pagesSection',
+                                controller: 'Pages',
+                                route: 'ai_suite_page',
+                                status: 'active'
+                            }" />
+                        </div>
+
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-rocket',
+                                cardname: 'agencySection',
+                                controller: 'Agencies',
+                                route: 'ai_suite_agencies',
+                                status: 'active'
+                            }" />
+                        </div>
+
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-message-dots',
+                                cardname: 'managePromptTemplates',
+                                controller: 'PromptTemplate',
+                                route: 'ai_suite_prompt',
+                                status: 'active'
+                            }" />
+                        </div>
+
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <div class="panel panel-default flex-fill">
+                                <div class="panel-heading">
+                                    <label class="panel-title fw-bold">
+                                        <core:icon identifier="actions-lightbulb-on" />
+                                        <f:translate key="aiSuite.module.feedbackTitle" extensionName="ai_suite"/>
+                                    </label>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="mb-3">
+                                        <p>
+                                            <f:translate key="aiSuite.module.feedbackDescription" extensionName="ai_suite"/>
+                                        </p>
+                                    </div>
+                                    <div class="panel-actions">
+                                        <f:link.external uri="mailto:service@autodudes.de" target="_blank" class="btn btn-primary">
+                                            <f:translate key="aiSuite.module.feedbackBtn" extensionName="ai_suite"/>
+                                        </f:link.external>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </f:section>

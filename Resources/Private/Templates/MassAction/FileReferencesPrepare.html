@@ -1,32 +1,36 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
 
-<f:layout name="Module" />
+<f:layout name="Module"/>
 
 <f:section name="Content">
     <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
 
-    <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.massActionFileReferences.title" extensionName="ai_suite"/>
-    </h1>
-    <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.massActionFileReferences.description" extensionName="ai_suite"/>
-    </p>
-
-    <section>
-        <h2 class="mb-4">
-            <f:translate key="tx_aisuite.module.prepareFileReferences.title" extensionName="ai_suite"/>
-        </h2>
-        <form action="fileReferencesPrepareExecute" name="fileReferencesPrepareExecute">
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="content-menu-pages" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFileReferences.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p class="mb-4">
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFileReferences.description" extensionName="ai_suite"/>
+                    </p>
+                    <form action="fileReferencesPrepareExecute" name="fileReferencesPrepareExecute">
             <div class="row">
                 <div class="col-md-6">
                     <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionFileReferencesPrepare[startFromPid]', label: 'tx_aisuite.module.preparePages.pageChooser', selected: pageId}" />
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>
+                        <label class="fw-bold mb-2">
                             <f:translate key="tx_aisuite.module.preparePages.depth" extensionName="ai_suite"/>
                         </label>
-                        <br />
                         <select name="massActionFileReferencesPrepare[depth]" class="form-select" id="depth">
                             <f:for each="{depths}" as="depth" key="value">
                                 <f:if condition="{preSelection} && {preSelection.depth} == {value}">
@@ -46,10 +50,9 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <div class="form-group">
-                            <label>
+                            <label class="fw-bold mb-2">
                                 <f:translate key="tx_aisuite.module.preparePages.column" extensionName="ai_suite"/>
                             </label>
-                            <br />
                             <select name="massActionFileReferencesPrepare[column]" class="form-select" id="column">
                                 <f:for each="{columns}" as="column" key="value">
                                     <f:if condition="{preSelection} && {preSelection.column} == {value}">
@@ -66,10 +69,9 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label>
+                    <label class="fw-bold mb-2">
                         <f:translate key="tx_aisuite.module.preparePages.sysLanguages" extensionName="ai_suite"/>
                     </label>
-                    <br />
                     <select name="massActionFileReferencesPrepare[sysLanguage]" class="form-select" id="sysLanguage">
                         <f:for each="{sysLanguages}" as="sysLanguage" key="value">
                             <f:if condition="{preSelection} && {preSelection.sysLanguage} == {value}">
@@ -83,22 +85,20 @@
                         </f:for>
                     </select>
                 </div>
-                <div class="col-md-4 d-flex align-items-center pt-3">
-                    <div class="form-group">
-                        <label class="position-relative">
-                            <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
-                                <f:then>
-                                    <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
-                                </f:then>
-                                <f:else>
-                                    <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
-                                </f:else>
-                            </f:if>
-                            <span class="px-4">
-                                <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
-                            </span>
-                        </label>
-                    </div>
+                <div class="col-md-4 d-flex align-items-center">
+                    <label class="fw-bold d-flex gap-2 my-3">
+                        <f:if condition="{preSelection} && {preSelection.showOnlyEmpty}">
+                            <f:then>
+                                <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1" checked="checked"/>
+                            </f:then>
+                            <f:else>
+                                <input type="checkbox" name="massActionFileReferencesPrepare[showOnlyEmpty]" id="showOnlyEmpty" value="1"/>
+                            </f:else>
+                        </f:if>
+                        <span>
+                            <f:translate key="tx_aisuite.module.preparePages.showOnlyEmpty" extensionName="ai_suite"/>
+                        </span>
+                    </label>
                 </div>
             </div>
             <div class="row">
@@ -106,9 +106,12 @@
                     <input type="submit" class="btn btn-primary" value="{f:translate(key: 'tx_aisuite.module.preparePages.showPrepareResults', extensionName: 'ai_suite')}" />
                 </div>
             </div>
-        </form>
-    </section>
-    <section id="resultsToExecute" class="mt-3">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="resultsToExecute">
 
     </section>
     <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.massActionPages'}" />

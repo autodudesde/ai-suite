@@ -14,7 +14,7 @@
                 <core:icon identifier="actions-document-info" size="small" /> Info
             </div>
             <div class="page-meta-content d-flex flex-column w-100">
-                <p class="title">
+                <label class="d-flex gap-2 fw-bold mb-3">
                     <f:if condition="{taskStatus} != ''">
                         <f:then>
                             <span class="badge badge-{taskStatus}">{taskStatus}</span>
@@ -28,8 +28,8 @@
                             >
                         </f:else>
                     </f:if>
-                    <span class="px-4">{task.title} (PID: {task.uid})</span>
-                </p>
+                    <span>{task.title} (PID: {task.uid})</span>
+                </label>
                 <label>
                     <strong>{columnName} ({column})</strong>
                     <input type="text" class="w-100 page-metadata-field" value="{task.columnValue}" />

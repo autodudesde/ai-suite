@@ -1,17 +1,16 @@
-
-<div class="row image-suggestions mt-2">
-    <h3 class="text-gradient">
+<div class="image-suggestions w-50">
+    <label class="control-label fw-bold mb-2">
         <f:translate key="AiSuite.imageSuggestionsHeader" extensionName="ai_suite"/>
-    </h3>
+    </label>
     <f:if condition="{imageSuggestions -> f:count()} == 1">
         <f:variable name="autoSelectImage" value="true" />
     </f:if>
     <f:for each="{imageSuggestions}" as="suggestion" iteration="it">
-        <div class="col-12 col-md-6 my-3">
+        <div class="form-check image-check">
             <input
                 type="checkbox"
                 id="{table}-{position}-{fieldName}-image-{it.cycle}"
-                class="input-hidden mx-1 image-selection"
+                class="form-check-input image-selection"
                 name="fileData[contentElementData][{table}][{position}][{fieldName}][newImageUrl]"
                 value="{suggestion.url}"
                 data-selection-group="{table}-{position}-{fieldName}-image"
@@ -21,19 +20,18 @@
                 data-position="{position}"
                 {f:if(condition: autoSelectImage, then: 'checked="checked"', else: '')}
             />
-            <label for="{table}-{position}-{fieldName}-image-{it.cycle}">
+            <label class="form-check-label image-label" for="{table}-{position}-{fieldName}-image-{it.cycle}">
                 <img
                     class="ce-image-selection"
                     data-selection-group="{table}-{position}-{fieldName}-image"
                     data-selection-id="{table}-{position}-{fieldName}-image-{it.cycle}"
                     src="{suggestion.url}"
-                    alt="Generated Image {position} {it.cycle} ({fieldName})"
+                    alt="{f:translate(key: 'tx_aisuite.image.generatedImageAlt', arguments: '{0: position, 1: it.cycle, 2: fieldName}', extensionName='ai_suite')}"
                 />
-                <div class="icon">
+                <div class="check-icon">
                     <core:icon identifier="actions-check" size="medium" />
                 </div>
             </label>
         </div>
     </f:for>
 </div>
-

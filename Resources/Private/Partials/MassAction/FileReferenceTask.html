@@ -10,7 +10,7 @@
                 <div class="preview-image">
                     <f:image src="{task.uid}" treatIdAsReference="1" />
                 </div>
-                <div class="file-reference-meta-content">
+                <div class="file-reference-meta-content d-flex flex-column w-100">
                     <f:variable name="taskStatus">{aiSuite:inArray(needle: task.uid, haystack: alreadyPendingFileReferences)}</f:variable>
                     <div class="file-reference-meta-content-info badge badge-info"
                          data-table="{task.tablenames}"
@@ -18,7 +18,7 @@
                     >
                         <core:icon identifier="actions-document-info" size="small" /> Info
                     </div>
-                    <p class="title">
+                    <label class="d-flex gap-2 fw-bold mb-3">
                         <f:if condition="{taskStatus} != ''">
                             <f:then>
                                 <span class="badge badge-{taskStatus}">{taskStatus}</span>
@@ -37,14 +37,14 @@
                                 >
                             </f:else>
                         </f:if>
-                        <span class="px-4">{task.fileName}</span>
+                        <span>{task.fileName}</span>
                         <f:if condition="{task.size} > {maxAllowedFileSize}">
                             <div class="size-info">
                                 <core:icon identifier="actions-exclamation-triangle" size="small" />
                                 <span class="error-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.imageSizeTooLarge" extensionName="ai_suite"/></span>
                             </div>
                         </f:if>
-                    </p>
+                    </label>
                     <label>
                         <strong>{columnName} ({column})</strong>
                         <input type="text" class="w-100 file-reference-metadata-field" value="{task.columnValue}" />

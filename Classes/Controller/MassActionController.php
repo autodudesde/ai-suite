@@ -31,6 +31,7 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class MassActionController extends AbstractBackendController
@@ -54,6 +55,7 @@ class MassActionController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         MetadataService $metadataService,
         MassActionService $massActionService,
         LoggerInterface $logger
@@ -70,7 +72,8 @@ class MassActionController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
         $this->metadataService = $metadataService;
         $this->massActionService = $massActionService;
@@ -89,6 +92,8 @@ class MassActionController extends AbstractBackendController
                 return $this->pagesPrepareAction();
             case 'ai_suite_massaction_filereferences_prepare':
                 return $this->fileReferencesPrepareAction();
+            case 'ai_suite_massaction_pages_translation_prepare':
+                return $this->pagesTranslationPrepareAction();
             default:
                 return $this->overviewAction();
         }
@@ -169,5 +174,50 @@ class MassActionController extends AbstractBackendController
             'sysLanguages' => $availableLanguages,
         ]);
         return $this->view->renderResponse('MassAction/FileReferencesPrepare');
+    }
+
+    public function pagesTranslationPrepareAction(): ResponseInterface
+    {
+        $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/pages-translation-prepare.js');
+
+        $availableLanguages = $this->siteService->getAvailableLanguages(true);
+        ksort($availableLanguages);
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $pageId = $this->sessionService->getWebPageId();
+
+        if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
+            $pageTitle = $accessablePages[$pageId];
+            $this->view->assignMultiple([
+                'pageTitle' => $pageTitle,
+                'pageId' => $pageId,
+            ]);
+        }
+
+        $sessionData = $this->sessionService->getParametersForRoute('ai_suite_massaction_pages_translation_prepare');
+        if (isset($sessionData['massActionPagesTranslationPrepare'])) {
+            $this->view->assign('preSelection', $sessionData['massActionPagesTranslationPrepare']);
+        }
+
+        $this->view->assignMultiple([
+            'pagesSelect' => $accessablePages,
+            'pageTypes' => $this->backendUserService->getAccessablePageTypes(),
+            'depths' => [
+                0 => $this->translationService->translate('tx_aisuite.massActionSection.filter.depth.onlyThisPage'),
+                1 => 1,
+                2 => 2,
+                3 => 3,
+                4 => 4,
+                5 => 5
+            ],
+            'sysLanguages' => $availableLanguages,
+            'translationScopeOptions' => [
+                'all' => $this->translationService->translate('tx_aisuite.massActionSection.translation.scope.all'),
+                'metadata' => $this->translationService->translate('tx_aisuite.massActionSection.translation.scope.metadata'),
+                'content' => $this->translationService->translate('tx_aisuite.massActionSection.translation.scope.content')
+            ]
+        ]);
+
+        return $this->view->renderResponse('MassAction/PagesTranslationPrepare');
     }
 }

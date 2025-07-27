@@ -32,6 +32,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\Entity\NullSite;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class PromptTemplateController extends AbstractBackendController
@@ -52,6 +53,7 @@ class PromptTemplateController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         CustomPromptTemplateRepository $customPromptTemplateRepository,
         LoggerInterface $logger
     ) {
@@ -67,7 +69,8 @@ class PromptTemplateController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
         $this->customPromptTemplateRepository = $customPromptTemplateRepository;
         $this->logger = $logger;

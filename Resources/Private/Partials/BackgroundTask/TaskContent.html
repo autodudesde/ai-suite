@@ -1,0 +1,89 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:if condition="{type} == 'Page'">
+    <f:then>
+        <div class="page-meta-content-info badge badge-info position-absolute d-flex align-items-center"
+             style="right: 15px;"
+             data-table="pages"
+             data-uid="{task.table_uid}">
+            <core:icon identifier="actions-document-info" size="small" /> Info
+        </div>
+
+        <h3 class="my-2">
+            <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" />"</strong> ({column}):
+        </h3>
+
+        <div class="form-group">
+            <input
+                type="text"
+                class="form-control mb-4 metadata-value"
+                data-page-uid="{task.table_uid}"
+                data-column="{column}"
+                data-uuid="{task.uuid}"
+                value="{task.columnValue}"
+            />
+        </div>
+    </f:then>
+    <f:else>
+        <div class="d-flex mb-3">
+            <div class="preview-image me-3">
+                <f:image src="{task.fileUid}" style="max-height: 200px; width: auto;" />
+            </div>
+            <div class="flex-grow-1 position-relative">
+                <div class="{f:if(condition: '{type} == \'FileMetadata\'', then: 'file-meta-content-info', else: 'file-reference-meta-content-info')}
+                            badge badge-info position-absolute d-inline-flex align-items-center"
+                     style="right: 0;"
+                     data-table="{task.table_name}"
+                     data-uid="{task.table_uid}">
+                    <core:icon identifier="actions-document-info" size="small" /> Info
+                </div>
+
+                <h3 class="my-2">
+                    <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />"</strong> ({column}):
+                </h3>
+
+                <div class="form-group">
+                    <input
+                        type="text"
+                        class="form-control mb-4 metadata-value"
+                        data-sys-file-reference-uid="{task.table_uid}"
+                        data-column="{column}"
+                        data-uuid="{task.uuid}"
+                        value="{task.columnValue}"
+                    />
+                </div>
+            </div>
+        </div>
+    </f:else>
+</f:if>
+
+<div>
+    <div class="row">
+        <div class="col-12">
+            <h3 class="fw-bold mb-2">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+            </h3>
+        </div>
+    </div>
+    <f:variable name="metadataTable"><f:if condition="{type} == 'Page'"><f:then>pages</f:then><f:else><f:if condition="{type} == 'FileMetadata'"><f:then>sys_file_metadata</f:then><f:else>sys_file_reference</f:else></f:if></f:else></f:if></f:variable>
+    <f:render partial="Libs/MetadataSuggestionSelection" arguments="{
+        metadataSuggestions: task.metadataSuggestions,
+        fieldName: column,
+        table: metadataTable,
+        position: position
+    }" />
+
+    <div class="row mt-3">
+        <div class="col-6">
+            <button class="btn btn-primary w-100 save-accordion-item" data-uuid="{task.uuid}" data-column="{column}">
+                <core:icon identifier="actions-check" size="small" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+            </button>
+        </div>
+    </div>
+</div>
+</html>

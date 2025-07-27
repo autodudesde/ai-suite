@@ -61,9 +61,11 @@ class FlexFormTranslationService implements SingletonInterface
             }
         }
         $this->removeEmptyArraysRecursively($flexFormData);
-        $translateFields['pi_flexform'] = [
-            'data' => $flexFormData
-        ];
+        if(!empty($flexFormData)) {
+            $translateFields['pi_flexform'] = [
+                'data' => $flexFormData
+            ];
+        }
     }
 
     protected function checkValue_flex_procInData_travDS(&$dataValues, $DSelements, $structurePath): void

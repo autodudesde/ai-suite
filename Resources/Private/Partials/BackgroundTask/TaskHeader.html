@@ -1,0 +1,25 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="d-flex align-items-center">
+    <span class="badge {f:if(condition: '{task.status} == \'finished\'', then: 'badge-success', else: '{f:if(condition: \'{task.status} == \'task-error\', then: \'badge-danger\', else: \'badge-info\')}')} me-2">
+        {task.status}
+    </span>
+
+    <f:if condition="{type} == 'Page'">
+        <f:then>
+            <f:if condition="{task.flag} != ''">
+                <span class="flag me-2"><core:icon identifier="{task.flag}" size="small" /></span>
+            </f:if>
+            <span class="task-title text-decoration-none">{task.title} (PID: {task.table_uid})</span>
+        </f:then>
+        <f:else>
+            <f:image src="{task.fileUid}" class="me-2" style="height: 32px; width: auto;" />
+            <span class="task-title text-decoration-none">{task.fileName}</span>
+        </f:else>
+    </f:if>
+</div>
+</html>

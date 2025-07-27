@@ -80,15 +80,21 @@ class FilelistFilesPrepare {
                             let currentFiles = {};
                             let handledFiles = {};
                             Generation.showSpinner();
-                            let formData = new FormData();
-                            formData.append('massActionFilesExecute[parentUuid]', document.querySelector('input#parentUuid').value);
-                            formData.append('massActionFilesExecute[column]', document.querySelector('select#column').value);
-                            formData.append('massActionFilesExecute[sysLanguage]', document.querySelector('select#sysLanguage').value);
-                            formData.append('massActionFilesExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
+                            const baseFormData = {
+                                parentUuid: document.querySelector('input#parentUuid').value,
+                                column: document.querySelector('select#column').value,
+                                sysLanguage: document.querySelector('select#sysLanguage').value,
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                            };
                             for (let key in selectedFiles) {
                                 if(counter === 5) {
                                     try {
                                         handledFiles = { ...handledFiles, ...currentFiles };
+                                        let formData = new FormData();
+                                        formData.append('massActionFilesExecute[parentUuid]', baseFormData.parentUuid);
+                                        formData.append('massActionFilesExecute[column]', baseFormData.column);
+                                        formData.append('massActionFilesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                        formData.append('massActionFilesExecute[textAiModel]', baseFormData.textAiModel);
                                         formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));
                                         await self.sendFilesToExecute(formData, selectedFiles, handledFiles);
                                         counter = 0;
@@ -101,6 +107,11 @@ class FilelistFilesPrepare {
                                 counter++;
                             }
                             if(Object.keys(currentFiles).length > 0) {
+                                let formData = new FormData();
+                                formData.append('massActionFilesExecute[parentUuid]', baseFormData.parentUuid);
+                                formData.append('massActionFilesExecute[column]', baseFormData.column);
+                                formData.append('massActionFilesExecute[sysLanguage]', baseFormData.sysLanguage);
+                                formData.append('massActionFilesExecute[textAiModel]', baseFormData.textAiModel);
                                 formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));
                                 await self.sendFilesToExecute(formData, selectedFiles, handledFiles);
                             }

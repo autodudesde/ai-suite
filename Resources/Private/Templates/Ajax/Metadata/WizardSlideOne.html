@@ -2,67 +2,42 @@
 
     <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
 
-    <div class="ai-suite" id="wizardSlideOne">
-        <div class="card-container">
-            <div>
-                <div class="card-header">
-                    <div class="card-header-body">
-                        <h2 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSlideOneHeader" />
-                        </h2>
-                    </div>
+    <div class="panel panel-default wizard-slide" id="wizardSlideOne">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSlideOneHeader" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+            <f:if condition="{sysLanguages}">
+                <div class="form-group" id="languageSelection">
+                    <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
                 </div>
-                <div class="card-body">
-                    <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                    <f:if condition="{sysLanguages}">
-                        <div id="languageSelection" class="my-3">
-                            <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
-                        </div>
-                    </f:if>
-                    <div class="prompt-settings mt-3 d-none">
-                        <div class="card card-size-large active">
-                            <div class="card-header">
-                                <h3 class="text-gradient">
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metaDataWizardPromptHeader" />
-                                </h3>
-                                <br />
-                                <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                                <div class="mt-2">
-                                    <label for="metadataGenerationPrompt" class="mt-3">
-                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSlideOnePrompt" />
-                                    </label>
-                                    <textarea class="p-2 w-100" id="metadataGenerationPrompt" required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <f:if condition="{availableNewsDetailPlugins}">
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <label for="newsDetailPlugin">
-                                    News Detail Plugins
-                                </label>
-                                <select id="newsDetailPlugin" class="w-100">
-                                    <option value="">Please select...</option>
-                                    <f:for each="{availableNewsDetailPlugins}" as="plugin">
-                                        <option value="{plugin.pid}">{plugin.title} (PID: {plugin.pid})</option>
-                                    </f:for>
-                                </select>
-                            </div>
-                        </div>
-                    </f:if>
-                    <div class="card-footer px-0">
-                        <button type="button" class="btn btn-primary"
-                                data-uuid="{uuid}"
-                                data-inline="1" value="blank"
-                                data-identifier="aiSuiteGenerateMetadata"
-                                id="aiSuiteGenerateMetadataBtn"
-                        >
-                            <core:icon identifier="actions-add" size="small" />
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSlideOneButton" />
-                        </button>
-                    </div>
+            </f:if>
+            <f:if condition="{availableNewsDetailPlugins}">
+                <div class="form-group">
+                    <label for="newsDetailPlugin" class="control-label fw-bold mb-2">
+                        News Detail Plugins
+                    </label>
+                    <select id="newsDetailPlugin" class="form-control">
+                        <option value="">Please select...</option>
+                        <f:for each="{availableNewsDetailPlugins}" as="plugin">
+                            <option value="{plugin.pid}">{plugin.title} (PID: {plugin.pid})</option>
+                        </f:for>
+                    </select>
                 </div>
+            </f:if>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary"
+                        data-uuid="{uuid}"
+                        data-inline="1" value="blank"
+                        data-identifier="aiSuiteGenerateMetadata"
+                        id="aiSuiteGenerateMetadataBtn"
+                >
+                    <core:icon identifier="actions-add" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSlideOneButton" />
+                </button>
             </div>
         </div>
     </div>

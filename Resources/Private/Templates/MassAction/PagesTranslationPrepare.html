@@ -1,0 +1,156 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+    <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="content-menu-pages" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionPagesTranslation.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p class="mb-4">
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionPagesTranslation.description" extensionName="ai_suite"/>
+                    </p>
+                    <form method="POST" action="pagesTranslationPrepareExecute" name="pagesTranslationPrepareExecute">
+            <div class="row">
+                <div class="col-md-4">
+                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionPagesTranslationPrepare[startFromPid]', label: 'tx_aisuite.module.preparePagesTranslation.pageChooser', selected: pageId}" />
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="fw-bold mb-2">
+                            <f:translate key="tx_aisuite.module.preparePagesTranslation.pageType" extensionName="ai_suite"/>
+                        </label>
+                        <select name="massActionPagesTranslationPrepare[pageType]" class="form-select" id="pageType">
+                            <f:for each="{pageTypes}" as="pageType" key="value">
+                                <f:if condition="{preSelection} && {preSelection.pageType} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{pageType}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <option value="{value}">{pageType}</option>
+                                    </f:else>
+                                </f:if>
+                            </f:for>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="fw-bold mb-2">
+                            <f:translate key="tx_aisuite.module.preparePagesTranslation.depth" extensionName="ai_suite"/>
+                        </label>
+                        <select name="massActionPagesTranslationPrepare[depth]" class="form-select" id="depth">
+                            <f:for each="{depths}" as="depth" key="value">
+                                <f:if condition="{preSelection} && {preSelection.depth} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{depth}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <option value="{value}">{depth}</option>
+                                    </f:else>
+                                </f:if>
+                            </f:for>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="fw-bold mb-2">
+                            <f:translate key="tx_aisuite.module.preparePagesTranslation.sourceLanguage" extensionName="ai_suite"/>
+                        </label>
+                        <select name="massActionPagesTranslationPrepare[sourceLanguage]" class="form-select" id="sourceLanguage">
+                            <f:for each="{sysLanguages}" as="sysLanguage" key="value">
+                                <f:if condition="{preSelection} && {preSelection.sourceLanguage} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <option value="{value}">{sysLanguage}</option>
+                                    </f:else>
+                                </f:if>
+                            </f:for>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="fw-bold mb-2">
+                            <f:translate key="tx_aisuite.module.preparePagesTranslation.targetLanguage" extensionName="ai_suite"/>
+                        </label>
+                        <select name="massActionPagesTranslationPrepare[targetLanguage]" class="form-select" id="targetLanguage">
+                            <f:for each="{sysLanguages}" as="sysLanguage" key="value" iteration="iteration">
+                                <f:if condition="{preSelection} && {preSelection.targetLanguage} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <f:if condition="{preSelection}">
+                                            <f:then>
+                                                <option value="{value}">{sysLanguage}</option>
+                                            </f:then>
+                                            <f:else>
+                                                <f:if condition="{iteration.index} == 1 && {value} != '0'">
+                                                    <f:then>
+                                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                                    </f:then>
+                                                    <f:else>
+                                                        <option value="{value}">{sysLanguage}</option>
+                                                    </f:else>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+                                    </f:else>
+                                </f:if>
+                            </f:for>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="fw-bold mb-2">
+                            <f:translate key="tx_aisuite.module.preparePagesTranslation.translationScope" extensionName="ai_suite"/>
+                        </label>
+                        <select name="massActionPagesTranslationPrepare[translationScope]" class="form-select" id="translationScope">
+                            <f:for each="{translationScopeOptions}" as="scopeOption" key="value">
+                                <f:if condition="{preSelection} && {preSelection.translationScope} == {value}">
+                                    <f:then>
+                                        <option value="{value}" selected="selected">{scopeOption}</option>
+                                    </f:then>
+                                    <f:else>
+                                        <option value="{value}">{scopeOption}</option>
+                                    </f:else>
+                                </f:if>
+                            </f:for>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary" value="{f:translate(key: 'tx_aisuite.module.preparePagesTranslation.showPrepareResults', extensionName: 'ai_suite')}" />
+                </div>
+            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="resultsToExecute">
+
+    </section>
+    <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.massActionPagesTranslation'}" />
+</f:section>
+</html>

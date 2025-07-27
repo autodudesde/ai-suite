@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'dependencies' => ['core', 'backend'],
+    'dependencies' => ['core', 'backend', 'rte_ckeditor'],
     'tags' => [
         'backend.form',
         'backend.contextmenu',

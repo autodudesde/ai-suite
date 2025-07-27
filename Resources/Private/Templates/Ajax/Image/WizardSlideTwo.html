@@ -1,45 +1,38 @@
 <html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
     <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
-    <div id="wizardSlideTwo" class="ai-suite-image-generation-wizard">
-        <f:if condition="{imageAiModel} == 'DALL-E'">
-            <f:then>
-                <div class="container">
-                    <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: imageSuggestions, fieldName: fieldName, table: table, position: position}" />
-                    <f:render partial="Libs/ImageTitleSelection" arguments="{imageTitleSuggestions: imageTitleSuggestions, fieldName: fieldName, table: table, position: position}" />
-                </div>
-                <div class="container">
-                    <div class="row mt-3">
-                        <div class="col-6">
-                            <button class="mb-3 mt-1 btn btn-default w-100" id="aiSuiteBackToWizardSlideOneBtn" style="font-size: 0.875rem;">
+    <div class="panel panel-default wizard-slide" id="wizardSlideTwo">
+        <div class="panel-body">
+            <f:if condition="{imageAiModel} == 'DALL-E'">
+                <f:then>
+                    <div class="d-flex gap-3">
+                        <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: imageSuggestions, fieldName: fieldName, table: table, position: position}" />
+                        <f:render partial="Libs/ImageTitleSelection" arguments="{imageTitleSuggestions: imageTitleSuggestions, fieldName: fieldName, table: table, position: position}" />
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group gap-2 mt-2" role="group">
+                            <button class="btn btn-default" id="aiSuiteBackToWizardSlideOneBtn">
                                 <core:icon identifier="actions-refresh" size="small" />
                                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
                             </button>
-                        </div>
-                        <div class="col-6">
-                            <button class="mb-3 mt-1 btn btn-primary w-100" id="aiSuiteSaveGeneratedImageBtn" style="font-size: 0.875rem;">
+                            <button class="btn btn-primary" id="aiSuiteSaveGeneratedImageBtn">
                                 <core:icon identifier="actions-check" size="small" />
                                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.useImageSuggestion" />
                             </button>
                         </div>
                     </div>
-                </div>
-            </f:then>
-            <f:else>
-                <div class="container ai-suite-image-generation-wizard">
+                </f:then>
+                <f:else>
                     <f:render partial="Libs/ImagePreSelection" arguments="{imageSuggestions: imageSuggestions, fieldName: fieldName, table: table, position: position, pageId: pageId, uuid: uuid}" />
-                </div>
-                <div class="container">
-                    <div class="row mt-3">
-                        <div class="col-6">
-                            <button class="mb-3 mt-1 btn btn-default w-100" id="aiSuiteBackToWizardSlideOneBtn" style="font-size: 0.875rem;">
-                                <core:icon identifier="actions-refresh" size="small" />
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
-                            </button>
-                        </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-default" id="aiSuiteBackToWizardSlideOneBtn">
+                            <core:icon identifier="actions-refresh" size="small" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                        </button>
                     </div>
-                </div>
-            </f:else>
-        </f:if>
+                </f:else>
+            </f:if>
+        </div>
     </div>
 </html>

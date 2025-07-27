@@ -5,9 +5,12 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Exception;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class BackgroundTaskService
 {
@@ -17,6 +20,12 @@ class BackgroundTaskService
     protected SiteFinder $siteFinder;
     protected PageRepository $pageRepository;
     protected MetadataService $metadataService;
+    protected LoggerInterface $logger;
+    protected SendRequestService $sendRequestService;
+    protected TranslationService $translationService;
+    protected IconFactory $iconFactory;
+
+    protected array $extConf = [];
 
     public function __construct(
         BackendUserService $backendUserService,
@@ -24,7 +33,11 @@ class BackgroundTaskService
         PagesRepository $pagesRepository,
         SiteFinder $siteFinder,
         PageRepository $pageRepository,
-        MetadataService $metadataService
+        MetadataService $metadataService,
+        LoggerInterface $logger,
+        SendRequestService $sendRequestService,
+        TranslationService $translationService,
+        IconFactory $iconFactory
     ) {
         $this->backendUserService = $backendUserService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
@@ -32,6 +45,10 @@ class BackgroundTaskService
         $this->siteFinder = $siteFinder;
         $this->pageRepository = $pageRepository;
         $this->metadataService = $metadataService;
+        $this->logger = $logger;
+        $this->sendRequestService = $sendRequestService;
+        $this->translationService = $translationService;
+        $this->iconFactory = $iconFactory;
     }
 
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
@@ -80,17 +97,7 @@ class BackgroundTaskService
             'alternative' => 0,
         ];
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
-            $filePermissions = false;
-            if(!$this->backendUserService->getBackendUser()->isAdmin()) {
-                foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
-                    if($fileMount['uid'] === $foundBackgroundTask['storage']) {
-                        $filePermissions = true;
-                    }
-                }
-            } else {
-                $filePermissions = true;
-            }
-            if($filePermissions) {
+            if ($this->hasFilePermissions($foundBackgroundTask['storage'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 try {
                     if ($foundBackgroundTask['sys_language_uid'] === -1) {
@@ -124,20 +131,10 @@ class BackgroundTaskService
             'alternative' => 0,
         ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
-            $filePermissions = false;
-            if(!$this->backendUserService->getBackendUser()->isAdmin()) {
-                foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
-                    if($fileMount['uid'] === $foundBackgroundTask['storage']) {
-                        $filePermissions = true;
-                    }
-                }
-            } else {
-                $filePermissions = true;
-            }
-            if($filePermissions) {
+            if ($this->hasFilePermissions($foundBackgroundTask['storage'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 if($counter[$foundBackgroundTask['column']] < 50) {
-                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
                     'uuid' => $foundBackgroundTask['uuid'],
@@ -226,12 +223,17 @@ class BackgroundTaskService
                 $statistics[$scope]['total'] += $count;
 
                 if (!isset($statistics[$scope]['columns'][$column])) {
+                    $columnName = match ($scope) {
+                        'page' => $pageMetadataColumns[$column] ?? $column,
+                        default => $fileMetadataColumns[$column] ?? $column,
+                    };
+
                     $statistics[$scope]['columns'][$column] = [
                         'finished' => 0,
                         'pending' => 0,
                         'taskError' => 0,
                         'total' => 0,
-                        'columnName' => $scope === 'page' ? $pageMetadataColumns[$column] : $fileMetadataColumns[$column],
+                        'columnName' => $columnName,
                     ];
                 }
                 $statistics[$scope]['columns'][$column][$status] += $count;
@@ -240,6 +242,226 @@ class BackgroundTaskService
             return $statistics;
         } catch (\Throwable $e) {
             return null;
+        }
+    }
+
+    public function collectUuidsForStatusUpdate(): array
+    {
+        $uuidStatus = [];
+
+        $this->collectPageBackgroundTasks($uuidStatus);
+        $this->collectFileReferenceBackgroundTasks($uuidStatus);
+        $this->collectPageTranslationBackgroundTasks($uuidStatus);
+
+        return $uuidStatus;
+    }
+
+    public function fetchStructuredBackgroundTaskStatus(): array
+    {
+        $uuidStatus = [];
+
+        $this->collectPageBackgroundTasks($uuidStatus, true);
+        $this->collectFileReferenceBackgroundTasks($uuidStatus, true);
+        $this->collectPageTranslationBackgroundTasks($uuidStatus, true);
+
+        return $uuidStatus;
+    }
+
+    public function fetchBackgroundTaskStatus(bool $update = false): array
+    {
+        if($update) {
+            $uuidStatus = $this->collectUuidsForStatusUpdate();
+            if (count($uuidStatus) > 0) {
+                $sendRequestService = GeneralUtility::makeInstance(
+                    SendRequestService::class
+                );
+
+                $answer = $sendRequestService->sendDataRequest('massActionStatus', [
+                    'uuidStatus' => $uuidStatus
+                ]);
+
+                if ($answer->getType() !== 'Error') {
+                    $statusData = $answer->getResponseData()['statusData'] ?? [];
+                    $this->backgroundTaskRepository->updateStatus($statusData);
+                }
+            }
+        }
+        return $this->fetchStructuredBackgroundTaskStatus();
+    }
+
+    private function collectPageBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
+        foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
+            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+                continue;
+            }
+
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status']
+            ];
+
+            if ($structuredResult) {
+                $uuidStatus['pages'][$foundBackgroundTask['table_uid']] = $taskData;
+            } else {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+            }
+        }
+    }
+
+    private function collectFileReferenceBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
+        foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
+            if (!$this->hasFilePermissions($foundBackgroundTask['storage'])) {
+                continue;
+            }
+
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status']
+            ];
+
+            if ($structuredResult) {
+                $uuidStatus['fileReferences'][$foundBackgroundTask['table_uid']] = $taskData;
+            } else {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+            }
+        }
+    }
+
+    private function collectPageTranslationBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasksPageTranslation = $this->backgroundTaskRepository->findAllPageTranslationBackgroundTasks();
+        foreach ($foundBackgroundTasksPageTranslation as $foundBackgroundTask) {
+            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+                continue;
+            }
+
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status']
+            ];
+
+            if ($structuredResult) {
+                $uuidStatus['translation'][$foundBackgroundTask['table_uid']] = $taskData;
+            } else {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+            }
+        }
+    }
+
+    private function hasFilePermissions(int $storageUid): bool
+    {
+        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+            return true;
+        }
+
+        foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
+            if ($fileMount['uid'] === $storageUid) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function retryBackgroundTask(string $uuid): bool
+    {
+        try {
+            if (empty($uuid)) {
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.noUuidProvided'));
+            }
+
+            $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
+            if (empty($backgroundTask)) {
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$uuid]));
+            }
+
+            $answer = $this->sendRequestService->sendDataRequest(
+                'handleBackgroundTask',
+                [
+                    'uuid' => $uuid,
+                    'mode' => 'retry'
+                ]
+            );
+
+            if ($answer->getType() === 'Error') {
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.server.aiSuiteError', [$answer->getResponseData()['message']]));
+            }
+
+            $this->backgroundTaskRepository->updateStatus([
+                $uuid => [
+                    'status' => 'pending',
+                    'answer' => '',
+                    'error' => ''
+                ]
+            ]);
+
+            return true;
+        } catch (\Throwable $e) {
+            $this->logger->error('Error while retrying background task: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function generateTranslationPageButtons(ServerRequestInterface $request): string
+    {
+        if (!$this->backendUserService->getBackendUser()->check('custom_options', 'tx_aisuite_features:enable_translations')) {
+            return '';
+        }
+
+        $pageId = $this->translationService->getPageIdFromRequest($request);
+        if ($pageId === 0) {
+            return '';
+        }
+
+        if (!$this->backendUserService->getBackendUser()->isInWebMount($pageId)) {
+            return '';
+        }
+
+        try {
+            $actionButtonsAbove = '<div class="form-row"><div class="form-group d-flex gap-2">';
+
+            $iconLocalize = $this->iconFactory->getIcon('actions-localize', 'small')->render();
+            $translateWholePageButton = '<a href="#" id="aiSuiteTranslateWholePage" class="btn btn-default" data-page-id="' . $pageId . '">'
+                . $iconLocalize
+                . ' ' . $this->translationService->translate('tx_aisuite.action.translateWholePage')
+                . '</a>';
+
+            $actionButtonsAbove .= $translateWholePageButton;
+
+            $backgroundTasks = $this->fetchBackgroundTaskStatus(true);
+            $statusUuid = $this->translationService->addTranslationNotifications($backgroundTasks, $pageId);
+            if (!empty($statusUuid)) {
+                $parts = explode('__', $statusUuid);
+                $status = $parts[0] ?? '';
+                $uuid = $parts[1] ?? '';
+                if (!empty($uuid)) {
+                    if($status === 'error') {
+                        $iconSynchronize = $this->iconFactory->getIcon('actions-document-synchronize', 'small')->render();
+                        $actionButtonsAbove .= '<a href="#" id="aiSuiteTranslationTaskRetry" class="btn btn-default" data-uuid="' . $uuid . '">'
+                            . $iconSynchronize
+                            . ' ' . $this->translationService->translate('tx_aisuite.action.retryTranslationTask')
+                            . '</a>';
+                    }
+                    $iconSynchronize = $this->iconFactory->getIcon('actions-delete', 'small')->render();
+                    $actionButtonsAbove .= '<a href="#" id="aiSuiteTranslationTaskRemove" class="btn btn-default" data-uuid="' . $uuid . '">'
+                        . $iconSynchronize
+                        . ' ' . $this->translationService->translate('tx_aisuite.action.removeTranslationTask')
+                        . '</a>';
+                }
+            }
+            $actionButtonsAbove .= '</div></div>';
+
+            return $actionButtonsAbove;
+        } catch (\Exception $e) {
+            $this->logger->error('Error generating translation page buttons', [
+                'pageId' => $pageId,
+                'error' => $e->getMessage()
+            ]);
+            return '';
         }
     }
 }

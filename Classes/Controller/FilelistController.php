@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 final class FilelistController extends AbstractBackendController
@@ -48,6 +49,7 @@ final class FilelistController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         protected MassActionService $massActionService
     ) {
         parent::__construct(
@@ -62,7 +64,8 @@ final class FilelistController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
     }
 

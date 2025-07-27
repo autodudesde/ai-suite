@@ -24,10 +24,12 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class BackgroundTaskController extends AbstractAjaxController
@@ -44,6 +46,7 @@ class BackgroundTaskController extends AbstractAjaxController
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         BackgroundTaskRepository $backgroundTaskRepository,
     ) {
         parent::__construct(
@@ -55,7 +58,8 @@ class BackgroundTaskController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->backgroundTaskRepository = $backgroundTaskRepository;
     }
@@ -67,14 +71,13 @@ class BackgroundTaskController extends AbstractAjaxController
             $data = $request->getParsedBody();
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($data['uuid']);
             if (empty($backgroundTask)) {
-                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found');
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$data['uuid']]));
             }
             if (empty($backgroundTask['table_name'])) {
                 throw new \Exception('Background task with uuid ' . $data['uuid'] . ' has invalid table_name');
             }
 
             $datamap[$backgroundTask['table_name']][$backgroundTask['table_uid']][$backgroundTask['column']] = $data['inputValue'];
-
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
@@ -83,7 +86,7 @@ class BackgroundTaskController extends AbstractAjaxController
             }
             $affectedRows = $this->backgroundTaskRepository->deleteByUuid($data['uuid']);
             if ($affectedRows === 0) {
-                throw new \Exception('No background task with uuid ' . $data['uuid'] . ' found');
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$data['uuid']]));
             }
             $response->getBody()->write(
                 json_encode(
@@ -114,7 +117,7 @@ class BackgroundTaskController extends AbstractAjaxController
             $uuids = $data['uuids'] ?? [];
 
             if (empty($uuids)) {
-                throw new \Exception('No UUIDs provided');
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.noUuidsProvided'));
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
@@ -124,10 +127,10 @@ class BackgroundTaskController extends AbstractAjaxController
                 ]
             );
             if ($answer->getType() === 'Error') {
-                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.server.aiSuiteError', [$answer->getResponseData()['message']]));
             }
             $deletedCount = $this->backgroundTaskRepository->deleteByUuids($uuids);
-
+            BackendUtility::setUpdateSignal('updatePageTree');
             $response->getBody()->write(
                 json_encode(
                     [
@@ -156,24 +159,26 @@ class BackgroundTaskController extends AbstractAjaxController
         try {
             $data = $request->getParsedBody();
             $uuid = $data['uuid'] ?? '';
+            $scope = $data['scope'] ?? 'metadata';
 
             if (empty($uuid)) {
-                throw new \Exception('No UUID provided');
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.noUuidProvided'));
             }
 
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
             if (empty($backgroundTask)) {
-                throw new \Exception('No background task with UUID ' . $uuid . ' found');
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$uuid]));
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
                 [
                     'uuid' => $uuid,
-                    'mode' => 'retry'
+                    'mode' => 'retry',
+                    'scope' => $scope
                 ]
             );
             if ($answer->getType() === 'Error') {
-                throw new \Exception('AI Suite Server error: ' . $answer->getResponseData()['message']);
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.server.aiSuiteError', [$answer->getResponseData()['message']]));
             }
             $this->backgroundTaskRepository->updateStatus([
                 $uuid => [
@@ -182,7 +187,7 @@ class BackgroundTaskController extends AbstractAjaxController
                     'error' => ''
                 ]
             ]);
-
+            BackendUtility::setUpdateSignal('updatePageTree');
             $response->getBody()->write(
                 json_encode(
                     [

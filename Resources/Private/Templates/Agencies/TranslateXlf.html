@@ -7,43 +7,42 @@
 
 <f:section name="Content">
 
-    <section>
-        <h2 class="text-gradient">
-            <f:translate key="AiSuite.module.Agencies.translateXlf.header" extensionName="ai_suite"/>
-        </h2>
-
-        <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_validate_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
-            <f:render partial="Libs/SelectTranslateGenerationLibrary" arguments="{translateGenerationLibraries: translateGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-            <div class="prompt-settings">
-                <div class="card card-size-large active">
-                    <div class="card-header">
-                        <h3 class="text-gradient">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.translateXlfHeader" extensionName="ai_suite"/>
-                        </h3>
-                        <br />
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-translate" />
+                        <f:translate key="AiSuite.module.Agencies.translateXlf.header" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_validate_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
+                        <f:render partial="Libs/SelectTranslateGenerationLibrary" arguments="{translateGenerationLibraries: translateGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <div class="form-group">
-                            <label for="extensionKey">
+                            <label class="fw-bold mb-2" for="extensionKey">
                                 <f:translate key="AiSuite.module.Agencies.translateXlf.insertExtKey" extensionName="ai_suite"/>
-                            </label><br />
+                            </label>
                             <input type="text" name="extensionKey" class="form-control" required="required" id="translateXlf-insertExtKey"/>
                         </div>
-
                         <div class="form-group">
-                            <label for="filename">
+                            <label class="fw-bold mb-2" for="filename">
                                 <f:translate key="AiSuite.module.Agencies.translateXlf.fileName" extensionName="ai_suite"/>
-                            </label><br />
+                            </label>
                             <input type="text" name="filename" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.Agencies.translateXlf.fileNamePlaceholder', extensionName: 'ai_suite')}" required="required" id="translateXlf-fileName"/>
                         </div>
-
+                        <label class="fw-bold mb-2">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.selectSysLanguage" extensionName="ai_suite"/>
+                        </label>
                         <f:render partial="Libs/SearchableDropdown" arguments="{
                             searchableList: allLanguagesList,
                             translateKeyButton: 'AiSuite.module.Agencies.translateXlf.destinationLang',
                             propertyName: 'destinationLanguage'
                         }" />
                         <div class="form-group">
-                            <label>
+                            <label class="fw-bold mb-2">
                                 <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.label" extensionName="ai_suite"/>
-                            </label><br />
+                            </label>
                             <select name="translationMode" class="form-control mb-4">
                                 <option value="all">
                                     <f:translate key="AiSuite.module.Agencies.translateXlf.translationMode.optionAll" extensionName="ai_suite"/>
@@ -53,17 +52,18 @@
                                 </option>
                             </select>
                         </div>
-                    </div>
-                </div>
-                <div class="p-0">
-                    <button type="submit" class="btn btn-primary">
-                        <core:icon identifier="actions-translate" size="small"/>
-                        <f:translate key="AiSuite.module.Agencies.translateXlf.submit" extensionName="ai_suite"/>
-                    </button>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <core:icon identifier="actions-translate" size="small"/>
+                                <f:translate key="AiSuite.module.Agencies.translateXlf.submit" extensionName="ai_suite"/>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
-        <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
-    </section>
+        </div>
+    </div>
+    <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
 
 </f:section>

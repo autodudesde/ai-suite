@@ -10,7 +10,7 @@ class Metadata {
     }
 
     backToPreviousSlideButton(modal, data) {
-        let aiSuiteBackToPreviousSlideBtn = modal.find('.modal-body').find('button#aiSuiteBackToPreviousSlideBtn');
+        let aiSuiteBackToPreviousSlideBtn = modal.find('.panel-body').find('button#aiSuiteBackToPreviousSlideBtn');
         aiSuiteBackToPreviousSlideBtn.on('click', function() {
             MultiStepWizard.unlockPrevStep().trigger('click');
         });
@@ -18,7 +18,7 @@ class Metadata {
 
     saveGeneratedMetadataButton(modal) {
         let self = this;
-        let aiSuiteSaveMetadataBtn = modal.find('.modal-body').find('button#aiSuiteSaveMetadataBtn');
+        let aiSuiteSaveMetadataBtn = modal.find('.panel-body').find('button#aiSuiteSaveMetadataBtn');
         aiSuiteSaveMetadataBtn.on('click', function() {
             let selectedSuggestion = modal.find('.metadata-suggestions input.metadata-selection:checked');
             if(selectedSuggestion.length === 0) {

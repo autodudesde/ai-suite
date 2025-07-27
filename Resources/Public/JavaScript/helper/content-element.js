@@ -6,7 +6,7 @@ import ImageGeneration from "@autodudes/ai-suite/helper/image/generation-handlin
 class ContentElement {
     showImageFieldsWithoutSelectionModal(imageFieldsWithoutSelection, form) {
         Modal.confirm(
-            'Warning',
+            TYPO3.lang['tx_aisuite.js.modal.warning'],
             TYPO3.lang['aiSuite.module.modal.noSelectionForFields'] + imageFieldsWithoutSelection.slice(0, -2)  + '. ' + TYPO3.lang['aiSuite.module.modal.continue'],
             Severity.warning, [
                 {

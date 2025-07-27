@@ -19,7 +19,7 @@ class GenerationHandling {
                             currentModal.querySelector('#wizardSlideOne textarea#imageGenerationPrompt').value = event.target.value;
                         });
                     }
-                    currentModal.querySelector('.modal-body #languageSelection').style.display = 'none';
+                    currentModal.querySelector('.panel-body #languageSelection').style.display = 'none';
                     this.addGenerateImageButton(currentModal, data, scope);
                 }
             },
@@ -31,11 +31,11 @@ class GenerationHandling {
         scope
     ) {
         let self = this;
-        let aiSuiteGenerateImageButton = modal.querySelector('.modal-body button#aiSuiteGenerateImageBtn');
+        let aiSuiteGenerateImageButton = modal.querySelector('.panel-body button#aiSuiteGenerateImageBtn');
 
         aiSuiteGenerateImageButton.addEventListener('click', async function (ev) {
-            let enteredPrompt = modal.querySelector('.modal-body textarea#imageGenerationPrompt').value ?? '';
-            let imageAiModel = modal.querySelector('.modal-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
+            let enteredPrompt = modal.querySelector('.panel-body textarea#imageGenerationPrompt').value ?? '';
+            let imageAiModel = modal.querySelector('.panel-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
 
             try {
                 let additionalImageSettings = self.getAdditionalImageSettings(imageAiModel, modal);
@@ -57,7 +57,7 @@ class GenerationHandling {
                             MidjourneyContentElement.addImageGenerationWizard(data);
                         }
                     } else if(scope === 'FileList') {
-                        data.langIsoCode = modal.querySelector('.modal-body #languageSelection select').value ?? '';
+                        data.langIsoCode = modal.querySelector('.panel-body #languageSelection select').value ?? '';
                         if (data.imageAiModel === 'DALL-E') {
                             const DalleFileList = (await import('./wizards/dalle.js')).default
                             DalleFileList.addImageGenerationWizard(data, true);
@@ -88,7 +88,7 @@ class GenerationHandling {
     }
     addAdditionalImageGenerationSettingsHandling(modal = null) {
         const selector = modal === null ? document : modal;
-        const prefix = modal === null ? '' : '.modal-body ';
+        const prefix = modal === null ? '' : '.panel-body ';
 
         const imageGenerationLibraries = selector.querySelectorAll(`${prefix}.image-generation-library input[name="libraries[imageGenerationLibrary]"]`);
         const imageSettingsMidjourney = selector.querySelector(`${prefix}.image-settings-midjourney`);
@@ -107,7 +107,7 @@ class GenerationHandling {
         let additionalSettings = '';
         if(imageAiModel === 'Midjourney') {
             const selector = modal === null ? document : modal;
-            const prefix = modal === null ? '' : '.modal-body ';
+            const prefix = modal === null ? '' : '.panel-body ';
 
             const imageSettingsMidjourneySelect = selector.querySelectorAll(`${prefix}.image-settings-midjourney select`);
             const imageSettingsMidjourneyInputText = selector.querySelectorAll(`${prefix}.image-settings-midjourney input[type="text"]`);

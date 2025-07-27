@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Package\Exception\UnknownPackageException;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Exception;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class AgenciesController extends AbstractBackendController
@@ -54,6 +55,7 @@ class AgenciesController extends AbstractBackendController
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
+        EventDispatcher $eventDispatcher,
         XliffService $xliffService,
         LoggerInterface $logger
     ) {
@@ -69,7 +71,8 @@ class AgenciesController extends AbstractBackendController
             $promptTemplateService,
             $siteService,
             $translationService,
-            $sessionService
+            $sessionService,
+            $eventDispatcher
         );
         $this->xliffService = $xliffService;
         $this->logger = $logger;

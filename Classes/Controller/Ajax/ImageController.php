@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\View\ViewFactoryInterface;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class ImageController extends AbstractAjaxController
@@ -52,6 +53,7 @@ class ImageController extends AbstractAjaxController
         TranslationService $translationService,
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
+        EventDispatcher $eventDispatcher,
         PageContentFactory $pageContentFactory,
         ResourceFactory $fileFactory,
         Filesystem $filesystem
@@ -65,7 +67,8 @@ class ImageController extends AbstractAjaxController
             $siteService,
             $translationService,
             $viewFactory,
-            $logger
+            $logger,
+            $eventDispatcher
         );
         $this->pageContentFactory = $pageContentFactory;
         $this->fileFactory = $fileFactory;
@@ -90,7 +93,6 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideOne',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-one.css',
             $params
         );
         return new HtmlResponse($output);
@@ -134,7 +136,6 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideTwo',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(
@@ -187,7 +188,6 @@ class ImageController extends AbstractAjaxController
             $request,
             'WizardSlideThree',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'EXT:ai_suite/Resources/Public/Css/Ajax/Image/wizard-slide-two.css',
             $params
         );
         $response->getBody()->write(
@@ -244,7 +244,6 @@ class ImageController extends AbstractAjaxController
             $request,
             'RegenerateImage',
             'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            '',
             $params
         );
         $response->getBody()->write(

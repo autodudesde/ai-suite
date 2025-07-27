@@ -26,11 +26,14 @@ use TYPO3\CMS\Core\SingletonInterface;
 class XliffService implements SingletonInterface
 {
     protected PackageManager $packageManager;
+    protected TranslationService $translationService;
 
     public function __construct(
-        PackageManager $packageManager
+        PackageManager $packageManager,
+        TranslationService $translationService
     ) {
         $this->packageManager = $packageManager;
+        $this->translationService = $translationService;
     }
 
     /**
@@ -70,10 +73,10 @@ class XliffService implements SingletonInterface
         try {
             $fileData = file_get_contents($file);
             if ($fileData === false) {
-                throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.');
+                throw new FileNotFoundException($this->translationService->translate('tx_aisuite.error.file.notFound', [$file, $extKey]));
             }
         } catch (\Exception $e) {
-            throw new FileNotFoundException('File ' . $file . ' not found in EXT:' . $extKey . '.');
+            throw new FileNotFoundException($this->translationService->translate('tx_aisuite.error.file.notFound', [$file, $extKey]));
         }
         $xmlData = new \SimpleXMLElement($fileData);
         $rawData = self::simpleXMLElementToArray($xmlData);

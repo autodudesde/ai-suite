@@ -161,4 +161,32 @@ return [
         'path' => '/glossary/synchronize',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::synchronizeAction'
     ],
+    'aisuite_translation_wizard_slide_one' => [
+        'path' => '/translation/wizard-slide-one',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::getTranslationWizardSlideOneAction'
+    ],
+    'aisuite_translation_wizard_slide_two' => [
+        'path' => '/translation/wizard-slide-two',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::getTranslationWizardSlideTwoAction'
+    ],
+    'aisuite_translation_wizard_slide_three' => [
+        'path' => '/translation/wizard-slide-three',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::getTranslationWizardSlideThreeAction'
+    ],
+    'aisuite_massaction_pages_translation_prepare' => [
+        'path' => '/massaction/pages-translation-prepare',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesTranslationPrepareExecuteAction'
+    ],
+    'aisuite_massaction_pages_translation_execute' => [
+        'path' => '/massaction/pages-translation-execute',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesTranslationExecuteAction'
+    ],
+    'aisuite_massaction_pages_translation_apply' => [
+        'path' => '/massaction/pages-translation-apply',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesTranslationApplyAction'
+    ],
+    'aisuite_massaction_pages_translation_retry' => [
+        'path' => '/massaction/pages-translation-retry',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesTranslationRetryAction'
+    ],
 ];

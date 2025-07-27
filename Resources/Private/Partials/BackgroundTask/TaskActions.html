@@ -1,0 +1,37 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="d-flex align-items-center pe-auto">
+
+    <span class="badge badge-default mx-2 pe-none">
+        <f:if condition="{type} == 'Page'">
+            <f:then>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" />
+            </f:then>
+            <f:else>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />
+            </f:else>
+        </f:if>
+    </span>
+
+    <span class="delete-accordion-item me-2 pe-auto" data-uuid="{task.uuid}" data-column="{column}">
+        <core:icon identifier="actions-delete" size="medium" />
+    </span>
+
+    <f:if condition="{task.status} == 'task-error'">
+        <div class="error-info me-2 pe-auto">
+            <core:icon identifier="actions-exclamation-triangle" size="medium" />
+            <span class="error-message d-none">{task.error}</span>
+        </div>
+    </f:if>
+
+    <f:if condition="{task.status} == 'finished'">
+        <span class="open-accordion-item pe-auto">
+            <core:icon identifier="actions-chevron-down" size="medium" />
+        </span>
+    </f:if>
+</div>
+</html>

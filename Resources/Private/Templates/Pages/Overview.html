@@ -1,33 +1,37 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-      data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
 
-<f:layout name="Module"/>
+<f:layout name="Module" />
 
 <f:section name="Content">
-    <h1 class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.title" extensionName="ai_suite"/>
-    </h1>
-    <p class="mb-4">
-        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.description" extensionName="ai_suite"/>
-    </p>
-
-    <section class="card-container">
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'content-menu-pages',
-            cardname: 'createPagetree',
-            controller: 'Pages',
-            route: 'ai_suite_page_create_pagetree',
-            status: 'active'
-        }" />
-
-        <f:render partial="DashboardCards/DynamicCard" arguments="{
-            icon: 'apps-pagetree-page-content-from-page-hideinmenu',
-            cardname: 'createPagetreeWithContent',
-            controller: 'Pages',
-            route: 'ai_suite_page',
-            status: 'comming-soon'
-        }" />
-    </section>
-
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="content-menu-pages" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="mb-3">
+                        <p>
+                            <f:translate key="tx_aisuite.module.dashboard.card.pagesSection.description" extensionName="ai_suite"/>
+                        </p>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3 align-items-stretch">
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'content-menu-pages',
+                                cardname: 'createPagetree',
+                                controller: 'Pages',
+                                route: 'ai_suite_page_create_pagetree',
+                                status: 'active'
+                            }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </f:section>

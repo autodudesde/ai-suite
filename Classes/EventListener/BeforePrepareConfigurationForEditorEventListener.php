@@ -13,7 +13,7 @@ use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditor
 use Throwable;
 
 #[AsEventListener(
-    identifier: 'tx-ai-suite/file-controls-event-listener',
+    identifier: 'tx-ai-suite/before-prepare-configuration-for-editor-event-listener',
     event: BeforePrepareConfigurationForEditorEvent::class,
 )]
 class BeforePrepareConfigurationForEditorEventListener
@@ -45,13 +45,24 @@ class BeforePrepareConfigurationForEditorEventListener
         $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
         $configuration = $event->getConfiguration();
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
-            $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin.js';
-            $configuration['toolbar']['items'][] = 'aiPlugin';
+            $configuration['importModules'][] = [
+                'module' => '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin.js',
+                'exports' => [
+                    'AiPlugin'
+                ]
+            ];
+            $configuration['toolbar']['items'][] = 'AiPlugin';
         }
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aieasylanguageplugin')) {
-            $configuration['importModules'][] = '@autodudes/ai-suite/ckeditor/AiEasyLanguagePlugin/ai-easy-language-plugin.js';
-            $configuration['toolbar']['items'][] = 'aiEasyLanguagePlugin';
+            $configuration['importModules'][] = [
+                'module' => '@autodudes/ai-suite/ckeditor/AiEasyLanguagePlugin/ai-easy-language-plugin.js',
+                'exports' => [
+                    'AiEasyLanguagePlugin'
+                ]
+            ];
+            $configuration['toolbar']['items'][] = 'AiEasyLanguagePlugin';
         }
+
         $event->setConfiguration($configuration);
     }
 }
