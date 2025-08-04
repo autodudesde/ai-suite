@@ -1573,7 +1573,7 @@
                 <source>Depth</source>
             <target>Tiefe</target></trans-unit>
             <trans-unit id="tx_aisuite.module.preparePagesTranslation.sourceLanguage">
-                <source>Source language</source>
+                <source>Source/default language</source>
             <target>Ausgangssprache</target></trans-unit>
             <trans-unit id="tx_aisuite.module.preparePagesTranslation.targetLanguage">
                 <source>Target language</source>
@@ -1591,7 +1591,7 @@
                 <source>Found pages for translation</source>
             <target>Seiten zur Übersetzung gefunden</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.translation.sourceLanguage">
-                <source>Source Language</source>
+                <source>Source/default language</source>
             <target>Ausgangssprache</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.translation.targetLanguage">
                 <source>Target Language</source>
@@ -1633,7 +1633,7 @@
                 <source>Page file references only</source>
             <target>Nur Verweise auf Auslagerungsdateien</target></trans-unit>
             <trans-unit id="tx_aisuite.massActionSection.translation.scope.all">
-                <source>All (metadata, content, files)</source>
+                <source>All (metadata, content)</source>
             <target>Alles (Metadaten, Inhalte)</target></trans-unit>
             <trans-unit id="tx_aisuite.action.translateWholePage">
                 <source>Translate whole page</source>
@@ -1671,6 +1671,27 @@
             <trans-unit id="AiSuite.notification.translation.failed.message">
                 <source>Translation task(s) have failed for this page. You can retry them by clicking the button below.</source>
             <target>Die Übersetzungsaufgabe(n) für diese Seite sind fehlgeschlagen. Du kannst es erneut versuchen, indem du auf die Schaltfläche unten klickst.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.pageTreeChanged">
+                <source>The page tree has been changed</source>
+            <target>Der Seitenbaum wurde geändert</target></trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available language of current page tree.</source>
+            <target>Auswahl auf verfügbare Sprache des aktuellen Seitenbaums geändert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.sourceLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available source language of current page tree.</source>
+            <target>Auswahl auf verfügbare Quellsprache des aktuellen Seitenbaums geändert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.targetLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available target language of current page tree.</source>
+            <target>Auswahl auf verfügbare Zielsprache des aktuellen Seitenbaums geändert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default language (previous language not available in current page tree).</source>
+            <target>Auswahl auf Standardsprache geändert (vorherige Sprache im aktuellen Seitenbaum nicht verfügbar).</target></trans-unit>
+            <trans-unit id="AiSuite.notification.sourceLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default/source language of current page tree.</source>
+            <target>Auswahl auf Standard-/Quellsprache des aktuellen Seitenbaums geändert.</target></trans-unit>
+            <trans-unit id="AiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default target language (previous language not available in current page tree).</source>
+            <target>Auswahl auf Standardzielsprache geändert (vorherige Sprache im aktuellen Seitenbaum nicht verfügbar).</target></trans-unit>
         </body>
     </file>
 </xliff>

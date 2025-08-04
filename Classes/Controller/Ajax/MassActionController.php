@@ -33,7 +33,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
@@ -139,6 +138,14 @@ class MassActionController extends AbstractAjaxController
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
 
             $massActionData = $request->getParsedBody()['massActionPagesPrepare'];
+            $pageId = (int)$massActionData['startFromPid'];
+            $availableLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+            $currentSysLanguage = $massActionData['sysLanguage'];
+            $sysLanguageToUse = $currentSysLanguage;
+            $notification = '';
+            $this->siteService->updateSelectedSysLanguage($availableLanguages, $sysLanguageToUse, $notification, $currentSysLanguage);
+
+            $massActionData['sysLanguage'] = $sysLanguageToUse;
             $massActionData['showOnlyEmpty'] = (array_key_exists('showOnlyEmpty', $massActionData) && $massActionData['showOnlyEmpty']);
             $foundPageUids = $this->pageRepository->getPageIdsRecursive(
                 [(int)$massActionData['startFromPid']],
@@ -171,6 +178,8 @@ class MassActionController extends AbstractAjaxController
                         'output' => [
                             'parentUuid' => $this->uuidService->generateUuid(),
                             'content' => $output,
+                            'availableSysLanguages' => $availableLanguages,
+                            'notification' => $notification,
                         ],
                     ]
                 )
@@ -330,6 +339,14 @@ class MassActionController extends AbstractAjaxController
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
 
             $massActionData = $request->getParsedBody()['massActionFileReferencesPrepare'];
+            $pageId = (int)$massActionData['startFromPid'];
+            $availableLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+            $currentSysLanguage = $massActionData['sysLanguage'];
+            $sysLanguageToUse = $currentSysLanguage;
+            $notification = '';
+            $this->siteService->updateSelectedSysLanguage($availableLanguages, $sysLanguageToUse, $notification, $currentSysLanguage);
+
+            $massActionData['sysLanguage'] = $sysLanguageToUse;
             $massActionData['showOnlyEmpty'] = (array_key_exists('showOnlyEmpty', $massActionData) && $massActionData['showOnlyEmpty']);
             $languageParts = explode('__', $massActionData['sysLanguage']);
             $foundPageUids = $this->pageRepository->getPageIdsRecursive(
@@ -343,9 +360,15 @@ class MassActionController extends AbstractAjaxController
 
             $foundFileReferences = $this->pagesRepository->fetchSysFileReferences($foundPageUids, $massActionData['column'], (int)$languageParts[1], $massActionData['showOnlyEmpty']);
             $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+                if (!$this->metadataService->hasFilePermissions($fileReference['uid_local'])) {
+                    return false;
+                }
                 return !in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
             });
             $params['fileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+                if (!$this->metadataService->hasFilePermissions($fileReference['uid_local'])) {
+                    return false;
+                }
                 return in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
             });
             $sysFileReferenceUids = array_column($params['fileReferences'], 'uid');
@@ -371,6 +394,8 @@ class MassActionController extends AbstractAjaxController
                         'output' => [
                             'parentUuid' => $this->uuidService->generateUuid(),
                             'content' => $output,
+                            'availableSysLanguages' => $availableLanguages,
+                            'notification' => $notification,
                         ],
                     ]
                 )
@@ -774,6 +799,21 @@ class MassActionController extends AbstractAjaxController
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
 
             $massActionData = $request->getParsedBody()['massActionPagesTranslationPrepare'];
+            $pageId = (int)$massActionData['startFromPid'];
+            $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, $pageId, true);
+            $currentSourceLanguage = $massActionData['sourceLanguage'];
+            $sourceLanguageToUse = $currentSourceLanguage;
+            $notificationSourceLanguage = '';
+            $this->siteService->updateSelectedSysLanguage($availableSourceLanguages, $sourceLanguageToUse, $notificationSourceLanguage, $currentSourceLanguage, 'sourceLanguage');
+            $massActionData['sourceLanguage'] = $sourceLanguageToUse;
+
+            $availableTargetLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+            $currentTargetLanguage = $massActionData['targetLanguage'];
+            $targetLanguageToUse = $currentTargetLanguage;
+            $notificationTargetLanguage = '';
+            $this->siteService->updateSelectedSysLanguage($availableTargetLanguages, $targetLanguageToUse, $notificationTargetLanguage, $currentTargetLanguage, 'targetLanguage');
+            $massActionData['targetLanguage'] = $targetLanguageToUse;
+
             $sourceLanguageParts = explode('__', $massActionData['sourceLanguage']);
             $targetLanguageParts = explode('__', $massActionData['targetLanguage']);
 
@@ -809,6 +849,10 @@ class MassActionController extends AbstractAjaxController
                     'output' => [
                         'parentUuid' => $this->uuidService->generateUuid(),
                         'content' => $output,
+                        'availableSourceLanguages' => $availableSourceLanguages,
+                        'availableTargetLanguages' => $availableTargetLanguages,
+                        'notificationSourceLanguage' => $notificationSourceLanguage,
+                        'notificationTargetLanguage' => $notificationTargetLanguage,
                     ],
                 ])
             );

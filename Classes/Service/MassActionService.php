@@ -83,7 +83,6 @@ class MassActionService implements SingletonInterface
         });
 
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
-        ksort($availableLanguages);
 
         $pendingFileMetadata = [];
         $parsedFiles = [];
@@ -97,7 +96,7 @@ class MassActionService implements SingletonInterface
             if (count($files) > 0) {
                 $fileUids = [0];
                 foreach ($files as $file) {
-                    if ($file->checkActionPermission('write') && $file->getType() === 2) {
+                    if ($this->metadataService->hasFilePermissions($file->getUid()) && $file->getType() === 2) {
                         $fileUids[] = $file->getUid();
                     }
                 }

@@ -107,7 +107,7 @@ class PageContentFactory
                     }
                 } else {
                     $newStrings[$table][$key] = $this->newStringPlaceholder($table, $key);
-                    $data[$table][$newStrings[$table][$key]]["pid"] = $content['uidPid'];
+                    $data[$table][$newStrings[$table][$key]]["pid"] = $content['pid'];
                     $data[$table][$newStrings[$table][$key]]["sys_language_uid"] = $content['sysLanguageUid'];
                     foreach ($fields as $fieldName => $fieldValue) {
                         $data[$table][$newStrings[$table][$key]][$fieldName] = html_entity_decode($fieldValue);

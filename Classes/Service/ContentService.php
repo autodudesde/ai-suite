@@ -89,7 +89,7 @@ class ContentService
     {
         $fieldArray = GeneralUtility::trimExplode(';', $field);
         if (empty($fieldArray[0])) {
-            throw new \RuntimeException($GLOBALS['LANG']->sL()->translate('tx_aisuite.error.field.mustNotBeEmpty'), 1426448465);
+            throw new \RuntimeException($GLOBALS['LANG']->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.field.mustNotBeEmpty'), 1426448465);
         }
         return [
             'fieldName' => $fieldArray[0],

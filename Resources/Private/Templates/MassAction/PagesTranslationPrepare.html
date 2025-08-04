@@ -24,7 +24,7 @@
                     <form method="POST" action="pagesTranslationPrepareExecute" name="pagesTranslationPrepareExecute">
             <div class="row">
                 <div class="col-md-4">
-                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionPagesTranslationPrepare[startFromPid]', label: 'tx_aisuite.module.preparePagesTranslation.pageChooser', selected: pageId}" />
+                    <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'massActionPagesTranslationPrepare[startFromPid]', label: 'tx_aisuite.module.preparePagesTranslation.pageChooser', selected: selectedPageId}" />
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
@@ -72,13 +72,13 @@
                             <f:translate key="tx_aisuite.module.preparePagesTranslation.sourceLanguage" extensionName="ai_suite"/>
                         </label>
                         <select name="massActionPagesTranslationPrepare[sourceLanguage]" class="form-select" id="sourceLanguage">
-                            <f:for each="{sysLanguages}" as="sysLanguage" key="value">
+                            <f:for each="{sourceLanguages}" as="sourceLanguage" key="value">
                                 <f:if condition="{preSelection} && {preSelection.sourceLanguage} == {value}">
                                     <f:then>
-                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                        <option value="{value}" selected="selected">{sourceLanguage}</option>
                                     </f:then>
                                     <f:else>
-                                        <option value="{value}">{sysLanguage}</option>
+                                        <option value="{value}">{sourceLanguage}</option>
                                     </f:else>
                                 </f:if>
                             </f:for>
@@ -91,23 +91,23 @@
                             <f:translate key="tx_aisuite.module.preparePagesTranslation.targetLanguage" extensionName="ai_suite"/>
                         </label>
                         <select name="massActionPagesTranslationPrepare[targetLanguage]" class="form-select" id="targetLanguage">
-                            <f:for each="{sysLanguages}" as="sysLanguage" key="value" iteration="iteration">
+                            <f:for each="{targetLanguages}" as="targetLanguage" key="value" iteration="iteration">
                                 <f:if condition="{preSelection} && {preSelection.targetLanguage} == {value}">
                                     <f:then>
-                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                        <option value="{value}" selected="selected">{targetLanguage}</option>
                                     </f:then>
                                     <f:else>
                                         <f:if condition="{preSelection}">
                                             <f:then>
-                                                <option value="{value}">{sysLanguage}</option>
+                                                <option value="{value}">{targetLanguage}</option>
                                             </f:then>
                                             <f:else>
                                                 <f:if condition="{iteration.index} == 1 && {value} != '0'">
                                                     <f:then>
-                                                        <option value="{value}" selected="selected">{sysLanguage}</option>
+                                                        <option value="{value}" selected="selected">{targetLanguage}</option>
                                                     </f:then>
                                                     <f:else>
-                                                        <option value="{value}">{sysLanguage}</option>
+                                                        <option value="{value}">{targetLanguage}</option>
                                                     </f:else>
                                                 </f:if>
                                             </f:else>

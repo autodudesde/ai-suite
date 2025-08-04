@@ -97,7 +97,7 @@ class BackgroundTaskService
             'alternative' => 0,
         ];
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
-            if ($this->hasFilePermissions($foundBackgroundTask['storage'])) {
+            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 try {
                     if ($foundBackgroundTask['sys_language_uid'] === -1) {
@@ -131,7 +131,7 @@ class BackgroundTaskService
             'alternative' => 0,
         ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
-            if ($this->hasFilePermissions($foundBackgroundTask['storage'])) {
+            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 if($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
@@ -178,7 +178,7 @@ class BackgroundTaskService
         }
     }
 
-    public function getBackgroundTasksStatistics(): ?array
+    public function getBackgroundTasksStatistics(array $backgroundTasks): ?array
     {
         try {
             $statuses = ['finished', 'pending', 'taskError'];
@@ -202,42 +202,42 @@ class BackgroundTaskService
                 ];
             }
 
-            $result =  $this->backgroundTaskRepository->countBackgroundTasksByStatusAndScope();
             $pageMetadataColumns = $this->metadataService->getMetadataColumns();
             $fileMetadataColumns = $this->metadataService->getFileMetadataColumns();
 
-            foreach ($result as $row) {
-                $scope = $row['scope'];
-                $status = $row['status'] === 'task-error' ? 'taskError' : $row['status'];
-                $column = $row['column'];
-                $count = (int)$row['count'];
+            foreach ($backgroundTasks as $scope => $tasksByColumn) {
+                foreach ($tasksByColumn as $column => $tasks) {
+                    foreach ($tasks as $task) {
+                        $status = $task['status'] === 'task-error' ? 'taskError' : $task['status'];
 
-                if (!in_array($scope, $scopes) || !in_array($status, $statuses)) {
-                    continue;
+                        if (!in_array($scope, $scopes) || !in_array($status, $statuses)) {
+                            continue;
+                        }
+
+                        $statistics['total'][$status]++;
+                        $statistics['total']['total']++;
+
+                        $statistics[$scope][$status]++;
+                        $statistics[$scope]['total']++;
+
+                        if (!isset($statistics[$scope]['columns'][$column])) {
+                            $columnName = match ($scope) {
+                                'page' => $pageMetadataColumns[$column] ?? $column,
+                                default => $fileMetadataColumns[$column] ?? $column,
+                            };
+
+                            $statistics[$scope]['columns'][$column] = [
+                                'finished' => 0,
+                                'pending' => 0,
+                                'taskError' => 0,
+                                'total' => 0,
+                                'columnName' => $columnName,
+                            ];
+                        }
+                        $statistics[$scope]['columns'][$column][$status]++;
+                        $statistics[$scope]['columns'][$column]['total']++;
+                    }
                 }
-
-                $statistics['total'][$status] += $count;
-                $statistics['total']['total'] += $count;
-
-                $statistics[$scope][$status] += $count;
-                $statistics[$scope]['total'] += $count;
-
-                if (!isset($statistics[$scope]['columns'][$column])) {
-                    $columnName = match ($scope) {
-                        'page' => $pageMetadataColumns[$column] ?? $column,
-                        default => $fileMetadataColumns[$column] ?? $column,
-                    };
-
-                    $statistics[$scope]['columns'][$column] = [
-                        'finished' => 0,
-                        'pending' => 0,
-                        'taskError' => 0,
-                        'total' => 0,
-                        'columnName' => $columnName,
-                    ];
-                }
-                $statistics[$scope]['columns'][$column][$status] += $count;
-                $statistics[$scope]['columns'][$column]['total'] += $count;
             }
             return $statistics;
         } catch (\Throwable $e) {
@@ -314,7 +314,7 @@ class BackgroundTaskService
     {
         $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
-            if (!$this->hasFilePermissions($foundBackgroundTask['storage'])) {
+            if (!$this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
                 continue;
             }
 
@@ -350,21 +350,6 @@ class BackgroundTaskService
                 $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
             }
         }
-    }
-
-    private function hasFilePermissions(int $storageUid): bool
-    {
-        if ($this->backendUserService->getBackendUser()->isAdmin()) {
-            return true;
-        }
-
-        foreach ($this->backendUserService->getBackendUser()->getFileMountRecords() as $fileMount) {
-            if ($fileMount['uid'] === $storageUid) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public function retryBackgroundTask(string $uuid): bool

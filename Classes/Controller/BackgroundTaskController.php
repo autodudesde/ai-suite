@@ -142,7 +142,7 @@ class BackgroundTaskController extends AbstractBackendController
                 }
                 $this->backgroundTaskService->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $answer->getResponseData()['statusData']);
             }
-            $taskStatistics = $this->backgroundTaskService->getBackgroundTasksStatistics();
+            $taskStatistics = $this->backgroundTaskService->getBackgroundTasksStatistics($backgroundTasks);
             $this->view->assign('taskStatistics', $taskStatistics);
             $this->view->assign('backgroundTasks', $backgroundTasks);
         } catch (\Throwable $e) {

@@ -149,7 +149,7 @@ class MetadataService
                 'headers' => ['Cookie' => 'be_typo_user=' . $_COOKIE['be_typo_user']],
             ];
         }
-        
+
         $basicAuth = $this->basicAuthService->getBasicAuth();
         if (!empty($basicAuth)) {
             if (!isset($options['headers'])) {
@@ -157,7 +157,7 @@ class MetadataService
             }
             $options['headers']['Authorization'] = 'Basic ' . $basicAuth;
         }
-        
+
         $response = $this->requestFactory->request($previewUrl, 'GET', $options);
         $fetchedContent = $response->getBody()->getContents();
 
@@ -240,6 +240,23 @@ class MetadataService
         }
 
         return $metadataFields;
+    }
+
+    public function hasFilePermissions(int $fileUid): bool
+    {
+        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+            return true;
+        }
+
+        try {
+            $file = $this->resourceFactory->getFileObject($fileUid);
+
+            return $file->isIndexed()
+                && $file->checkActionPermission('editMeta')
+                && $this->backendUserService->getBackendUser()->check('tables_modify', 'sys_file_metadata');
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     protected function getFormData(int $pageId): array

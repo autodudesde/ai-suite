@@ -146,6 +146,32 @@ class PagesTranslationPrepare {
             } else {
                 this.parentUuid = res.output.parentUuid;
                 document.querySelector('#resultsToExecute').innerHTML = res.output.content;
+                const sourceLanguageSelect = document.querySelector('select[name="massActionPagesTranslationPrepare[sourceLanguage]"]');
+                if (sourceLanguageSelect && General.isUsable(res.output.availableSourceLanguages)) {
+                    sourceLanguageSelect.innerHTML = '';
+                    Object.entries(res.output.availableSourceLanguages).forEach(([identifier, label]) => {
+                        const option = document.createElement('option');
+                        option.value = identifier;
+                        option.textContent = label;
+                        sourceLanguageSelect.appendChild(option);
+                    });
+                }
+                if(General.isUsable(res.output.notificationSourceLanguage) && res.output.notificationSourceLanguage !== '') {
+                    Notification.info(TYPO3.lang['AiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notificationSourceLanguage);
+                }
+                const targetLanguageSelect = document.querySelector('select[name="massActionPagesTranslationPrepare[targetLanguage]"]');
+                if (targetLanguageSelect && General.isUsable(res.output.availableTargetLanguages)) {
+                    targetLanguageSelect.innerHTML = '';
+                    Object.entries(res.output.availableTargetLanguages).forEach(([identifier, label]) => {
+                        const option = document.createElement('option');
+                        option.value = identifier;
+                        option.textContent = label;
+                        targetLanguageSelect.appendChild(option);
+                    });
+                }
+                if(General.isUsable(res.output.notificationTargetLanguage) && res.output.notificationTargetLanguage !== '') {
+                    Notification.info(TYPO3.lang['AiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notificationTargetLanguage);
+                }
             }
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);
