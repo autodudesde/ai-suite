@@ -140,7 +140,7 @@ class PagesPrepare {
                             Generation.hideSpinner();
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
                             let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
-                            formData = new FormData(pagesPrepareExecuteForm);
+                            let formData = new FormData(pagesPrepareExecuteForm);
                             self.preparePages(formData).then(() => {});
                         }
                     }
@@ -154,8 +154,21 @@ class PagesPrepare {
             if(General.isUsable(res.output) && !General.isUsable(res.output.content)) {
                 document.querySelector('#resultsToExecute').innerHTML = res.output;
             } else {
-                self.parentUuid = res.output.parentUuid;
+                this.parentUuid = res.output.parentUuid;
                 document.querySelector('#resultsToExecute').innerHTML = res.output.content;
+                const languageSelect = document.querySelector('select[name="massActionPagesPrepare[sysLanguage]"]');
+                if (languageSelect && General.isUsable(res.output.availableSysLanguages)) {
+                    languageSelect.innerHTML = '';
+                    Object.entries(res.output.availableSysLanguages).forEach(([identifier, label]) => {
+                        const option = document.createElement('option');
+                        option.value = identifier;
+                        option.textContent = label;
+                        languageSelect.appendChild(option);
+                    });
+                }
+                if(General.isUsable(res.output.notification) && res.output.notification !== '') {
+                    Notification.info(TYPO3.lang['AiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notification);
+                }
             }
         } else {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);

@@ -1573,7 +1573,7 @@
                 <source>Depth</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.preparePagesTranslation.sourceLanguage">
-                <source>Source language</source>
+                <source>Source/default language</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.preparePagesTranslation.targetLanguage">
                 <source>Target language</source>
@@ -1591,7 +1591,7 @@
                 <source>Found pages for translation</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.massAction.translation.sourceLanguage">
-                <source>Source Language</source>
+                <source>Source/default language</source>
             </trans-unit>
             <trans-unit id="AiSuite.module.massAction.translation.targetLanguage">
                 <source>Target Language</source>
@@ -1670,6 +1670,27 @@
             </trans-unit>
             <trans-unit id="AiSuite.notification.translation.failed.message">
                 <source>Translation task(s) have failed for this page. You can retry them by clicking the button below.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.pageTreeChanged">
+                <source>The page tree has been changed</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.sourceLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available source language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.targetLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available target language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.sysLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default language (previous language not available in current page tree).</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.sourceLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default/source language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default target language (previous language not available in current page tree).</source>
             </trans-unit>
         </body>
     </file>

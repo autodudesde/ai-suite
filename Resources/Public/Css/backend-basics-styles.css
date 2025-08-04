@@ -1,6 +1,6 @@
 :root {
     --ai-suite-primary-color: #F09C42;
-    --ai-suite-button-font-color: #000;
+    --ai-suite-button-font-color: var(--typo3-text-color-base, #000);
     --ai-suite-border-color: #ddd;
     --checkbox-radio-size: 18px;
     --checkbox-radio-gap: 10px;
@@ -53,7 +53,7 @@ div[data-module-id="aiSuite"] {
     }
 
     .panel.panel-default {
-
+        overflow: visible;
         .panel-heading {
             border-bottom: 1px solid var(--ai-suite-border-color);
 
@@ -271,10 +271,10 @@ div[data-module-id="aiSuite"] {
     .btn.btn-primary {
         background-color: var(--ai-suite-primary-color);
         border-color: var(--ai-suite-primary-color);
-        color: var(--ai-suite-button-font-color);
+        color: #000;
 
         svg {
-            fill: var(--ai-suite-button-font-color);
+            fill: #000;
         }
     }
     .form-control {
@@ -348,7 +348,6 @@ div[data-module-id="aiSuite"] {
         font-size: 0.75rem;
     }
     .badge-default {
-        background-color: rgb(242, 242, 242);
         border: 1px solid rgb(191, 191, 191);
     }
     .badge-warning {
@@ -512,8 +511,8 @@ button.delete {
 #sortable-files .file-meta-content-info,
 #sortable-file-references .file-reference-meta-content-info {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 1rem;
+    right: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -552,6 +551,7 @@ button.delete {
         margin-right: -1rem;
         margin-top: -10px;
         font-size: 0.9rem;
+        cursor: pointer;
 
         &:hover {
             background-color: transparent !important;
@@ -616,13 +616,16 @@ button.delete {
 
     .ck-save-button .ck.ck-button.ck-button_with-text {
         background: transparent;
-        color: black;
+        color: var(--ai-suite-button-font-color);
         border: 1px solid var(--ai-suite-button-font-color);
         border-radius: 3px;
         padding: 0.375rem 0.75rem;
         font-size: 0.75rem;
         transition: all ease-in-out .3s;
         cursor: pointer;
+    }
+    .ck-button.ck-button-cancel svg{
+        color: var(--ai-suite-button-font-color) !important;
     }
 
     .ck-radio-button-group label {
@@ -663,8 +666,6 @@ button.delete {
         }
 
         input[type="radio"]:checked ~ .checkmark {
-            background-color: var(--ai-suite-button-font-color);
-
             &:after {
                 display: block;
             }

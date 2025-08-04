@@ -242,6 +242,23 @@ class MetadataService
         return $metadataFields;
     }
 
+    public function hasFilePermissions(int $fileUid): bool
+    {
+        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+            return true;
+        }
+
+        try {
+            $file = $this->resourceFactory->getFileObject($fileUid);
+
+            return $file->isIndexed()
+                && $file->checkActionPermission('editMeta')
+                && $this->backendUserService->getBackendUser()->check('tables_modify', 'sys_file_metadata');
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     protected function getFormData(int $pageId): array
     {
         $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class);

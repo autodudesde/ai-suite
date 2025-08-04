@@ -34,13 +34,32 @@ class SiteService implements SingletonInterface
         $this->translationConfigurationProvider = $translationConfigurationProvider ?? GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
     }
 
-    public function getAvailableLanguages(bool $includeLanguageIds = false): array
+    public function getAvailableLanguages(bool $includeLanguageIds = false, $pageId = 0, $onlyDefault = false): array
     {
         $availableLanguages = [];
-        foreach ($this->siteFinder->getAllSites() as $site) {
-            foreach ($site->getLanguages() as $language) {
-                if($includeLanguageIds) {
-                    $availableLanguages[$language->getLocale()->getLanguageCode() . '__' . $language->getLanguageId()] = $language->getTitle();
+        $sites = $this->siteFinder->getAllSites();
+        if($pageId > 0){
+            $sites = [$this->siteFinder->getSiteByPageId($pageId)];
+        }
+        foreach ($sites as $site) {
+            $siteLanguages = $site->getAvailableLanguages($GLOBALS['BE_USER'], true);
+            foreach ($siteLanguages as $language) {
+                $languageId = $language->getLanguageId();
+                if($languageId === -1) {
+                    continue;
+                }
+                if($onlyDefault && $languageId !== 0) {
+                    continue;
+                }
+                if ($includeLanguageIds) {
+                    $title = $language->getTitle();
+                    $languageBase = $language->getBase();
+                    if(isset($languageBase) && !empty($languageBase->getHost())) {
+                        $title .= ' [' . $languageBase->getHost() . ']';
+                    } else {
+                        $title .= ' [Site: ' . $site->getIdentifier() . ']';
+                    }
+                    $availableLanguages[$language->getLocale()->getLanguageCode() . '__' . $languageId . '__' . $site->getIdentifier()] = $title;
                 } else {
                     $availableLanguages[$language->getLocale()->getLanguageCode()] = $language->getTitle();
                 }
@@ -81,9 +100,9 @@ class SiteService implements SingletonInterface
                     return $language['isoCode'] ?? '';
                 }
             }
-            throw new SiteNotFoundException($GLOBALS['LANG']->sl()->translate('tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         } catch (\Exception $e) {
-            throw new SiteNotFoundException($GLOBALS['LANG']->sl()->translate('tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         }
     }
 
@@ -101,6 +120,38 @@ class SiteService implements SingletonInterface
             }
         }
         return $allSystemLanguages;
+    }
+
+    public function updateSelectedSysLanguage(array &$availableLanguages, string &$sysLanguageToUse, string &$notification, string $currentSysLanguage, string $fieldName = 'sysLanguage'): void
+    {
+        $currentLanguageData = explode('__', $currentSysLanguage);
+        $sysLanguageToUse = '';
+        $notification = '';
+
+        if (isset($availableLanguages[$currentSysLanguage])) {
+            $sysLanguageToUse = $currentSysLanguage;
+        } else {
+            foreach ($availableLanguages as $key => $language) {
+                $languageData = explode('__', $key);
+
+                if ($languageData[0] === $currentLanguageData[0]) {
+                    $sysLanguageToUse = $key;
+                    $notification = $GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.' . $fieldName . '.selectAvailableLanguageOfPageTree');
+                    break;
+                }
+
+                if ((int)$languageData[1] === 0) {
+                    $sysLanguageToUse = $key;
+                    $notification = $GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification' . $fieldName . 'selectDefaultLanguageOfPageTree');
+                }
+            }
+        }
+
+        if ($sysLanguageToUse && isset($availableLanguages[$sysLanguageToUse])) {
+            $selectedLanguage = [$sysLanguageToUse => $availableLanguages[$sysLanguageToUse]];
+            unset($availableLanguages[$sysLanguageToUse]);
+            $availableLanguages = $selectedLanguage + $availableLanguages;
+        }
     }
 
     public function buildAbsoluteUri(UriInterface $uri): string {

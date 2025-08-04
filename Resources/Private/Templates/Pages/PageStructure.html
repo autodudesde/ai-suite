@@ -19,11 +19,12 @@
                 <div class="panel-body">
                     <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree')}" name="input" enctype="multipart/form-data" class="with-spinner">
                         <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
+                        <input type="hidden" name="paidRequestsAvailable" value="{paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                         <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: ''}" />
                         <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
-                        <div class="language-selection row mb-3">
+                        <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
                         </div>
                         <div class="form-group">

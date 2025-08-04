@@ -134,6 +134,7 @@ class PagesController extends AbstractBackendController
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/validation.js');
             $parsedBody = $this->request->getParsedBody();
             $textAi = isset($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
+            $paidRequestsAvailable = isset($parsedBody['paidRequestsAvailable']) ? $parsedBody['paidRequestsAvailable'] === '1' : false;
             if((int)$parsedBody['startStructureFromPid'] === -1) {
                 $langIsoCode = $parsedBody['sysLanguage'];
             } else {
@@ -163,6 +164,7 @@ class PagesController extends AbstractBackendController
                 'selectedPid' => $this->request->getParsedBody()['startStructureFromPid'] ?? 0,
                 'pagesSelect' => $this->getPagesInWebMount(),
                 'textGenerationLibraries' => $this->libraryService->prepareLibraries(json_decode($this->request->getParsedBody()['textGenerationLibraries'], true), $textAi),
+                'paidRequestsAvailable' => $paidRequestsAvailable,
                 'sysLanguages' => $this->siteService->getAvailableLanguages(),
                 'selectedSysLanguage' => $langIsoCode,
             ]);

@@ -18,12 +18,12 @@
     </span>
 
     <span class="delete-accordion-item me-2 pe-auto" data-uuid="{task.uuid}" data-column="{column}">
-        <core:icon identifier="actions-delete" size="medium" />
+        <core:icon identifier="actions-delete" size="small" />
     </span>
 
     <f:if condition="{task.status} == 'task-error'">
         <div class="error-info me-2 pe-auto">
-            <core:icon identifier="actions-exclamation-triangle" size="medium" />
+            <core:icon identifier="actions-exclamation-triangle" size="small" />
             <span class="error-message d-none">{task.error}</span>
         </div>
     </f:if>

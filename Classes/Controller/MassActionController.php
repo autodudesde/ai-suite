@@ -109,10 +109,10 @@ class MassActionController extends AbstractBackendController
     {
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/pages-prepare.js');
-        $availableLanguages = $this->siteService->getAvailableLanguages(true);
-        ksort($availableLanguages);
-        $accessablePages = $this->backendUserService->fetchAccessablePages();
         $pageId = $this->sessionService->getWebPageId();
+        $availableLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $selectedPageId = $pageId > 0 ? $pageId : array_key_first($accessablePages);
         if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
             $pageTitle = $accessablePages[$pageId];
             $this->view->assignMultiple([
@@ -126,6 +126,7 @@ class MassActionController extends AbstractBackendController
         }
         $this->view->assignMultiple([
             'pagesSelect' => $accessablePages,
+            'selectedPageId' => $selectedPageId,
             'pageTypes' => $this->backendUserService->getAccessablePageTypes(),
             'depths' => [
                 0 => $this->translationService->translate('tx_aisuite.massActionSection.filter.depth.onlyThisPage'),
@@ -145,10 +146,10 @@ class MassActionController extends AbstractBackendController
     {
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/file-references-prepare.js');
-        $availableLanguages = $this->siteService->getAvailableLanguages(true);
-        ksort($availableLanguages);
-        $accessablePages = $this->backendUserService->fetchAccessablePages();
         $pageId = $this->sessionService->getWebPageId();
+        $availableLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $selectedPageId = $pageId > 0 ? $pageId : array_key_first($accessablePages);
         if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
             $pageTitle = $accessablePages[$pageId];
             $this->view->assignMultiple([
@@ -162,6 +163,7 @@ class MassActionController extends AbstractBackendController
         }
         $this->view->assignMultiple([
             'pagesSelect' => $this->backendUserService->fetchAccessablePages(),
+            'selectedPageId' => $selectedPageId,
             'depths' => [
                 0 => $this->translationService->translate('tx_aisuite.massActionSection.filter.depth.onlyThisPage'),
                 1 => 1,
@@ -180,11 +182,11 @@ class MassActionController extends AbstractBackendController
     {
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/mass-action/pages-translation-prepare.js');
-
-        $availableLanguages = $this->siteService->getAvailableLanguages(true);
-        ksort($availableLanguages);
-        $accessablePages = $this->backendUserService->fetchAccessablePages();
         $pageId = $this->sessionService->getWebPageId();
+        $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, $pageId, true);
+        $availableTargetLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+        $accessablePages = $this->backendUserService->fetchAccessablePages();
+        $selectedPageId = $pageId > 0 ? $pageId : array_key_first($accessablePages);
 
         if ($pageId > 0 && array_key_exists($pageId, $accessablePages)) {
             $pageTitle = $accessablePages[$pageId];
@@ -201,6 +203,7 @@ class MassActionController extends AbstractBackendController
 
         $this->view->assignMultiple([
             'pagesSelect' => $accessablePages,
+            'selectedPageId' => $selectedPageId,
             'pageTypes' => $this->backendUserService->getAccessablePageTypes(),
             'depths' => [
                 0 => $this->translationService->translate('tx_aisuite.massActionSection.filter.depth.onlyThisPage'),
@@ -210,7 +213,8 @@ class MassActionController extends AbstractBackendController
                 4 => 4,
                 5 => 5
             ],
-            'sysLanguages' => $availableLanguages,
+            'sourceLanguages' => $availableSourceLanguages,
+            'targetLanguages' => $availableTargetLanguages,
             'translationScopeOptions' => [
                 'all' => $this->translationService->translate('tx_aisuite.massActionSection.translation.scope.all'),
                 'metadata' => $this->translationService->translate('tx_aisuite.massActionSection.translation.scope.metadata'),

@@ -49,11 +49,13 @@ class PagesRepository extends AbstractRepository
         $queryBuilder
             ->select('*')
             ->from($this->table);
+        $constraints = [
+            $queryBuilder->expr()->eq('l10n_parent', 0)
+        ];
         if(count($uidList) > 0) {
-            $queryBuilder->where(
-                $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uidList, Connection::PARAM_INT_ARRAY))
-            );
+            $constraints[] = $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uidList, Connection::PARAM_INT_ARRAY));
         }
+        $queryBuilder->where(...$constraints);
         return $queryBuilder
             ->executeQuery()
             ->fetchAllAssociative();

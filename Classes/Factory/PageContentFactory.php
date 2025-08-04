@@ -70,14 +70,14 @@ class PageContentFactory
                 $newStrings['tt_content'] = $this->newStringPlaceholder('tt_content');
                 $data['tt_content'][$newStrings['tt_content']]["colPos"] = $content['colPos'];
                 $data['tt_content'][$newStrings['tt_content']]["CType"] = $content['CType'];
-                $data['tt_content'][$newStrings['tt_content']]["pid"] = $content['pid'];
+                $data['tt_content'][$newStrings['tt_content']]["pid"] = $content['uidPid'];
                 $data['tt_content'][$newStrings['tt_content']]["sys_language_uid"] = $content['sysLanguageUid'];
                 if ($content['containerParentUid'] !== 0) {
                     $data['tt_content'][$newStrings['tt_content']]["tx_container_parent"] = $content['containerParentUid'];
                 }
             } else {
                 $newStrings['tx_news_domain_model_news'] = $this->newStringPlaceholder('tx_news_domain_model_news');
-                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content['pid'];
+                $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["pid"] = $content['uidPid'];
                 $data['tx_news_domain_model_news'][$newStrings['tx_news_domain_model_news']]["sys_language_uid"] = $content['sysLanguageUid'];
             }
         }
@@ -89,7 +89,7 @@ class PageContentFactory
                     $newStrings[$table] = $this->newStringPlaceholder($table);
                     $data[$table][$newStrings[$table]]["colPos"] = $content['colPos'];
                     $data[$table][$newStrings[$table]]["CType"] = $content['CType'];
-                    $data[$table][$newStrings[$table]]["pid"] = $content['pid'];
+                    $data[$table][$newStrings[$table]]["pid"] = $content['uidPid'];
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content['sysLanguageUid'];
                     if ($content['containerParentUid'] !== 0) {
                         $data[$table][$newStrings[$table]]["tx_container_parent"] = $content['containerParentUid'];
@@ -99,7 +99,7 @@ class PageContentFactory
                     }
                 } elseif ($table === 'tx_news_domain_model_news') {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
-                    $data[$table][$newStrings[$table]]["pid"] = $content['pid'];
+                    $data[$table][$newStrings[$table]]["pid"] = $content['uidPid'];
                     $data[$table][$newStrings[$table]]["sys_language_uid"] = $content['sysLanguageUid'];
                     $data[$table][$newStrings[$table]]["datetime"] = time();
                     foreach ($fields as $fieldName => $fieldValue) {
@@ -136,7 +136,7 @@ class PageContentFactory
                         'tablenames' => $table,
                         'uid_foreign' => ($table === 'tt_content' || $table === 'tx_news_domain_model_news') ? $newStrings[$table] : $newStrings[$table][$key],
                         'fieldname' => $fieldName,
-                        'pid' => $content['pid'],
+                        'pid' => $content['uidPid'],
                         'title' => $fieldData['imageTitle'] ?? '',
                         'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
@@ -154,15 +154,6 @@ class PageContentFactory
 
         if (count($dataHandler->errorLog) > 0) {
             throw new AiSuiteException('Content/SaveContent','', '', $dataHandler->errorLog[0], $content['regenerateReturnUrl']);
-        }
-
-        if (array_key_exists('tt_content', $data)) {
-            $tempUid = array_key_first($data['tt_content']);
-            $uid = $dataHandler->substNEWwithIDs[$tempUid];
-            $cmd['tt_content'][$uid]['move'] = $content['uidPid'];
-            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $dataHandler->start([], $cmd);
-            $dataHandler->process_cmdmap();
         }
     }
 

@@ -52,7 +52,7 @@
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                         <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt}" />
                         <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
-                        <div class="language-selection row mb-3">
+                        <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
                         </div>
                         <div class="form-group">
