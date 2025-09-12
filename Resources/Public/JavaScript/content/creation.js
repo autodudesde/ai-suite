@@ -82,7 +82,11 @@ class Creation {
             formsWithSpinner.forEach(function (form, index, arr) {
                 form.addEventListener('submit', function (event) {
                     event.preventDefault();
-                    let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked').value;
+                    let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked')
+                    if(imageAiModel) {
+                        let imageAiModelValue = imageAiModel.value;
+                        document.querySelector('input[name="additionalImageSettings"]').value = GenerationHandling.getAdditionalImageSettings(imageAiModelValue);
+                    }
                     try {
                         document.querySelector('input[name="additionalImageSettings"]').value = GenerationHandling.getAdditionalImageSettings(imageAiModel);
                         const fileCheckboxes = document.querySelectorAll('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"], .request-field-checkbox[value="file"]');
