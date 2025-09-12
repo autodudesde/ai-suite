@@ -14,7 +14,6 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SysFileMetadataRepository extends AbstractRepository
 {
@@ -41,7 +40,7 @@ class SysFileMetadataRepository extends AbstractRepository
         bool $showOnlyEmpty = false,
         bool $showOnlyUsed = false
     ): array {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
             $queryBuilder->expr()->in('file', $uids),
             $queryBuilder->expr()->eq('sys_language_uid', $langUid)
@@ -85,7 +84,7 @@ class SysFileMetadataRepository extends AbstractRepository
 
     public function findByUidList(array $uids, string $indexColumn = 'uid'): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder
             ->select('*')
             ->from($this->table)
@@ -98,7 +97,7 @@ class SysFileMetadataRepository extends AbstractRepository
 
     public function isFileUsed(int $fileUid): bool
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable("sys_refindex");
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable("sys_refindex");
         $queryBuilder
             ->count('recuid')
             ->from('sys_refindex')

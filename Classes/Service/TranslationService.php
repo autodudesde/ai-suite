@@ -4,6 +4,7 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Domain\Repository\TranslationRepository;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,20 +18,25 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\QueryBuilder;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
+use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Schema\Capability\LanguageAwareSchemaCapability;
+use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
+use TYPO3\CMS\Core\Schema\Field\FieldTranslationBehaviour;
+use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Versioning\VersionState;
 
 class TranslationService
 {
@@ -83,7 +89,8 @@ class TranslationService
     protected FlashMessageService $flashMessageService;
     protected BackgroundTaskRepository $backgroundTaskRepository;
     protected LoggerInterface $logger;
-    protected ConnectionPool $connectionPool;
+    protected TranslationRepository $translationRepository;
+    protected TcaSchemaFactory $tcaSchemaFactory;
 
     private array $translatableMetadataFields = [
         'title',
@@ -110,7 +117,8 @@ class TranslationService
         FlashMessageService $flashMessageService,
         BackgroundTaskRepository $backgroundTaskRepository,
         LoggerInterface $logger,
-        ConnectionPool $connectionPool
+        TranslationRepository $translationRepository,
+        TcaSchemaFactory $tcaSchemaFactory,
     ) {
         $this->contentService = $contentService;
         $this->uriBuilder = $uriBuilder;
@@ -124,7 +132,8 @@ class TranslationService
         $this->flashMessageService = $flashMessageService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
         $this->logger = $logger;
-        $this->connectionPool = $connectionPool;
+        $this->translationRepository = $translationRepository;
+        $this->tcaSchemaFactory = $tcaSchemaFactory;
     }
 
     public function fetchTranslationFields(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table): array
@@ -161,9 +170,7 @@ class TranslationService
 
         $parameterArray['fieldConf']['config'] = FormEngineUtility::overrideFieldConf($parameterArray['fieldConf']['config'], $parameterArray['fieldTSConfig']);
 
-        //if ($parameterArray['fieldConf']['config']['type'] === 'inline' || $parameterArray['fieldConf']['config']['type'] === 'file') {
         if ($parameterArray['fieldConf']['config']['type'] === 'inline') {
-            $this->processInlineFieldForTranslation($formData, $fieldName, $parameterArray['fieldConf'], $translateFields);
             return;
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
@@ -263,52 +270,20 @@ class TranslationService
         return $availableTargetLanguages;
     }
 
-    public function getFileReferencesForTranslation(int $pageId, int $languageId): array
-    {
-        $fileReferences = $this->pagesRepository->getFileReferencesOnPage($pageId, $languageId);
-        $translatableFields = $this->collectFileReferenceTranslationFields($fileReferences);
-
-        return [
-            'count' => count($fileReferences),
-            'translatableCount' => count($translatableFields),
-            'hasTranslatableContent' => !empty($translatableFields),
-        ];
-    }
-
-    public function collectFileReferenceTranslationFields(array $fileReferences): array
-    {
-        $translationFields = [];
-
-        foreach ($fileReferences as $fileRef) {
-            $fields = $this->fetchTranslationFields(
-                $GLOBALS['TYPO3_REQUEST'],
-                [],
-                (int)$fileRef['uid'],
-                'sys_file_reference'
-            );
-
-            if (!empty($fields)) {
-                $translationFields[$fileRef['uid']] = $fields;
-            }
-        }
-
-        return $translationFields;
-    }
-
     public function collectPageTranslatableContent(int $pageUid, int $sourceLanguageUid, string $translationScope, int $targetLanguageUid = 0): array
     {
         $translatableContent = [];
 
         switch ($translationScope) {
             case 'metadata':
-                $translatableContent['metadata'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
+                $translatableContent['pages'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
                 break;
             case 'content':
-                $translatableContent['content'] = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
+                $translatableContent[] = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
                 break;
             case 'all':
-                $translatableContent['metadata'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
-                $translatableContent['content'] = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
+                $translatableContent = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
+                $translatableContent['pages'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
                 break;
         }
 
@@ -536,11 +511,13 @@ class TranslationService
         if (empty($foreignTable)) {
             return;
         }
-
+        if(!array_key_exists($foreignTable, $translateFields)) {
+            $translateFields[$foreignTable] = [];
+        }
         $inlineFields = $this->collectInlineChildFields($parentFormData, $fieldName, $foreignTable);
 
         if (!empty($inlineFields)) {
-            $translateFields[$fieldName] = $inlineFields;
+            $translateFields[$foreignTable][$fieldName] = $inlineFields;
         }
     }
 
@@ -662,7 +639,7 @@ class TranslationService
      */
     protected function collectPageContentElementFields(int $pageUid, int $sourceLanguageUid, int $targetLanguageUid = 0): array
     {
-        $contentElements = $this->getContentElementsOnPage($pageUid, $sourceLanguageUid);
+        $contentElements = $this->translationRepository->getElementsOnPage($pageUid, $sourceLanguageUid);
 
         if ($targetLanguageUid > 0) {
             $contentElements = $this->filterUntranslatedContentElements($contentElements, $pageUid, $targetLanguageUid);
@@ -671,22 +648,25 @@ class TranslationService
         $translatableContent = [];
 
         foreach ($contentElements as $contentElement) {
-            $contentFields = $this->fetchTranslationFields(
-                $GLOBALS['TYPO3_REQUEST'],
-                [
-                    'CType' => $contentElement['CType'],
-                    'pid' => $contentElement['pid'],
-                    'sys_language_uid' => $sourceLanguageUid,
-                ],
-                (int)$contentElement['uid'],
-                'tt_content'
-            );
-
-            if (!empty($contentFields)) {
-                $translatableContent[(int)$contentElement['uid']] = [
-                    'CType' => $contentElement['CType'] ?? '',
-                    'fields' => $contentFields
-                ];
+            $copyMappingArray = [];
+            $this->localize($copyMappingArray, 'tt_content', $contentElement['uid'], $targetLanguageUid);
+            foreach($copyMappingArray as $table => $uidMapping) {
+                if(!array_key_exists($table, $translatableContent)) {
+                    $translatableContent[$table] = [];
+                }
+                foreach ($uidMapping as $sourceUid => $translatedUid) {
+                    $fields = $this->fetchTranslationFields(
+                        $GLOBALS['TYPO3_REQUEST'],
+                        [
+                            'sys_language_uid' => $targetLanguageUid,
+                        ],
+                        (int)$sourceUid,
+                        $table
+                    );
+                    if(count($fields) > 0) {
+                        $translatableContent[$table][$sourceUid] = $fields;
+                    }
+                }
             }
         }
 
@@ -704,17 +684,7 @@ class TranslationService
             return $sourceElements;
         }
 
-        $queryBuilder = $this->createContentQueryBuilder();
-        $targetElements = $queryBuilder
-            ->select('l18n_parent')
-            ->from('tt_content')
-            ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, Connection::PARAM_INT)),
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid, Connection::PARAM_INT))
-            )
-            ->executeQuery()
-            ->fetchAllAssociative();
-
+        $targetElements = $this->translationRepository->getTranslatedElementsOnPage($pageUid, $targetLanguageUid);
         $translatedParentUids = array_column($targetElements, 'l18n_parent');
 
         return array_filter($sourceElements, function($element) use ($translatedParentUids) {
@@ -722,35 +692,12 @@ class TranslationService
         });
     }
 
-    /**
-     * @throws Exception
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
-    protected function getContentElementsOnPage(int $pageUid, int $languageUid): array
-    {
-        $queryBuilder = $this->createContentQueryBuilder();
-        return $queryBuilder
-            ->select('uid', 'pid', 'CType', 'header')
-            ->from('tt_content')
-            ->where(
-                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageUid, Connection::PARAM_INT)),
-                $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageUid, Connection::PARAM_INT)),
-                    $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(-1, Connection::PARAM_INT))
-                )
-            )
-            ->orderBy('sorting')
-            ->executeQuery()
-            ->fetchAllAssociative();
-    }
-
     protected function processTranslationTask(array $task): void
     {
         try {
             $taskAnswer = json_decode($task['answer'], true);
             $translationData = $taskAnswer['body']['translationResults'] ?? [];
-            if (!$this->isValidTranslationResult($translationData)) {
+            if (empty($translationData)) {
                 $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
                 throw new \Exception('Invalid translation result format');
             }
@@ -781,7 +728,7 @@ class TranslationService
         $existingTranslation = $this->pagesRepository->checkPageTranslationExists($pageUid, $targetLanguageUid);
 
         if (!$existingTranslation) {
-            $this->createPageTranslation($pageUid, $targetLanguageUid);
+            $this->executeLocalizationCommand('pages', $pageUid, $targetLanguageUid);
         }
 
         $translatedPageUid = $this->pagesRepository->getPageTranslationUid($pageUid, $targetLanguageUid);
@@ -811,20 +758,12 @@ class TranslationService
     /**
      * @throws \Exception
      */
-    protected function createPageTranslation(int $pageUid, int $targetLanguageUid): void
-    {
-        $this->executeLocalizationCommand('pages', $pageUid, $targetLanguageUid);
-    }
-
-    /**
-     * @throws \Exception
-     */
     protected function applyPageMetadataTranslation(int $translatedPageUid, array $translationData): void
     {
         $datamap = [];
         foreach ($this->translatableMetadataFields as $field) {
-            if (isset($translationData['metadata'][$field])) {
-                $datamap['pages'][$translatedPageUid][$field] = $translationData['metadata'][$field];
+            if (isset($translationData['pages'][$field])) {
+                $datamap['pages'][$translatedPageUid][$field] = $translationData['pages'][$field];
             }
         }
 
@@ -835,114 +774,51 @@ class TranslationService
 
     protected function applyContentElementTranslations(int $targetLanguageUid, array $translationData): void
     {
-        if (!isset($translationData['content']) || !is_array($translationData['content'])) {
-            return;
+        $datamap =  [];
+        $alreadyTranslatedUids = [];
+
+        $sortedTranslationData = [];
+        if (isset($translationData['tt_content'])) {
+            $sortedTranslationData['tt_content'] = $translationData['tt_content'];
+            unset($translationData['tt_content']);
         }
+        $sortedTranslationData = array_merge($sortedTranslationData, $translationData);
 
-        foreach ($translationData['content'] as $sourceContentUid => $contentTranslation) {
-            try {
-                $this->translateContentElement((int)$sourceContentUid, $targetLanguageUid, $contentTranslation);
-            } catch (\Throwable $e) {
-                $this->logger->warning('Failed to translate content element', [
-                    'sourceContentUid' => $sourceContentUid,
-                    'error' => $e->getMessage()
-                ]);
-            }
-        }
-    }
-
-    /**
-     * @throws \Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
-    protected function translateContentElement(int $sourceContentUid, int $targetLanguageUid, array $translationData): void
-    {
-        $existingTranslation = $this->getContentElementTranslation($sourceContentUid, $targetLanguageUid);
-
-        if ($existingTranslation) {
-            $translationUidArray = [
-                'tt_content' => [ $sourceContentUid => $existingTranslation['uid'] ]
-            ];
-            $this->updateContentElementTranslation($translationUidArray, $translationData['fields']);
-        } else {
-            $translationUidArray = $this->createContentElementTranslation($sourceContentUid, $targetLanguageUid);
-            if (count($translationUidArray) > 0) {
-                $this->updateContentElementTranslation($translationUidArray, $translationData['fields']);
-            }
-        }
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function createContentElementTranslation(int $sourceContentUid, int $targetLanguageUid): array
-    {
-        return $this->executeLocalizationCommand('tt_content', $sourceContentUid, $targetLanguageUid);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    protected function updateContentElementTranslation(array $translatedContentArray, array $fieldData): void
-    {
-        $datamap = [];
-
-        if (isset($translatedContentArray['tt_content'])) {
-            $ttContentFields = [];
-            foreach ($fieldData as $fieldName => $fieldValue) {
-                if (!isset($translatedContentArray[$fieldName])) {
-                    $ttContentFields[$fieldName] = $fieldValue;
-                }
-            }
-
-            foreach ($translatedContentArray['tt_content'] as $translatedUid) {
-                if (!empty($ttContentFields)) {
-                    $datamap['tt_content'][$translatedUid] = $ttContentFields;
-                }
-            }
-        }
-
-        foreach ($translatedContentArray as $tableName => $records) {
-            if ($tableName === 'tt_content') {
-                continue;
-            }
-
-            if (isset($fieldData[$tableName]) && is_array($fieldData[$tableName])) {
-                $datamap[$tableName] = [];
-
-                foreach ($fieldData[$tableName] as $sourceUid => $tableFieldData) {
-                    if (isset($records[$sourceUid])) {
-                        $translatedUid = $records[$sourceUid];
-                        $datamap[$tableName][$translatedUid] = $tableFieldData;
+        foreach($sortedTranslationData as $table => $elements) {
+            foreach ($elements as $sourceUid => $element) {
+                try {
+                    $languageParentField = $table === 'tt_content' ? 'l18n_parent' : 'l10n_parent';
+                    $existingTranslation = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $languageParentField);
+                    if ($existingTranslation) {
+                        if (!array_key_exists($table, $datamap)) {
+                            $datamap[$table] = [];
+                        }
+                        $datamap[$table][$existingTranslation['uid']] = $sortedTranslationData[$table][$sourceUid];
+                        $alreadyTranslatedUids[$table][$sourceUid] = $existingTranslation['uid'];
+                    } else {
+                        if(array_key_exists($table, $alreadyTranslatedUids) && array_key_exists($sourceUid, $alreadyTranslatedUids[$table])) {
+                            continue;
+                        }
+                        $tranlatedUidMapping = $this->executeLocalizationCommand($table, $sourceUid, $targetLanguageUid);
+                        foreach ($tranlatedUidMapping as $table => $uidMapping) {
+                            if (!array_key_exists($table, $datamap)) {
+                                $datamap[$table] = [];
+                            }
+                            foreach ($uidMapping as $srcUid => $destUid) {
+                                if(isset($sortedTranslationData[$table][$srcUid])) {
+                                    $datamap[$table][$destUid] = $sortedTranslationData[$table][$srcUid];
+                                }
+                            }
+                        }
                     }
+                } catch (\Throwable $e) {
+                    $this->logger->warning('Failed to translate content element', ['error' => $e->getMessage()]);
                 }
             }
         }
-
-        if (!empty($datamap)) {
+        if (count($datamap) > 0) {
             $this->executeDataHandler($datamap, []);
         }
-    }
-
-    /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws DBALException
-     */
-    protected function getContentElementTranslation(int $sourceContentUid, int $targetLanguageUid): ?array
-    {
-        $queryBuilder = $this->createContentQueryBuilder();
-        $result = $queryBuilder
-            ->select('uid', 'l18n_parent')
-            ->from('tt_content')
-            ->where(
-                $queryBuilder->expr()->eq('l18n_parent', $queryBuilder->createNamedParameter($sourceContentUid)),
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid)),
-            )
-            ->executeQuery()
-            ->fetchAssociative();
-
-        return $result ?: null;
     }
 
     /**
@@ -950,28 +826,13 @@ class TranslationService
      */
     protected function applyCompletePageTranslation(int $translatedPageUid, int $targetLanguageUid, array $translationData): void
     {
-        if (isset($translationData['metadata'])) {
+        if (isset($translationData['pages'])) {
             $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
         }
-        if (isset($translationData['content'])) {
+        unset($translationData['pages']);
+        if(!empty($translationData)) {
             $this->applyContentElementTranslations($targetLanguageUid, $translationData);
         }
-    }
-
-    protected function isValidTranslationResult(array $translationData): bool
-    {
-        if (empty($translationData)) {
-            return false;
-        }
-
-        $validScopes = ['metadata', 'content'];
-        foreach ($validScopes as $scope) {
-            if (isset($translationData[$scope]) && is_array($translationData[$scope])) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -1034,15 +895,6 @@ class TranslationService
         }
     }
 
-    protected function createContentQueryBuilder(string $table = 'tt_content'): QueryBuilder
-    {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()
-            ->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        return $queryBuilder;
-    }
-
     /**
      * @throws \Exception
      */
@@ -1065,5 +917,280 @@ class TranslationService
         }
 
         return $dataHandler->copyMappingArray_merged ?? [];
+    }
+
+    /**
+     * DATAHANDLER FUNCTIONS
+     */
+
+    protected function localize(&$copyMappingArray, $table, $uid, $language): void
+    {
+        $uid = (int)$uid;
+
+        if (!$this->tcaSchemaFactory->has($table) || !$uid) {
+            return;
+        }
+
+        $schema = $this->tcaSchemaFactory->get($table);
+        if (!$schema->isLanguageAware()) {
+            return;
+        }
+
+        /** @var LanguageAwareSchemaCapability $languageCapability */
+        $languageCapability = $schema->getCapability(TcaSchemaCapability::Language);
+        $languageFieldName = $languageCapability->getLanguageField()->getName();
+        $translationOriginPointerFieldName = $languageCapability->getTranslationOriginPointerField()->getName();
+
+        // Getting workspace overlay if possible - this will localize versions in workspace if any
+        $row = BackendUtility::getRecord($table, $uid);
+        BackendUtility::workspaceOL($table, $row, $GLOBALS['BE_USER']->workspace);
+        if (!is_array($row)) {
+            return;
+        }
+        $pageRecord = [];
+        if ($table === 'pages') {
+            $pageRecord = $row;
+        } elseif ((int)$row['pid'] > 0) {
+            $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
+            if (!is_array($pageRecord)) {
+                return;
+            }
+        }
+        if (($pageRecord === [] && $row['pid'] === 0 && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table)))
+        ) {
+            return;
+        }
+
+        [$pageId] = BackendUtility::getTSCpid($table, $uid, '');
+        // Try to fetch the site language from the pages' associated site
+        $siteLanguage = $this->getSiteLanguageForPage((int)$pageId, (int)$language);
+        if ($siteLanguage === null) {
+            return;
+        }
+
+        // Make sure that records which are translated from another language than the default language have a correct
+        // localization source set themselves, before translating them to another language.
+        if ((int)$row[$translationOriginPointerFieldName] !== 0
+            && $row[$languageFieldName] > 0) {
+            $localizationParentRecord = BackendUtility::getRecord(
+                $table,
+                $row[$translationOriginPointerFieldName]
+            );
+            if ((int)$localizationParentRecord[$languageFieldName] !== 0) {
+                return;
+            }
+        }
+
+        // Default language records must never have a localization parent as they are the origin of any translation.
+        if ((int)$row[$translationOriginPointerFieldName] !== 0
+            && (int)$row[$languageFieldName] === 0) {
+            return;
+        }
+
+        $overrideValues = [];
+        $overrideValues[$languageFieldName] = (int)$language;
+        if ((int)$row[$languageFieldName] === 0) {
+            $overrideValues[$translationOriginPointerFieldName] = $uid;
+        }
+        if ($languageCapability->hasTranslationSourceField()) {
+            $overrideValues[$languageCapability->getTranslationSourceField()->getName()] = $uid;
+        }
+        if ($schema->supportsSubSchema()) {
+            $subSchemaDivisorFieldName = $schema->getSubSchemaTypeInformation()->getFieldName();
+            $overrideValues[$subSchemaDivisorFieldName] = $row[$subSchemaDivisorFieldName] ?? null;
+        }
+        foreach ($schema->getFields() as $field) {
+            $fieldContent = $row[$field->getName()];
+            if ($field->getTranslationBehaviour() === FieldTranslationBehaviour::PrefixLanguageTitle
+                && $field->isType(TableColumnType::TEXT, TableColumnType::INPUT, TableColumnType::EMAIL, TableColumnType::LINK)
+                && (string)$row[$field->getName()] !== ''
+            ) {
+                $overrideValues[$field->getName()] = $fieldContent;
+            }
+            if (($field->getConfiguration()['MM'] ?? false)
+                && (!empty($field->getConfiguration()['MM_oppositeUsage']) || !isset($field->getConfiguration()['MM_opposite_field']))
+            ) {
+                $overrideValues[$field->getName()] = 0;
+            }
+        }
+
+        if ($table !== 'pages') {
+            $this->copyRecord($copyMappingArray, $table, $uid, $overrideValues, '', $language);
+        }
+    }
+
+    protected function copyRecord(&$copyMappingArray, $table, $uid, $overrideValues = [], $excludeFields = '', $language = 0, $ignoreLocalization = false): void
+    {
+        $uid = ($origUid = (int)$uid);
+        if (!$this->tcaSchemaFactory->has($table) || $uid === 0) {
+            return;
+        }
+
+        $row = BackendUtility::getRecord($table, $uid);
+        if (!is_array($row)) {
+            return;
+        }
+        BackendUtility::workspaceOL($table, $row, $GLOBALS['BE_USER']->workspace);
+        $pageRecord = [];
+        if ($table === 'pages') {
+            $pageRecord = $row;
+        } elseif ((int)$row['pid'] > 0) {
+            $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
+            if (!is_array($pageRecord)) {
+                return;
+            }
+        }
+        if (($pageRecord === [] && $row['pid'] === 0 && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table)))
+        ) {
+            return;
+        }
+
+        $fullLanguageCheckNeeded = $table !== 'pages';
+        if (!$ignoreLocalization && ($language <= 0 || !$GLOBALS['BE_USER']->checkLanguageAccess($language)) && !$GLOBALS['BE_USER']->recordEditAccessInternals($table, $row, false, null, $fullLanguageCheckNeeded)) {
+            return;
+        }
+
+        $nonFields = array_unique(GeneralUtility::trimExplode(',', 'uid,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,' . $excludeFields, true));
+        BackendUtility::workspaceOL($table, $row, $GLOBALS['BE_USER']->workspace);
+        if (BackendUtility::isTableWorkspaceEnabled($table)
+            && $GLOBALS['BE_USER']->workspace > 0
+            && VersionState::tryFrom($row['t3ver_state'] ?? 0) === VersionState::DELETE_PLACEHOLDER
+        ) {
+            return;
+        }
+        $row = BackendUtility::purgeComputedPropertiesFromRecord($row);
+
+        $schema = $this->tcaSchemaFactory->get($table);
+        foreach ($row as $field => $value) {
+            if (!in_array($field, $nonFields, true)) {
+                if (array_key_exists($field, $overrideValues)) {
+                    continue;
+                }
+                else {
+                    $conf = $schema->hasField($field) ? $schema->getField($field)->getConfiguration() : [];
+                    $this->copyRecord_procBasedOnFieldType($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
+                }
+            }
+        }
+        $copyMappingArray[$table][$origUid] = 1;
+    }
+
+    protected function getSiteLanguageForPage(int $pageId, int $languageId): ?SiteLanguage
+    {
+        try {
+            $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
+            return $site->getLanguageById($languageId);
+        } catch (SiteNotFoundException | \InvalidArgumentException $e) {
+            $sites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
+            foreach ($sites as $site) {
+                try {
+                    return $site->getLanguageById($languageId);
+                } catch (\InvalidArgumentException $e) {
+                    continue;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public function copyRecord_procBasedOnFieldType(&$copyMappingArray, $table, $uid, $value, $row, $conf, $language = 0): void
+    {
+        $relationFieldType = $this->getRelationFieldType($conf);
+        if ($this->isReferenceField($conf) || $relationFieldType === 'mm') {
+            $this->copyRecord_processManyToMany($copyMappingArray, $table, $uid, $value, $conf, $language);
+        } elseif ($relationFieldType !== false) {
+            $this->copyRecord_processRelation($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
+        }
+    }
+
+    protected function copyRecord_processRelation(
+        &$copyMappingArray,
+        $table,
+        $uid,
+        $value,
+        $row,
+        $conf,
+        $language
+    ) {
+        $schema = $this->tcaSchemaFactory->get($table);
+        $dbAnalysis = $this->createRelationHandlerInstance();
+        $dbAnalysis->start($value, $conf['foreign_table'], '', $uid, $table, $conf);
+        foreach ($dbAnalysis->itemArray as $k => $v) {
+            // If language is set and differs from original record, this isn't a copy action but a localization of our parent/ancestor:
+            if ($language > 0 && $schema->isLanguageAware() && $language != ($row[$schema->getCapability(TcaSchemaCapability::Language)->getLanguageField()->getName()] ?? 0)) {
+                // Children should be localized when the parent gets localized the first time, just do it:
+                $this->localize($copyMappingArray, $v['table'], $v['id'], $language);
+            }
+        }
+    }
+
+    protected function copyRecord_processManyToMany(&$copyMappingArray, $table, $uid, $value, $conf, $language)
+    {
+        $allowedTables = $conf['type'] === 'group' ? $conf['allowed'] : $conf['foreign_table'];
+        $allowedTablesArray = GeneralUtility::trimExplode(',', $allowedTables, true);
+        $mmTable = !empty($conf['MM']) ? $conf['MM'] : '';
+
+        $dbAnalysis = $this->createRelationHandlerInstance();
+        $dbAnalysis->start($value, $allowedTables, $mmTable, $uid, $table, $conf);
+
+        // Check if referenced records of select or group fields should also be localized in general.
+        // A further check is done in the loop below for each table name.
+        if ($language > 0 && $mmTable === '' && !empty($conf['localizeReferencesAtParentLocalization'])) {
+            // Check whether allowed tables can be localized.
+            $localizeTables = [];
+            foreach ($allowedTablesArray as $allowedTable) {
+                $localizeTables[$allowedTable] = (bool)$this->tcaSchemaFactory->get($allowedTable)->isLanguageAware();
+            }
+
+            foreach ($dbAnalysis->itemArray as $index => $item) {
+                // No action required, if referenced tables cannot be localized (current value will be used).
+                if (empty($localizeTables[$item['table']])) {
+                    continue;
+                }
+
+                // Since select or group fields can reference many records, check whether there's already a localization.
+                $recordLocalization = BackendUtility::getRecordLocalization($item['table'], $item['id'], $language);
+                if (!$recordLocalization) {
+                    $this->localize($copyMappingArray, $item['table'], $item['id'], $language);
+                }
+            }
+        }
+    }
+
+    protected function createRelationHandlerInstance(): RelationHandler
+    {
+        $isWorkspacesLoaded = ExtensionManagementUtility::isLoaded('workspaces');
+        $relationHandler = GeneralUtility::makeInstance(RelationHandler::class);
+        $relationHandler->setWorkspaceId($GLOBALS['BE_USER']->workspace);
+        $relationHandler->setUseLiveReferenceIds($isWorkspacesLoaded);
+        $relationHandler->setUseLiveParentIds($isWorkspacesLoaded);
+        return $relationHandler;
+    }
+
+    protected function getRelationFieldType($conf): bool|string
+    {
+        if (
+            empty($conf['foreign_table'])
+            || !in_array($conf['type'] ?? '', ['inline', 'file'], true)
+            || ($conf['type'] === 'file' && !($conf['foreign_field'] ?? false))
+        ) {
+            return false;
+        }
+        if ($conf['foreign_field'] ?? false) {
+            return 'field';
+        }
+        if ($conf['MM'] ?? false) {
+            return 'mm';
+        }
+        return 'list';
+    }
+
+    protected function isReferenceField($conf): bool
+    {
+        if (!isset($conf['type'])) {
+            return false;
+        }
+        return ($conf['type'] === 'group') || (($conf['type'] === 'select' || $conf['type'] === 'category') && !empty($conf['foreign_table']));
     }
 }

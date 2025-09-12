@@ -30,6 +30,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                 $this->colPos,
                 $this->sys_language,
                 $this->uid_pid,
+                $request,
             )
         )->getWizardItems();
 

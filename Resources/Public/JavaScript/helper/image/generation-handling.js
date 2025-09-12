@@ -19,10 +19,14 @@ class GenerationHandling {
                             currentModal.querySelector('#wizardSlideOne textarea#imageGenerationPrompt').value = event.target.value;
                         });
                     }
+                    if(General.isUsable(data.imagePrompt)) {
+                        let cleanedPrompt = data.imagePrompt.replace(/\s--[a-zA-Z]+\s[^\s-]+/g, '').trim();
+                        currentModal.querySelector('.panel-body textarea#imageGenerationPrompt').value = cleanedPrompt;
+                    }
                     currentModal.querySelector('.panel-body #languageSelection').style.display = 'none';
                     this.addGenerateImageButton(currentModal, data, scope);
                 }
-            },
+            }
         );
     }
     addGenerateImageButton(

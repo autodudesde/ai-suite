@@ -11,6 +11,7 @@
                             <f:translate key="AiSuite.imageSettings.midjourney.version" extensionName="ai_suite"/>
                         </label>
                         <select id="midjourneyVersion" name="midjourneyVersion" class="form-control" data-prefix="--v">
+                            <option value="7.0" {f:if(condition: '{additionalImageSettings.v} == "7.0"', then: 'selected="selected"')}>7.0</option>
                             <option value="6.1" {f:if(condition: '{additionalImageSettings.v} == "6.1"', then: 'selected="selected"')}>6.1 (Default)</option>
                             <option value="6.0" {f:if(condition: '{additionalImageSettings.v} == "6.0"', then: 'selected="selected"')}>6.0</option>
                             <option value="5.2" {f:if(condition: '{additionalImageSettings.v} == "5.2"', then: 'selected="selected"')}>5.2</option>
