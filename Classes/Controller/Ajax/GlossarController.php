@@ -52,8 +52,7 @@ class GlossarController extends AbstractAjaxController
         EventDispatcher       $eventDispatcher,
         GlossarService        $glossarService,
         DataHandler           $dataHandler,
-    )
-    {
+    ) {
         parent::__construct(
             $backendUserService,
             $requestService,
@@ -76,8 +75,7 @@ class GlossarController extends AbstractAjaxController
         $response = new Response();
         try {
             $success = $this->glossarService->syncDeeplGlossar((int)$request->getParsedBody()['pid']);
-        }
-        catch (\Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }
 

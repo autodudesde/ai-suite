@@ -116,8 +116,9 @@ class SendRequestService implements SingletonInterface
         return $librariesAnswer;
     }
 
-    public function sendDataRequest(string $targetEndpoint, array $additionalData = [],  string $prompt = '', string $langIsoCode = '', array $models = []): ClientAnswer {
-        if(count($models) > 0) {
+    public function sendDataRequest(string $targetEndpoint, array $additionalData = [], string $prompt = '', string $langIsoCode = '', array $models = []): ClientAnswer
+    {
+        if (count($models) > 0) {
             $modelTypes = [];
             foreach ($models as $model) {
                 $modelTypes[] = $model;

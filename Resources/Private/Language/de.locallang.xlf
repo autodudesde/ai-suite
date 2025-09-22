@@ -651,6 +651,9 @@
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
                 <source>Selected image will be generated. This may take a moment. Please wait...</source>
             <target>Das ausgewählte Bild wird generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessFlux" xml:space="preserve">
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
+            <target>Das ausgewählte Bild wird generiert. Dies kann einen Moment dauern. Bitte warten...</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
                 <source>Select pre-selection image option</source>
             <target>Wähle ein Bild der Vorauswahl aus</target></trans-unit>
@@ -675,6 +678,9 @@
             <trans-unit id="aiSuite.module.modal.midjourneySelectionError" xml:space="preserve">
                 <source>Unable to load selected Midjourney image</source>
             <target>Das ausgewählte Midjourney-Bild konnte nicht geladen werden</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.fluxSelectionError" xml:space="preserve">
+                <source>Unable to load selected Flux image</source>
+            <target>DALL-E-Bildvorschläge können nicht geladen werden</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.dalleSelectionError" xml:space="preserve">
                 <source>Unable to load DALL-E image suggestions</source>
             <target>DALL-E-Bildvorschläge können nicht geladen werden</target></trans-unit>
@@ -892,8 +898,8 @@
                 <source>Translate record (1 Credit)</source>
             <target>Datensatz übersetzen (1 Credit)</target></trans-unit>
             <trans-unit id="aiSuite.translateWholePage" xml:space="preserve">
-                <source>Translate Whole Page</source>
-            <target>Ganze Seite übersetzen</target></trans-unit>
+                <source>Translate whole page with AI</source>
+            <target>Ganze Seite mit KI übersetzen</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.translationInProcess" xml:space="preserve">
                 <source>Translation is in progress </source>
             <target>Übersetzungen werden erstellt</target></trans-unit>
@@ -952,11 +958,23 @@
                 <source>If active the AI "Einfache Sprache" Plugin will be shown within CKEditor / RTE fields.</source>
             <target>Wenn aktiv, wird das AI-Plugin „Einfache Sprache“ in den CKEditor-/RTE-Feldern angezeigt.</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
-                <source>AI translation options within translation wizard</source>
+                <source>AI translation options within page content translation wizard</source>
             <target>KI-Übersetzungsoptionen im Übersetzungsassistenten</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
-                <source>If active AI translation options will be added within the translation wizard</source>
+                <source>If active AI translation options will be added within the page content translation wizard</source>
             <target>Wenn aktiv, werden KI-Übersetzungsoptionen im Übersetzungsassistenten hinzugefügt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizard" xml:space="preserve">
+                <source>AI translation options within the list module</source>
+            <target>KI-Übersetzungsoptionen innerhalb des Listenmoduls</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizardDescription" xml:space="preserve">
+                <source>If active AI translation options will be added within the list module</source>
+            <target>Bei aktiver KI werden im Listenmodul Übersetzungsoptionen hinzugefügt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePage" xml:space="preserve">
+                <source>Show buttons "Translate whole page with AI" within page and list module</source>
+            <target>Schaltflächen „Ganze Seite mit KI übersetzen“ im Seiten- und Listenmodul anzeigen</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePageDescription" xml:space="preserve">
+                <source>If active buttons with title "Translate whole page with AI" will be added within page and list module</source>
+            <target>Wenn aktiv, werde die Schaltflächen mit dem Titel „Ganze Seite mit KI übersetzen“ im Seiten- und Listenmodul hinzugefügt</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSync" xml:space="preserve">
                 <source>"Synchronize DeepL glossaries" button within list module</source>
             <target>Button „DeepL-Glossare synchronisieren“ im Listenmodul</target></trans-unit>
@@ -1026,6 +1044,9 @@
             <trans-unit id="aiSuite.customPermOptions.modelDalle" xml:space="preserve">
                 <source>DALL-E</source>
             <target>DALL-E</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelFlux" xml:space="preserve">
+                <source>Flux</source>
+            <target>Flux</target></trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelMidjourney" xml:space="preserve">
                 <source>Midjourney</source>
             <target>Midjourney</target></trans-unit>
@@ -1404,6 +1425,9 @@
             <trans-unit id="tx_aisuite.error.backgroundTask.noUuidProvided">
                 <source>No UUID provided</source>
             <target>Keine UUID angegeben</target></trans-unit>
+            <trans-unit id="tx_aisuite.error.backgroundTask.fileUidNotFound">
+                <source>No valid fileUid provided/found</source>
+            <target>Keine gültige fileUid angegeben/gefunden</target></trans-unit>
             <trans-unit id="tx_aisuite.error.server.aiSuiteError">
                 <source>AI Suite Server error: %s</source>
             <target>AI Suite Server Fehler: %s</target></trans-unit>
@@ -1636,8 +1660,8 @@
                 <source>All (metadata, content)</source>
             <target>Alles (Metadaten, Inhalte)</target></trans-unit>
             <trans-unit id="tx_aisuite.action.translateWholePage">
-                <source>Translate whole page</source>
-            <target>Ganze Seite übersetzen</target></trans-unit>
+                <source>Translate whole page with AI</source>
+            <target>Ganze Seite mit KI übersetzen</target></trans-unit>
             <trans-unit id="tx_aisuite.action.retryTranslationTask">
                 <source>Retry translation task</source>
             <target>Übersetzungstask wiederholen</target></trans-unit>
@@ -1692,6 +1716,9 @@
             <trans-unit id="AiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
                 <source>Changed selection to default target language (previous language not available in current page tree).</source>
             <target>Auswahl auf Standardzielsprache geändert (vorherige Sprache im aktuellen Seitenbaum nicht verfügbar).</target></trans-unit>
+            <trans-unit id="AiSuite.notification.badge.new">
+                <source>New</source>
+            <target>Neu</target></trans-unit>
         </body>
     </file>
 </xliff>

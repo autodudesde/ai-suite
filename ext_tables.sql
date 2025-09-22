@@ -21,7 +21,7 @@ CREATE TABLE tx_aisuite_domain_model_requests (
 );
 
 CREATE TABLE tx_aisuite_domain_model_backgroundtask (
-    uuid varchar(64) DEFAULT '',
+    uuid varchar(128) DEFAULT '',
     type varchar(255) DEFAULT '',
     scope varchar(255) DEFAULT '',
 
@@ -38,6 +38,7 @@ CREATE TABLE tx_aisuite_domain_model_backgroundtask (
     table_name text,
     id_column text,
     table_uid int(11) DEFAULT 0,
+    mode varchar(20) DEFAULT '',
 
     PRIMARY KEY (uuid, type)
 );

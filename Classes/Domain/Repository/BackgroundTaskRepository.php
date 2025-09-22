@@ -59,8 +59,17 @@ class BackgroundTaskRepository
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-        return $queryBuilder->select('bt.*', 'p.title', 'p.slug', 'p.seo_title', 'p.description',
-            'p.og_title', 'p.og_description', 'p.twitter_title', 'p.twitter_description')
+        return $queryBuilder->select(
+            'bt.*',
+            'p.title',
+            'p.slug',
+            'p.seo_title',
+            'p.description',
+            'p.og_title',
+            'p.og_description',
+            'p.twitter_title',
+            'p.twitter_description'
+        )
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -85,8 +94,16 @@ class BackgroundTaskRepository
     public function findAllFileReferenceBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage',
-            'sfr.title', 'sfr.alternative', 'sfr.sys_language_uid', 'sfr.pid AS pageId')
+        return $queryBuilder->select(
+            'bt.*',
+            'sf.name AS fileName',
+            'sf.uid AS fileUid',
+            'sf.storage',
+            'sfr.title',
+            'sfr.alternative',
+            'sfr.sys_language_uid',
+            'sfr.pid AS pageId'
+        )
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -118,8 +135,15 @@ class BackgroundTaskRepository
     public function findAllFileMetadataBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-        return $queryBuilder->select('bt.*', 'sf.name AS fileName', 'sf.uid AS fileUid', 'sf.storage',
-            'sfm.title', 'sfm.description', 'sfm.alternative')
+        return $queryBuilder->select(
+            'bt.*',
+            'sf.name AS fileName',
+            'sf.uid AS fileUid',
+            'sf.storage',
+            'sfm.title',
+            'sfm.description',
+            'sfm.alternative'
+        )
             ->from($this->table, 'bt')
             ->leftJoin(
                 'bt',
@@ -152,10 +176,32 @@ class BackgroundTaskRepository
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
-            ->select('*')
-            ->from($this->table)
+            ->select('bt.*')
+            ->from($this->table, 'bt')
             ->where(
                 $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
+            )
+            ->executeQuery()
+            ->fetchAssociative();
+    }
+
+    public function findFileUid(int $uidLocal, string $uuid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        return $queryBuilder
+            ->select('bt.*', 'sfm.file AS fileUid')
+            ->from($this->table, 'bt')
+            ->leftJoin(
+                'bt',
+                'sys_file_metadata',
+                'sfm',
+                $queryBuilder->expr()->eq('sfm.uid', $queryBuilder->createNamedParameter($uidLocal))
+            )
+            ->where(
+                $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid)),
+                $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('fileMetadata')),
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_metadata')),
+                $queryBuilder->expr()->gt('sfm.file', 0)
             )
             ->executeQuery()
             ->fetchAssociative();
@@ -172,9 +218,6 @@ class BackgroundTaskRepository
             ->executeStatement();
     }
 
-    /**
-     * @throws DBALException
-     */
     public function updateStatus(array $data): void
     {
         foreach ($data as $uuid => $statusData) {
@@ -195,14 +238,15 @@ class BackgroundTaskRepository
     /**
      * @throws Exception
      */
-    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column): array
+    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column, string $mode = ''): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
             $queryBuilder->expr()->in('table_uid', $queryBuilder->createNamedParameter($foundUids, Connection::PARAM_INT_ARRAY)),
             $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName)),
+            $queryBuilder->expr()->eq('mode', $queryBuilder->createNamedParameter($mode))
         ];
-        if($column === 'all') {
+        if ($column === 'all') {
             $constraints[] = $queryBuilder->expr()->or(
                 $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('title')),
                 $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('alternative')),
@@ -211,7 +255,7 @@ class BackgroundTaskRepository
             $constraints[] = $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter($column));
         }
 
-        return $queryBuilder->select('table_name', 'table_uid', 'status')
+        return $queryBuilder->select('table_name', 'table_uid', 'mode', 'status')
             ->from($this->table)
             ->where(
                 ...$constraints
@@ -241,9 +285,6 @@ class BackgroundTaskRepository
             );
     }
 
-    /**
-     * @throws DBALException
-     */
     public function deleteByUuids(array $uuids): int
     {
         if (empty($uuids)) {
@@ -259,11 +300,6 @@ class BackgroundTaskRepository
             ->executeStatement();
     }
 
-    /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws DBALException
-     */
     public function countBackgroundTasksByStatusAndScope(): array
     {
         $results = [];
@@ -334,7 +370,6 @@ class BackgroundTaskRepository
             ->fetchAllAssociative();
 
         $results = array_merge($results, $fileMetaResults);
-
         return $results;
     }
 

@@ -12,7 +12,6 @@
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -34,12 +33,7 @@ class AbstractRepository
         $this->sortBy = $sortBy;
     }
 
-    /**
-     * @throws Exception
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
-    protected function selectQuery(string $column, string $value): array
+    protected function selectQuery(string $column, int $value): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()
@@ -80,16 +74,5 @@ class AbstractRepository
     public function findByUid(int $uid): array
     {
         return $this->selectQuery('uid', $uid);
-    }
-
-    /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     *
-     * @param int $pid  the page id
-     */
-    public function findByPid(int $pid): array
-    {
-        return $this->selectQuery('pid', $pid);
     }
 }

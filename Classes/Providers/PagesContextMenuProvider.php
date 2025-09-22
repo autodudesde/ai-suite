@@ -18,7 +18,6 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 
-
 class PagesContextMenuProvider extends AbstractProvider
 {
     protected BackendUserService $backendUserService;
@@ -68,7 +67,7 @@ class PagesContextMenuProvider extends AbstractProvider
                     'type' => 'item',
                     'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translateWholePage',
                     'iconIdentifier' => 'actions-localize',
-                    'callbackAction' => 'translateWholePage',
+                    'callbackAction' => 'contextMenuLink',
                 ],
             ],
         ],
@@ -108,13 +107,19 @@ class PagesContextMenuProvider extends AbstractProvider
                 $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_filelist_files_prepare', ['id' => $this->identifier])->__toString();
                 break;
             case 'translateWholePage':
-                // No specific module URL needed for whole page translation
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('web_layout', ['id' => $this->identifier])->__toString();
                 break;
         }
-        return [
+        $attributes = [
             'data-callback-module' => '@autodudes/ai-suite/context-menu/page-context-menu-actions',
             'data-module-url' => $moduleUrl,
         ];
+
+        if ($itemName === 'translateWholePage') {
+            $attributes['data-action'] = 'translateWholePage';
+        }
+
+        return $attributes;
     }
 
     /**
@@ -130,14 +135,14 @@ class PagesContextMenuProvider extends AbstractProvider
         if (isset($items['info'])) {
             $position = array_search('info', array_keys($items), true);
 
-            $beginning = array_slice($items, 0, $position+1, true);
+            $beginning = array_slice($items, 0, $position + 1, true);
             $end = array_slice($items, $position, null, true);
 
             $items = $beginning + $localItems + $end;
-        } else if (isset($items['newFile'])) {
+        } elseif (isset($items['newFile'])) {
             $position = array_search('newFile', array_keys($items), true);
 
-            $beginning = array_slice($items, 0, $position+1, true);
+            $beginning = array_slice($items, 0, $position + 1, true);
             $end = array_slice($items, $position, null, true);
 
             $items = $beginning + $localItems + $end;
@@ -202,6 +207,6 @@ class PagesContextMenuProvider extends AbstractProvider
 
     protected function canTranslateWholePage(): bool
     {
-        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation');
+        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_whole_page');
     }
 }

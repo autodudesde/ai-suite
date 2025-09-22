@@ -63,7 +63,7 @@ class BackgroundTaskService
             'twitter_description' => 0
         ];
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
-            if(!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
                 continue;
             }
             try {
@@ -76,12 +76,12 @@ class BackgroundTaskService
                         $pageId = $page['l10n_parent'];
                     }
                     $site = $this->siteFinder->getSiteByPageId($pageId);
-                    $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier() ?? '';
+                    $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier();
                 }
             } catch (\Exception $e) {
                 $foundBackgroundTask['flag'] = '';
             }
-            if($counter[$foundBackgroundTask['column']] < 50) {
+            if ($counter[$foundBackgroundTask['column']] < 50) {
                 $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
             }
             $uuidStatus[$foundBackgroundTask['uuid']] =  [
@@ -109,7 +109,7 @@ class BackgroundTaskService
                             $pageId = $page['l10n_parent'];
                         }
                         $site = $this->siteFinder->getSiteByPageId($pageId);
-                        $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier() ?? '';
+                        $foundBackgroundTask['flag'] = $site->getLanguageById($foundBackgroundTask['sys_language_uid'])->getFlagIdentifier();
                     }
                 } catch (\Throwable $e) {
                     $foundBackgroundTask['flag'] = '';
@@ -133,7 +133,7 @@ class BackgroundTaskService
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
             if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
-                if($counter[$foundBackgroundTask['column']] < 50) {
+                if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
@@ -145,12 +145,9 @@ class BackgroundTaskService
         }
     }
 
-    /**
-     * @throws DBALException
-     */
     public function mergeBackgroundTasksAndUpdateStatus(array &$backgroundTasks, array $fetchedStatusData): void
     {
-        if(count($fetchedStatusData) > 0) {
+        if (count($fetchedStatusData) > 0) {
             $this->backgroundTaskRepository->updateStatus($fetchedStatusData);
         }
 
@@ -269,7 +266,7 @@ class BackgroundTaskService
 
     public function fetchBackgroundTaskStatus(bool $update = false): array
     {
-        if($update) {
+        if ($update) {
             $uuidStatus = $this->collectUuidsForStatusUpdate();
             if (count($uuidStatus) > 0) {
                 $sendRequestService = GeneralUtility::makeInstance(
@@ -352,48 +349,9 @@ class BackgroundTaskService
         }
     }
 
-    public function retryBackgroundTask(string $uuid): bool
-    {
-        try {
-            if (empty($uuid)) {
-                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.noUuidProvided'));
-            }
-
-            $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
-            if (empty($backgroundTask)) {
-                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$uuid]));
-            }
-
-            $answer = $this->sendRequestService->sendDataRequest(
-                'handleBackgroundTask',
-                [
-                    'uuid' => $uuid,
-                    'mode' => 'retry'
-                ]
-            );
-
-            if ($answer->getType() === 'Error') {
-                throw new \Exception($this->translationService->translate('tx_aisuite.error.server.aiSuiteError', [$answer->getResponseData()['message']]));
-            }
-
-            $this->backgroundTaskRepository->updateStatus([
-                $uuid => [
-                    'status' => 'pending',
-                    'answer' => '',
-                    'error' => ''
-                ]
-            ]);
-
-            return true;
-        } catch (\Throwable $e) {
-            $this->logger->error('Error while retrying background task: ' . $e->getMessage());
-            return false;
-        }
-    }
-
     public function generateTranslationPageButtons(ServerRequestInterface $request): string
     {
-        if (!$this->backendUserService->getBackendUser()->check('custom_options', 'tx_aisuite_features:enable_translations')) {
+        if (!$this->backendUserService->getBackendUser()->check('custom_options', 'tx_aisuite_features:enable_translation_whole_page')) {
             return '';
         }
 
@@ -424,7 +382,7 @@ class BackgroundTaskService
                 $status = $parts[0] ?? '';
                 $uuid = $parts[1] ?? '';
                 if (!empty($uuid)) {
-                    if($status === 'error') {
+                    if ($status === 'error') {
                         $iconSynchronize = $this->iconFactory->getIcon('actions-document-synchronize', 'small')->render();
                         $actionButtonsAbove .= '<a href="#" id="aiSuiteTranslationTaskRetry" class="btn btn-default" data-uuid="' . $uuid . '">'
                             . $iconSynchronize

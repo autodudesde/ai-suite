@@ -63,12 +63,12 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
     {
         $view = $this->backendViewFactory->create($this->request, ['ai_suite']);
         try {
-            if(!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_toolbar_stats_item')) {
+            if (!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_toolbar_stats_item')) {
                 return $view->render('ToolbarItems/RequestsToolbarItem');
             }
             $requests = $this->requestsRepository->findEntryByApiKey($this->extConf['aiSuiteApiKey']);
             if (count($requests) > 0 && $requests['free_requests'] >= 0 && $requests['paid_requests'] >= 0 && $requests['abo_requests'] >= 0) {
-                if(!empty($requests['model_type'])) {
+                if (!empty($requests['model_type'])) {
                     $requests['abo_requests'] = (int)$requests['model_type'] - $requests['abo_requests'] . ' / ' . $requests['model_type'];
                 } else {
                     unset($requests['abo_requests']);

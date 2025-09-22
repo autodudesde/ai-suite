@@ -62,7 +62,7 @@ class TranslationController extends AbstractAjaxController
     public function librariesAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::TRANSLATE,'translate', ['text']);
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::TRANSLATE, 'translate', ['text']);
 
         if ($librariesAnswer->getType() === 'Error') {
             $response->getBody()->write(

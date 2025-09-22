@@ -45,7 +45,7 @@ class SettingsFactory
     public function mergeExtConfAndUserGroupSettings(): array
     {
         try {
-            if($this->backendUserService->getBackendUser()->isAdmin()) {
+            if ($this->backendUserService->getBackendUser()->isAdmin()) {
                 return $this->extConf;
             }
             foreach ($this->extConf as $key => $value) {

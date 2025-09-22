@@ -135,7 +135,7 @@ class PagesController extends AbstractBackendController
             $parsedBody = $this->request->getParsedBody();
             $textAi = isset($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
             $paidRequestsAvailable = isset($parsedBody['paidRequestsAvailable']) ? $parsedBody['paidRequestsAvailable'] === '1' : false;
-            if((int)$parsedBody['startStructureFromPid'] === -1) {
+            if ((int)$parsedBody['startStructureFromPid'] === -1) {
                 $langIsoCode = $parsedBody['sysLanguage'];
             } else {
                 $langIsoCode = $this->siteService->getIsoCodeByLanguageId(0, (int)$parsedBody['startStructureFromPid']);

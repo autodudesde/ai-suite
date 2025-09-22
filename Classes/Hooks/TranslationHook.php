@@ -19,7 +19,6 @@ use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-
 class TranslationHook
 {
     protected TranslationService $translationService;
@@ -56,7 +55,8 @@ class TranslationHook
      * @throws AspectNotFoundException
      * @throws Exception
      */
-    public function processCmdmap_afterFinish(DataHandler $dataHandler): void {
+    public function processCmdmap_afterFinish(DataHandler $dataHandler): void
+    {
         try {
             if (isset($dataHandler->cmdmap['localization'][0]['aiSuite'])) {
                 $aiSuiteConfig = $dataHandler->cmdmap['localization'][0]['aiSuite'];
@@ -114,7 +114,7 @@ class TranslationHook
                 $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
                 if (count($fields) > 0) {
                     $fields = array_filter($fields, function ($field, $key) {
-                        if($key === 'pi_flexform') {
+                        if ($key === 'pi_flexform') {
                             return true;
                         }
                         return !is_array($field);
@@ -192,15 +192,6 @@ class TranslationHook
                 if (!empty($pageMetadata)) {
                     $allTranslateFields['pages'][$dataHandler->copyMappingArray_merged['pages'][$pageId]] = $pageMetadata;
                 }
-
-//                $fileReferences = $this->pagesRepository->getFileReferencesOnPage($dataHandler->copyMappingArray_merged['pages'][$pageId], $destLangId);
-//                $fileRefFields = $this->translationService->collectFileReferenceTranslationFields($fileReferences);
-//                if (!empty($fileRefFields)) {
-//                    foreach ($fileRefFields as $fileRefUid => $fields) {
-//                        $allTranslateFields['sys_file_reference'][$fileRefUid] = $fields;
-//                    }
-//                }
-
                 break;
             default:
                 $request = $GLOBALS['TYPO3_REQUEST'];
@@ -276,7 +267,7 @@ class TranslationHook
                 $this->addErrorFlashMessage();
             } else {
                 $pageUid = array_key_first($allTranslateFields['pages'] ?? null);
-                if(!empty($pageUid)) {
+                if (!empty($pageUid)) {
                     $this->translationService->updatePageSlug($pageUid);
                 }
             }

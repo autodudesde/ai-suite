@@ -2,16 +2,17 @@
  * Module: @autodudes/ai-suite/context-menu/page-context-menu-actions-actions
  */
 
-import PageLocalization from '@autodudes/ai-suite/translation/page-localization.js';
-
 class ContextMenuActions {
     contextMenuLink (table, uid, data) {
+        if (data.action === 'translateWholePage') {
+            if (top.TYPO3 && top.TYPO3.Backend) {
+                top.TYPO3.Backend.aiSuiteWholePageTranslationWizard = {
+                    pageId: uid,
+                    shouldOpen: true
+                };
+            }
+        }
         top.TYPO3.Backend.ContentContainer.setUrl(data.moduleUrl);
-    }
-
-    translateWholePage(table, uid, data) {
-        const pageId = parseInt(uid);
-        PageLocalization.showWholePageTranslationWizard(pageId);
     }
 }
 

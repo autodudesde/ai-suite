@@ -52,8 +52,7 @@ abstract class AbstractAjaxController
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
         EventDispatcher $eventDispatcher
-    )
-    {
+    ) {
         $this->backendUserService = $backendUserService;
         $this->requestService = $requestService;
         $this->promptTemplateService = $promptTemplateService;

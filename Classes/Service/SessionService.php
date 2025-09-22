@@ -76,7 +76,8 @@ class SessionService implements SingletonInterface
         return $sessionData['ai_suite_context'] ?? 'default';
     }
 
-    public function getLastRoute(): string {
+    public function getLastRoute(): string
+    {
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData['ai_suite_last_route'] ?? '';
     }
@@ -93,10 +94,10 @@ class SessionService implements SingletonInterface
                 }
             }
         }
-        if(array_key_exists('backgroundTaskFilter', $queryParams)) {
+        if (array_key_exists('backgroundTaskFilter', $queryParams)) {
             $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] = $queryParams['backgroundTaskFilter'];
         }
-        if(array_key_exists('clickAndSave', $queryParams)) {
+        if (array_key_exists('clickAndSave', $queryParams)) {
             $sessionData[self::AI_SUITE_CLICK_AND_SAVE] = $queryParams['clickAndSave'] === '1';
         }
     }
@@ -113,12 +114,14 @@ class SessionService implements SingletonInterface
         return $sessionData[self::AI_SUITE_WEB_PAGE_ID] ?? 0;
     }
 
-    public function getBackgroundTaskFilter(): string {
+    public function getBackgroundTaskFilter(): string
+    {
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] ?? '';
     }
 
-    public function getClickAndSaveState(): bool {
+    public function getClickAndSaveState(): bool
+    {
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_CLICK_AND_SAVE] ?? false;
     }

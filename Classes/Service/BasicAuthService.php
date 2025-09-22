@@ -25,7 +25,7 @@ class BasicAuthService implements SingletonInterface
     public function getBasicAuth(): string
     {
         if ((bool)$this->authConf['enable']) {
-            if(!empty($this->authConf['user']) && !empty($this->authConf['pass'])) {
+            if (!empty($this->authConf['user']) && !empty($this->authConf['pass'])) {
                 return base64_encode($this->authConf['user']. ':' . $this->authConf['pass']);
             }
             throw new \RuntimeException('Basic Auth is enabled, but no user or password is configured.', 1698251234);

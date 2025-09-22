@@ -2,7 +2,6 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-
 use TYPO3\CMS\Core\SingletonInterface;
 
 class DirectiveService implements SingletonInterface
@@ -34,8 +33,10 @@ class DirectiveService implements SingletonInterface
         switch ($unit) {
             case 'g':
                 $size *= 1024;
+                // no break
             case 'm':
                 $size *= 1024;
+                // no break
             case 'k':
                 $size *= 1024;
         }

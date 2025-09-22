@@ -13,7 +13,8 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 class AfterFormEnginePageInitializedEventListener
 {
     protected PageRenderer $pageRenderer;
-    public function __construct(PageRenderer $pageRenderer) {
+    public function __construct(PageRenderer $pageRenderer)
+    {
         $this->pageRenderer = $pageRenderer;
     }
 

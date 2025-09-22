@@ -78,15 +78,15 @@ class MassActionService implements SingletonInterface
         $sessionData = $this->sessionService->getParametersForRoute('ai_suite_massaction_filelist_files_prepare');
 
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-        $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
+        $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
             return $library['name'] === 'Vision';
         });
 
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
 
         $pendingFileMetadata = [];
-        $parsedFiles = [];
-        $unsupportedFiles = [];
+        $fileMetadata = [];
+        $unsupportedFileMetadata = [];
         $folderName = '';
         if ($directoryId !== '') {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryId);
@@ -103,29 +103,82 @@ class MassActionService implements SingletonInterface
 
                 $languageParts = isset($sessionData['options']['sysLanguage']) ? explode('__', $sessionData['options']['sysLanguage']) : [];
                 $column = $sessionData['options']['column'] ?? 'all';
+
                 $languageId = isset($languageParts[1]) ? (int)$languageParts[1] : 0;
                 $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
                     $fileUids,
                     $column,
                     'file',
-                    $languageId,
-                    isset($sessionData['options']['showOnlyEmpty']),
-                    isset($sessionData['options']['showOnlyUsed'])
+                    $languageId
                 );
-                $metadataUids = array_column($metadataList, 'uid');
-                $pendingFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($metadataUids, 'sys_file_metadata', $column);
-                $pendingFileMetadata = array_reduce($pendingFileMetadata, function ($carry, $item) {
-                    $carry[$item['table_uid']] = $item['status'];
-                    return $carry;
+
+                if ($languageId > 0) {
+                    $translatedFileUids = array_keys($metadataList);
+
+                    $nonTranslatedFileUids = array_diff($fileUids, $translatedFileUids);
+
+                    $defaultLanguageMetadataUids = $this->sysFileMetadataRepository->findDefaultLanguageMetadataUidsByFileUids($nonTranslatedFileUids);
+
+                    foreach ($nonTranslatedFileUids as $fileUid) {
+                        if ($fileUid === 0) {
+                            continue;
+                        }
+                        $defaultMetadataUid = $defaultLanguageMetadataUids[$fileUid] ?? 0;
+                        if ($defaultMetadataUid === 0) {
+                            $this->logger->error('Missing default file metadata for file ' . $fileUid);
+                            continue;
+                        }
+                        $metadataList[$fileUid] = [
+                            'uid' => $defaultMetadataUid,
+                            'file' => $fileUid,
+                            'title' => '',
+                            'alternative' => '',
+                            'description' => '',
+                            'mode' => 'NEW'
+                        ];
+                    }
+                }
+
+                $showOnlyEmpty = isset($sessionData['options']['showOnlyEmpty']);
+                $showOnlyUsed = isset($sessionData['options']['showOnlyUsed']);
+                if ($showOnlyEmpty || $showOnlyUsed) {
+                    $metadataList = $this->filterMetadataList($metadataList, $column, $showOnlyEmpty, $showOnlyUsed);
+                }
+
+                $translatedMetadata = [];
+                $nonTranslatedMetadata = [];
+                foreach ($metadataList as $fileUid => $metadata) {
+                    if (isset($metadata['mode']) && $metadata['mode'] === "NEW") {
+                        $nonTranslatedMetadata[$fileUid] = $metadata;
+                    } else {
+                        $translatedMetadata[$fileUid] = $metadata;
+                    }
+                }
+                $translatedMetadataUids = array_column($translatedMetadata, 'uid');
+                $nonTranslatedMetadataUids = array_column($nonTranslatedMetadata, 'uid');
+                $pendingTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($translatedMetadataUids, 'sys_file_metadata', $column);
+                $pendingTranslatedFileMetadata = array_reduce($pendingTranslatedFileMetadata, function ($task, $item) {
+                    $task[$item['table_uid']] = $item['status'];
+                    return $task;
                 }, []);
+                $pendingNonTranslatedFileMetadata = [];
+                if ($languageId > 0) {
+                    $pendingNonTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($nonTranslatedMetadataUids, 'sys_file_metadata', $column, 'NEW');
+                    $pendingNonTranslatedFileMetadata = array_reduce($pendingNonTranslatedFileMetadata, function ($task, $item) {
+                        $task[$item['table_uid']] = $item['status'];
+                        return $task;
+                    }, []);
+                }
+                $pendingFileMetadata = $pendingTranslatedFileMetadata + $pendingNonTranslatedFileMetadata;
+
                 foreach ($files as $file) {
                     if ($file->checkActionPermission('write') && strpos('image', $file->getMimeType()) !== -1) {
                         if (array_key_exists($file->getUid(), $metadataList)) {
                             $fileMeta = $metadataList[$file->getUid()];
-                            if(in_array($file->getMimeType(), $this->supportedMimeTypes)) {
-                                $parsedFiles[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
+                            if (in_array($file->getMimeType(), $this->supportedMimeTypes)) {
+                                $fileMetadata[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
                             } else {
-                                $unsupportedFiles[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
+                                $unsupportedFileMetadata[$file->getUid()] = FileMetadata::createFromFileObject($file, $fileMeta);
                             }
                         }
                     }
@@ -136,12 +189,13 @@ class MassActionService implements SingletonInterface
         return [
             'directory' => $directoryId,
             'directoryName' => $folderName,
-            'files' => $parsedFiles,
-            'unsupportedFiles' => $unsupportedFiles,
+            'fileMetadata' => $fileMetadata,
+            'unsupportedFileMetadata' => $unsupportedFileMetadata,
             'depths' => [1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5],
             'columns' => array_merge_recursive(
                 ['all' => $this->translationService->translate('tx_aisuite.module.massActionFilelist.allColumns')],
-                $this->metadataService->getFileMetadataColumns()),
+                $this->metadataService->getFileMetadataColumns()
+            ),
             'activeColumn' => $sessionData['options']['column'] ?? 'all',
             'sysLanguages' => $availableLanguages,
             'alreadyPendingFiles' => $pendingFileMetadata,
@@ -151,5 +205,37 @@ class MassActionService implements SingletonInterface
             'preSelection' => $sessionData['options'] ?? [],
             'maxAllowedFileSize' => $this->directiveService->getEffectiveMaxUploadSize(),
         ];
+    }
+
+    private function filterMetadataList(array $metadataList, string $column, bool $showOnlyEmpty, bool $showOnlyUsed): array
+    {
+        $filteredList = $metadataList;
+
+        if ($showOnlyEmpty) {
+            $filteredList = array_filter($filteredList, function ($metadata) use ($column) {
+                return $this->isMetadataEmpty($metadata, $column);
+            });
+        }
+
+        if ($showOnlyUsed) {
+            $filteredList = array_filter($filteredList, function ($metadata) {
+                return $this->sysFileMetadataRepository->isFileUsed($metadata['file']);
+            });
+        }
+
+        return $filteredList;
+    }
+
+    private function isMetadataEmpty(array $metadata, string $column): bool
+    {
+        if ($column === 'title') {
+            return empty($metadata['title']);
+        }
+
+        if ($column === 'alternative') {
+            return empty($metadata['alternative']);
+        }
+
+        return empty($metadata['title']) && empty($metadata['alternative']);
     }
 }

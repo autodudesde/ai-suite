@@ -38,7 +38,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
 
     $services->set(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class);
 
-    $containerBuilder->addCompilerPass(new class implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
+    $containerBuilder->addCompilerPass(new class () implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
         public function process(ContainerBuilder $container): void
         {
             if (!$container->hasDefinition(\AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class)) {
@@ -47,7 +47,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             try {
                 $extConfig = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)
                     ->get('ai_suite');
-                $disableTranslationFunctionality = array_key_exists('disableTranslationFunctionality', $extConfig) && !empty($extConfig['disableTranslationFunctionality']) && (bool)$extConfig['disableTranslationFunctionality'];
+                $disableTranslationFunctionality = array_key_exists('disableTranslationFunctionality', $extConfig) && !empty($extConfig['disableTranslationFunctionality']) && $extConfig['disableTranslationFunctionality'] === true;
             } catch (\Throwable $e) {
                 $disableTranslationFunctionality = false;
             }

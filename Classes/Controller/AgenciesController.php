@@ -101,7 +101,7 @@ class AgenciesController extends AbstractBackendController
     public function translateXlfAction(): ResponseInterface
     {
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agencies/creation.js');
-        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::GOOGLE_TRANSLATE,'translate', ['translate']);
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::GOOGLE_TRANSLATE, 'translate', ['translate']);
         $this->view->assignMultiple([
             'allLanguagesList' => $this->siteService->getAvailableLanguages(),
             'translateGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['translateGenerationLibraries']),

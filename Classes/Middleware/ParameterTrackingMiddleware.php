@@ -29,7 +29,7 @@ class ParameterTrackingMiddleware implements MiddlewareInterface
             if (!empty($route)) {
                 $this->sessionService->trackRequestParameters($request, $route);
             }
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             // silent fail
         }
         return $handler->handle($request);

@@ -153,7 +153,7 @@ class PageContentFactory
         $dataHandler->process_datamap();
 
         if (count($dataHandler->errorLog) > 0) {
-            throw new AiSuiteException('Content/SaveContent','', '', $dataHandler->errorLog[0], $content['regenerateReturnUrl']);
+            throw new AiSuiteException('Content/SaveContent', '', '', $dataHandler->errorLog[0], $content['regenerateReturnUrl']);
         }
     }
 
@@ -167,13 +167,13 @@ class PageContentFactory
         $title = empty($imageTitle) ? 'ai-generated-image-' . time() : $imageTitle;
 
         $defaultFolder = null;
-        if($this->backendUserService->getBackendUser()->isAdmin()) {
+        if ($this->backendUserService->getBackendUser()->isAdmin()) {
             $storage = $this->storageRepository->getDefaultStorage();
             $defaultFolder = $storage->getDefaultFolder();
         } else {
             $availableFileMounts = $this->backendUserService->getBackendUser()->getFileMountRecords();
             if (count($availableFileMounts) === 0) {
-                throw new AiSuiteException('Content/SaveContent','aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
+                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
             }
             foreach ($availableFileMounts as $fileMount) {
                 $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['identifier']);
@@ -185,7 +185,7 @@ class PageContentFactory
                 }
             }
             if ($defaultFolder === null) {
-                throw new AiSuiteException('Content/SaveContent','aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
+                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
             }
         }
         if (!empty($this->extConf['mediaStorageFolder'])) {

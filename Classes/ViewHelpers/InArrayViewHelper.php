@@ -14,7 +14,7 @@ final class InArrayViewHelper extends AbstractViewHelper
 
     public function render(): string
     {
-        if(array_key_exists($this->arguments['needle'], $this->arguments['haystack'])) {
+        if (array_key_exists($this->arguments['needle'], $this->arguments['haystack'])) {
             return $this->arguments['haystack'][$this->arguments['needle']];
         }
         return '';

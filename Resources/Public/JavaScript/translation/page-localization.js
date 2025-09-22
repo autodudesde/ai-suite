@@ -40,6 +40,14 @@ class PageLocalization {
 
         this.addDeleteEventListener();
         this.addRetryEventListener();
+
+        if (top.TYPO3?.Backend?.aiSuiteWholePageTranslationWizard?.shouldOpen) {
+            const pageId = top.TYPO3.Backend.aiSuiteWholePageTranslationWizard.pageId;
+            top.TYPO3.Backend.aiSuiteWholePageTranslationWizard.shouldOpen = false;
+            if (!isNaN(pageId)) {
+                this.showWholePageTranslationWizard(pageId);
+            }
+        }
     }
 
     showWholePageTranslationWizard(pageId) {
@@ -54,10 +62,10 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-1',
-            TYPO3.lang['tx_aisuite.js.wizard.selectLanguages'],
+            TYPO3.lang['tx_aisuite.js.wizard.selectLanguages'] ?? 'Select Languages',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.languageSelection'],
+            TYPO3.lang['tx_aisuite.js.wizard.languageSelection'] ?? 'Language Selection',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();
@@ -82,10 +90,10 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-2',
-            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'],
+            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'] ?? 'Translation Summary',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'],
+            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'] ?? 'Translation Summary',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();
@@ -113,10 +121,10 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-3',
-            TYPO3.lang['tx_aisuite.js.wizard.translationProgress'],
+            TYPO3.lang['tx_aisuite.js.wizard.translationProgress'] ?? 'Translation Progress',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.translationInProgress'],
+            TYPO3.lang['tx_aisuite.js.wizard.translationInProgress'] ?? 'Translation in Progress',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();

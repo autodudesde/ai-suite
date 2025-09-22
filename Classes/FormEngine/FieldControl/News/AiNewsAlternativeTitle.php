@@ -15,13 +15,13 @@ class AiNewsAlternativeTitle extends AbstractNode
 {
     public function render(): array
     {
-        if(!$GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_metadata_generation')) {
+        if (!$GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_metadata_generation')) {
             return [];
         }
         try {
             $siteService = GeneralUtility::makeInstance(SiteService::class);
             $pageUid = (int)$this->data['databaseRow']['pid'];
-            if(isset($this->data['databaseRow']['l10n_parent'][0]) && (int)$this->data['databaseRow']['l10n_parent'][0] > 0) {
+            if (isset($this->data['databaseRow']['l10n_parent'][0]) && (int)$this->data['databaseRow']['l10n_parent'][0] > 0) {
                 $pageUid = (int)$this->data['databaseRow']['l10n_parent'][0];
             }
             $langIsoCode = $siteService->getIsoCodeByLanguageId((int)$this->data['databaseRow']['sys_language_uid'], $pageUid);

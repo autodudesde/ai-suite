@@ -23,14 +23,11 @@ class RequestsRepository
     protected string $table = 'tx_aisuite_domain_model_requests';
     protected string $sortBy = 'uid';
 
-    public function __construct(ConnectionPool $connectionPool) {
+    public function __construct(ConnectionPool $connectionPool)
+    {
         $this->connectionPool = $connectionPool;
     }
 
-    /**
-     * @throws DriverException
-     * @throws DBALException
-     */
     public function findEntryByApiKey(string $apiKey): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -45,9 +42,6 @@ class RequestsRepository
         return array_key_exists('0', $result) ? $result[0] : [];
     }
 
-    /**
-     * @throws DriverException|DBALException
-     */
     public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
         $apiKeyEntity = $this->findEntryByApiKey($apiKey);
@@ -60,9 +54,6 @@ class RequestsRepository
         }
     }
 
-    /**
-     * @throws Exception|DBALException
-     */
     public function updateRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -79,9 +70,6 @@ class RequestsRepository
             ->executeStatement();
     }
 
-    /**$queryBuilder
-     * @throws Exception|DBALException
-     */
     public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -97,14 +85,11 @@ class RequestsRepository
             ->executeStatement();
     }
 
-    /**
-     * @throws DBALException
-     */
     public function deleteRequests(string $apiKey = ''): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->delete($this->table);
-        if(!empty($apiKey)) {
+        if (!empty($apiKey)) {
             $queryBuilder->where(
                 $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
             );

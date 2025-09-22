@@ -38,13 +38,10 @@ class PageStructureFactory
         $this->pagePermissionAssembler = $pagePermissionAssembler;
     }
 
-    /**
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function createFromArray(array $data, int $parentPageUid): int
+    public function createFromArray(array $data, string $parentPageUid): int
     {
         $newPagesCount = 0;
+        $parentPageUid = (int)$parentPageUid;
         if ($parentPageUid === -1) {
             $parentPageUid = 0;
         }
@@ -79,7 +76,7 @@ class PageStructureFactory
         return $newPagesCount;
     }
 
-    protected function createSlug(int $uid): void
+    protected function createSlug(string $uid): void
     {
         $fieldConfig = $GLOBALS['TCA']['pages']['columns']['slug']['config'];
         $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);

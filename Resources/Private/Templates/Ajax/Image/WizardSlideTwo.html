@@ -3,7 +3,7 @@
     <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
     <div class="panel panel-default wizard-slide" id="wizardSlideTwo">
         <div class="panel-body">
-            <f:if condition="{imageAiModel} == 'DALL-E'">
+            <f:if condition="{imageAiModel} == 'DALL-E' || {imageAiModel} == 'Flux'">
                 <f:then>
                     <div class="d-flex gap-3">
                         <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: imageSuggestions, fieldName: fieldName, table: table, position: position}" />

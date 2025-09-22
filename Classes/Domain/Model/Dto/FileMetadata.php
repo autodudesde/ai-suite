@@ -18,8 +18,7 @@ use TYPO3\CMS\Core\Resource\File;
 
 class FileMetadata
 {
-    // uid, identifier, title, description, copyright, alternative, publicUrl, userCanRead, userCanWrite, userCanDelete
-    protected int $uid;
+    protected string $uid;
     protected string $identifier;
     protected string $title;
     protected string $name;
@@ -31,9 +30,11 @@ class FileMetadata
     protected bool $userCanWrite;
     protected bool $userCanDelete;
     protected int $size;
+    protected int $fileUid;
+    protected string $mode;
 
     public function __construct(
-        int $uid = 0,
+        string $uid = '0',
         string $identifier = '',
         string $title = '',
         string $name = '',
@@ -44,9 +45,10 @@ class FileMetadata
         bool $userCanRead = false,
         bool $userCanWrite = false,
         bool $userCanDelete = false,
-        int $size = 0
-    )
-    {
+        int $size = 0,
+        int $fileUid = 0,
+        string $mode = ''
+    ) {
         $this->uid = $uid;
         $this->identifier = $identifier;
         $this->title = $title;
@@ -59,13 +61,15 @@ class FileMetadata
         $this->userCanWrite = $userCanWrite;
         $this->userCanDelete = $userCanDelete;
         $this->size = $size;
+        $this->fileUid = $fileUid;
+        $this->mode = $mode;
     }
 
     public static function createFromFileObject(File $file, array $metadata = []): self
     {
         $fileMeta = new self();
         $meta = count($metadata) > 0 ? $metadata : $file->getMetaData();
-        $fileMeta->uid = $meta['uid'];
+        $fileMeta->uid = (string)$meta['uid'];
         $fileMeta->identifier = $file->getIdentifier();
         $fileMeta->title = ($meta['title'] ?? '');
         $fileMeta->name = $file->getName();
@@ -77,15 +81,17 @@ class FileMetadata
         $fileMeta->userCanWrite = $file->checkActionPermission('write');
         $fileMeta->userCanDelete = $file->checkActionPermission('delete');
         $fileMeta->size = $file->getSize();
+        $fileMeta->fileUid = $meta['file'] ?? 0;
+        $fileMeta->mode = $meta['mode'] ?? '';
         return $fileMeta;
     }
 
-    public function setUid(int $uid): self
+    public function setUid(string $uid): self
     {
         $this->uid = $uid;
         return $this;
     }
-    public function getUid(): int
+    public function getUid(): string
     {
         return $this->uid;
     }
@@ -200,6 +206,26 @@ class FileMetadata
         $this->size = $size;
     }
 
+    public function getFileUid(): int
+    {
+        return $this->fileUid;
+    }
+
+    public function setFileUid(int $fileUid): void
+    {
+        $this->fileUid = $fileUid;
+    }
+
+    public function getMode(): string
+    {
+        return $this->mode;
+    }
+
+    public function setMode(string $mode): void
+    {
+        $this->mode = $mode;
+    }
+
     public function toArray(): array
     {
         return [
@@ -213,7 +239,9 @@ class FileMetadata
             'userCanRead' => $this->userCanRead,
             'userCanWrite' => $this->userCanWrite,
             'userCanDelete' => $this->userCanDelete,
-            'size' => $this->size
+            'size' => $this->size,
+            'fileUid' => $this->fileUid,
+            'mode' => $this->mode,
         ];
     }
 }

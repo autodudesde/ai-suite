@@ -22,7 +22,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 )]
 class ModifyPageLayoutContentEventListener
 {
-
     public function __construct(
         protected PageRenderer $pageRenderer,
         protected BackgroundTaskService $backgroundTaskService,
@@ -35,7 +34,7 @@ class ModifyPageLayoutContentEventListener
         $request = $event->getRequest();
         $pageLayoutContext = $this->createPageLayoutContext($request);
 
-        if(!empty($pageLayoutContext->getNewLanguageOptions())) {
+        if (!empty($pageLayoutContext->getNewLanguageOptions())) {
             $translationButtons = $this->backgroundTaskService->generateTranslationPageButtons($request);
 
             if (!empty($translationButtons)) {

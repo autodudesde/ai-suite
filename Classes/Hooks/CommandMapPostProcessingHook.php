@@ -66,7 +66,7 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
                 if ($newId === null) {
                     continue;
                 }
-                $cmd = ['tt_content' => [$newId=> [
+                $cmd = ['tt_content' => [$newId => [
                     'move' => [
                         'target' => -$last,
                         'action' => 'paste',

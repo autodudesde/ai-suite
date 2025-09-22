@@ -7,8 +7,6 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 
 class GlossarRepository extends AbstractRepository
 {
@@ -25,7 +23,7 @@ class GlossarRepository extends AbstractRepository
      */
     public function findBySysLanguageUid(int $languageId): array
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
             ->select("l18n_parent", 'input')
             ->from($this->table)
@@ -38,7 +36,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findEntryByUid(int $l18n_parent)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
             ->select('input')
             ->from($this->table)
@@ -51,7 +49,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findEntryByL18nParentAndUid(int $l18n_parent, int $srcLangUid)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
             ->select('input')
             ->from($this->table)
@@ -65,7 +63,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findGlossarEntriesByPid(int $pid)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder->count('pid')
                     ->from('tx_aisuite_domain_model_glossar')
                     ->where($queryBuilder->expr()->eq('pid', $pid))
@@ -75,7 +73,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findAllEntriesForPages(array $foundPages)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder->select('*')
             ->from('tx_aisuite_domain_model_glossar')
             ->where(
@@ -87,7 +85,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findAll()
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
             ->select('input')
             ->from($this->table)
@@ -97,7 +95,7 @@ class GlossarRepository extends AbstractRepository
 
     public function findDeeplGlossaryEntry(int $rootPageId, string $sourceLang, string $targetLang)
     {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
         return $queryBuilder->select('*')
             ->from('tx_aisuite_domain_model_deepl')
             ->where(
@@ -109,8 +107,9 @@ class GlossarRepository extends AbstractRepository
             ->fetchAssociative();
     }
 
-    public function findDeeplGlossaryUuidsByRootPageId(int $rootPageId) {
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
+    public function findDeeplGlossaryUuidsByRootPageId(int $rootPageId)
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
         return $queryBuilder->select('source_lang', 'target_lang', 'glossar_uuid')
             ->from('tx_aisuite_domain_model_deepl')
             ->where(
@@ -120,9 +119,9 @@ class GlossarRepository extends AbstractRepository
             ->fetchAllAssociative();
     }
 
-    public function insertOrUpdateDeeplGlossaryEntry(array|bool $existingRecord, string $glossaryId, string $rootPageId, array $nameParts): void
+    public function insertOrUpdateDeeplGlossaryEntry(array|bool $existingRecord, string $glossaryId, int $rootPageId, array $nameParts): void
     {
-        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('tx_aisuite_domain_model_deepl');
+        $connection = $this->connectionPool->getConnectionForTable('tx_aisuite_domain_model_deepl');
         if (is_array($existingRecord)) {
             $connection->update(
                 'tx_aisuite_domain_model_deepl',

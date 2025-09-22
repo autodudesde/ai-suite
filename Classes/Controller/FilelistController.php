@@ -78,7 +78,8 @@ final class FilelistController extends AbstractBackendController
         return $this->indexAction();
     }
 
-    protected function indexAction(): ResponseInterface {
+    protected function indexAction(): ResponseInterface
+    {
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::METADATA, 'createMetadata', ['text']);
         if ($librariesAnswer->getType() === 'Error') {
             $this->view->addFlashMessage(

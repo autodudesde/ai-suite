@@ -2,7 +2,6 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\SingletonInterface;
 
@@ -61,7 +60,7 @@ class FlexFormTranslationService implements SingletonInterface
             }
         }
         $this->removeEmptyArraysRecursively($flexFormData);
-        if(!empty($flexFormData)) {
+        if (!empty($flexFormData)) {
             $translateFields['pi_flexform'] = [
                 'data' => $flexFormData
             ];
@@ -88,8 +87,8 @@ class FlexFormTranslationService implements SingletonInterface
                             continue;
                         }
 
-                        if (!is_array($dataValues_current[$key]['el'] ?? false)) {
-                            $dataValues_current[$key]['el'] = [];
+                        if (!is_array($dataValues[$key]['el'] ?? false)) {
+                            $dataValues[$key]['el'] = [];
                         }
                         $theKey = key($el);
                         if (!is_array($dataValues[$key]['el'][$ik][$theKey]['el'] ?? false)) {
@@ -116,10 +115,7 @@ class FlexFormTranslationService implements SingletonInterface
                         // If is new record and a default is specified for field, use it.
                         $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
                     }
-                    if (!empty($dataValues_current[$key]['vDEF'])) {
-                        // If there is existing value, keep it
-                        $dataValues[$key]['vDEF'] = $dataValues_current[$key]['vDEF'];
-                    } elseif (!empty($fieldConfiguration['default'])) {
+                    if (!empty($fieldConfiguration['default'])) {
                         // If is new record and a default is specified for field, use it.
                         $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
                     }

@@ -651,6 +651,9 @@
             <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
                 <source>Selected image will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessFlux" xml:space="preserve">
+                <source>Selected image will be generated. This may take a moment. Please wait...</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
                 <source>Select pre-selection image option</source>
             </trans-unit>
@@ -674,6 +677,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.midjourneySelectionError" xml:space="preserve">
                 <source>Unable to load selected Midjourney image</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.fluxSelectionError" xml:space="preserve">
+                <source>Unable to load selected Flux image</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.dalleSelectionError" xml:space="preserve">
                 <source>Unable to load DALL-E image suggestions</source>
@@ -892,7 +898,7 @@
                 <source>Translate record (1 Credit)</source>
             </trans-unit>
             <trans-unit id="aiSuite.translateWholePage" xml:space="preserve">
-                <source>Translate Whole Page</source>
+                <source>Translate whole page with AI</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.translationInProcess" xml:space="preserve">
                 <source>Translation is in progress </source>
@@ -952,10 +958,22 @@
                 <source>If active the AI "Einfache Sprache" Plugin will be shown within CKEditor / RTE fields.</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
-                <source>AI translation options within translation wizard</source>
+                <source>AI translation options within page content translation wizard</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
-                <source>If active AI translation options will be added within the translation wizard</source>
+                <source>If active AI translation options will be added within the page content translation wizard</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizard" xml:space="preserve">
+                <source>AI translation options within the list module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizardDescription" xml:space="preserve">
+                <source>If active AI translation options will be added within the list module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePage" xml:space="preserve">
+                <source>Show buttons "Translate whole page with AI" within page and list module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePageDescription" xml:space="preserve">
+                <source>If active buttons with title "Translate whole page with AI" will be added within page and list module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSync" xml:space="preserve">
                 <source>"Synchronize DeepL glossaries" button within list module</source>
@@ -1025,6 +1043,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelDalle" xml:space="preserve">
                 <source>DALL-E</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelFlux" xml:space="preserve">
+                <source>Flux</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.modelMidjourney" xml:space="preserve">
                 <source>Midjourney</source>
@@ -1404,6 +1425,9 @@
             <trans-unit id="tx_aisuite.error.backgroundTask.noUuidProvided">
                 <source>No UUID provided</source>
             </trans-unit>
+            <trans-unit id="tx_aisuite.error.backgroundTask.fileUidNotFound">
+                <source>No valid fileUid provided/found</source>
+            </trans-unit>
             <trans-unit id="tx_aisuite.error.server.aiSuiteError">
                 <source>AI Suite Server error: %s</source>
             </trans-unit>
@@ -1636,7 +1660,7 @@
                 <source>All (metadata, content)</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.action.translateWholePage">
-                <source>Translate whole page</source>
+                <source>Translate whole page with AI</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.action.retryTranslationTask">
                 <source>Retry translation task</source>
@@ -1691,6 +1715,9 @@
             </trans-unit>
             <trans-unit id="AiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
                 <source>Changed selection to default target language (previous language not available in current page tree).</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.badge.new">
+                <source>New</source>
             </trans-unit>
         </body>
     </file>

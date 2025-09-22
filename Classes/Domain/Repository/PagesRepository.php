@@ -36,11 +36,6 @@ class PagesRepository extends AbstractRepository
         parent::__construct($connectionPool, $table, $sortBy);
     }
 
-    /**
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws DBALException
-     */
     public function findAvailablePages($uidList = []): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -52,7 +47,7 @@ class PagesRepository extends AbstractRepository
         $constraints = [
             $queryBuilder->expr()->eq('l10n_parent', 0)
         ];
-        if(count($uidList) > 0) {
+        if (count($uidList) > 0) {
             $constraints[] = $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($uidList, Connection::PARAM_INT_ARRAY));
         }
         $queryBuilder->where(...$constraints);
@@ -61,11 +56,7 @@ class PagesRepository extends AbstractRepository
             ->fetchAllAssociative();
     }
 
-    /**
-     * @throws Exception
-     * @throws DBALException
-     */
-    public function addPage(Pages $page): int
+    public function addPage(Pages $page): string
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->insert($this->table)->values($page->toDatabase());
@@ -73,13 +64,8 @@ class PagesRepository extends AbstractRepository
         return $queryBuilder->getConnection()->lastInsertId();
     }
 
-    /**
-     * @throws Exception
-     * @throws AspectNotFoundException
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     */
-    public function fetchNecessaryPageData(array $massActionData, array $foundPageUids, string $mode = 'pages'): array {
+    public function fetchNecessaryPageData(array $massActionData, array $foundPageUids, string $mode = 'pages'): array
+    {
         $context = GeneralUtility::makeInstance(Context::class);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()
@@ -87,10 +73,10 @@ class PagesRepository extends AbstractRepository
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
             ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $context->getPropertyFromAspect('workspace', 'id')));
         $fields = ['uid', 'title', 'slug'];
-        if($mode === 'pages') {
+        if ($mode === 'pages') {
             $fields[] = $massActionData['column'] . ' AS columnValue';
         }
-        if($mode === 'pages') {
+        if ($mode === 'pages') {
             $queryBuilder->select(...$fields)
                 ->from($this->table)
                 ->where(
@@ -101,23 +87,22 @@ class PagesRepository extends AbstractRepository
                 ->from($this->table);
         }
         $languageParts = explode('__', $massActionData['sysLanguage']);
-        if(isset($languageParts[1]) && (int)$languageParts[1] > 0) {
+        if (isset($languageParts[1]) && (int)$languageParts[1] > 0) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->in('l10n_parent', $queryBuilder->createNamedParameter($foundPageUids, Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter((int)$languageParts[1], Connection::PARAM_INT))
-
             );
         } else {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($foundPageUids, Connection::PARAM_INT_ARRAY)),
             );
         }
-        if($mode === 'pages' && (int)$massActionData['pageType'] > 0) {
+        if ($mode === 'pages' && (int)$massActionData['pageType'] > 0) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter($massActionData['pageType'], Connection::PARAM_INT))
             );
         }
-        if($mode === 'pages' && $massActionData['showOnlyEmpty']) {
+        if ($mode === 'pages' && $massActionData['showOnlyEmpty']) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq($massActionData['column'], $queryBuilder->createNamedParameter('', Connection::PARAM_STR)),
@@ -131,10 +116,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws Exception
-     *
      * @todo: PageRepository should not be responsible for fetching tt_content
      */
     public function getAvailableNewsDetailPlugins(array $pids, int $languageId): array
@@ -159,10 +140,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * @throws DBALException
-     * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
-     *
      * @todo: PageRepository should not be responsible for fetching sys_file_references
      */
     public function fetchSysFileReferences(array $pagesUids, string $column, int $sysLanguageUid, bool $showOnlyEmpty): array
@@ -182,7 +159,7 @@ class PagesRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('sfr.sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid)),
                 $queryBuilder->expr()->eq('sf.missing', 0),
             );
-        if($showOnlyEmpty === true) {
+        if ($showOnlyEmpty === true) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->or(
                     $queryBuilder->expr()->isNull('sfr.' . $column),
@@ -281,10 +258,6 @@ class PagesRepository extends AbstractRepository
     /**
      * Fetch pages for translation with filter options and additional statistics
      *
-     * @throws Exception
-     * @throws AspectNotFoundException
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function fetchPagesForTranslation(array $foundPageUids, int $sourceLanguageUid, int $targetLanguageUid, array $massActionData): array
     {

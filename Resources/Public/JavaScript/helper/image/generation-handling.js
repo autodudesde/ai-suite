@@ -56,6 +56,9 @@ class GenerationHandling {
                         if (data.imageAiModel === 'DALL-E') {
                             const DalleContentElement = (await import('./wizards/dalle-content-element.js')).default
                             DalleContentElement.addImageGenerationWizard(data);
+                        } else if (data.imageAiModel === 'Flux') {
+                            const FluxContentElement = (await import('./wizards/flux-content-element.js')).default
+                            FluxContentElement.addImageGenerationWizard(data);
                         } else if (data.imageAiModel === 'Midjourney') {
                             const MidjourneyContentElement = (await import('./wizards/midjourney-content-element.js')).default
                             MidjourneyContentElement.addImageGenerationWizard(data);
@@ -65,6 +68,9 @@ class GenerationHandling {
                         if (data.imageAiModel === 'DALL-E') {
                             const DalleFileList = (await import('./wizards/dalle.js')).default
                             DalleFileList.addImageGenerationWizard(data, true);
+                        } else if (data.imageAiModel === 'Flux') {
+                            const FluxFileList = (await import('./wizards/flux.js')).default
+                            FluxFileList.addImageGenerationWizard(data, true);
                         } else if (data.imageAiModel === 'Midjourney') {
                             const MidjourneyFileList = (await import('./wizards/midjourney.js')).default
                             MidjourneyFileList.addImageGenerationWizard(data, true);
@@ -73,6 +79,9 @@ class GenerationHandling {
                         if (data.imageAiModel === 'DALL-E') {
                             const Dalle = (await import('./wizards/dalle.js')).default
                             Dalle.addImageGenerationWizard(data);
+                        } else if (data.imageAiModel === 'Flux') {
+                            const Flux = (await import('./wizards/flux.js')).default
+                            Flux.addImageGenerationWizard(data);
                         } else if (data.imageAiModel === 'Midjourney') {
                             const Midjourney = (await import('./wizards/midjourney.js')).default
                             Midjourney.addImageGenerationWizard(data);
