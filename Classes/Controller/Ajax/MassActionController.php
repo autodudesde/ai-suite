@@ -128,7 +128,7 @@ class MassActionController extends AbstractAjaxController
                 return $response;
             }
             $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
+            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
                 return $library['name'] !== 'Vision';
             });
             $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
@@ -153,10 +153,10 @@ class MassActionController extends AbstractAjaxController
             $params['columnName'] = $pageMetadataColumns[$massActionData['column']];
             $params['pages'] = $this->pagesRepository->fetchNecessaryPageData($massActionData, $foundPageUids);
             $pagesUids = array_column($params['pages'], 'uid');
-            if(count($pagesUids) > 0) {
+            if (count($pagesUids) > 0) {
                 $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($pagesUids, 'pages', $params['column']);
 
-                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
+                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function ($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'] ?? 'pending';
                     return $carry;
                 }, []);
@@ -197,7 +197,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function pagesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function pagesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         $massActionData = $serverRequest->getParsedBody()['massActionPagesExecute'];
         $pages = json_decode($massActionData['pages'], true);
@@ -228,7 +229,8 @@ class MassActionController extends AbstractAjaxController
                     'pages',
                     'uid',
                     $pageUid,
-                    (int)$languageParts[1]
+                    (int)$languageParts[1],
+                    ''
                 );
                 $payload[] = [
                     'field_label' => $massActionData['column'],
@@ -240,7 +242,7 @@ class MassActionController extends AbstractAjaxController
                 $failedPages[] = $pageUid;
             }
         }
-        if(count($payload) > 0) {
+        if (count($payload) > 0) {
             $answer = $this->requestService->sendDataRequest(
                 'createMassAction',
                 [
@@ -275,7 +277,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function pagesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function pagesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         try {
             $massActionData = $serverRequest->getParsedBody()['massActionPagesExecute'];
@@ -290,7 +293,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
-            if(count($dataHandler->errorLog) > 0) {
+            if (count($dataHandler->errorLog) > 0) {
                 throw new \Exception(implode(', ', $dataHandler->errorLog));
             }
             $response->getBody()->write(
@@ -331,7 +334,7 @@ class MassActionController extends AbstractAjaxController
                 return $response;
             }
             $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
+            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
                 return $library['name'] === 'Vision';
             });
             $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
@@ -358,13 +361,13 @@ class MassActionController extends AbstractAjaxController
             $params['columnName'] = $fileReferenceMetadataColumns[$massActionData['column']];
 
             $foundFileReferences = $this->pagesRepository->fetchSysFileReferences($foundPageUids, $massActionData['column'], (int)$languageParts[1], $massActionData['showOnlyEmpty']);
-            $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+            $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
                 if (!$this->metadataService->hasFilePermissions($fileReference['uid_local'])) {
                     return false;
                 }
                 return !in_array($fileReference['fileMimeType'], $this->supportedMimeTypes);
             });
-            $params['fileReferences'] = array_filter($foundFileReferences, function($fileReference) {
+            $params['fileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
                 if (!$this->metadataService->hasFilePermissions($fileReference['uid_local'])) {
                     return false;
                 }
@@ -373,7 +376,7 @@ class MassActionController extends AbstractAjaxController
             $sysFileReferenceUids = array_column($params['fileReferences'], 'uid');
             $alreadyPendingFiles = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($sysFileReferenceUids, 'sys_file_reference', $params['column']);
 
-            $params['alreadyPendingFileReferences'] = array_reduce($alreadyPendingFiles, function($carry, $item) {
+            $params['alreadyPendingFileReferences'] = array_reduce($alreadyPendingFiles, function ($carry, $item) {
                 $carry[$item['table_uid']] = $item['status'] ?? 'pending';
                 return $carry;
             }, []);
@@ -415,7 +418,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function fileReferencesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function fileReferencesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         $massActionData = $serverRequest->getParsedBody()['massActionFileReferencesExecute'];
         $fileReferences = json_decode($massActionData['fileReferences'], true);
@@ -473,7 +477,8 @@ class MassActionController extends AbstractAjaxController
                     'sys_file_reference',
                     'uid',
                     $sysFileReferenceUid,
-                    (int)$languageParts[1]
+                    (int)$languageParts[1],
+                    ''
                 );
                 $payload[] = [
                     'field_label' => $massActionData['column'],
@@ -486,7 +491,7 @@ class MassActionController extends AbstractAjaxController
                 $failedFileReferences[] = $sysFileReferenceUid;
             }
         }
-        if(count($payload) > 0) {
+        if (count($payload) > 0) {
             $answer = $this->requestService->sendDataRequest(
                 'createMassAction',
                 [
@@ -521,7 +526,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function fileReferencesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function fileReferencesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         try {
             $massActionData = $serverRequest->getParsedBody()['massActionFileReferencesExecute'];
@@ -536,7 +542,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
-            if(count($dataHandler->errorLog) > 0) {
+            if (count($dataHandler->errorLog) > 0) {
                 throw new \Exception(implode(', ', $dataHandler->errorLog));
             }
             $response->getBody()->write(
@@ -560,7 +566,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function filelistFilesUpdateViewAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function filelistFilesUpdateViewAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         try {
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::METADATA, 'createMetadata', ['text']);
@@ -610,7 +617,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function filelistFilesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function filelistFilesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         $massActionData = $serverRequest->getParsedBody()['massActionFilesExecute'];
         $scope = 'fileMetadata';
@@ -618,8 +626,7 @@ class MassActionController extends AbstractAjaxController
         $filesMetadataUidList = [];
         $files = [];
         $massActionDataFiles = json_decode($massActionData['files'], true);
-        foreach ($massActionDataFiles as $sysFileMetaUid => $v) {
-            $sysFileMetaUid = (int)$sysFileMetaUid;
+        foreach ($massActionDataFiles as $sysFileMetaUid => $data) {
             $filesMetadataUidList[] = $sysFileMetaUid;
             $fileMetaData = $massActionDataFiles[$sysFileMetaUid];
             foreach ($fileMetaData as $column => $value) {
@@ -628,7 +635,10 @@ class MassActionController extends AbstractAjaxController
                 }
             }
         }
-        $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
+        $metadataListFromRepo = [];
+        if (count($filesMetadataUidList) > 0) {
+            $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
+        }
         $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
         $bulkPayload = [];
@@ -638,7 +648,13 @@ class MassActionController extends AbstractAjaxController
         foreach ($files as $sysFileMetaUid => $columns) {
             foreach ($columns as $column => $value) {
                 try {
+                    if ($column === 'mode') {
+                        continue;
+                    }
                     $fileUid = (int)$metadataListFromRepo[$sysFileMetaUid]['file'];
+                    $defaultSysFileMetaUid = (int)$sysFileMetaUid;
+                    $targetLanguageId = (int)$languageParts[1];
+
                     $fileContent = $this->metadataService->getFileContent($fileUid);
                     $fileSize = strlen($fileContent);
 
@@ -669,6 +685,7 @@ class MassActionController extends AbstractAjaxController
                     }
 
                     $uuid = $this->uuidService->generateUuid();
+
                     $bulkPayload[] = new BackgroundTask(
                         $scope,
                         'metadata',
@@ -677,8 +694,9 @@ class MassActionController extends AbstractAjaxController
                         $column,
                         'sys_file_metadata',
                         'uid',
-                        $sysFileMetaUid,
-                        (int)$languageParts[1]
+                        $defaultSysFileMetaUid,
+                        $targetLanguageId,
+                        $columns['mode'] ?? ''
                     );
                     $payload[] = [
                         'field_label' => $column,
@@ -692,7 +710,7 @@ class MassActionController extends AbstractAjaxController
                 }
             }
         }
-        if(count($payload) > 0) {
+        if (count($payload) > 0) {
             $answer = $this->requestService->sendDataRequest(
                 'createMassAction',
                 [
@@ -727,7 +745,8 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
-    public function filelistFilesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface {
+    public function filelistFilesUpdateAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
         $response = new Response();
         try {
             $massActionData = $serverRequest->getParsedBody();
@@ -757,7 +776,7 @@ class MassActionController extends AbstractAjaxController
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
             $dataHandler->start($datamap, []);
             $dataHandler->process_datamap();
-            if(count($dataHandler->errorLog) > 0) {
+            if (count($dataHandler->errorLog) > 0) {
                 throw new \Exception(implode(', ', $dataHandler->errorLog));
             }
             $response->getBody()->write(
@@ -830,9 +849,9 @@ class MassActionController extends AbstractAjaxController
             $params['pages'] = $this->pagesRepository->fetchPagesForTranslation($foundPageUids, (int)$sourceLanguageParts[1], (int)$targetLanguageParts[1], $massActionData);
 
             $pagesUids = array_column($params['pages'], 'uid');
-            if(count($pagesUids) > 0) {
+            if (count($pagesUids) > 0) {
                 $alreadyPendingPages = $this->backgroundTaskRepository->fetchAlreadyPendingEntriesForTranslation($pagesUids, 'pages', (int)$targetLanguageParts[1]);
-                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function($carry, $item) {
+                $params['alreadyPendingPages'] = array_reduce($alreadyPendingPages, function ($carry, $item) {
                     $carry[$item['table_uid']] = $item['status'];
                     return $carry;
                 }, []);
@@ -907,7 +926,8 @@ class MassActionController extends AbstractAjaxController
                     'pages',
                     'uid',
                     $pageUid,
-                    (int)$targetLanguageParts[1]
+                    (int)$targetLanguageParts[1],
+                    ''
                 );
 
                 $payload[] = [
@@ -924,7 +944,7 @@ class MassActionController extends AbstractAjaxController
             }
         }
 
-        if(count($payload) > 0) {
+        if (count($payload) > 0) {
             $answer = $this->requestService->sendDataRequest(
                 'createMassAction',
                 [

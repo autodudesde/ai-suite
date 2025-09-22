@@ -50,8 +50,7 @@ abstract class AbstractAjaxController
         TranslationService $translationService,
         LoggerInterface $logger,
         EventDispatcher $eventDispatcher
-    )
-    {
+    ) {
         $this->backendUserService = $backendUserService;
         $this->requestService = $requestService;
         $this->promptTemplateService = $promptTemplateService;

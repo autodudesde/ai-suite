@@ -18,23 +18,23 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
 {
-    private const ACTION_LOCALIZE_OPEN_AI = 'localizeChatGPT';
-    private const ACTION_LOCALIZE_ANTHROPIC = 'localizeAnthropic';
-    private const ACTION_LOCALIZE_GOOGLE_TRANSLATE = 'localizeGoogleTranslate';
-    private const ACTION_LOCALIZE_DEEPL = 'localizeDeepl';
-    private const ACTION_LOCALIZE_AISUITETEXTULTIMATE = 'localizeAiSuiteTextUltimate';
-    private const ACTION_COPY_OPEN_AI = 'copyFromLanguageChatGPT';
-    private const ACTION_COPY_ANTHROPIC = 'copyFromLanguageAnthropic';
-    private const ACTION_COPY_GOOGLE_TRANSLATE = 'copyFromLanguageGoogleTranslate';
-    private const ACTION_COPY_DEEPL = 'copyFromLanguageDeepl';
-    private const ACTION_COPY_AISUITETEXTULTIMATE = 'copyFromLanguageAiSuiteTextUltimate';
+    public const ACTION_LOCALIZE_OPEN_AI = 'localizeChatGPT';
+    public const ACTION_LOCALIZE_ANTHROPIC = 'localizeAnthropic';
+    public const ACTION_LOCALIZE_GOOGLE_TRANSLATE = 'localizeGoogleTranslate';
+    public const ACTION_LOCALIZE_DEEPL = 'localizeDeepl';
+    public const ACTION_LOCALIZE_AISUITETEXTULTIMATE = 'localizeAiSuiteTextUltimate';
+    public const ACTION_COPY_OPEN_AI = 'copyFromLanguageChatGPT';
+    public const ACTION_COPY_ANTHROPIC = 'copyFromLanguageAnthropic';
+    public const ACTION_COPY_GOOGLE_TRANSLATE = 'copyFromLanguageGoogleTranslate';
+    public const ACTION_COPY_DEEPL = 'copyFromLanguageDeepl';
+    public const ACTION_COPY_AISUITETEXTULTIMATE = 'copyFromLanguageAiSuiteTextUltimate';
 
     // Whole page translation actions
-    private const ACTION_LOCALIZE_WHOLE_PAGE_OPEN_AI = 'localizeWholePageChatGPT';
-    private const ACTION_LOCALIZE_WHOLE_PAGE_ANTHROPIC = 'localizeWholePageAnthropic';
-    private const ACTION_LOCALIZE_WHOLE_PAGE_GOOGLE_TRANSLATE = 'localizeWholePageGoogleTranslate';
-    private const ACTION_LOCALIZE_WHOLE_PAGE_DEEPL = 'localizeWholePageDeepl';
-    private const ACTION_LOCALIZE_WHOLE_PAGE_AISUITETEXTULTIMATE = 'localizeWholePageAiSuiteTextUltimate';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_OPEN_AI = 'localizeWholePageChatGPT';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_ANTHROPIC = 'localizeWholePageAnthropic';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_GOOGLE_TRANSLATE = 'localizeWholePageGoogleTranslate';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_DEEPL = 'localizeWholePageDeepl';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_AISUITETEXTULTIMATE = 'localizeWholePageAiSuiteTextUltimate';
 
     protected MetadataService $metadataService;
     protected TranslationService $translationService;
@@ -80,7 +80,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $destLanguageId = (int)($params['destLanguageId']);
 
         try {
-            $payload['pageMetadata'] = $this->metadataService->getPageMetadataForTranslation($pageId, $srcLanguageId);
+            $payload['pageMetadata'] = $this->metadataService->getPageMetadataForTranslation($pageId);
             $payload['pageTranslationNecessary'] = !$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId);
         } catch (\Exception $e) {
             $payload['pageTranslationNecessary'] = false;
@@ -193,7 +193,8 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_AISUITETEXTULTIMATE
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
-                        $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);;
+                        $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);
+                        ;
                         $cmd['localization'][0]['aiSuite']['srcLangIsoCode'] = $siteService->getIsoCodeByLanguageId($srcLanguageId, $pageId);
                         $cmd['localization'][0]['aiSuite']['destLangIsoCode'] = $siteService->getIsoCodeByLanguageId($destLanguageId, $pageId);
                         $cmd['localization'][0]['aiSuite']['destLangId'] = $destLanguageId;

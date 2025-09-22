@@ -38,7 +38,7 @@ class PageTreeTranslationStatusEventListener
                 $this->backgroundTasks = $this->backgroundTaskService->fetchBackgroundTaskStatus(true);
                 continue;
             }
-            if(!array_key_exists('translation', $this->backgroundTasks)) {
+            if (!array_key_exists('translation', $this->backgroundTasks)) {
                 continue;
             }
             if (!$this->backendUserService->getBackendUser()->isInWebMount($pageUid)) {

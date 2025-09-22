@@ -16,6 +16,7 @@ class BackgroundTask
         protected ?string $idColumn,
         protected int $tableUid,
         protected int $sysLanguageUid,
+        protected string $mode,
         protected string $status = 'pending',
         protected string $slug = '',
         protected int $crdate = 0 // time() is not allowed here
@@ -40,6 +41,7 @@ class BackgroundTask
             'id_column',
             'table_uid',
             'sys_language_uid',
+            'mode',
         ];
     }
 
@@ -58,6 +60,7 @@ class BackgroundTask
             Connection::PARAM_STR, // id_column
             Connection::PARAM_INT, // table_uid
             Connection::PARAM_INT, // sys_language_uid
+            Connection::PARAM_STR, // mode
         ];
     }
 
@@ -76,6 +79,7 @@ class BackgroundTask
             $this->idColumn ?? '',
             $this->tableUid,
             $this->sysLanguageUid,
+            $this->mode
         ];
     }
 }

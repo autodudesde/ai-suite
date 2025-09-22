@@ -49,6 +49,10 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/Vision.svg',
     ],
+    'tx-aisuite-model-Flux' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/Flux.svg',
+    ],
     'tx-aisuite-translate-action-finished' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/actions-translate-finished.svg',

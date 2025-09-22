@@ -35,7 +35,8 @@ class TranslationRepository extends AbstractRepository
     /**
      * @throws Exception
      */
-    public function getTranslatedElements(array $elementUids, int $targetLanguageUid, string $table): array {
+    public function getTranslatedElements(array $elementUids, int $targetLanguageUid, string $table): array
+    {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $queryBuilder
@@ -52,7 +53,8 @@ class TranslationRepository extends AbstractRepository
     /**
      * @throws Exception
      */
-    public function getTranslatedElementsOnPage(int $pageUid, int $targetLanguageUid): array {
+    public function getTranslatedElementsOnPage(int $pageUid, int $targetLanguageUid): array
+    {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         return $queryBuilder

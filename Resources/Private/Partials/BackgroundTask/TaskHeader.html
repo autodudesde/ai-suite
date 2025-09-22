@@ -19,6 +19,9 @@
         <f:else>
             <f:image src="{task.fileUid}" class="me-2" style="height: 32px; width: auto;" />
             <span class="task-title text-decoration-none">{task.fileName}</span>
+            <f:if condition="{task.mode} === 'NEW'">
+                <span class="badge badge-success mx-2"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.badge.new" /></span>
+            </f:if>
         </f:else>
     </f:if>
 </div>

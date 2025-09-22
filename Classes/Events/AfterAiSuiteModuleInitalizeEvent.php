@@ -20,7 +20,8 @@ final class AfterAiSuiteModuleInitalizeEvent
     public function __construct(
         private readonly ServerRequestInterface $request,
         private readonly PageRenderer $pageRenderer
-    ) {}
+    ) {
+    }
 
     public function getRequest(): ServerRequestInterface
     {

@@ -51,6 +51,12 @@
             <trans-unit id="midjourneyId" resname="midjourneyId">
                 <source>Enter your Midjourney ID</source>
             </trans-unit>
+            <trans-unit id="fluxApiKey" resname="fluxApiKey">
+                <source>Enter your Flux API key</source>
+            </trans-unit>
+            <trans-unit id="fluxBaseUrl" resname="fluxBaseUrl">
+                <source>Enter your Flux Base URL</source>
+            </trans-unit>
             <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
                 <source>Enable Basic Authentication</source>
             </trans-unit>

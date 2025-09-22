@@ -11,7 +11,7 @@ class AiSysFileDescription extends AbstractNode
 {
     public function render(): array
     {
-        if(!$GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_metadata_generation')) {
+        if (!$GLOBALS['BE_USER']->check('custom_options', 'tx_aisuite_features:enable_metadata_generation')) {
             return [];
         }
         return [

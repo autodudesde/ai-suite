@@ -46,7 +46,7 @@ class MetadataController extends AbstractAjaxController
         MetadataService $metadataService,
         PagesRepository $pagesRepository,
         SiteFinder $siteFinder
-    ){
+    ) {
         parent::__construct(
             $backendUserService,
             $requestService,
@@ -110,21 +110,21 @@ class MetadataController extends AbstractAjaxController
             );
             return $response;
         }
-        if($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
+        if ($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
             $rootPageId = $this->siteFinder->getSiteByPageId((int)$request->getParsedBody()['pageId'])->getRootPageId();
             $searchableWebMounts = $this->backendUserService->getSearchableWebmounts($rootPageId, 10);
             $params['availableNewsDetailPlugins'] = $this->pagesRepository->getAvailableNewsDetailPlugins($searchableWebMounts, (int)$request->getParsedBody()['languageId']);
         }
-        if($request->getParsedBody()['table'] === 'sys_file_metadata') {
+        if ($request->getParsedBody()['table'] === 'sys_file_metadata') {
             $params['sysLanguages'] = $this->siteService->getAvailableLanguages();
         }
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-        if($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
+        if ($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
+            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
                 return $library['name'] !== 'Vision';
             });
         } else {
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function($library) {
+            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
                 return $library['name'] === 'Vision';
             });
         }
@@ -175,7 +175,7 @@ class MetadataController extends AbstractAjaxController
             return $response;
         }
         $additionalFields = $this->metadataAdditionalFields[$request->getParsedBody()['fieldName']] ?? [];
-        if($request->getParsedBody()['table'] === 'sys_file_metadata' && $request->getParsedBody()['fieldName'] === 'description') {
+        if ($request->getParsedBody()['table'] === 'sys_file_metadata' && $request->getParsedBody()['fieldName'] === 'description') {
             $additionalFields = [];
         }
         $params = [

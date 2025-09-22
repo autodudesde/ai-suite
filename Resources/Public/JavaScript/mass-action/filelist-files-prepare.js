@@ -68,6 +68,7 @@ class FilelistFilesPrepare {
                                     let column = input.name.replace('files[' + checkbox.value + '][', '').replace(']', '');
                                     let obj = {};
                                     obj[column] = input.value;
+                                    obj['mode'] = input.dataset.mode;
                                     selectedFiles[checkbox.value] = { ...selectedFiles[checkbox.value], ...obj };
                                 });
                             }

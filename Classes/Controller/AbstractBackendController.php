@@ -113,12 +113,12 @@ class AbstractBackendController
         $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-default rounded', 'ai_suite_page'));
         $buttonBar->addButton($this->buildButton('content-store', 'tx_aisuite.module.actionmenu.agencies', 'btn-md btn-default rounded', 'ai_suite_agencies'));
         $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default rounded', 'ai_suite_prompt'));
-        if($this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
             $buttonBar->addButton($this->buildButton('actions-duplicate', 'tx_aisuite.module.actionmenu.massAction', 'btn-md btn-default rounded', 'ai_suite_massaction'));
         }
-        if($this->backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling')) {
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling')) {
             $additonalParams = [];
-            if(!empty($this->sessionService->getBackgroundTaskFilter())) {
+            if (!empty($this->sessionService->getBackgroundTaskFilter())) {
                 $additonalParams['backgroundTaskFilter'] = $this->sessionService->getBackgroundTaskFilter();
                 $additonalParams['clickAndSave'] = $this->sessionService->getClickAndSaveState();
             }

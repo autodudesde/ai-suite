@@ -38,23 +38,23 @@ class SiteService implements SingletonInterface
     {
         $availableLanguages = [];
         $sites = $this->siteFinder->getAllSites();
-        if($pageId > 0){
+        if ($pageId > 0) {
             $sites = [$this->siteFinder->getSiteByPageId($pageId)];
         }
         foreach ($sites as $site) {
             $siteLanguages = $site->getAvailableLanguages($GLOBALS['BE_USER'], true);
             foreach ($siteLanguages as $language) {
                 $languageId = $language->getLanguageId();
-                if($languageId === -1) {
+                if ($languageId === -1) {
                     continue;
                 }
-                if($onlyDefault && $languageId !== 0) {
+                if ($onlyDefault && $languageId !== 0) {
                     continue;
                 }
                 if ($includeLanguageIds) {
                     $title = $language->getTitle();
                     $languageBase = $language->getBase();
-                    if(isset($languageBase) && !empty($languageBase->getHost())) {
+                    if (!empty($languageBase->getHost())) {
                         $title .= ' [' . $languageBase->getHost() . ']';
                     } else {
                         $title .= ' [Site: ' . $site->getIdentifier() . ']';
@@ -92,7 +92,7 @@ class SiteService implements SingletonInterface
                 $allSystemLanguages,
                 $site->getAvailableLanguages($GLOBALS['BE_USER'], true)
             );
-            if($languageId === -1) {
+            if ($languageId === -1) {
                 $languageId = $site->getDefaultLanguage()->getLanguageId();
             }
             foreach ($updatedSystemLanguages as $language) {
@@ -154,7 +154,8 @@ class SiteService implements SingletonInterface
         }
     }
 
-    public function buildAbsoluteUri(UriInterface $uri): string {
+    public function buildAbsoluteUri(UriInterface $uri): string
+    {
         $port = $uri->getPort() ? ':' . $uri->getPort() : '';
         $absoluteUri = $uri->getScheme() . '://' . $uri->getHost() . $port . $uri->getPath();
         if ($uri->getScheme() === '' || $uri->getHost() === '') {

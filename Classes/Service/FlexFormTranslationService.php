@@ -2,7 +2,6 @@
 
 namespace AutoDudes\AiSuite\Service;
 
-
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\SingletonInterface;
 
@@ -64,7 +63,7 @@ class FlexFormTranslationService implements SingletonInterface
             }
         }
         $this->removeEmptyArraysRecursively($flexFormData);
-        if(!empty($flexFormData)) {
+        if (!empty($flexFormData)) {
             $translateFields['pi_flexform'] = [
                 'data' => $flexFormData
             ];

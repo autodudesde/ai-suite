@@ -140,7 +140,7 @@ class ModifyButtonBarEventListener
 
             $event->setButtons($buttons);
         }
-        if(array_key_exists('disableTranslationFunctionality', $this->extConf) && (bool)$this->extConf['disableTranslationFunctionality'] === false) {
+        if (array_key_exists('disableTranslationFunctionality', $this->extConf) && (bool)$this->extConf['disableTranslationFunctionality'] === false) {
             if ($request->getUri()->getPath() === $entryPoint . '/module/web/layout') {
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
@@ -164,7 +164,7 @@ class ModifyButtonBarEventListener
             $pageUid = $request->getQueryParams()['id'] ?? 0;
             $result = $this->translationService->processFinishedTranslationTasksForPage((int)$pageUid);
 
-            if($result['processedCount'] > 0) {
+            if ($result['processedCount'] > 0) {
                 BackendUtility::setUpdateSignal('updatePageTree', $pageUid);
                 $this->pageRenderer->getJavaScriptRenderer()->addJavaScriptModuleInstruction(
                     JavaScriptModuleInstruction::create('@autodudes/ai-suite/translation/reload-page.js')

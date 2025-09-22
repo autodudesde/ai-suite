@@ -36,17 +36,17 @@ class SysFileMetadataRepository extends AbstractRepository
         array $uids,
         string $column,
         string $indexColumn = 'uid',
-        int $langUid = 0,
+        int $languageUid = 0,
         bool $showOnlyEmpty = false,
         bool $showOnlyUsed = false
     ): array {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
             $queryBuilder->expr()->in('file', $uids),
-            $queryBuilder->expr()->eq('sys_language_uid', $langUid)
+            $queryBuilder->expr()->eq('sys_language_uid', $languageUid)
         ];
-        if($showOnlyEmpty) {
-            if($column === 'title') {
+        if ($showOnlyEmpty) {
+            if ($column === 'title') {
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('title')
@@ -72,9 +72,9 @@ class SysFileMetadataRepository extends AbstractRepository
             ->from($this->table)
             ->where(...$constraints);
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
-        if($showOnlyUsed) {
+        if ($showOnlyUsed) {
             foreach ($metadataList as $key => $metadata) {
-                if(!$this->isFileUsed($metadata['file'])) {
+                if (!$this->isFileUsed($metadata['file'])) {
                     unset($metadataList[$key]);
                 }
             }
@@ -93,6 +93,34 @@ class SysFileMetadataRepository extends AbstractRepository
             );
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
         return array_column($metadataList, null, $indexColumn);
+    }
+
+    public function findDefaultLanguageMetadataUidsByFileUids(array $fileUids): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder
+            ->select('uid', 'file')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->in('file', $fileUids),
+                $queryBuilder->expr()->eq('sys_language_uid', 0)
+            );
+        $result = $queryBuilder->executeQuery()->fetchAllAssociative();
+        return array_column($result, 'uid', 'file');
+    }
+
+    public function findTranslatedMetadataUid(int $l10nParent, int $fileUid, int $languageId): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder
+            ->select('uid')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('l10n_parent', $l10nParent),
+                $queryBuilder->expr()->eq('file', $fileUid),
+                $queryBuilder->expr()->eq('sys_language_uid', $languageId)
+            );
+        return $queryBuilder->executeQuery()->fetchFirstColumn();
     }
 
     public function isFileUsed(int $fileUid): bool

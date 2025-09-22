@@ -19,7 +19,8 @@ class GlossarService implements SingletonInterface
 
     protected array $extConf;
 
-    public function __construct(GlossarRepository $glossarRepository,
+    public function __construct(
+        GlossarRepository $glossarRepository,
         SendRequestService $sendRequestService,
         SiteService $siteService,
         PageRepository $pageRepository,
@@ -35,17 +36,18 @@ class GlossarService implements SingletonInterface
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
 
-    public function findGlossarEntries(string $jsonContent, int $destLangUid, int $srcLangUid): array {
+    public function findGlossarEntries(string $jsonContent, int $destLangUid, int $srcLangUid): array
+    {
         $glossary = [];
         $glossarExpressions = $this->glossarRepository->findBySysLanguageUid($destLangUid);
         foreach ($glossarExpressions as $glossarExpression) {
             if ($glossarExpression['l18n_parent'] > 0) {
-                if($srcLangUid === 0) {
+                if ($srcLangUid === 0) {
                     $parentExpression = $this->glossarRepository->findEntryByUid($glossarExpression['l18n_parent']);
                 } else {
                     $parentExpression = $this->glossarRepository->findEntryByL18nParentAndUid($glossarExpression['l18n_parent'], $srcLangUid);
                 }
-                if(isset($parentExpression["input"]) && str_contains($jsonContent, $parentExpression["input"])) {
+                if (isset($parentExpression["input"]) && str_contains($jsonContent, $parentExpression["input"])) {
                     $glossary[$parentExpression["input"]] = $glossarExpression["input"];
                 }
             }
@@ -53,7 +55,8 @@ class GlossarService implements SingletonInterface
         return $glossary;
     }
 
-    public function findDeeplGlossary(int $rootPageId, string $sourceLang, string $targetLang) {
+    public function findDeeplGlossary(int $rootPageId, string $sourceLang, string $targetLang)
+    {
         return $this->glossarRepository->findDeeplGlossaryEntry($rootPageId, $sourceLang, $targetLang);
     }
 
@@ -84,7 +87,7 @@ class GlossarService implements SingletonInterface
                 foreach ($translationRecords[$defaultUid] as $languageId => $translationRecord) {
                     $translationInput = $translationRecord['input'] ?? '';
                     $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId, $pid);
-                    if(empty($targetLanguageIsoCode)) {
+                    if (empty($targetLanguageIsoCode)) {
                         $this->logger->warning('Empty target language isoCode for languageId: ' . $languageId . ', input: ' . $translationInput . ', pid: ' . $pid);
                         continue;
                     }

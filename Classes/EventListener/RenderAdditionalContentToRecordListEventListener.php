@@ -29,7 +29,7 @@ class RenderAdditionalContentToRecordListEventListener
         $request = $event->getRequest();
         $pageLayoutContext = $this->createPageLayoutContext($request);
 
-        if(!empty($pageLayoutContext->getNewLanguageOptions())) {
+        if (!empty($pageLayoutContext->getNewLanguageOptions())) {
             $translationButtons = $this->backgroundTaskService->generateTranslationPageButtons($request);
 
             if (!empty($translationButtons)) {

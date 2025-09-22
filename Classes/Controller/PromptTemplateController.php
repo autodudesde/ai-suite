@@ -109,7 +109,7 @@ class PromptTemplateController extends AbstractBackendController
     public function manageCustomPromptTemplatesAction(): ResponseInterface
     {
         try {
-            if($this->request->getQueryParams()['id'] === '0') {
+            if ($this->request->getQueryParams()['id'] === '0') {
                 $this->view->addFlashMessage(
                     $this->translationService->translate('aiSuite.module.customPromptTemplateStorageMessage'),
                     $this->translationService->translate('aiSuite.module.customPromptTemplateStorageTitle'),
@@ -137,7 +137,7 @@ class PromptTemplateController extends AbstractBackendController
                 'search' => $search,
                 'pid' => $this->request->getQueryParams()['id']
             ]);
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             $this->view->addFlashMessage(
                 $e->getMessage(),

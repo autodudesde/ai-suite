@@ -50,7 +50,7 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
     {
 
         $out = parent::makeLocalizationPanel($table, $row, $translations);
-        if ($out && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')) {
+        if ($out && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_list_wizard')) {
             $pageId = (int)($table === 'pages' ? $row['uid'] : $row['pid']);
             $possibleTranslations = $this->possibleTranslations;
             if ($table === 'pages') {

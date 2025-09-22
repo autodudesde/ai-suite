@@ -18,7 +18,7 @@ final class ModelTypeEnumeration
 {
     // general models
     public const TEXT = 'CHATGPT,Vision';
-    public const IMAGE = 'DALL-E,Midjourney';
+    public const IMAGE = 'DALL-E,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
 
     // model - api mapping
@@ -27,6 +27,7 @@ final class ModelTypeEnumeration
     public const VISION = 'openAiApiKey';
     public const DALLE = 'openAiApiKey';
     public const MIDJOURNEY = 'midjourneyApiKey,midjourneyId';
+    public const FLUX = 'fluxApiKey,fluxBaseUrl';
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';
     public const DEEPL = 'deeplApiKey,deeplApiMode';
     public const DEEPLGLOSSARYMANAGER = 'deeplApiKey,deeplApiMode';

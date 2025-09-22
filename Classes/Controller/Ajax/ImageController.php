@@ -32,6 +32,7 @@ use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
@@ -100,7 +101,7 @@ class ImageController extends AbstractAjaxController
     {
         $response = new Response();
         $parsedBody = $request->getParsedBody();
-        if(isset($parsedBody['langIsoCode'])) {
+        if (isset($parsedBody['langIsoCode'])) {
             $langIsoCode = $parsedBody['langIsoCode'];
         } else {
             $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
@@ -152,7 +153,7 @@ class ImageController extends AbstractAjaxController
     {
         $response = new Response();
         $parsedBody = $request->getParsedBody();
-        if(isset($parsedBody['langIsoCode'])) {
+        if (isset($parsedBody['langIsoCode'])) {
             $langIsoCode = $parsedBody['langIsoCode'];
         } else {
             $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
@@ -205,7 +206,7 @@ class ImageController extends AbstractAjaxController
     {
         $response = new Response();
         $parsedBody = $request->getParsedBody();
-        if(isset($parsedBody['langIsoCode'])) {
+        if (isset($parsedBody['langIsoCode'])) {
             $langIsoCode = $parsedBody['langIsoCode'];
         } else {
             $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
@@ -297,7 +298,8 @@ class ImageController extends AbstractAjaxController
                 $parsedBody['fileUrl'],
                 $destinationPath . $parsedBody['fileName']
             );
-            $newFile = $fileTargetObject ->getFile($parsedBody['fileName']);
+            /** @var File $newFile */
+            $newFile = $fileTargetObject->getFile($parsedBody['fileName']);
             $newFile->getMetaData()->offsetSet('title', $parsedBody['fileTitle']);
             $newFile->getMetaData()->offsetSet('alternative', $parsedBody['fileTitle']);
             $newFile->getMetaData()->save();

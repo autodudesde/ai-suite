@@ -19,7 +19,8 @@ final class BeforeAiSuiteAjaxTemplateRenderEvent
     public function __construct(
         private readonly ServerRequestInterface $request,
         private array $params
-    ) {}
+    ) {
+    }
 
     public function getRequest(): ServerRequestInterface
     {

@@ -176,7 +176,7 @@ class TranslationService
             $isContainerElement = false;
             $cType = $formData['databaseRow']['CType'][0] ?? '';
             foreach ($containerConfiguration as $containerValue) {
-                if(array_key_exists('cType', $containerValue) && $containerValue['cType'] === $cType) {
+                if (array_key_exists('cType', $containerValue) && $containerValue['cType'] === $cType) {
                     $isContainerElement = true;
                 }
             }
@@ -312,9 +312,7 @@ class TranslationService
         $editPages = $queryParams['edit']['pages'] ?? $parsedBody['edit']['pages'] ?? null;
         if ($editPages && is_array($editPages)) {
             $pageIds = array_keys($editPages);
-            if (!empty($pageIds)) {
-                return (int)$pageIds[0];
-            }
+            return (int)$pageIds[0];
         }
 
         return 0;
@@ -429,7 +427,7 @@ class TranslationService
     public function translate(string $xlfKey, array $arguments = []): string
     {
         $xlfPrefix = '';
-        if(!str_starts_with($xlfKey, 'LLL:')) {
+        if (!str_starts_with($xlfKey, 'LLL:')) {
             $xlfPrefix = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
         }
         return sprintf($this->getLanguageService()->sL($xlfPrefix . $xlfKey), ...$arguments);
@@ -503,7 +501,7 @@ class TranslationService
         if (empty($foreignTable)) {
             return;
         }
-        if(!array_key_exists($foreignTable, $translateFields)) {
+        if (!array_key_exists($foreignTable, $translateFields)) {
             $translateFields[$foreignTable] = [];
         }
         $inlineFields = $this->collectInlineChildFields($parentFormData, $fieldName, $foreignTable);
@@ -516,9 +514,9 @@ class TranslationService
     protected function collectInlineChildFields(array $parentFormData, string $parentFieldName, string $foreignTable): array
     {
         $childFields = [];
-        $childUidList = isset($parentFormData['databaseRow'][$parentFieldName])  ? $parentFormData['databaseRow'][$parentFieldName] : [];
+        $childUidList = isset($parentFormData['databaseRow'][$parentFieldName]) ? $parentFormData['databaseRow'][$parentFieldName] : [];
         $childUids = explode(',', $childUidList);
-        if (!is_array($childUids) || empty($childUids)) {
+        if (!is_array($childUids)) {
             return $childFields;
         }
 
@@ -625,9 +623,7 @@ class TranslationService
     }
 
     /**
-     * @throws DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     protected function collectPageContentElementFields(int $pageUid, int $sourceLanguageUid, int $targetLanguageUid = 0): array
     {
@@ -642,8 +638,8 @@ class TranslationService
         foreach ($contentElements as $contentElement) {
             $copyMappingArray = [];
             $this->localize($copyMappingArray, 'tt_content', $contentElement['uid'], $targetLanguageUid);
-            foreach($copyMappingArray as $table => $uidMapping) {
-                if(!array_key_exists($table, $translatableContent)) {
+            foreach ($copyMappingArray as $table => $uidMapping) {
+                if (!array_key_exists($table, $translatableContent)) {
                     $translatableContent[$table] = [];
                 }
                 foreach ($uidMapping as $sourceUid => $translatedUid) {
@@ -655,7 +651,7 @@ class TranslationService
                         (int)$sourceUid,
                         $table
                     );
-                    if(count($fields) > 0) {
+                    if (count($fields) > 0) {
                         $translatableContent[$table][$sourceUid] = $fields;
                     }
                 }
@@ -666,9 +662,7 @@ class TranslationService
     }
 
     /**
-     * @throws \Doctrine\DBAL\Driver\Exception
-     * @throws Exception
-     * @throws DBALException
+     * @throws \Doctrine\DBAL\Exception
      */
     protected function filterUntranslatedContentElements(array $sourceElements, int $pageUid, int $targetLanguageUid): array
     {
@@ -679,7 +673,7 @@ class TranslationService
         $targetElements = $this->translationRepository->getTranslatedElementsOnPage($pageUid, $targetLanguageUid);
         $translatedParentUids = array_column($targetElements, 'l18n_parent');
 
-        return array_filter($sourceElements, function($element) use ($translatedParentUids) {
+        return array_filter($sourceElements, function ($element) use ($translatedParentUids) {
             return !in_array((int)$element['uid'], $translatedParentUids);
         });
     }
@@ -776,7 +770,7 @@ class TranslationService
         }
         $sortedTranslationData = array_merge($sortedTranslationData, $translationData);
 
-        foreach($sortedTranslationData as $table => $elements) {
+        foreach ($sortedTranslationData as $table => $elements) {
             foreach ($elements as $sourceUid => $element) {
                 try {
                     $languageParentField = $table === 'tt_content' ? 'l18n_parent' : 'l10n_parent';
@@ -788,7 +782,7 @@ class TranslationService
                         $datamap[$table][$existingTranslation['uid']] = $sortedTranslationData[$table][$sourceUid];
                         $alreadyTranslatedUids[$table][$sourceUid] = $existingTranslation['uid'];
                     } else {
-                        if(array_key_exists($table, $alreadyTranslatedUids) && array_key_exists($sourceUid, $alreadyTranslatedUids[$table])) {
+                        if (array_key_exists($table, $alreadyTranslatedUids) && array_key_exists($sourceUid, $alreadyTranslatedUids[$table])) {
                             continue;
                         }
                         $tranlatedUidMapping = $this->executeLocalizationCommand($table, $sourceUid, $targetLanguageUid);
@@ -797,7 +791,7 @@ class TranslationService
                                 $datamap[$table] = [];
                             }
                             foreach ($uidMapping as $srcUid => $destUid) {
-                                if(isset($sortedTranslationData[$table][$srcUid])) {
+                                if (isset($sortedTranslationData[$table][$srcUid])) {
                                     $datamap[$table][$destUid] = $sortedTranslationData[$table][$srcUid];
                                 }
                             }
@@ -822,7 +816,7 @@ class TranslationService
             $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
         }
         unset($translationData['pages']);
-        if(!empty($translationData)) {
+        if (!empty($translationData)) {
             $this->applyContentElementTranslations($targetLanguageUid, $translationData);
         }
     }
@@ -1052,8 +1046,7 @@ class TranslationService
                 $conf = $GLOBALS['TCA'][$table]['columns'][$field]['config'] ?? [];
                 if (array_key_exists($field, $overrideValues)) {
                     continue;
-                }
-                else {
+                } else {
                     $this->copyRecord_procBasedOnFieldType($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
                 }
             }

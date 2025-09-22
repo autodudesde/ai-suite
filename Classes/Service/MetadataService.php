@@ -96,12 +96,12 @@ class MetadataService
         $file = $this->resourceFactory->getFileObject($sysFileId);
         try {
             $data = $file->getContents();
-            if(empty($data)) {
+            if (empty($data)) {
                 $decodedIdentifier = urldecode($file->getIdentifier());
                 $file->setIdentifier($decodedIdentifier);
                 $data = $file->getContents();
             }
-        } catch(\Throwable $e) {
+        } catch (\Throwable $e) {
             $decodedIdentifier = urldecode($file->getIdentifier());
             $file->setIdentifier($decodedIdentifier);
             $data = $file->getContents();
@@ -179,10 +179,7 @@ class MetadataService
         }
         $additionalGetVars = '_language=' . $page['sys_language_uid'];
         foreach ($additionalQueryParameters as $key => $value) {
-            if (!empty($additionalGetVars)) {
-                $additionalGetVars .= '&';
-            }
-            $additionalGetVars .= $key . '=' . $value;
+            $additionalGetVars .= '&' . $key . '=' . $value;
         }
 
         $previewUriBuilder = PreviewUriBuilder::create($pageId);

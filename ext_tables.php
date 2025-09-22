@@ -27,6 +27,16 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableTranslationDescription',
         ],
+        'enable_translation_list_wizard' => [
+            $lll . 'aiSuite.customPermOptions.enableTranslationListWizard',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableTranslationListWizardDescription',
+        ],
+        'enable_translation_whole_page' => [
+            $lll . 'aiSuite.customPermOptions.enableTranslationWholePage',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableTranslationWholePageDescription',
+        ],
         'enable_translation_deepl_sync' => [
             $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSync',
             'tx-aisuite-permissions',
@@ -94,6 +104,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
         ],
         'Midjourney' => [
             $lll . 'aiSuite.customPermOptions.modelMidjourney',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
+        'Flux' => [
+            $lll . 'aiSuite.customPermOptions.modelFlux',
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.modelDescription',
         ],

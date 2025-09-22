@@ -132,7 +132,7 @@ class AiSuiteController extends AbstractBackendController
                 'modelType' => $modelType
             ]);
             BackendUtility::setUpdateSignal('updateTopbar');
-        }  catch (\Throwable $e) {
+        } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());
             $this->view->addFlashMessage(
                 $e->getMessage(),

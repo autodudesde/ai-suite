@@ -58,7 +58,7 @@ class StatusController extends AbstractAjaxController
         $response = new Response();
 
         $backendUser = $this->backendUserService->getBackendUser();
-        if($backendUser->user['lang'] === 'default') {
+        if ($backendUser->user['lang'] === 'default') {
             $langIsoCode = 'en';
         } else {
             $langIsoCode = $backendUser->user['lang'];
