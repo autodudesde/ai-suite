@@ -13,6 +13,7 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
@@ -42,6 +43,7 @@ class GlossarController extends AbstractAjaxController
         BackendUserService    $backendUserService,
         SendRequestService    $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService        $libraryService,
         UuidService           $uuidService,
         SiteService           $siteService,
@@ -55,6 +57,7 @@ class GlossarController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,

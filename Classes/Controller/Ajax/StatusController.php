@@ -13,6 +13,7 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -33,6 +34,7 @@ class StatusController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -44,6 +46,7 @@ class StatusController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,

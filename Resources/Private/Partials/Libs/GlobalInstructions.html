@@ -1,0 +1,12 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+<div class="global-instruction-wrapper d-inline-flex">
+    <f:if condition="{globalInstructions} && {globalInstructions} != ''">
+            <span
+                class="global-instruction-tooltip badge d-inline-flex justify-content-center align-items-center gap-1"
+                data-global-instructions="{globalInstructions}"
+            >
+                <core:icon identifier="actions-eye" size="small" /> <f:translate key="aiSuite.globalInstructions.show_global_instructions" extensionName="ai_suite"/>
+            </span>
+    </f:if>
+</div>
+</html>

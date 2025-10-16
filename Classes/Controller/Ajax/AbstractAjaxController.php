@@ -14,6 +14,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Events\BeforeAiSuiteAjaxTemplateRenderEvent;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -33,6 +34,7 @@ abstract class AbstractAjaxController
     protected SendRequestService $requestService;
     protected BackendUserService $backendUserService;
     protected PromptTemplateService $promptTemplateService;
+    protected GlobalInstructionService $globalInstructionService;
     protected LibraryService $libraryService;
     protected UuidService $uuidService;
     protected SiteService $siteService;
@@ -44,6 +46,7 @@ abstract class AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -54,6 +57,7 @@ abstract class AbstractAjaxController
         $this->backendUserService = $backendUserService;
         $this->requestService = $requestService;
         $this->promptTemplateService = $promptTemplateService;
+        $this->globalInstructionService = $globalInstructionService;
         $this->libraryService = $libraryService;
         $this->uuidService = $uuidService;
         $this->siteService = $siteService;

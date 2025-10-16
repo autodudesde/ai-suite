@@ -12,10 +12,7 @@
             <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries}" />
             <div class="form-sectin mb-3">
                 <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                <label class="control-label fw-bold mb-2">
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageWizardPromptHeader" />
-                </label>
-                <textarea class="form-control" id="imageGenerationPrompt" rows="6" required></textarea>
+                <f:render partial="Libs/PromptField" arguments="{propertyName: 'imageGenerationPrompt', value: '', globalInstructions: globalInstructions}" />
             </div>
             <div class="form-group" id="languageSelection">
                 <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'langIsoCode', selected: ''}" />

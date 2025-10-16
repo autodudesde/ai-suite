@@ -3,6 +3,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class PagesPrepare {
     parentUuid;
@@ -10,6 +11,7 @@ class PagesPrepare {
         this.pagesPrepareExecuteFormEventListener();
         Generation.cancelGeneration();
         this.pageSelectionEventDelegation();
+        GlobalInstructions.metadataTooltipEventDelegation();
         this.parentUuid = '';
         this.init();
     }
@@ -98,9 +100,6 @@ class PagesPrepare {
                         if(Object.keys(selectedPages).length === 0) {
                             Notification.warning(TYPO3.lang['AiSuite.notification.generation.massAction.missingSelection'], TYPO3.lang['AiSuite.notification.generation.massAction.missingPages']);
                         } else {
-                            let counter = 0;
-                            let currentPages = {};
-                            let handledPages = {};
                             Generation.showSpinner();
                             const baseFormData = {
                                 parentUuid: self.parentUuid,
@@ -108,37 +107,17 @@ class PagesPrepare {
                                 sysLanguage: document.querySelector('select[name="massActionPagesPrepare[sysLanguage]"]').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
                             };
-                            for (let key in selectedPages) {
-                                if(counter === 5) {
-                                    try {
-                                        handledPages = { ...handledPages, ...currentPages };
-                                        let formData = new FormData();
-                                        formData.append('massActionPagesExecute[parentUuid]', baseFormData.parentUuid);
-                                        formData.append('massActionPagesExecute[column]', baseFormData.column);
-                                        formData.append('massActionPagesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                        formData.append('massActionPagesExecute[textAiModel]', baseFormData.textAiModel);
-                                        formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
-                                        await self.sendPagesToExecute(formData, selectedPages, handledPages);
-                                        counter = 0;
-                                        currentPages = {};
-                                    } catch (e) {
-                                        console.error(e);
-                                    }
-                                }
-                                currentPages[key] = selectedPages[key];
-                                counter++;
+
+                            if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
+                                Notification.error(TYPO3.lang['AiSuite.error.invalidFormData']);
+                                Generation.hideSpinner();
+                                return;
                             }
-                            if(Object.keys(currentPages).length > 0) {
-                                let formData = new FormData();
-                                formData.append('massActionPagesExecute[parentUuid]', baseFormData.parentUuid);
-                                formData.append('massActionPagesExecute[column]', baseFormData.column);
-                                formData.append('massActionPagesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                formData.append('massActionPagesExecute[textAiModel]', baseFormData.textAiModel);
-                                formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
-                                await self.sendPagesToExecute(formData, selectedPages, handledPages);
-                            }
+
+                            await self.processBatches(selectedPages, baseFormData);
                             Generation.hideSpinner();
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
+                            selectedPages = null;
                             let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
                             let formData = new FormData(pagesPrepareExecuteForm);
                             self.preparePages(formData).then(() => {});
@@ -148,6 +127,8 @@ class PagesPrepare {
             });
         });
     }
+
+
     async preparePages(formData) {
         let res = await Ajax.sendAjaxRequest('aisuite_massaction_pages_prepare', formData);
         if (General.isUsable(res)) {
@@ -174,18 +155,51 @@ class PagesPrepare {
             Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);
         }
     }
-    async sendPagesToExecute(formData, selectedPages, handledPages) {
-        let res = await Ajax.sendAjaxRequest('aisuite_massaction_pages_execute', formData);
-        if (General.isUsable(res)) {
-            if(res.output.failedPages.length > 0) {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.failedPages'] + res.output.failedPages.join(', '));
+    async sendPagesToExecute(formData, selectedPages, handledPages, maxRetries = 2, delay = 1000) {
+        try {
+            if (!formData.has('massActionPagesExecute[pages]')) {
+                throw new Error(TYPO3.lang['AiSuite.error.invalidFormData']);
             }
-            let statusElement = document.querySelector('.module-body .spinner-overlay .status');
-            if (statusElement !== null) {
-                statusElement.innerHTML = res.output.message + Object.keys(handledPages).length + ' / ' + Object.keys(selectedPages).length;
+
+            let lastError;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    let res = await Ajax.sendAjaxRequest('aisuite_massaction_pages_execute', formData);
+
+                    if (!General.isUsable(res)) {
+                        throw new Error(TYPO3.lang['AiSuite.error.invalidServerResponse']);
+                    }
+
+                    if (res.output?.failedPages?.length > 0) {
+                        Notification.error(
+                            TYPO3.lang['AiSuite.notification.generation.error'],
+                            TYPO3.lang['AiSuite.notification.generation.failedPages'] + res.output.failedPages.join(', ')
+                        );
+                    }
+
+                    let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                    if (statusElement !== null && selectedPages && handledPages) {
+                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
+                    }
+
+                    return res;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Request attempt ${attempt} failed:`, error);
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                    }
+                }
             }
-        } else {
-            Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);
+            throw lastError;
+
+        } catch (error) {
+            console.error('sendPagesToExecute failed after all retries:', error.message);
+            Notification.error(
+                TYPO3.lang['AiSuite.notification.generation.error'],
+                TYPO3.lang['AiSuite.notification.generation.requestError']
+            );
+            throw error;
         }
     }
     async sendPagesToUpdate(formData) {
@@ -195,6 +209,55 @@ class PagesPrepare {
             document.querySelector('#resultsToExecute').innerHTML = '';
             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.successUpdate']);
         }
+    }
+
+    async processBatches(selectedPages, baseFormData) {
+        const batchSize = 5;
+        const delayBetweenBatches = 500;
+
+        const pageKeys = Object.keys(selectedPages);
+        let handledPages = {};
+
+        for (let i = 0; i < pageKeys.length; i += batchSize) {
+            const batchKeys = pageKeys.slice(i, i + batchSize);
+            const currentPages = {};
+
+            batchKeys.forEach(key => {
+                currentPages[key] = selectedPages[key];
+            });
+
+            try {
+                const formData = this.createFormData(baseFormData, currentPages);
+                await this.sendPagesToExecute(formData, selectedPages, handledPages);
+                handledPages = { ...handledPages, ...currentPages };
+
+                let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                if (statusElement !== null) {
+                    statusElement.innerHTML = `${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
+                }
+
+                if (i + batchSize < pageKeys.length) {
+                    await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+                }
+            } catch (error) {
+                Notification.warning(
+                    TYPO3.lang['AiSuite.notification.generation.error'],
+                    TYPO3.lang['AiSuite.massAction.batchFailed'].replace('{0}', Math.floor(i/batchSize) + 1)
+                );
+            }
+        }
+
+        return handledPages;
+    }
+
+    createFormData(baseFormData, currentPages) {
+        let formData = new FormData();
+        formData.append('massActionPagesExecute[parentUuid]', baseFormData.parentUuid);
+        formData.append('massActionPagesExecute[column]', baseFormData.column);
+        formData.append('massActionPagesExecute[sysLanguage]', baseFormData.sysLanguage);
+        formData.append('massActionPagesExecute[textAiModel]', baseFormData.textAiModel);
+        formData.append('massActionPagesExecute[pages]', JSON.stringify(currentPages));
+        return formData;
     }
 
     calculateRequestAmount() {

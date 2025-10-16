@@ -13,7 +13,9 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
+use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -38,6 +40,7 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 class PromptTemplateController extends AbstractBackendController
 {
     protected CustomPromptTemplateRepository $customPromptTemplateRepository;
+    protected GlobalInstructionsRepository $globalInstructionsRepository;
     protected LoggerInterface $logger;
 
     public function __construct(
@@ -50,11 +53,13 @@ class PromptTemplateController extends AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
         EventDispatcher $eventDispatcher,
         CustomPromptTemplateRepository $customPromptTemplateRepository,
+        GlobalInstructionsRepository $globalInstructionsRepository,
         LoggerInterface $logger
     ) {
         parent::__construct(
@@ -67,12 +72,14 @@ class PromptTemplateController extends AbstractBackendController
             $backendUserService,
             $libraryService,
             $promptTemplateService,
+            $globalInstructionService,
             $siteService,
             $translationService,
             $sessionService,
             $eventDispatcher
         );
         $this->customPromptTemplateRepository = $customPromptTemplateRepository;
+        $this->globalInstructionsRepository = $globalInstructionsRepository;
         $this->logger = $logger;
     }
 
@@ -132,6 +139,7 @@ class PromptTemplateController extends AbstractBackendController
                     }
                 }
             }
+            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/prompt-templates/manage-custom-prompt-templates.js');
             $this->view->assignMultiple([
                 'customPromptTemplates' => $customPromptTemplates,
                 'search' => $search,

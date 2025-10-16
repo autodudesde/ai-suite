@@ -114,11 +114,11 @@ class PagesContextMenuProvider extends AbstractProvider
             'data-callback-module' => '@autodudes/ai-suite/context-menu/page-context-menu-actions',
             'data-module-url' => $moduleUrl,
         ];
-        
+
         if ($itemName === 'translateWholePage') {
             $attributes['data-action'] = 'translateWholePage';
         }
-        
+
         return $attributes;
     }
 

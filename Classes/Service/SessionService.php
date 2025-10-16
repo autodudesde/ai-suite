@@ -18,6 +18,14 @@ class SessionService implements SingletonInterface
         'ajax_aisuite_massaction_filereferences_prepare' => 'ai_suite_massaction_filereferences_prepare',
         'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare',
         'ajax_aisuite_massaction_pages_translation_prepare' => 'ai_suite_massaction_pages_translation_prepare',
+        'ai_suite_global_instructions' => 'ai_suite_global_instructions',
+        'ai_suite_prompt_manage_customprompttemplates' => 'ai_suite_prompt_manage_customprompttemplates',
+    ];
+
+    private const CONTEXT_PRESERVE_ROUTES = [
+        'web_aisuite',
+        'ai_suite_global_instructions',
+        'ai_suite_prompt_manage_customprompttemplates',
     ];
 
     private const AI_SUITE_FILELIST_FOLDER_ID = 'ai_suite_filelist_folder_id';
@@ -53,7 +61,7 @@ class SessionService implements SingletonInterface
 
     protected function storeContextForRoute(array &$sessionData, string $route, array $postParams): void
     {
-        $sessionData['ai_suite_context'] = $route === 'web_aisuite' ? $sessionData['ai_suite_context'] : 'default';
+        $sessionData['ai_suite_context'] = in_array($route, self::CONTEXT_PRESERVE_ROUTES, true) ? $sessionData['ai_suite_context'] : 'default';
 
         if (array_key_exists($route, self::AI_SUITE_ROUTES)) {
             $sessionData['ai_suite_context'] = self::AI_SUITE_ROUTES[$route];
@@ -135,7 +143,14 @@ class SessionService implements SingletonInterface
         if ($this->getCurrentContext() !== 'default') {
             $lastRoute = $this->getLastRoute();
             if (!empty($lastRoute)) {
-                $id = $this->getCurrentContext() === 'ai_suite_workflowmanager_files' ? $this->getFilelistFolderId() : $this->getWebPageId();
+                $currentContext = $this->getCurrentContext();
+                if ($currentContext === 'ai_suite_workflowmanager_files') {
+                    $id = $this->getFilelistFolderId();
+                } elseif ($currentContext === 'ai_suite_global_instructions' || $currentContext === 'ai_suite_prompt_manage_customprompttemplates') {
+                    $id = $this->getWebPageId();
+                } else {
+                    $id = $this->getWebPageId();
+                }
                 $uri = $this->uriBuilder->buildUriFromRoute($lastRoute, ['id' => $id]);
                 $response = new RedirectResponse((string)$uri);
                 throw new PropagateResponseException($response, 303);

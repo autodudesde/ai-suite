@@ -6,6 +6,7 @@ import Metadata from "@autodudes/ai-suite/helper/metadata.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class GenerateSuggestions {
     constructor() {
@@ -26,6 +27,7 @@ class GenerateSuggestions {
                 let languageId = parseInt(this.getAttribute('data-language-id')) ?? 0;
                 let table = this.getAttribute('data-table');
                 let sysFileId = this.getAttribute('data-sys-file-id');
+                let targetFolder = this.getAttribute('data-target-folder') ?? '';
                 let postData = {
                     id: id,
                     pageId: pageId,
@@ -35,6 +37,7 @@ class GenerateSuggestions {
                     fieldName: fieldName,
                     fieldLabel: fieldLabel,
                     sysFileId: sysFileId ?? 0,
+                    targetFolder: targetFolder
                 };
                 self.addMetadataWizard(postData);
             });
@@ -59,6 +62,13 @@ class GenerateSuggestions {
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             let aiSuiteGenerateButton = modal.find('.panel-body button#aiSuiteGenerateMetadataBtn');
             let postData = settings['postData'];
+            postData.context = postData.table === 'pages' ? 'pages' : 'files';
+            GlobalInstructions.fetchGlobalInstructionsMultiStepWizard({
+                context: postData.context,
+                scope: 'metadata',
+                pageId: postData.pageId ?? null,
+                targetFolder: postData.targetFolder ?? null
+            }, modalContent);
             aiSuiteGenerateButton.on('click', async function (ev) {
                 let textAiModel = modal.find('.panel-body input[name="libraries[textGenerationLibrary]"]:checked').val() ?? '';
                 let newsDetailPlugin = modal.find('.panel-body select#newsDetailPlugin');

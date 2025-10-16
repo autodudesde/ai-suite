@@ -15,6 +15,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -42,6 +43,7 @@ class BackgroundTaskController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -55,6 +57,7 @@ class BackgroundTaskController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,
@@ -130,6 +133,16 @@ class BackgroundTaskController extends AbstractAjaxController
                 if (count($dataHandler->errorLog) > 0) {
                     throw new \Exception(implode(', ', $dataHandler->errorLog));
                 }
+            }
+            $answer = $this->requestService->sendDataRequest(
+                'handleBackgroundTask',
+                [
+                    'uuids' => [$data['uuid']],
+                    'mode' => 'delete'
+                ]
+            );
+            if ($answer->getType() === 'Error') {
+                $this->logger->error('Error while sending delete request to server: ' . $answer->getResponseData()['message']);
             }
 
             $affectedRows = $this->backgroundTaskRepository->deleteByUuid($data['uuid']);

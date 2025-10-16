@@ -3,6 +3,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class FileReferencePrepare {
     parentUuid;
@@ -10,6 +11,7 @@ class FileReferencePrepare {
         this.fileReferencesPrepareExecuteFormEventListener();
         Generation.cancelGeneration();
         this.fileReferencesSelectionEventDelegation();
+        GlobalInstructions.metadataTooltipEventDelegation();
         this.parentUuid = '';
         this.init();
     }
@@ -97,47 +99,25 @@ class FileReferencePrepare {
                         if(Object.keys(selectedFileReferences).length === 0) {
                             Notification.warning(TYPO3.lang['AiSuite.notification.generation.massAction.missingSelection'], TYPO3.lang['AiSuite.notification.generation.massAction.missingFiles']);
                         } else {
-                            let counter = 0;
-                            let currentFileReferences = {};
-                            let handledFileReferences = {};
                             Generation.showSpinner();
                             const baseFormData = {
                                 parentUuid: self.parentUuid,
                                 column: document.querySelector('select[name="massActionFileReferencesPrepare[column]"]').value,
                                 sysLanguage: document.querySelector('select[name="massActionFileReferencesPrepare[sysLanguage]"]').value,
-                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
+                                startFromPid: document.querySelector('input[name="massActionFileReferencesPrepare[startFromPid]"]').value,
                             };
-                            for (let key in selectedFileReferences) {
-                                if(counter === 3) {
-                                    try {
-                                        handledFileReferences = { ...handledFileReferences, ...currentFileReferences };
-                                        let formData = new FormData();
-                                        formData.append('massActionFileReferencesExecute[parentUuid]', baseFormData.parentUuid);
-                                        formData.append('massActionFileReferencesExecute[column]', baseFormData.column);
-                                        formData.append('massActionFileReferencesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                        formData.append('massActionFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
-                                        formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
-                                        await self.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
-                                        counter = 0;
-                                        currentFileReferences = {};
-                                    } catch (e) {
-                                        console.error(e);
-                                    }
-                                }
-                                currentFileReferences[key] = selectedFileReferences[key];
-                                counter++;
+
+                            if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
+                                Notification.error(TYPO3.lang['AiSuite.error.invalidFormData']);
+                                Generation.hideSpinner();
+                                return;
                             }
-                            if(Object.keys(currentFileReferences).length > 0) {
-                                let formData = new FormData();
-                                formData.append('massActionFileReferencesExecute[parentUuid]', baseFormData.parentUuid);
-                                formData.append('massActionFileReferencesExecute[column]', baseFormData.column);
-                                formData.append('massActionFileReferencesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                formData.append('massActionFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
-                                formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
-                                await self.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
-                            }
+
+                            await self.processBatches(selectedFileReferences, baseFormData);
                             Generation.hideSpinner();
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
+                            selectedFileReferences = null;
                             let fileReferencesPrepareExecuteForm = document.querySelector('form[name="fileReferencesPrepareExecute"]');
                             let formData = new FormData(fileReferencesPrepareExecuteForm);
                             self.prepareFileReferences(formData).then(() => {});
@@ -175,18 +155,51 @@ class FileReferencePrepare {
         }
     }
 
-    async sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences) {
-        let res = await Ajax.sendAjaxRequest('aisuite_massaction_filereferences_execute', formData);
-        if (General.isUsable(res)) {
-            if(res.output.failedFileReferences.length > 0) {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.failedFileReferences'] + res.output.failedFileReferences.join(', '));
+    async sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences, maxRetries = 2, delay = 1000) {
+        try {
+            if (!formData.has('massActionFileReferencesExecute[fileReferences]')) {
+                throw new Error(TYPO3.lang['AiSuite.error.invalidFormData']);
             }
-            let statusElement = document.querySelector('.module-body .spinner-overlay .status');
-            if (statusElement !== null) {
-                statusElement.innerHTML = res.output.message + Object.keys(handledFileReferences).length + ' / ' + Object.keys(selectedFileReferences).length;
+
+            let lastError;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    let res = await Ajax.sendAjaxRequest('aisuite_massaction_filereferences_execute', formData);
+
+                    if (!General.isUsable(res)) {
+                        throw new Error(TYPO3.lang['AiSuite.error.invalidServerResponse']);
+                    }
+
+                    if (res.output?.failedFileReferences?.length > 0) {
+                        Notification.error(
+                            TYPO3.lang['AiSuite.notification.generation.error'],
+                            TYPO3.lang['AiSuite.notification.generation.failedFileReferences'] + res.output.failedFileReferences.join(', ')
+                        );
+                    }
+
+                    let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                    if (statusElement !== null && selectedFileReferences && handledFileReferences) {
+                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledFileReferences).length} / ${Object.keys(selectedFileReferences).length}`;
+                    }
+
+                    return res;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Request attempt ${attempt} failed:`, error);
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                    }
+                }
             }
-        } else {
-            Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);
+            throw lastError;
+
+        } catch (error) {
+            console.error('sendFileReferencesToExecute failed after all retries:', error.message);
+            Notification.error(
+                TYPO3.lang['AiSuite.notification.generation.error'],
+                TYPO3.lang['AiSuite.notification.generation.requestError']
+            );
+            throw error;
         }
     }
     async sendFileReferencesToUpdate(formData) {
@@ -196,6 +209,56 @@ class FileReferencePrepare {
             document.querySelector('#resultsToExecute').innerHTML = '';
             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.successUpdate']);
         }
+    }
+
+    createFormData(baseFormData, currentFileReferences) {
+        let formData = new FormData();
+        formData.append('massActionFileReferencesExecute[parentUuid]', baseFormData.parentUuid);
+        formData.append('massActionFileReferencesExecute[column]', baseFormData.column);
+        formData.append('massActionFileReferencesExecute[sysLanguage]', baseFormData.sysLanguage);
+        formData.append('massActionFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
+        formData.append('massActionFileReferencesExecute[startFromPid]', baseFormData.startFromPid);
+        formData.append('massActionFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
+        return formData;
+    }
+
+    async processBatches(selectedFileReferences, baseFormData) {
+        const batchSize = 5;
+        const delayBetweenBatches = 500;
+
+        const fileKeys = Object.keys(selectedFileReferences);
+        let handledFileReferences = {};
+
+        for (let i = 0; i < fileKeys.length; i += batchSize) {
+            const batchKeys = fileKeys.slice(i, i + batchSize);
+            const currentFileReferences = {};
+
+            batchKeys.forEach(key => {
+                currentFileReferences[key] = selectedFileReferences[key];
+            });
+
+            try {
+                const formData = this.createFormData(baseFormData, currentFileReferences);
+                await this.sendFileReferencesToExecute(formData, selectedFileReferences, handledFileReferences);
+                handledFileReferences = { ...handledFileReferences, ...currentFileReferences };
+
+                let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                if (statusElement !== null) {
+                    statusElement.innerHTML = `${Object.keys(handledFileReferences).length} / ${Object.keys(selectedFileReferences).length}`;
+                }
+
+                if (i + batchSize < fileKeys.length) {
+                    await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+                }
+            } catch (error) {
+                Notification.warning(
+                    TYPO3.lang['AiSuite.notification.generation.error'],
+                    TYPO3.lang['AiSuite.massAction.batchFailed'].replace('{0}', Math.floor(i/batchSize) + 1)
+                );
+            }
+        }
+
+        return handledFileReferences;
     }
 
     calculateRequestAmount() {

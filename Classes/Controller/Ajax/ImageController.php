@@ -13,8 +13,10 @@
 namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -27,7 +29,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
@@ -47,6 +48,7 @@ class ImageController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -61,6 +63,7 @@ class ImageController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,
@@ -76,7 +79,6 @@ class ImageController extends AbstractAjaxController
     public function getImageWizardSlideOneAction(ServerRequestInterface $request): ResponseInterface
     {
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::IMAGE, 'createImage', ['image']);
-
         if ($librariesAnswer->getType() === 'Error') {
             $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             return new HtmlResponse($librariesAnswer->getResponseData()['message']);
@@ -100,52 +102,59 @@ class ImageController extends AbstractAjaxController
     public function getImageWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-        $parsedBody = $request->getParsedBody();
-        if (isset($parsedBody['langIsoCode'])) {
-            $langIsoCode = $parsedBody['langIsoCode'];
-        } else {
-            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
-        }
-        $answer = $this->requestService->sendDataRequest(
-            'createImage',
-            [
-                'uuid' => $request->getParsedBody()['uuid'],
-                'progress' => 'prepare'
-            ],
-            $request->getParsedBody()['imagePrompt'],
-            $langIsoCode,
-            [
-                'image' => $request->getParsedBody()['imageAiModel'],
-            ]
-        );
-        if ($answer->getType() === 'Error') {
-            $this->logError($answer->getResponseData()['message'], $response, 503);
-            return $response;
-        }
-        $params = [
-            'imageAiModel' => $request->getParsedBody()['imageAiModel'],
-            'imageSuggestions' => $answer->getResponseData()['images'],
-            'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
-            'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
-            'table' => $request->getParsedBody()['table'] ?? '',
-            'position' => $request->getParsedBody()['position'] ?? '',
-            'uuid' => $request->getParsedBody()['uuid']
-        ];
-        $output = $this->getContentFromTemplate(
-            $request,
-            'WizardSlideTwo',
-            'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
-            'Image',
-            $params
-        );
-        $response->getBody()->write(
-            json_encode(
+        try {
+            $parsedBody = $request->getParsedBody();
+            $pageId = $parsedBody['pageId'] ?? 0;
+            $langIsoCode = $parsedBody['langIsoCode'] ?? $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$pageId);
+            if (isset($parsedBody['pageId'])) {
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'imageWizard', (int)$parsedBody['pageId']);
+            } else {
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'imageWizard', null, $parsedBody['targetFolder'] ?? '');
+            }
+            $answer = $this->requestService->sendDataRequest(
+                'createImage',
                 [
-                    'success' => true,
-                    'output' => $output
+                    'uuid' => $request->getParsedBody()['uuid'],
+                    'progress' => 'prepare',
+                    'global_instructions' => $globalInstructions
+                ],
+                $request->getParsedBody()['imagePrompt'],
+                $langIsoCode,
+                [
+                    'image' => $request->getParsedBody()['imageAiModel'],
                 ]
-            )
-        );
+            );
+            if ($answer->getType() === 'Error') {
+                $this->logError($answer->getResponseData()['message'], $response, 503);
+                return $response;
+            }
+            $params = [
+                'imageAiModel' => $request->getParsedBody()['imageAiModel'],
+                'imageSuggestions' => $answer->getResponseData()['images'],
+                'imageTitleSuggestions' => $answer->getResponseData()['imageTitles'] ?? [],
+                'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
+                'table' => $request->getParsedBody()['table'] ?? '',
+                'position' => $request->getParsedBody()['position'] ?? '',
+                'uuid' => $request->getParsedBody()['uuid']
+            ];
+            $output = $this->getContentFromTemplate(
+                $request,
+                'WizardSlideTwo',
+                'EXT:ai_suite/Resources/Private/Templates/Ajax/Image/',
+                'Image',
+                $params
+            );
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => true,
+                        'output' => $output
+                    ]
+                )
+            );
+        } catch (\Exception $e) {
+            $this->logError($e->getMessage(), $response, 403);
+        }
         return $response;
     }
 
@@ -153,11 +162,7 @@ class ImageController extends AbstractAjaxController
     {
         $response = new Response();
         $parsedBody = $request->getParsedBody();
-        if (isset($parsedBody['langIsoCode'])) {
-            $langIsoCode = $parsedBody['langIsoCode'];
-        } else {
-            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
-        }
+        $langIsoCode = $parsedBody['langIsoCode'] ?? $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -199,6 +204,7 @@ class ImageController extends AbstractAjaxController
                 ]
             )
         );
+
         return $response;
     }
 
@@ -206,11 +212,7 @@ class ImageController extends AbstractAjaxController
     {
         $response = new Response();
         $parsedBody = $request->getParsedBody();
-        if (isset($parsedBody['langIsoCode'])) {
-            $langIsoCode = $parsedBody['langIsoCode'];
-        } else {
-            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
-        }
+        $langIsoCode = $parsedBody['langIsoCode'] ?? $this->siteService->getIsoCodeByLanguageId((int)$parsedBody['languageId'], (int)$parsedBody['pageId']);
         $answer = $this->requestService->sendDataRequest(
             'createImage',
             [
@@ -279,7 +281,7 @@ class ImageController extends AbstractAjaxController
                 )
             );
             return $response;
-        } catch (InsufficientFolderAccessPermissionsException $e) {
+        } catch (InsufficientFolderAccessPermissionsException|AiSuiteException $e) {
             $this->logError($e->getMessage(), $response, 403);
         }
         return $response;

@@ -17,6 +17,7 @@ use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\ContentService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
@@ -64,6 +65,7 @@ class ContentController extends AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
@@ -85,6 +87,7 @@ class ContentController extends AbstractBackendController
             $backendUserService,
             $libraryService,
             $promptTemplateService,
+            $globalInstructionService,
             $siteService,
             $translationService,
             $sessionService,
@@ -164,6 +167,8 @@ class ContentController extends AbstractBackendController
 
         $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content['CType'], $content['pid'], $table);
         $selectedTcaColumns = isset($params['selectedTcaColumns']) ? json_decode($params['selectedTcaColumns'], true) : $requestFields;
+        $scope = count($defVals) > 0 ? 'contentElement' : 'newsRecord';
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/creation.js');
@@ -186,7 +191,8 @@ class ContentController extends AbstractBackendController
             'defVals' => $defVals,
             'showMaxImageHint' => true,
             'uuid' => $this->uuidService->generateUuid(),
-            'contentTypeTitle' => $content['CType'] === '0' ? 'news' : $content['CType']
+            'contentTypeTitle' => $content['CType'] === '0' ? 'news' : $content['CType'],
+            'globalInstructions' => $globalInstructions,
         ]);
         return $this->view->renderResponse('Content/CreateContent');
     }
@@ -267,6 +273,8 @@ class ContentController extends AbstractBackendController
                 }
             }
         }
+        $scope = count($defVals) > 0 ? 'contentElement' : 'newsRecord';
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
         $models = $this->contentService->checkRequestModels($requestFields, ['text' => $textAi, 'image' => $imageAi]);
         $answer = $this->requestService->sendDataRequest(
             'createContentElement',
@@ -275,6 +283,7 @@ class ContentController extends AbstractBackendController
                 'c_type' => $content['CType'],
                 'additional_image_settings' => $parsedBody['additionalImageSettings'] ?? '',
                 'uuid' => $parsedBody['uuid'] ?? '',
+                'global_instructions' => $globalInstructions,
             ],
             $parsedBody['initialPrompt'],
             strtoupper($langIsoCode),

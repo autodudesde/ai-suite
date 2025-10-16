@@ -1,0 +1,43 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<div class="recordlist-heading multi-record-selection-panel">
+    <div class="recordlist-heading-row">
+        <div class="recordlist-heading-title">
+            <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel"
+                         extensionName="ai_suite"/> - {sectionTitle}
+            (
+            <f:count subject="{instructions}"/>
+            )
+        </div>
+        <be:link.newRecord
+            table="tx_aisuite_domain_model_global_instructions"
+            returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+            class="btn btn-secondary"
+            pid="{pid}"
+        >
+            <core:icon identifier="actions-page-new" size="small"/>
+            <f:translate
+                key="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"
+                extensionName="ai_suite"/>
+        </be:link.newRecord>
+        <form action="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+              name="input" enctype="multipart/form-data" method="POST"
+              class="manage-global-instructions-search-form">
+            <input type="text" id="search" name="search" value="{search}" class="form-control"
+                   placeholder="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder', extensionName: 'ai_suite')}"/>
+            <input type="submit"
+                   value="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit', extensionName: 'ai_suite')}"
+                   class="btn btn-primary"/>
+            <a href="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+               class="btn btn-secondary"
+               title="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset', extensionName: 'ai_suite')}"
+            >
+                <f:translate key="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset"
+                             extensionName="ai_suite"/>
+            </a>
+        </form>
+    </div>
+</div>
+</html>

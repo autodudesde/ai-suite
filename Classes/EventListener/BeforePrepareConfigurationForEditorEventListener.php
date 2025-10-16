@@ -38,6 +38,7 @@ class BeforePrepareConfigurationForEditorEventListener
             return;
         }
         $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
+        $this->pageRenderer->addInlineSetting('aiSuite', 'pageId', $event->getData()['effectivePid']);
         $configuration = $event->getConfiguration();
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
             $configuration['importModules'][] = [

@@ -15,6 +15,9 @@
         <div class="panel-body">
             <f:if condition="{fileMetadata -> f:count()} > 0">
                 <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
+                    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
+                </label>
                 <label class="mb-3 d-flex gap-2 fw-bold">
                     <input type="checkbox" id="toggleFileSelection" value="1" />
                     <span>

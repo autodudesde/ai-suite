@@ -3,6 +3,7 @@ import General from "@autodudes/ai-suite/helper/general.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Sortable from "@autodudes/ai-suite/helper/sortable.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class Validation {
     constructor() {
@@ -13,6 +14,8 @@ class Validation {
         Generation.addFormSubmitEventListener('plainPrompt');
         PromptTemplate.loadPromptTemplates('plainPrompt');
         Generation.languageSelectionEventListener();
+        this.addGlobalInstructionEventListener().then();
+        GlobalInstructions.initializeAllModals();
     }
 
     addEventListenerGeneratePageStructure() {
@@ -33,6 +36,24 @@ class Validation {
                 }
             });
         }
+    }
+
+    async addGlobalInstructionEventListener() {
+        const elements = document.querySelectorAll('ul.dropdown-menu li');
+        elements.forEach((element) => {
+            element.addEventListener('click', function(ev) {
+                ev.preventDefault();
+                const fields = document.querySelectorAll('input[name="startStructureFromPid"]');
+                const startFromPid = fields.length >= 1 && parseInt(fields[0].value) !== -1 ? parseInt(fields[0].value) : 0;
+                let data = {
+                    context: 'pages',
+                    scope: 'pageTree',
+                    pageId: startFromPid,
+                    useModal: true
+                }
+                GlobalInstructions.fetchGlobalInstructions(data);
+            });
+        });
     }
 }
 

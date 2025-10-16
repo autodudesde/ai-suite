@@ -87,6 +87,25 @@ return [
         'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
     ],
     /**
+     * Global Instructions routes
+     */
+    'ai_suite_global_instructions' => [
+        'path' => '/aisuite/global-instructions',
+        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+    ],
+    'ai_suite_global_instructions_activate' => [
+        'path' => '/aisuite/global-instructions/activate',
+        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+    ],
+    'ai_suite_global_instructions_deactivate' => [
+        'path' => '/aisuite/global-instructions/deactivate',
+        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+    ],
+    'ai_suite_global_instructions_delete' => [
+        'path' => '/aisuite/global-instructions/delete',
+        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+    ],
+    /**
      * Content routes
      */
     'ai_suite_content_create' => [

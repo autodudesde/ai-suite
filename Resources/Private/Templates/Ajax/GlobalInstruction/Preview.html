@@ -1,0 +1,15 @@
+<html data-namespace-typo3-fluid="true"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<f:if condition="{globalInstructions} && {globalInstructions} != ''">
+    <span
+        class="badge d-inline-flex justify-content-center align-items-center mx-2 gap-1 {f:if(condition: useModal, then: 'global-instruction-btn', else: 'global-instruction-tooltip')}"
+        data-global-instructions="{globalInstructions}"
+    >
+        <core:icon identifier="actions-eye" size="small" /> <f:translate key="aiSuite.globalInstructions.show_global_instructions" extensionName="ai_suite"/>
+    </span>
+</f:if>
+</html>
+
+

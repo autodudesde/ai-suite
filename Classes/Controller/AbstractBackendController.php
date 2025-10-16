@@ -13,6 +13,7 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Events\AfterAiSuiteModuleInitalizeEvent;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -43,6 +44,7 @@ class AbstractBackendController
     protected BackendUserService $backendUserService;
     protected LibraryService $libraryService;
     protected PromptTemplateService $promptTemplateService;
+    protected GlobalInstructionService $globalInstructionService;
     protected SiteService $siteService;
     protected TranslationService $translationService;
     protected SessionService $sessionService;
@@ -60,6 +62,7 @@ class AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
@@ -74,6 +77,7 @@ class AbstractBackendController
         $this->backendUserService = $backendUserService;
         $this->libraryService = $libraryService;
         $this->promptTemplateService = $promptTemplateService;
+        $this->globalInstructionService = $globalInstructionService;
         $this->siteService = $siteService;
         $this->translationService = $translationService;
         $this->sessionService = $sessionService;
@@ -112,7 +116,12 @@ class AbstractBackendController
         $buttonBar->addButton($this->buildButton('actions-menu', 'tx_aisuite.module.actionmenu.dashboard', 'btn-md btn-primary rounded', 'ai_suite_dashboard'));
         $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.pages', 'btn-md btn-default rounded', 'ai_suite_page'));
         $buttonBar->addButton($this->buildButton('content-store', 'tx_aisuite.module.actionmenu.agencies', 'btn-md btn-default rounded', 'ai_suite_agencies'));
-        $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default rounded', 'ai_suite_prompt'));
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_global_instructions_button')) {
+            $buttonBar->addButton($this->buildButton('apps-pagetree-page-content-from-page-root', 'tx_aisuite.module.actionmenu.globalInstructions', 'btn-md btn-default rounded', 'ai_suite_global_instructions'));
+        }
+        if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button')) {
+            $buttonBar->addButton($this->buildButton('actions-file-text', 'tx_aisuite.module.actionmenu.promptTemplate', 'btn-md btn-default rounded', 'ai_suite_prompt'));
+        }
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
             $buttonBar->addButton($this->buildButton('actions-duplicate', 'tx_aisuite.module.actionmenu.massAction', 'btn-md btn-default rounded', 'ai_suite_massaction'));
         }

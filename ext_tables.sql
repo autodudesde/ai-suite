@@ -12,6 +12,18 @@ CREATE TABLE tx_aisuite_domain_model_custom_prompt_template (
     type varchar(255) DEFAULT '',
 );
 
+CREATE TABLE tx_aisuite_domain_model_global_instructions (
+    name varchar(255) DEFAULT '',
+    instructions text,
+    scope varchar(255) DEFAULT '',
+    use_for_subtree tinyint(3) DEFAULT '0' NOT NULL,
+    extend_previous_instructions tinyint(3) DEFAULT '0' NOT NULL,
+    override_predefined_prompt tinyint(3) DEFAULT '0' NOT NULL,
+    context VARCHAR(255) DEFAULT '' NOT NULL,
+    selected_pages VARCHAR(255) DEFAULT '',
+    selected_directories LONGTEXT DEFAULT NULL
+);
+
 CREATE TABLE tx_aisuite_domain_model_requests (
     free_requests int(10) DEFAULT '0',
     paid_requests int(10) DEFAULT '0',
