@@ -189,4 +189,8 @@ return [
         'path' => '/massaction/pages-translation-retry',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::pagesTranslationRetryAction'
     ],
+    'aisuite_globalinstruction_preview' => [
+        'path' => '/globalinstruction/preview',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\GlobalInstructionController::class . '::previewAction'
+    ],
 ];

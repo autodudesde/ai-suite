@@ -1,0 +1,21 @@
+form.manage-global-instructions-search-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 10px;
+    max-width: 400px;
+}
+
+form.manage-global-instructions-search-form > div {
+    display: none;
+}
+
+div[data-module-id="aiSuite"] .recordlist .recordlist-heading .recordlist-heading-actions,
+div[data-module-id="aiSuite"] .recordlist .t3js-record-delete {
+    display: none;
+}
+
+div[data-module-id="aiSuite"] .recordlist .btn-group > button[data-datahandler-field="hidden"] {
+    border-start-end-radius: 2px;
+    border-end-end-radius: 2px;
+}

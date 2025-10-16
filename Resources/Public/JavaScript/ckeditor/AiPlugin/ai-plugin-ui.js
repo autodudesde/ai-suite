@@ -15,12 +15,18 @@ export default class AiPluginUI extends Plugin {
         this.contextualBalloon = editor.plugins.get( ContextualBalloon );
         if(TYPO3.settings.aiSuite) {
             this.languageCode = TYPO3.settings.aiSuite.rteLanguageCode;
+            this.pageId = TYPO3.settings.aiSuite.pageId;
         } else {
             this.languageCode = 'en';
+            this.pageId = 0;
         }
-        const prefillContent = await this._fetchRteContent();
+        const data = {
+            pageId: this.pageId,
+        }
+        const prefillContent = await this._fetchRteContent(data);
         this.libraries = prefillContent['libraries'];
         this.promptTemplates = prefillContent['promptTemplates'];
+        this.globalInstructions = prefillContent['globalInstructions'];
         this.uuid = prefillContent['uuid'];
         this.selectedContent = '';
 
@@ -62,8 +68,8 @@ export default class AiPluginUI extends Plugin {
         } );
     }
 
-    async _fetchRteContent() {
-        let res = await Ajax.fetchLibraries('aisuite_ckeditor_libraries');
+    async _fetchRteContent(data) {
+        let res = await Ajax.fetchLibraries('aisuite_ckeditor_libraries', data);
         if (General.isUsable(res)) {
             return res.output;
         } else {
@@ -74,7 +80,7 @@ export default class AiPluginUI extends Plugin {
 
     _createFormView() {
         const editor = this.editor;
-        const modalView = new ModalView( editor.locale , this.libraries, this.promptTemplates);
+        const modalView = new ModalView( editor.locale , this.libraries, this.promptTemplates, this.globalInstructions);
 
         clickOutsideHandler( {
             emitter: modalView,
@@ -111,7 +117,8 @@ export default class AiPluginUI extends Plugin {
                 selectedContent: this.selectedContent,
                 wholeContent: editor.getData(),
                 languageCode: this.languageCode,
-                uuid: this.uuid
+                uuid: this.uuid,
+                pageId: this.pageId,
             };
             let res = await Ajax.sendRteAjaxRequest( postData );
             if(General.isUsable(res)) {

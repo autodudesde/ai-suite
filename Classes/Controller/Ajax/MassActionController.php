@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\DirectiveService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
@@ -67,6 +68,7 @@ class MassActionController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -88,6 +90,7 @@ class MassActionController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,
@@ -164,6 +167,7 @@ class MassActionController extends AbstractAjaxController
                     return $carry;
                 }, []);
             }
+            $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
 
             $output = $this->getContentFromTemplate(
                 $request,
@@ -201,7 +205,18 @@ class MassActionController extends AbstractAjaxController
     public function pagesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
     {
         $response = new Response();
-        $massActionData = $serverRequest->getParsedBody()['massActionPagesExecute'];
+
+        $parsedBody = $serverRequest->getParsedBody();
+        if (!is_array($parsedBody) || !array_key_exists('massActionPagesExecute', $parsedBody)) {
+            $this->logger->error('Invalid request: empty parsedBody or missing massActionPagesExecute key in pagesExecuteAction');
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => $this->translationService->translate('AiSuite.error.invalidRequest')
+            ]));
+            return $response;
+        }
+
+        $massActionData = $parsedBody['massActionPagesExecute'];
         $pages = json_decode($massActionData['pages'], true);
         $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
@@ -233,10 +248,14 @@ class MassActionController extends AbstractAjaxController
                     (int)$languageParts[1],
                     ''
                 );
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageUid);
+                $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]);
                 $payload[] = [
                     'field_label' => $massActionData['column'],
                     'request_content' => $pageContent,
                     'uuid' => $uuid,
+                    'global_instructions' => $globalInstructions,
+                    'override_predefined_prompt' => $globalInstructionsOverride
                 ];
             } catch (\Exception $e) {
                 $this->logger->error('Error while fetching page content for page with uid ' . $pageUid . ': ' . $e->getMessage());
@@ -244,7 +263,8 @@ class MassActionController extends AbstractAjaxController
             }
         }
         if (count($payload) > 0) {
-            $answer = $this->requestService->sendDataRequest(
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $answer = $requestService->sendDataRequest(
                 'createMassAction',
                 [
                     'uuid' => $massActionData['parentUuid'],
@@ -383,6 +403,7 @@ class MassActionController extends AbstractAjaxController
             }, []);
 
             $params['maxAllowedFileSize'] = $this->directiveService->getEffectiveMaxUploadSize();
+            $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
 
             $output = $this->getContentFromTemplate(
                 $request,
@@ -420,7 +441,18 @@ class MassActionController extends AbstractAjaxController
     public function fileReferencesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
     {
         $response = new Response();
-        $massActionData = $serverRequest->getParsedBody()['massActionFileReferencesExecute'];
+
+        $parsedBody = $serverRequest->getParsedBody();
+        if (!is_array($parsedBody) || !array_key_exists('massActionFileReferencesExecute', $parsedBody)) {
+            $this->logger->error('Invalid request: empty parsedBody or missing massActionFileReferencesExecute key in fileReferencesExecuteAction');
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => $this->translationService->translate('AiSuite.error.invalidRequest')
+            ]));
+            return $response;
+        }
+
+        $massActionData = $parsedBody['massActionFileReferencesExecute'];
         $fileReferences = json_decode($massActionData['fileReferences'], true);
         $languageParts = explode('__', $massActionData['sysLanguage']);
         $payload = [];
@@ -441,7 +473,8 @@ class MassActionController extends AbstractAjaxController
                 $fileSize = strlen($fileContent);
 
                 if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                    $answer = $this->requestService->sendDataRequest(
+                    $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+                    $answer = $requestService->sendDataRequest(
                         'createMassAction',
                         [
                             'uuid' => $massActionData['parentUuid'],
@@ -479,10 +512,15 @@ class MassActionController extends AbstractAjaxController
                     (int)$languageParts[1],
                     ''
                 );
+                $pageId = (int)$massActionData['startFromPid'];
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+                $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageId]);
                 $payload[] = [
                     'field_label' => $massActionData['column'],
                     'request_content' => $fileContent,
                     'uuid' => $uuid,
+                    'global_instructions' => $globalInstructions,
+                    'override_predefined_prompt' => $globalInstructionsOverride
                 ];
                 $fileSizeSumInBytes += $fileSize;
             } catch (\Exception $e) {
@@ -491,7 +529,8 @@ class MassActionController extends AbstractAjaxController
             }
         }
         if (count($payload) > 0) {
-            $answer = $this->requestService->sendDataRequest(
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $answer = $requestService->sendDataRequest(
                 'createMassAction',
                 [
                     'uuid' => $massActionData['parentUuid'],
@@ -618,7 +657,18 @@ class MassActionController extends AbstractAjaxController
     public function filelistFilesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
     {
         $response = new Response();
-        $massActionData = $serverRequest->getParsedBody()['massActionFilesExecute'];
+
+        $parsedBody = $serverRequest->getParsedBody();
+        if (!is_array($parsedBody) || !array_key_exists('massActionFilesExecute', $parsedBody)) {
+            $this->logger->error('Invalid request: empty parsedBody or missing massActionFilesExecute key in filelistFilesExecuteAction');
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => $this->translationService->translate('AiSuite.error.invalidRequest')
+            ]));
+            return $response;
+        }
+
+        $massActionData = $parsedBody['massActionFilesExecute'];
         $scope = 'fileMetadata';
 
         $filesMetadataUidList = [];
@@ -657,7 +707,8 @@ class MassActionController extends AbstractAjaxController
                     $fileSize = strlen($fileContent);
 
                     if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                        $answer = $this->requestService->sendDataRequest(
+                        $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+                        $answer = $requestService->sendDataRequest(
                             'createMassAction',
                             [
                                 'uuid' => $massActionData['parentUuid'],
@@ -696,10 +747,15 @@ class MassActionController extends AbstractAjaxController
                         $targetLanguageId,
                         $columns['mode'] ?? ''
                     );
+                    $folderCombinedIdentifier = $this->massActionService->getFolderCombinedIdentifier($fileUid);
+                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
+                    $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folderCombinedIdentifier]);
                     $payload[] = [
                         'field_label' => $column,
                         'request_content' => $fileContent,
                         'uuid' => $uuid,
+                        'global_instructions' => $globalInstructions,
+                        'override_predefined_prompt' => $globalInstructionsOverride
                     ];
                     $fileSizeSumInBytes += $fileSize;
                 } catch (\Exception $e) {
@@ -709,7 +765,8 @@ class MassActionController extends AbstractAjaxController
             }
         }
         if (count($payload) > 0) {
-            $answer = $this->requestService->sendDataRequest(
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $answer = $requestService->sendDataRequest(
                 'createMassAction',
                 [
                     'uuid' => $massActionData['parentUuid'],
@@ -926,7 +983,6 @@ class MassActionController extends AbstractAjaxController
                     (int)$targetLanguageParts[1],
                     ''
                 );
-
                 $payload[] = [
                     'source_page_uid' => $pageUid,
                     'source_language' => $sourceLanguageParts[0],
@@ -942,7 +998,8 @@ class MassActionController extends AbstractAjaxController
         }
 
         if (count($payload) > 0) {
-            $answer = $this->requestService->sendDataRequest(
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $answer = $requestService->sendDataRequest(
                 'createMassAction',
                 [
                     'uuid' => $massActionData['parentUuid'],

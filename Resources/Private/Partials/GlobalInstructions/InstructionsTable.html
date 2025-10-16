@@ -1,0 +1,158 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<div class="">
+    <div class="table-fit">
+        <table class="table product-table table-striped recordlist">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">
+                    #
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate
+                        key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions"
+                        extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage"
+                                 extensionName="ai_suite"/>
+                </th>
+                <th scope="col">
+                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions"
+                                 extensionName="ai_suite"/>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <f:if condition="{instructions -> f:count()} == 0">
+                <tr>
+                    <td colspan="8">
+                        <f:translate
+                            key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound"
+                            extensionName="ai_suite"/>
+                    </td>
+                </tr>
+            </f:if>
+            <f:for each="{instructions}" as="instruction" iteration="it">
+                <tr data-testid="{instruction.uid}">
+                    <td>
+                        {it.cycle}
+                    </td>
+                    <td>
+                        <be:link.editRecord
+                            table="tx_aisuite_domain_model_global_instructions"
+                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel', extensionName: 'ai_suite')}"
+                            uid="{instruction.uid}"
+                            returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+                        >
+                            {instruction.name}
+                        </be:link.editRecord>
+                    </td>
+                    <td data-test-context="{instruction.context}">
+                        {instruction.context -> f:format.case(mode: 'capital')}
+                    </td>
+                    <td data-test-scope="{instruction.scope}">
+                        <f:translate
+                            key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope{instruction.scope -> f:format.case(mode: 'capital')}"
+                            extensionName="ai_suite"/>
+                    </td>
+                    <td data-test-selected-pages-directories="1">
+                        <f:if condition="{instruction.context} == 'pages'">
+                            <f:for each="{instruction.selected_pages}" as="page">
+                                {page.title} (ID: {page.uid})<br/>
+                            </f:for>
+                        </f:if>
+                        <f:if condition="{instruction.context} == 'files'">
+                            <f:for each="{instruction.selected_directories}" as="directory">
+                                {directory}<br/>
+                            </f:for>
+                        </f:if>
+                    </td>
+                    <td data-test-subtree="{instruction.use_for_subtree}">
+                        <f:if condition="{instruction.use_for_subtree}">
+                            <f:then>
+                                <f:translate key="aiSuite.yes" extensionName="ai_suite"/>
+                            </f:then>
+                            <f:else>
+                                <f:translate key="aiSuite.no" extensionName="ai_suite"/>
+                            </f:else>
+                        </f:if>
+                    </td>
+                    <td data-test-extendprevious="{instruction.extend_previous_instructions}">
+                        <f:if condition="{instruction.extend_previous_instructions}">
+                            <f:then>
+                                <f:translate key="aiSuite.yes" extensionName="ai_suite"/>
+                            </f:then>
+                            <f:else>
+                                <f:translate key="aiSuite.no" extensionName="ai_suite"/>
+                            </f:else>
+                        </f:if>
+                    </td>
+                    <td data-test-storage-page="{instruction.page_title} (ID: {instruction.pid})">
+                        {instruction.page_title} <br/>(ID: {instruction.pid})
+                    </td>
+                    <td>
+                        <be:link.editRecord
+                            table="tx_aisuite_domain_model_global_instructions"
+                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel', extensionName: 'ai_suite')}"
+                            uid="{instruction.uid}"
+                            returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+                            class="btn btn-default"
+                        >
+                            <core:icon identifier="actions-open" size="small"/>
+                        </be:link.editRecord>
+                        <f:if condition="{instruction.hidden}">
+                            <f:then>
+                                <a href="{f:be.uri(route: 'ai_suite_global_instructions_activate', parameters: '{recordId: instruction.uid, id: pid}')}"
+                                   title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel', extensionName: 'ai_suite')}"
+                                   class="btn btn-default"
+                                >
+                                    <core:icon identifier="actions-toggle-off" size="small"/>
+                                </a>
+                            </f:then>
+                            <f:else>
+                                <a href="{f:be.uri(route: 'ai_suite_global_instructions_deactivate', parameters: '{recordId: instruction.uid, id: pid}')}"
+                                   title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel', extensionName: 'ai_suite')}"
+                                   class="btn btn-default"
+                                >
+                                    <core:icon identifier="actions-toggle-on" size="small"/>
+                                </a>
+                            </f:else>
+                        </f:if>
+                        <a href="{f:be.uri(route: 'ai_suite_global_instructions_delete', parameters: '{recordId: instruction.uid, id: pid}')}"
+                           title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel', extensionName: 'ai_suite')}"
+                           class="btn btn-default delete-global-instruction"
+                           data-instruction-name="{instruction.name}"
+                        >
+                            <core:icon identifier="actions-delete" size="small"/>
+                        </a>
+                    </td>
+                </tr>
+            </f:for>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

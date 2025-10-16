@@ -14,6 +14,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -37,6 +38,7 @@ class CkeditorController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -50,6 +52,7 @@ class CkeditorController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,
@@ -78,7 +81,7 @@ class CkeditorController extends AbstractAjaxController
             );
             return $response;
         }
-
+        $pageId = $request->getParsedBody()['pageId'] ?? 0;
         $response->getBody()->write(
             json_encode(
                 [
@@ -86,6 +89,7 @@ class CkeditorController extends AbstractAjaxController
                     'output' => [
                         'libraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                         'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates('editContent'),
+                        'globalInstructions' => $this->globalInstructionService->buildGlobalInstruction('pages', 'editContent', (int)$pageId),
                         'uuid' => $this->uuidService->generateUuid(),
                     ],
                 ]
@@ -135,7 +139,8 @@ class CkeditorController extends AbstractAjaxController
     public function requestAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
-
+        $pageUid = $request->getParsedBody()['pageId'] ?? 0;
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'editContent', (int)$pageUid);
         $answer = $this->requestService->sendDataRequest(
             'editContent',
             [
@@ -143,6 +148,7 @@ class CkeditorController extends AbstractAjaxController
                 'selectedContent' => $request->getParsedBody()['selectedContent'] ?? '',
                 'wholeContent' => $request->getParsedBody()['wholeContent'] ?? '',
                 'type' => $request->getParsedBody()['type'] ?? '',
+                'globalInstructions' => $globalInstructions,
             ],
             $request->getParsedBody()['prompt'] ?? '',
             $request->getParsedBody()['languageCode'] ?? 'en',

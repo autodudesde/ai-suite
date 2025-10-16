@@ -1,7 +1,8 @@
 :root {
     --ai-suite-primary-color: #F09C42;
-    --ai-suite-button-font-color: var(--typo3-text-color-base, #000);
-    --ai-suite-border-color: #ddd;
+    --ai-suite-button-font-color: #000;
+    --ai-suite-border-color: #F09C42;
+    --ai-suite-border-secondary-color: #ddd;
     --checkbox-radio-size: 18px;
     --checkbox-radio-gap: 10px;
     --checkbox-radio-border-width: 1px;
@@ -137,7 +138,7 @@ div[data-module-id="aiSuite"] {
             display: block;
             width: 49%;
             padding: 0.75rem;
-            border: 1px solid var(--ai-suite-border-color);
+            border: 1px solid var(--ai-suite-border-secondary-color);
             border-radius: 0.25rem;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -145,7 +146,7 @@ div[data-module-id="aiSuite"] {
 
         input[type="radio"]:checked + label {
             background-color: transparent;
-            border-color: var(--ai-suite-primary-color);
+            border: 1px solid var(--ai-suite-border-color);
         }
 
         .icon {
@@ -270,11 +271,11 @@ div[data-module-id="aiSuite"] {
 
     .btn.btn-primary {
         background-color: var(--ai-suite-primary-color);
-        border-color: var(--ai-suite-primary-color);
-        color: #000;
+        border-color: var(--ai-suite-border-color);
+        color: var(--ai-suite-button-font-color);
 
         svg {
-            fill: #000;
+            fill: var(--ai-suite-button-font-color);
         }
     }
     .form-control {
@@ -615,7 +616,7 @@ button.delete {
     }
 
     .ck-save-button .ck.ck-button.ck-button_with-text {
-        background: transparent;
+        background: var(--ai-suite-primary-color);
         color: var(--ai-suite-button-font-color);
         border: 1px solid var(--ai-suite-button-font-color);
         border-radius: 3px;
@@ -674,6 +675,12 @@ button.delete {
 
     .ck.ck-dialog__actions {
         padding: 0 !important;
+    }
+    .ck.ck-button-global-instructions {
+        border: 1px solid var(--typo3-text-color-base, #000) !important;
+        border-radius: 3px !important;
+        margin-left: 0.5rem !important;
+        padding: 0 0.5rem !important;
     }
 }
 

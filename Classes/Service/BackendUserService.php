@@ -19,6 +19,7 @@ use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,16 +34,21 @@ class BackendUserService implements SingletonInterface
     protected PagesRepository $pagesRepository;
 
     protected ConnectionPool $connectionPool;
+
+    protected ResourceFactory $resourceFactory;
+
     public function __construct(
         TranslationService $translationService,
         PageTreeRepository $pageTreeRepository,
         PagesRepository $pagesRepository,
-        ConnectionPool $connectionPool
+        ConnectionPool $connectionPool,
+        ResourceFactory $resourceFactory
     ) {
         $this->translationService = $translationService;
         $this->pageTreeRepository = $pageTreeRepository;
         $this->pagesRepository = $pagesRepository;
         $this->connectionPool = $connectionPool;
+        $this->resourceFactory = $resourceFactory;
     }
 
     public function checkPermissions(string $permissionsKey): bool
@@ -129,6 +135,65 @@ class BackendUserService implements SingletonInterface
             }
         }
         return $pagesSelect ?? [];
+    }
+
+    public function hasFileAccessPermissions(array $globalInstruction): bool
+    {
+        $backendUser = $this->getBackendUser();
+
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+
+        $selectedDirectories = GeneralUtility::trimExplode(',', $globalInstruction['selected_directories'] ?? '', true);
+
+        foreach ($selectedDirectories as $selectedDir) {
+            if (!$this->hasDirectoryReadAccess($selectedDir)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function hasDirectoryReadAccess(string $directoryPath): bool
+    {
+        $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryPath);
+
+        if (!$folder->getStorage()->isBrowsable()) {
+            return false;
+        }
+
+        if (!$folder->getStorage()->isWithinFileMountBoundaries($folder)) {
+            return false;
+        }
+
+        return $folder->checkActionPermission('read');
+    }
+
+    public function isPathWithinStorageMountBoundaries(string $currentPath, string $parentPath): bool
+    {
+        $currentFolder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($currentPath);
+        $parentFolder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($parentPath);
+
+        if ($currentFolder->getStorage() !== $parentFolder->getStorage()) {
+            return false;
+        }
+
+        $storage = $currentFolder->getStorage();
+
+        if (!$storage->isWithinFileMountBoundaries($currentFolder) ||
+            !$storage->isWithinFileMountBoundaries($parentFolder)) {
+            return false;
+        }
+
+        $currentIdentifier = $currentFolder->getIdentifier();
+        $parentIdentifier = $parentFolder->getIdentifier();
+
+        $currentNormalized = rtrim($currentIdentifier, '/') . '/';
+        $parentNormalized = rtrim($parentIdentifier, '/') . '/';
+
+        return str_starts_with($currentNormalized, $parentNormalized);
     }
 
     public function getBackendUser(): BackendUserAuthentication

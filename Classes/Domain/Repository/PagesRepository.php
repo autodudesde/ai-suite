@@ -462,4 +462,20 @@ class PagesRepository extends AbstractRepository
     {
         return $this->getTranslatedPageUid($sourcePageUid, $targetLanguageUid);
     }
+
+    public function getPageTitlesForPages(array $pids)
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        return $queryBuilder
+            ->select('uid', 'title')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($pids, Connection::PARAM_INT_ARRAY))
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 }

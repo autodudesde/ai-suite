@@ -2,6 +2,7 @@ import Notification from "@typo3/backend/notification.js";
 import Severity from "@typo3/backend/severity.js";
 import Modal from "@typo3/backend/modal.js";
 import General from "@autodudes/ai-suite/helper/general.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class GenerationHandling {
     showGeneralImageSettingsModal(data, scope = '') {
@@ -25,6 +26,13 @@ class GenerationHandling {
                     }
                     currentModal.querySelector('.panel-body #languageSelection').style.display = 'none';
                     this.addGenerateImageButton(currentModal, data, scope);
+                    const globalInstructionData = {
+                        context: scope === 'FileList' ? 'files' : 'pages',
+                        scope: 'imageWizard',
+                        pageId: data.pageId ?? 0,
+                        targetFolder: data.targetFolder ?? ''
+                    }
+                    GlobalInstructions.fetchGlobalInstructions(globalInstructionData, currentModal);
                 }
             }
         );
@@ -42,12 +50,11 @@ class GenerationHandling {
             let imageAiModel = modal.querySelector('.panel-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
 
             try {
-                let additionalImageSettings = self.getAdditionalImageSettings(imageAiModel, modal);
-                enteredPrompt += additionalImageSettings;
-
                 if (enteredPrompt.length < 10) {
                     Notification.warning(TYPO3.lang['aiSuite.module.modal.enteredPromptTitle'], TYPO3.lang['aiSuite.module.modal.enteredPromptMessage'], 8);
                 } else {
+                    let additionalImageSettings = self.getAdditionalImageSettings(imageAiModel, modal);
+                    enteredPrompt += additionalImageSettings;
                     data.uuid = ev.target.getAttribute('data-uuid');
                     data.imagePrompt = enteredPrompt;
                     data.imageAiModel = imageAiModel;

@@ -44,9 +44,9 @@ class Ajax {
                 return null;
             });
     }
-    fetchLibraries(endpoint) {
+    fetchLibraries(endpoint, data = {}) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls[endpoint])
-            .post({})
+            .post(data)
             .then(async function (response) {
 
                 const resolved = await response.resolve();

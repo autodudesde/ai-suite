@@ -13,6 +13,7 @@
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
@@ -52,6 +53,7 @@ class MassActionController extends AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
@@ -70,6 +72,7 @@ class MassActionController extends AbstractBackendController
             $backendUserService,
             $libraryService,
             $promptTemplateService,
+            $globalInstructionService,
             $siteService,
             $translationService,
             $sessionService,

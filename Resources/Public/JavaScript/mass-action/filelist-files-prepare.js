@@ -3,6 +3,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class FilelistFilesPrepare {
 
@@ -10,6 +11,7 @@ class FilelistFilesPrepare {
         this.filesPrepareFormEventListener();
         Generation.cancelGeneration();
         this.fileSelectionEventDelegation();
+        GlobalInstructions.metadataTooltipEventDelegation();
     }
 
     filesPrepareFormEventListener() {
@@ -77,9 +79,6 @@ class FilelistFilesPrepare {
                         if(Object.keys(selectedFiles).length === 0) {
                             Notification.warning(TYPO3.lang['AiSuite.notification.generation.massAction.missingSelection'], TYPO3.lang['AiSuite.notification.generation.massAction.missingFiles']);
                         } else {
-                            let counter = 0;
-                            let currentFiles = {};
-                            let handledFiles = {};
                             Generation.showSpinner();
                             const baseFormData = {
                                 parentUuid: document.querySelector('input#parentUuid').value,
@@ -87,38 +86,18 @@ class FilelistFilesPrepare {
                                 sysLanguage: document.querySelector('select#sysLanguage').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
                             };
-                            for (let key in selectedFiles) {
-                                if(counter === 5) {
-                                    try {
-                                        handledFiles = { ...handledFiles, ...currentFiles };
-                                        let formData = new FormData();
-                                        formData.append('massActionFilesExecute[parentUuid]', baseFormData.parentUuid);
-                                        formData.append('massActionFilesExecute[column]', baseFormData.column);
-                                        formData.append('massActionFilesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                        formData.append('massActionFilesExecute[textAiModel]', baseFormData.textAiModel);
-                                        formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));
-                                        await self.sendFilesToExecute(formData, selectedFiles, handledFiles);
-                                        counter = 0;
-                                        currentFiles = {};
-                                    } catch (e) {
-                                        console.error(e);
-                                    }
-                                }
-                                currentFiles[key] = selectedFiles[key];
-                                counter++;
+
+                            if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
+                                Notification.error(TYPO3.lang['AiSuite.error.invalidFormData']);
+                                Generation.hideSpinner();
+                                return;
                             }
-                            if(Object.keys(currentFiles).length > 0) {
-                                let formData = new FormData();
-                                formData.append('massActionFilesExecute[parentUuid]', baseFormData.parentUuid);
-                                formData.append('massActionFilesExecute[column]', baseFormData.column);
-                                formData.append('massActionFilesExecute[sysLanguage]', baseFormData.sysLanguage);
-                                formData.append('massActionFilesExecute[textAiModel]', baseFormData.textAiModel);
-                                formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));
-                                await self.sendFilesToExecute(formData, selectedFiles, handledFiles);
-                            }
+
+                            await self.processBatches(selectedFiles, baseFormData);
                             Generation.hideSpinner();
-                            self.updateContent();
+                            await self.updateContent();
                             Notification.success(TYPO3.lang['AiSuite.notification.generation.massAction.success'], TYPO3.lang['AiSuite.notification.generation.massAction.successDescription']);
+                            selectedFiles = null;
                         }
                     }
                     if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.id === 'toggleFileSelection') {
@@ -153,19 +132,101 @@ class FilelistFilesPrepare {
         Generation.hideSpinner();
         return General.isUsable(res)
     }
-    async sendFilesToExecute(formData, selectedFiles, handledFiles) {
-        let res = await Ajax.sendAjaxRequest('aisuite_massaction_filelist_files_execute', formData);
-        if (General.isUsable(res)) {
-            if(res.output.failedFiles.length > 0) {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.failedFiles'] + res.output.failedFiles.join(', '));
+    async sendFilesToExecute(formData, selectedFiles, handledFiles, maxRetries = 2, delay = 1000) {
+        try {
+            if (!formData.has('massActionFilesExecute[files]')) {
+                throw new Error(TYPO3.lang['AiSuite.error.invalidFormData']);
             }
-            let statusElement = document.querySelector('.module-body .spinner-overlay .status');
-            if (statusElement !== null) {
-                statusElement.innerHTML = res.output.message + Object.keys(handledFiles).length + ' / ' + Object.keys(selectedFiles).length;
+
+            let lastError;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    let res = await Ajax.sendAjaxRequest('aisuite_massaction_filelist_files_execute', formData);
+
+                    if (!General.isUsable(res)) {
+                        throw new Error(TYPO3.lang['AiSuite.error.invalidServerResponse']);
+                    }
+
+                    if (res.output?.failedFiles?.length > 0) {
+                        Notification.error(
+                            TYPO3.lang['AiSuite.notification.generation.error'],
+                            TYPO3.lang['AiSuite.notification.generation.failedFiles'] + res.output.failedFiles.join(', ')
+                        );
+                    }
+
+                    let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                    if (statusElement !== null && selectedFiles && handledFiles) {
+                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
+                    }
+
+                    return res;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Request attempt ${attempt} failed:`, error);
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                    }
+                }
             }
-        } else {
-            Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], TYPO3.lang['AiSuite.notification.generation.requestError']);
+            throw lastError;
+
+        } catch (error) {
+            console.error('sendFilesToExecute failed after all retries:', error.message);
+            Notification.error(
+                TYPO3.lang['AiSuite.notification.generation.error'],
+                TYPO3.lang['AiSuite.notification.generation.requestError']
+            );
+            throw error;
         }
+    }
+
+    createFormData(baseFormData, currentFiles) {
+        let formData = new FormData();
+        formData.append('massActionFilesExecute[parentUuid]', baseFormData.parentUuid);
+        formData.append('massActionFilesExecute[column]', baseFormData.column);
+        formData.append('massActionFilesExecute[sysLanguage]', baseFormData.sysLanguage);
+        formData.append('massActionFilesExecute[textAiModel]', baseFormData.textAiModel);
+        formData.append('massActionFilesExecute[files]', JSON.stringify(currentFiles));
+        return formData;
+    }
+
+    async processBatches(selectedFiles, baseFormData) {
+        const batchSize = 5;
+        const delayBetweenBatches = 500;
+
+        const fileKeys = Object.keys(selectedFiles);
+        let handledFiles = {};
+
+        for (let i = 0; i < fileKeys.length; i += batchSize) {
+            const batchKeys = fileKeys.slice(i, i + batchSize);
+            const currentFiles = {};
+
+            batchKeys.forEach(key => {
+                currentFiles[key] = selectedFiles[key];
+            });
+
+            try {
+                const formData = this.createFormData(baseFormData, currentFiles);
+                await this.sendFilesToExecute(formData, selectedFiles, handledFiles);
+                handledFiles = { ...handledFiles, ...currentFiles };
+
+                let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                if (statusElement !== null) {
+                    statusElement.innerHTML = `${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
+                }
+
+                if (i + batchSize < fileKeys.length) {
+                    await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+                }
+            } catch (error) {
+                Notification.warning(
+                    TYPO3.lang['AiSuite.notification.generation.error'],
+                    TYPO3.lang['AiSuite.massAction.batchFailed'].replace('{0}', Math.floor(i/batchSize) + 1)
+                );
+            }
+        }
+
+        return handledFiles;
     }
 
     async updateContent() {

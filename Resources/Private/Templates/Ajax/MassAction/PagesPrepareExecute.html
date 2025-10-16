@@ -12,6 +12,9 @@
                 <f:if condition="{pages -> f:count()} > 0">
                     <f:then>
                 <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
+                    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
+                </label>
                 <label class="mb-3 d-flex gap-2 fw-bold">
                     <input type="checkbox" id="togglePageSelection" value="1" />
                     <span>

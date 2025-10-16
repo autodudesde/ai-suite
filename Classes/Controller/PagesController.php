@@ -16,6 +16,7 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -53,6 +54,7 @@ class PagesController extends AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
@@ -71,6 +73,7 @@ class PagesController extends AbstractBackendController
             $backendUserService,
             $libraryService,
             $promptTemplateService,
+            $globalInstructionService,
             $siteService,
             $translationService,
             $sessionService,
@@ -114,7 +117,7 @@ class PagesController extends AbstractBackendController
                 'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                 'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
                 'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates('pageTree'),
-                'sysLanguages' => $this->siteService->getAvailableLanguages(),
+                'sysLanguages' => $this->siteService->getAvailableLanguages()
             ]);
         } catch (\Throwable $e) {
             $this->view->assign('error', true);
@@ -135,15 +138,20 @@ class PagesController extends AbstractBackendController
             $parsedBody = $this->request->getParsedBody();
             $textAi = isset($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
             $paidRequestsAvailable = isset($parsedBody['paidRequestsAvailable']) ? $parsedBody['paidRequestsAvailable'] === '1' : false;
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
+            $prompt = $globalInstructions . "\n" . ($this->request->getParsedBody()['plainPrompt'] ?? '');
             if ((int)$parsedBody['startStructureFromPid'] === -1) {
                 $langIsoCode = $parsedBody['sysLanguage'];
             } else {
                 $langIsoCode = $this->siteService->getIsoCodeByLanguageId(0, (int)$parsedBody['startStructureFromPid']);
             }
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
             $answer = $this->requestService->sendDataRequest(
                 'pageTree',
-                [],
-                $this->request->getParsedBody()['plainPrompt'] ?? '',
+                [
+                    'global_instructions' => $globalInstructions,
+                ],
+                $prompt,
                 $langIsoCode,
                 [
                     'text' => $textAi,
@@ -167,6 +175,7 @@ class PagesController extends AbstractBackendController
                 'paidRequestsAvailable' => $paidRequestsAvailable,
                 'sysLanguages' => $this->siteService->getAvailableLanguages(),
                 'selectedSysLanguage' => $langIsoCode,
+                'globalInstructions' => $globalInstructions,
             ]);
             $this->view->addFlashMessage(
                 $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.message'),

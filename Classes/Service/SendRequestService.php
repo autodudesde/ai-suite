@@ -19,14 +19,14 @@ use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
+use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Http\RequestFactory;
-use TYPO3\CMS\Core\SingletonInterface;
 
-class SendRequestService implements SingletonInterface
+class SendRequestService
 {
     protected RequestFactory $requestFactory;
     protected RequestsRepository $requestsRepository;
@@ -37,13 +37,16 @@ class SendRequestService implements SingletonInterface
 
     protected array $extConf;
 
+    protected GlobalInstructionsRepository $globalInstructionsRepository;
+
     public function __construct(
         RequestFactory $requestFactory,
         RequestsRepository $requestsRepository,
         SettingsFactory $settingsFactory,
         ModelService $modelService,
         TranslationService $translationService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        GlobalInstructionsRepository $globalInstructionsRepository
     ) {
         $this->requestFactory = $requestFactory;
         $this->requestsRepository = $requestsRepository;
@@ -51,6 +54,7 @@ class SendRequestService implements SingletonInterface
         $this->modelService = $modelService;
         $this->translationService = $translationService;
         $this->logger = $logger;
+        $this->globalInstructionsRepository = $globalInstructionsRepository;
 
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }

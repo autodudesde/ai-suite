@@ -40,6 +40,9 @@
             <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Prompt Manager</source>
             <target>Prompt-Manager</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.actionmenu.globalInstructions" resname="tx_aisuite.module.actionmenu.globalInstructions">
+                <source>Global Instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.massAction" resname="tx_aisuite.module.actionmenu.massAction">
                 <source>WorkflowManager</source>
             <target>WorkflowManager</target></trans-unit>
@@ -245,7 +248,7 @@
             <target>Allgemein verfügbar</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard">
                 <source>Image generation</source>
-            <target>Bilderzeugung</target></trans-unit>
+            <target>Bildgenerierung</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree">
                 <source>Page tree generation</source>
             <target>Seitenbaumgenerierung</target></trans-unit>
@@ -280,6 +283,88 @@
                 <source>Deactivate</source>
             <target>Deaktivieren</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel">
+                <source>Delete</source>
+            <target>Löschen</target></trans-unit>
+
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.customGlobalInstructionsLabel">
+                <source>Global Instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.title" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.title">
+                <source>Manage your global instructions</source>
+            <target>Verwalte deine globalen Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.description" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.description">
+                <source>Change the general outcome of your requests using Global Instructions</source>
+            <target>Mit dieser Aktion kannst du der Schnittstelle allgemeine und globale Anweisungen geben.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.linklabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.linklabel">
+                <source>Manage global instructions</source>
+            <target>Verwalten globaler Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name">
+                <source>Name</source>
+            <target>Name</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context">
+                <source>Context</source>
+            <target>Kontext</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope">
+                <source>Scope</source>
+            <target>Gültigkeitsbereich</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral">
+                <source>General available</source>
+            <target>Allgemein verfügbar</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard">
+                <source>Image generation</source>
+            <target>Bildgenerierung</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopePageTree" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopePageTree">
+                <source>Page tree generation</source>
+            <target>Seitenbaumgenerierung</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement">
+                <source>ContentElements</source>
+            <target>Inhaltselemente</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord">
+                <source>News</source>
+            <target>Nachricht</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent">
+                <source>RTE Content Editing</source>
+            <target>RTE-Inhaltsbearbeitung</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
+                <source>Metatdata</source>
+            <target>Metadaten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructions">
+                <source>Global instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage">
+                <source>Storage page</source>
+            <target>Speicher-Verzeichnis</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScope" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScope">
+                <source>ContentElements (leave empty for all elements)</source>
+            <target>ContentElements (für alle Elemente leer lassen)</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScopeHeader" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScopeHeader">
+                <source>ContentElements</source>
+            <target>Inhaltselemente</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.language" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.language">
+                <source>Language</source>
+            <target>Sprache</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree">
+                <source>Use for subtree</source>
+            <target>Für Sub-Tree verwenden</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions">
+                <source>Extend previous</source>
+            <target>Erweiterung der vorherigen Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection">
+                <source>Selected pages/directories</source>
+            <target>Ausgewählte Seiten/Verzeichnisse</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions">
+                <source>Actions</source>
+            <target>Aktionen</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel">
+                <source>Edit</source>
+            <target>Bearbeiten</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel">
+                <source>Activate</source>
+            <target>Aktivieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel">
+                <source>Deactivate</source>
+            <target>Deaktivieren</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel">
                 <source>Delete</source>
             <target>Löschen</target></trans-unit>
 
@@ -471,6 +556,26 @@
             <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate">
                 <source>Create prompt template</source>
             <target>Prompt-Vorlage erstellen</target></trans-unit>
+
+            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder">
+                <source>Search...</source>
+            <target>Suchen...</target></trans-unit>
+            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit">
+                <source>Search</source>
+            <target>Suchen</target></trans-unit>
+            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset">
+                <source>Reset</source>
+            <target>Zurücksetzen</target></trans-unit>
+            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewPromptTemplate">
+                <source>Create global instructions</source>
+            <target>Erstellen globaler Anweisungen</target></trans-unit>
+
+            <trans-unit id="AiSuite.generation.keywordsSuggestions" resname="AiSuite.generation.keywordsSuggestions">
+                <source>Generate keywords suggestions (1 Credit)</source>
+            <target>Keyword-Vorschläge generieren (1 Credit)</target></trans-unit>
+            <trans-unit id="AiSuite.generation.newsKeywordsSuggestions" resname="AiSuite.generation.newsKeywordsSuggestions">
+                <source>Generate keywords suggestions for news article (1 Credit)</source>
+            <target>Keywords für Nachrichtenartikel generieren (1 Credit)</target></trans-unit>
             <trans-unit id="AiSuite.generation.metaDescriptionSuggestions" resname="AiSuite.generation.metaDescriptionSuggestions">
                 <source>Generate meta description suggestions (1 Credit)</source>
             <target>Vorschläge für Meta-Beschreibungen generieren (1 Credit)</target></trans-unit>
@@ -1140,6 +1245,9 @@
             <trans-unit id="AiSuite.module.massAction.toggleAll" resname="AiSuite.module.massAction.toggleAll">
                 <source>Check / uncheck all</source>
             <target>Alle auswählen/abwählen</target></trans-unit>
+            <trans-unit id="AiSuite.module.massAction.onlyUseGlobalInstructions" resname="AiSuite.module.massAction.onlyUseGlobalInstructions">
+                <source>Only use Global Instructions (override predefined prompt)</source>
+            <target>Nur globale Anweisungen verwenden (vordefinierten Prompt überschreiben)</target></trans-unit>
             <trans-unit id="AiSuite.module.massAction.executeBtn" resname="AiSuite.module.massAction.executeBtn">
                 <source>Generate metadata with AI</source>
             <target>Metadaten mit KI generieren</target></trans-unit>
@@ -1234,12 +1342,15 @@
                 <source>0 (only this page)</source>
             <target>0 (nur diese Seite)</target></trans-unit>
             <trans-unit id="aiSuite.module.customPromptTemplateStorageTitle" resname="aiSuite.module.customPromptTemplateStorageTitle">
-                <source>Page could not be used to store custom prompt templates</source>
+                <source>Page can not be used to store custom prompt templates</source>
             <target>Die Seite konnte nicht zum Speichern benutzerdefinierter Prompt-Vorlagen verwendet werden.</target></trans-unit>
             <trans-unit id="aiSuite.module.customPromptTemplateStorageMessage" resname="aiSuite.module.customPromptTemplateStorageMessage">
                 <source>Please select a page where custom prompt templates could be stored.</source>
             <target>Bitte wähle eine Seite aus, auf der benutzerdefinierte Prompt-Vorlagen gespeichert werden können.</target></trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound">
+                <source>No records available.</source>
+            <target>Keine Datensätze verfügbar.</target></trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound">
                 <source>No records available.</source>
             <target>Keine Datensätze verfügbar.</target></trans-unit>
             <trans-unit id="aiSuite.error.default.title" resname="aiSuite.error.default.title">
@@ -1363,8 +1474,8 @@
                 <source>Image size too large</source>
             <target>Bildgröße zu groß</target></trans-unit>
             <trans-unit id="AiSuite.notification.imageSizeTooLarge" resname="AiSuite.notification.imageSizeTooLarge">
-                <source>Based on your environment configuration, this image is too large and would cause problems.</source>
-            <target>Basierend auf Ihrer Umgebungskonfiguration ist dieses Bild zu groß und würde Probleme verursachen.</target></trans-unit>
+                <source>Image is too large and cannot be processed.</source>
+            <target>Das Bild ist zu groß und kann nicht verarbeitet werden.</target></trans-unit>
             <trans-unit id="AiSuite.notification.invalidUrlTitle" resname="AiSuite.notification.invalidUrlTitle">
                 <source>Invalid URL provided for style parameter</source>
             <target>Für den Stilparameter wurde eine ungültige URL angegeben.</target></trans-unit>
@@ -1719,6 +1830,132 @@
             <trans-unit id="AiSuite.notification.badge.new">
                 <source>New</source>
             <target>Neu</target></trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.modal.title">
+                <source>Global Instructions &amp; Prompt Preview</source>
+            <target>Globale Anweisungen und Prompt-Vorschau</target></trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.label">
+                <source>Global Instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="aiSuite.currentPrompt.label">
+                <source>Current Prompt</source>
+            <target>Aktueller Prompt</target></trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
+                <source>Global instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="aiSuite.yes">
+                <source>Yes</source>
+            <target>Ja</target></trans-unit>
+            <trans-unit id="aiSuite.no">
+                <source>No</source>
+            <target>Nein</target></trans-unit>
+            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsTitle">
+                <source>Multiple global instruction for scope "image".</source>
+            <target>Mehrere globale Anweisungen für den Bereich „Bild“.</target></trans-unit>
+            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsMessage">
+                <source>There are more than one global instruction for scope "image". Only the last added instruction will be considered.</source>
+            <target>Für den Bereich "Bild" gibt es mehrere globale Anweisungen. Nur die zuletzt hinzugefügte Anweisung wird berücksichtigt.</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enablePromptTemplateButton">
+                <source>Enable "Prompt Template" section within backend module</source>
+            <target>Aktiviere den Abschnitt „Prompt Template“ im Backend-Modul</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enablePromptTemplateButtonDescription">
+                <source>If active the "Prompt Template" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird der Button „Prompt Template“ im Backend-Modul angezeigt</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableGlobalInstructionsButton">
+                <source>Enable "Global Instructions" section within backend module</source>
+            <target>Aktiviere den Abschnitt „Globale Anweisungen“ im Backend-Modul</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableGlobalInstructionsButtonDescription">
+                <source>If active the "Global Instructions" button will be shown within the backend module</source>
+            <target>Wenn aktiv, wird der Button "Globale Anweisungen" im Backend-Modul angezeigt</target></trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionStorageTitle" resname="aiSuite.module.globalInstructionStorageTitle">
+                <source>Page can not be used to store Global Instructions</source>
+            <target>Die Seite kann nicht zum Speichern globaler Anweisungen verwendet werden.</target></trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionStorageMessage" resname="aiSuite.module.globalInstructionStorageMessage">
+                <source>Please select a page where Global Instructions could be stored.</source>
+            <target>Bitte wähle eine Seite aus, auf der globale Anweisungen gespeichert werden können.</target></trans-unit>
+            <trans-unit id="AiSuite.promptTemplate.deleteModalTitle">
+                <source>Warning</source>
+            <target>Warnung</target></trans-unit>
+            <trans-unit id="AiSuite.promptTemplate.deleteModalText">
+                <source>Are you sure you want to delete the prompt template "{0}"?</source>
+            <target>Möchtest du das Prompt Template „{0}“ wirklich löschen?</target></trans-unit>
+            <trans-unit id="AiSuite.promptTemplate.deleteConfirm">
+                <source>Delete</source>
+            <target>Löschen</target></trans-unit>
+            <trans-unit id="AiSuite.promptTemplate.deleteCancel">
+                <source>Cancel</source>
+            <target>Abbrechen</target></trans-unit>
+            <trans-unit id="AiSuite.globalInstructions.deleteModalTitle">
+                <source>Warning</source>
+            <target>Warnung</target></trans-unit>
+            <trans-unit id="AiSuite.globalInstructions.deleteModalText">
+                <source>Are you sure you want to delete the global instruction "{0}"?</source>
+            <target>Möchtest du die globale Anweisung „{0}“ wirklich löschen?</target></trans-unit>
+            <trans-unit id="AiSuite.globalInstructions.deleteConfirm">
+                <source>Delete</source>
+            <target>Löschen</target></trans-unit>
+            <trans-unit id="AiSuite.globalInstructions.deleteCancel">
+                <source>Cancel</source>
+            <target>Abbrechen</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions">
+                <source>Global Instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.name">
+                <source>Name</source>
+            <target>Name</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.instructions">
+                <source>Global Instructions</source>
+            <target>Globale Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.context">
+                <source>Context</source>
+            <target>Kontext</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope">
+                <source>Scope</source>
+            <target>Bereich</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.selected_pages">
+                <source>Selected Pages</source>
+            <target>Ausgewählte Seiten</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.selected_directories">
+                <source>Selected Directories</source>
+            <target>Ausgewählte Verzeichnisse</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.use_for_subtree">
+                <source>Use for subtree (pages/directories)</source>
+            <target>Verwendung für Sub-Tree (Seiten/Verzeichnisse)</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.extend_previous_instructions">
+                <source>Extend previous instructions</source>
+            <target>Erweitern der vorherigen Anweisungen</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.context.pages">
+                <source>Page/List/AI Suite Web Module</source>
+            <target>Seiten-/Listen-/AI-Suite-Webmodul</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.context.files">
+                <source>Filelist/AI Suite Filelist Module</source>
+            <target>Dateilisten-/AI Suite-Dateilistenmodul</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.enable">
+                <source>Enable</source>
+            <target>Aktivieren</target></trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.override_predefined_prompt">
+                <source>Use Global Instruction (instead of predefined server prompt)</source>
+            <target>Globale Anweisung verwenden (anstelle des vordefinierten Server-Prompts)</target></trans-unit>
+            <trans-unit id="global_instructions.duplicate_detected_title">
+                <source>Duplicate detected</source>
+            <target>Duplikat erkannt</target></trans-unit>
+            <trans-unit id="global_instructions.duplicate_detected_message">
+                <source>A global instruction for context "%s", scope "%s" and page/directory IDs %s already exists. The duplicate pages/directories have been removed from the selection. Please check your input.</source>
+            <target>Eine globale Anweisung für Kontext "%s", Bereich "%s" und Seiten-/Verzeichnis-IDs %s existiert bereits. Die doppelten Seiten/Verzeichnisse wurden aus der Auswahl entfernt. Bitte überprüfe deine Eingabe.</target></trans-unit>
+            <trans-unit id="AiSuite.error.invalidRequest">
+                <source>Invalid request (Please see logs for further details)</source>
+            <target>Ungültige Anfrage (weitere Einzelheiten findest du in den Logs)</target></trans-unit>
+            <trans-unit id="AiSuite.error.invalidRequest">
+                <source>Invalid request (Please see logs for further details)</source>
+            <target>Ungültige Anfrage (weitere Einzelheiten findest du in den Logs)</target></trans-unit>
+            <trans-unit id="AiSuite.error.invalidFormData">
+                <source>Invalid Form Data: missing required fields</source>
+            <target>Ungültige Formulardaten: fehlende Pflichtfelder</target></trans-unit>
+            <trans-unit id="AiSuite.error.invalidServerResponse">
+                <source>Invalid server response or network error</source>
+            <target>Ungültige Serverantwort oder Netzwerkfehler</target></trans-unit>
+            <trans-unit id="AiSuite.massAction.batchFailed">
+                <source>Batch {0} failed, continuing with remaining files...</source>
+            <target>Batch {0} ist fehlgeschlagen. Es wird mit den verbleibenden Dateien fortgefahren …</target></trans-unit>
         </body>
     </file>
 </xliff>

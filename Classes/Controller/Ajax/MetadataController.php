@@ -7,6 +7,7 @@ namespace AutoDudes\AiSuite\Controller\Ajax;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
@@ -38,6 +39,7 @@ class MetadataController extends AbstractAjaxController
         BackendUserService $backendUserService,
         SendRequestService $requestService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         LibraryService $libraryService,
         UuidService $uuidService,
         SiteService $siteService,
@@ -53,6 +55,7 @@ class MetadataController extends AbstractAjaxController
             $backendUserService,
             $requestService,
             $promptTemplateService,
+            $globalInstructionService,
             $libraryService,
             $uuidService,
             $siteService,
@@ -158,13 +161,24 @@ class MetadataController extends AbstractAjaxController
     public function getMetadataWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
+        $params = $request->getParsedBody();
+        $pageUid = $params['id'] ?? 0;
+        if ($params['context'] === 'pages') {
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', (int)$pageUid);
+            $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]);
+        } else {
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', null, $params['targetFolder'] ?? null);
+            $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$params['targetFolder'] ?? '']);
+        }
 
         $answer = $this->requestService->sendDataRequest(
             'createMetadata',
             [
                 'uuid' => $request->getParsedBody()['uuid'],
                 'field_label' => $request->getParsedBody()['fieldLabel'],
-                'request_content' => $this->metadataService->fetchContent($request)
+                'request_content' => $this->metadataService->fetchContent($request),
+                'global_instructions' => $globalInstructions,
+                'override_predefined_prompt' => $globalInstructionsOverride,
             ],
             '',
             $request->getParsedBody()['langIsoCode'],
@@ -185,7 +199,7 @@ class MetadataController extends AbstractAjaxController
             'metadataSuggestions' => $answer->getResponseData()['metadataResult'],
             'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
             'table' => $request->getParsedBody()['table'] ?? '',
-            'id' => $request->getParsedBody()['id'],
+            'id' => $pageUid,
             'uuid' => $request->getParsedBody()['uuid'],
             'additionalFields' => $additionalFields
         ];

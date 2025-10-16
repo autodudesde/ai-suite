@@ -72,6 +72,8 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public();
     $services->set(\AutoDudes\AiSuite\Service\TranslationService::class)
         ->public();
+    $services->set(\AutoDudes\AiSuite\Service\SendRequestService::class)
+        ->public();
     $services->set(\AutoDudes\AiSuite\Domain\Repository\PagesRepository::class)
         ->public();
 };

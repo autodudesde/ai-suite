@@ -95,6 +95,9 @@ if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('news')) {
     ];
 }
 
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite']
+    = \AutoDudes\AiSuite\Hooks\GlobalInstructionsHook::class;
+
 try {
     $extensionConfiguration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('ai_suite');
     if(!array_key_exists('disableTranslationFunctionality', $extensionConfiguration) ||

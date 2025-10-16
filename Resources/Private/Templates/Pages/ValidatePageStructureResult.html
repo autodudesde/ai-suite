@@ -50,7 +50,7 @@
                         <input type="hidden" name="textGenerationLibraries" value="{textGenerationLibraries -> f:format.json()}" />
                         <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                        <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt}" />
+                        <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt, globalInstructions: globalInstructions}" />
                         <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
                         <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />

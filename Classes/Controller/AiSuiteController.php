@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
@@ -55,6 +56,7 @@ class AiSuiteController extends AbstractBackendController
         BackendUserService $backendUserService,
         LibraryService $libraryService,
         PromptTemplateService $promptTemplateService,
+        GlobalInstructionService $globalInstructionService,
         SiteService $siteService,
         TranslationService $translationService,
         SessionService $sessionService,
@@ -73,10 +75,11 @@ class AiSuiteController extends AbstractBackendController
             $backendUserService,
             $libraryService,
             $promptTemplateService,
+            $globalInstructionService,
             $siteService,
             $translationService,
             $sessionService,
-            $eventDispatcher,
+            $eventDispatcher
         );
         $this->settingsFactory = $settingsFactory;
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();

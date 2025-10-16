@@ -1,0 +1,40 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+{namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+    <f:asset.css identifier="manage-global-instructions-search-form"
+                 href="EXT:ai_suite/Resources/Public/Css/PromptManager/global-instructions-styles.css"/>
+    <h1 class="mb-2">
+        <f:translate key="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.header"
+                     extensionName="ai_suite"/>
+    </h1>
+    <br/>
+    <div class="recordlist mb-4">
+        <f:render partial="GlobalInstructions/SectionHeader" arguments="{
+            sectionTitle: 'Pages',
+            instructions: globalInstructionsPages,
+            pid: pid,
+            search: search
+        }" />
+        <f:render partial="GlobalInstructions/InstructionsTable" arguments="{
+            instructions: globalInstructionsPages,
+            pid: pid
+        }" />
+    </div>
+    <div class="recordlist">
+        <f:render partial="GlobalInstructions/SectionHeader" arguments="{
+            sectionTitle: 'Files',
+            instructions: globalInstructionsFiles,
+            pid: pid,
+            search: search
+        }" />
+        <f:render partial="GlobalInstructions/InstructionsTable" arguments="{
+            instructions: globalInstructionsFiles,
+            pid: pid
+        }" />
+    </div>
+</f:section>
+</html>

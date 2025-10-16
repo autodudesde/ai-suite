@@ -29,7 +29,7 @@
                             <f:render partial="Libs/SelectImageSettings" arguments="{imageGenerationLibraries: imageGenerationLibraries, additionalImageSettings: additionalImageSettings}" />
                             <f:render partial="PageContent/AvailableTcaColumns" arguments="{_all}" />
                             <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                            <f:render partial="Libs/PromptField" arguments="{propertyName: 'initialPrompt', value: initialPrompt}" />
+                            <f:render partial="Libs/PromptField" arguments="{propertyName: 'initialPrompt', value: initialPrompt, globalInstructions: globalInstructions}" />
 
                             <div class="form-group">
                                 <button

@@ -1,8 +1,9 @@
-<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
     <div class="form-group">
         <label for="{propertyName}" class="control-label fw-bold mb-2">
             <f:translate key="tx_aisuite.module.general.prompt" extensionName="ai_suite"/>
+            <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
         </label><br />
-        <textarea minlength="10" name="{propertyName}" class="form-control {propertyName}">{value}</textarea>
+        <textarea minlength="10" id="{propertyName}" name="{propertyName}" class="form-control {propertyName}">{value}</textarea>
     </div>
 </html>

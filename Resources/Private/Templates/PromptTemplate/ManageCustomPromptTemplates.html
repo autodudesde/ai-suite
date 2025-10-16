@@ -132,7 +132,8 @@
                                 </f:if>
                                 <a href="{f:be.uri(route: 'ai_suite_prompt_delete_customprompttemplates', parameters: '{recordId: template.uid, id: pid}')}"
                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel', extensionName: 'ai_suite')}"
-                                   class="btn btn-default"
+                                   class="btn btn-default delete-prompt-template"
+                                   data-template-name="{template.name}"
                                 >
                                     <core:icon identifier="actions-delete" size="small"/>
                                 </a>

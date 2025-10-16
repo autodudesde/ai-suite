@@ -17,8 +17,10 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Model\Dto\FileMetadata;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
+use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 
@@ -37,6 +39,7 @@ class MassActionService implements SingletonInterface
     protected SessionService $sessionService;
     protected SysFileMetadataRepository $sysFileMetadataRepository;
     protected DirectiveService $directiveService;
+    protected GlobalInstructionService $globalInstructionService;
     protected array $supportedMimeTypes;
 
     public function __construct(
@@ -51,6 +54,7 @@ class MassActionService implements SingletonInterface
         SessionService $sessionService,
         SysFileMetadataRepository $sysFileMetadataRepository,
         DirectiveService $directiveService,
+        GlobalInstructionService $globalInstructionService
     ) {
         $this->metadataService = $metadataService;
         $this->resourceFactory = $resourceFactory;
@@ -63,6 +67,7 @@ class MassActionService implements SingletonInterface
         $this->sessionService = $sessionService;
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
         $this->directiveService = $directiveService;
+        $this->globalInstructionService = $globalInstructionService;
 
         $this->supportedMimeTypes = [
             "image/jpeg",
@@ -186,6 +191,8 @@ class MassActionService implements SingletonInterface
             }
         }
 
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $directoryId);
+
         return [
             'directory' => $directoryId,
             'directoryName' => $folderName,
@@ -204,6 +211,7 @@ class MassActionService implements SingletonInterface
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
             'preSelection' => $sessionData['options'] ?? [],
             'maxAllowedFileSize' => $this->directiveService->getEffectiveMaxUploadSize(),
+            'globalInstructions' => $globalInstructions,
         ];
     }
 
@@ -237,5 +245,16 @@ class MassActionService implements SingletonInterface
         }
 
         return empty($metadata['title']) && empty($metadata['alternative']);
+    }
+
+    public function getFolderCombinedIdentifier(int $fileUid): ?string
+    {
+        try {
+            $file = $this->resourceFactory->getFileObject($fileUid);
+            return $file->getParentFolder()->getCombinedIdentifier();
+        } catch (\Exception $e) {
+            $this->logger->error('Could not get folder identifier for file ' . $fileUid . ': ' . $e->getMessage());
+            return null;
+        }
     }
 }

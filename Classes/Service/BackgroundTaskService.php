@@ -132,7 +132,13 @@ class BackgroundTaskService
         ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
             if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
-                $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                if ($foundBackgroundTask['mode'] === 'NEW') {
+                    $foundBackgroundTask['title'] = '';
+                    $foundBackgroundTask['alternative'] = '';
+                    $foundBackgroundTask['columnValue'] = '';
+                } else {
+                    $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                }
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }

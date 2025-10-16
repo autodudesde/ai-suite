@@ -82,6 +82,16 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableToolbarStatsItemDescription',
         ],
+        'enable_prompt_template_button' => [
+            $lll . 'aiSuite.customPermOptions.enablePromptTemplateButton',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enablePromptTemplateButtonDescription',
+        ],
+        'enable_global_instructions_button' => [
+            $lll . 'aiSuite.customPermOptions.enableGlobalInstructionsButton',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableGlobalInstructionsButtonDescription',
+        ],
     ],
 ];
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [

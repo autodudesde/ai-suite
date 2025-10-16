@@ -4,6 +4,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 class Creation {
 
@@ -18,6 +19,7 @@ class Creation {
         Generation.cancelGeneration();
         this.handleCheckboxChange('.request-field-checkbox[value="file"]', '.image-generation-library', this.calculateRequestAmount);
         this.handleCheckboxChange('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]', '.text-generation-library', this.calculateRequestAmount);
+        GlobalInstructions.initializeAllTooltips();
         this.intervalId = null;
     }
 
