@@ -20,6 +20,7 @@ class GlobalInstructionsHook
         try {
             if ($table === 'tx_aisuite_domain_model_global_instructions') {
                 $globalInstructionsRepository = GeneralUtility::makeInstance(GlobalInstructionsRepository::class);
+                $incomingFieldArray['selected_directories'] = $incomingFieldArray['selected_directories'] ?? '';
                 $selectedTree = $incomingFieldArray['context'] === 'pages' ? $incomingFieldArray['selected_pages'] : $incomingFieldArray['selected_directories'];
                 $selectedTreeArray = GeneralUtility::trimExplode(',', $selectedTree, true);
                 $globalInstruction = $globalInstructionsRepository->findExistingGlobalInstruction(
