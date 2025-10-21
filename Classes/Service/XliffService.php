@@ -170,14 +170,17 @@ class XliffService implements SingletonInterface
                 if (array_key_exists($unitAttributes, $translations)) {
                     if (count($sourceFile->getFormatedData()) === 1) {
                         if ($newTranslation->file->body->{"trans-unit"}->target->count() === 0) {
-                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $translations['' . $unitAttributes]);
+                            $safeValue = $this->escapeForXml((string)$translations['' . $unitAttributes]);
+                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $safeValue);
                         }
                     } else {
-                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                        $safeValue = $this->escapeForXml((string)$translations['' . $unitAttributes]);
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $safeValue);
                     }
                 } else {
                     if (array_key_exists($unitAttributes, $destinationFile->getFormatedData())) {
-                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $destinationFile->getFormatedData()[$unitAttributes]['target']);
+                        $safeValue = $this->escapeForXml((string)$destinationFile->getFormatedData()[$unitAttributes]['target']);
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $safeValue);
                     }
                 }
             }
@@ -189,10 +192,12 @@ class XliffService implements SingletonInterface
                 if (array_key_exists($unitAttributes, $translations)) {
                     if (count($sourceFile->getFormatedData()) === 1) {
                         if ($newTranslation->file->body->{"trans-unit"}->target->count() === 0) {
-                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $translations['' . $unitAttributes]);
+                            $safeValue = $this->escapeForXml((string)$translations['' . $unitAttributes]);
+                            $newTranslation->file->body->{"trans-unit"}->addChild('target', $safeValue);
                         }
                     } else {
-                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $translations['' . $unitAttributes]);
+                        $safeValue = $this->escapeForXml((string)$translations['' . $unitAttributes]);
+                        $newTranslation->file->body->{"trans-unit"}[$i]->addChild('target', $safeValue);
                     }
                 }
             }
@@ -212,5 +217,13 @@ class XliffService implements SingletonInterface
             $unitAttributes = array_key_first($sourceFile->getFormatedData());
         }
         return $unitAttributes;
+    }
+
+    /**
+     * Ensure text content is safe for XML nodes.
+     */
+    private function escapeForXml(string $value): string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_XML1, 'UTF-8');
     }
 }
