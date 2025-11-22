@@ -12,7 +12,7 @@ class Overview {
     activeView;
 
     constructor() {
-        this.views = ['Page', 'FileReference', 'FileMetadata'];
+        this.views = ['Page', 'FileReference', 'FileMetadata', 'FileMetadataTranslation'];
         this.clickAndSave = false;
         this.activeView = 'Page';
 
@@ -266,7 +266,7 @@ class Overview {
     }
 
     addInfoWindowEventListener() {
-        document.querySelectorAll('.page-meta-content-info, .file-reference-meta-content-info, .file-meta-content-info').forEach(function(element) {
+        document.querySelectorAll('.page-meta-content-info, .file-reference-meta-content-info, .file-meta-content-info, .file-meta-translation-content-info').forEach(function(element) {
             element.addEventListener('click', function(ev) {
                 ev.preventDefault();
                 const table = ev.target.dataset.table;

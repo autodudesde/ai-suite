@@ -145,6 +145,14 @@ return [
         'path' => '/mass-action/filelist-files-update-view',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesUpdateViewAction'
     ],
+    'aisuite_massaction_filelist_files_translate_update_view' => [
+        'path' => '/mass-action/filelist-files-translation-update-view',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesTranslateUpdateViewAction'
+    ],
+    'aisuite_massaction_filelist_files_translate_execute' => [
+        'path' => '/mass-action/filelist-files-translate-execute',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\MassActionController::class . '::filelistFilesTranslateExecuteAction'
+    ],
     'aisuite_background_task_delete' => [
         'path' => '/background-task/delete',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\BackgroundTaskController::class . '::deleteAction'
@@ -160,6 +168,10 @@ return [
     'aisuite_glossary_synchronize' => [
         'path' => '/glossary/synchronize',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::synchronizeAction'
+    ],
+    'aisuite_glossary_fetch_file_translation' => [
+        'path' => '/glossary/fetch-file-translation',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::fetchGlossariesForFileTranslationAction'
     ],
     'aisuite_translation_wizard_slide_one' => [
         'path' => '/translation/wizard-slide-one',

@@ -7,6 +7,8 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 
 class GlossarRepository extends AbstractRepository
 {
@@ -93,15 +95,15 @@ class GlossarRepository extends AbstractRepository
             ->fetchAssociative();
     }
 
-    public function findDeeplGlossaryEntry(int $rootPageId, string $sourceLang, string $targetLang)
+    public function findDeeplGlossaryEntry(int $rootPageId, int $defaultLanguageId, int $targetLanguageId)
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
         return $queryBuilder->select('*')
             ->from('tx_aisuite_domain_model_deepl')
             ->where(
                 $queryBuilder->expr()->eq('root_page_uid', $queryBuilder->createNamedParameter($rootPageId)),
-                $queryBuilder->expr()->eq('source_lang', $queryBuilder->createNamedParameter($sourceLang)),
-                $queryBuilder->expr()->eq('target_lang', $queryBuilder->createNamedParameter($targetLang))
+                $queryBuilder->expr()->eq('default_language_id', $queryBuilder->createNamedParameter($defaultLanguageId)),
+                $queryBuilder->expr()->eq('target_language_id', $queryBuilder->createNamedParameter($targetLanguageId))
             )
             ->executeQuery()
             ->fetchAssociative();
@@ -119,13 +121,30 @@ class GlossarRepository extends AbstractRepository
             ->fetchAllAssociative();
     }
 
-    public function insertOrUpdateDeeplGlossaryEntry(array|bool $existingRecord, string $glossaryId, int $rootPageId, array $nameParts): void
+    public function findDeeplGlossaryUuidsBySourceAndTargetLanguage(string $sourceLang, string $targetLang): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');
+        return $queryBuilder->select('*')
+            ->from('tx_aisuite_domain_model_deepl')
+            ->where(
+                $queryBuilder->expr()->eq('source_lang', $queryBuilder->createNamedParameter($sourceLang)),
+                $queryBuilder->expr()->eq('target_lang', $queryBuilder->createNamedParameter($targetLang))
+            )
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    public function insertOrUpdateDeeplGlossaryEntry(array|bool $existingRecord, string $glossaryId, int $rootPageId, array $nameParts, int $defaultLanguageId, ?int $targetLanguageId): void
     {
         $connection = $this->connectionPool->getConnectionForTable('tx_aisuite_domain_model_deepl');
         if (is_array($existingRecord)) {
             $connection->update(
                 'tx_aisuite_domain_model_deepl',
-                ['glossar_uuid' => $glossaryId],
+                [
+                    'glossar_uuid' => $glossaryId,
+                    'default_language_id' => $defaultLanguageId,
+                    'target_language_id' => $targetLanguageId
+                ],
                 [
                     'root_page_uid' => $existingRecord['root_page_uid'],
                     'source_lang' => $existingRecord['source_lang'],
@@ -137,9 +156,53 @@ class GlossarRepository extends AbstractRepository
                 'glossar_uuid' => $glossaryId,
                 'source_lang' => $nameParts[1],
                 'target_lang' => $nameParts[2],
-                'root_page_uid' => $rootPageId
+                'root_page_uid' => $rootPageId,
+                'default_language_id' => $defaultLanguageId,
+                'target_language_id' => $targetLanguageId
             ];
             $connection->insert('tx_aisuite_domain_model_deepl', $data);
         }
     }
+
+    public function findDistinctRootPageUidsWithGlossaryEntries(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $pagesWithGlossaries = $queryBuilder->selectLiteral('DISTINCT pid')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->gt('pid', 0)
+            )
+            ->executeQuery()
+            ->fetchFirstColumn();
+
+        if (empty($pagesWithGlossaries)) {
+            return [];
+        }
+
+        $rootPageUids = [];
+
+        foreach ($pagesWithGlossaries as $pid) {
+            try {
+                $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pid);
+                $rootline = $rootlineUtility->get();
+
+                $rootPageUid = 0;
+                foreach ($rootline as $page) {
+                    if ((int)$page['pid'] === 0 || (int)$page['is_siteroot'] === 1) {
+                        $rootPageUid = (int)$page['uid'];
+                        break;
+                    }
+                }
+
+                if ($rootPageUid > 0 && !in_array($rootPageUid, $rootPageUids)) {
+                    $rootPageUids[] = $rootPageUid;
+                }
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return $rootPageUids;
+    }
+
 }

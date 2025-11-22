@@ -24,6 +24,7 @@ class BackgroundTaskService
     protected SendRequestService $sendRequestService;
     protected TranslationService $translationService;
     protected IconFactory $iconFactory;
+    protected SiteService $siteService;
 
     protected array $extConf = [];
 
@@ -37,7 +38,8 @@ class BackgroundTaskService
         LoggerInterface $logger,
         SendRequestService $sendRequestService,
         TranslationService $translationService,
-        IconFactory $iconFactory
+        IconFactory $iconFactory,
+        SiteService $siteService
     ) {
         $this->backendUserService = $backendUserService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
@@ -49,6 +51,7 @@ class BackgroundTaskService
         $this->sendRequestService = $sendRequestService;
         $this->translationService = $translationService;
         $this->iconFactory = $iconFactory;
+        $this->siteService = $siteService;
     }
 
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
@@ -139,10 +142,42 @@ class BackgroundTaskService
                 } else {
                     $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 }
+
+                $sourceLanguageFlags = $this->siteService->getLanguageFlagsByLanguageId($foundBackgroundTask['sys_language_uid']);
+                $foundBackgroundTask['sourceLanguageFlags'] = $sourceLanguageFlags;
+
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] =  [
+                    'uuid' => $foundBackgroundTask['uuid'],
+                    'status' => $foundBackgroundTask['status'] ?? 'pending'
+                ];
+                $counter[$foundBackgroundTask['column']]++;
+            }
+        }
+
+        $foundBackgroundTasksFileMetadataTranslation = $this->backgroundTaskRepository->findAllFileMetadataTranslationBackgroundTasks();
+        $counter = [
+            'title' => 0,
+            'alternative' => 0,
+            'description' => 0,
+        ];
+        foreach ($foundBackgroundTasksFileMetadataTranslation as $foundBackgroundTask) {
+            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+                $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
+                $defaultSysFileMetadataRow = $this->backgroundTaskRepository->findSourceColumnValueByFileUidAndDefaultLanguage($foundBackgroundTask['fileUid']);
+                $foundBackgroundTask['sourceColumnValue'] = $defaultSysFileMetadataRow[$foundBackgroundTask['column']] ?? '';
+
+                $defaultLanguageFlags = $this->siteService->getLanguageFlagsByLanguageId(0);
+                $targetLanguageFlags = $this->siteService->getLanguageFlagsByLanguageId($foundBackgroundTask['sys_language_uid']);
+                $foundBackgroundTask['sourceLanguageFlags'] = $defaultLanguageFlags;
+                $foundBackgroundTask['targetLanguageFlags'] = $targetLanguageFlags;
+
+                if ($counter[$foundBackgroundTask['column']] < 50) {
+                    $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                }
+                $uuidStatus[$foundBackgroundTask['uuid']] = [
                     'uuid' => $foundBackgroundTask['uuid'],
                     'status' => $foundBackgroundTask['status'] ?? 'pending'
                 ];
@@ -171,6 +206,11 @@ class BackgroundTaskService
                         if ($answer['type'] === 'Metadata' && isset($answer['body']['metadataResult'])) {
                             $result = array_filter($answer['body']['metadataResult'], 'is_string');
                             $backgroundTasks[$scope][$column][$key]['metadataSuggestions'] = $result;
+                        } elseif ($answer['type'] === 'Translate' && isset($answer['body']['translationResults']['sys_file_metadata'])) {
+                            $translationSuggestionAnswer = $answer['body']['translationResults']['sys_file_metadata'];
+                            $uidKey = array_key_first($translationSuggestionAnswer);
+                            $translationSuggestion = $translationSuggestionAnswer[$uidKey][$column];
+                            $backgroundTasks[$scope][$column][$key]['translationSuggestions'] = [$translationSuggestion];
                         } elseif ($answer['type'] === 'Error' && isset($answer['body']['message'])) {
                             $backgroundTasks[$scope][$column][$key]['error'] = $answer['body']['message'];
                         }
@@ -185,7 +225,7 @@ class BackgroundTaskService
     {
         try {
             $statuses = ['finished', 'pending', 'taskError'];
-            $scopes = ['page', 'fileReference', 'fileMetadata'];
+            $scopes = ['page', 'fileReference', 'fileMetadata', 'fileMetadataTranslation'];
             $statistics = [
                 'total' => [
                     'finished' => 0,
@@ -226,6 +266,7 @@ class BackgroundTaskService
                         if (!isset($statistics[$scope]['columns'][$column])) {
                             $columnName = match ($scope) {
                                 'page' => $pageMetadataColumns[$column] ?? $column,
+                                'fileMetadataTranslation' => $fileMetadataColumns[$column] ?? $column,
                                 default => $fileMetadataColumns[$column] ?? $column,
                             };
 
@@ -255,6 +296,7 @@ class BackgroundTaskService
         $this->collectPageBackgroundTasks($uuidStatus);
         $this->collectFileReferenceBackgroundTasks($uuidStatus);
         $this->collectPageTranslationBackgroundTasks($uuidStatus);
+        $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus);
 
         return $uuidStatus;
     }
@@ -266,6 +308,7 @@ class BackgroundTaskService
         $this->collectPageBackgroundTasks($uuidStatus, true);
         $this->collectFileReferenceBackgroundTasks($uuidStatus, true);
         $this->collectPageTranslationBackgroundTasks($uuidStatus, true);
+        $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus, true);
 
         return $uuidStatus;
     }
@@ -411,6 +454,27 @@ class BackgroundTaskService
                 'error' => $e->getMessage()
             ]);
             return '';
+        }
+    }
+
+    private function collectFileMetadataTranslationBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasksFileMetadataTranslation = $this->backgroundTaskRepository->findAllFileMetadataTranslationBackgroundTasks();
+        foreach ($foundBackgroundTasksFileMetadataTranslation as $foundBackgroundTask) {
+            if (!$this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+                continue;
+            }
+
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status']
+            ];
+
+            if ($structuredResult) {
+                $uuidStatus['fileMetadataTranslation'][$foundBackgroundTask['table_uid']] = $taskData;
+            } else {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+            }
         }
     }
 }

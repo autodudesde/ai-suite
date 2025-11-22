@@ -420,6 +420,7 @@ button.delete {
 #backgroundTaskWrapper {
     .page-meta-content-info,
     .file-meta-content-info,
+    .file-meta-translation-content-info,
     .file-reference-meta-content-info {
         cursor: pointer;
     }
@@ -524,10 +525,23 @@ button.delete {
 #sortable-pages .page-meta-content-info svg,
 #sortable-files .file-meta-content-info span,
 #sortable-files .file-meta-content-info svg,
+#sortable-files .file-meta-translation-content-info span,
+#sortable-files .file-meta-translation-content-info svg,
 #sortable-file-references .file-reference-meta-content-info span,
 #sortable-file-references .file-reference-meta-content-info svg,
 #sortable-pages-translation .page-translation-content-info span,
 #sortable-pages-translation .page-translation-content-info svg {
+    pointer-events: none;
+}
+
+.background-tasks-wrapper .page-meta-content-info span,
+.background-tasks-wrapper .page-meta-content-info svg,
+.background-tasks-wrapper .file-meta-content-info span,
+.background-tasks-wrapper .file-meta-content-info svg,
+.background-tasks-wrapper .file-meta-translation-content-info span,
+.background-tasks-wrapper .file-meta-translation-content-info svg,
+.background-tasks-wrapper .file-reference-meta-content-info span,
+.background-tasks-wrapper .file-reference-meta-content-info svg {
     pointer-events: none;
 }
 
@@ -755,6 +769,9 @@ button.delete {
 
 .ai-suite-record-localization span {
     pointer-events: none;
+}
+div[data-module-id="aiSuite"] .panel-actions {
+    justify-content: start;
 }
 
 div[data-module-id="aiSuite"] .panel .caret,

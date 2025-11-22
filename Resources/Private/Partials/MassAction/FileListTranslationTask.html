@@ -1,0 +1,174 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<div class="ai-suite" id="massActionFilesTranslationPrepareExecute">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <label class="panel-title fw-bold">
+                <core:icon identifier="apps-filetree-folder-media" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.foundFilesForTranslation" extensionName="ai_suite" />
+            </label>
+        </div>
+        <div class="panel-body">
+            <f:if condition="{fileMetadata -> f:count()} > 0">
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
+                    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
+                </label>
+                <div class="glossary-selection" id="glossarySelection" style="display: none;"></div>
+                <label class="mb-3 d-flex gap-2 fw-bold">
+                    <input type="checkbox" id="toggleFileTranslationSelection" value="1" />
+                    <span>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
+                    </span>
+                </label>
+                <div id="sortable-files" class="sortable-wrap list-group nested-sortable">
+                <f:for each="{fileMetadata}" as="metadata" key="fileUid">
+                    <f:variable name="hasSourceContent">
+                        <f:if condition="{activeColumn} == 'all'">
+                            <f:then>
+                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative}', then: '1', else: '0')}
+                            </f:then>
+                            <f:else if="{activeColumn} == 'title'">
+                                {f:if(condition: '{metadata.sourceMetadata.title}', then: '1', else: '0')}
+                            </f:else>
+                            <f:else if="{activeColumn} == 'alternative'">
+                                {f:if(condition: '{metadata.sourceMetadata.alternative}', then: '1', else: '0')}
+                            </f:else>
+                            <f:else>
+                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative}', then: '1', else: '0')}
+                            </f:else>
+                        </f:if>
+                    </f:variable>
+                    <div class="list-group-item nested {f:if(condition: '{hasSourceContent} == \'0\'', then: 'disabled', else: '')}">
+                        <div class="d-flex w-100">
+                            <div class="preview-image">
+                                <f:if condition="{hasSourceContent} == '1'">
+                                    <f:then>
+                                        <label for="file-selection[{metadata.uid}]">
+                                            <f:image src="{fileUid}" width="100px"  />
+                                        </label>
+                                    </f:then>
+                                    <f:else>
+                                        <label>
+                                            <f:image src="{fileUid}" width="100px"  />
+                                        </label>
+                                    </f:else>
+                                </f:if>
+                            </div>
+                            <div class="file-meta-content d-flex flex-column w-100">
+                                <f:variable name="taskStatus">{aiSuite:inArray(needle: metadata.uid, haystack: alreadyPendingFiles)}</f:variable>
+                                <div class="file-meta-content-info badge badge-info"
+                                     data-table="sys_file_metadata"
+                                     data-uid="{metadata.uid}"
+                                >
+                                    <core:icon identifier="actions-document-info" size="small" /> <f:translate key="tx_aisuite.status.info" extensionName="ai_suite"/>
+                                </div>
+                                <label class="d-flex gap-2 fw-bold mb-3" for="file-selection[{metadata.uid}]">
+                                    <f:if condition="{taskStatus} != ''">
+                                        <f:then>
+                                            <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                                        </f:then>
+                                        <f:else if="{hasSourceContent} == '0'">
+                                            <span class="badge badge-warning">
+                                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.emptySourceContent" />
+                                            </span>
+                                        </f:else>
+                                        <f:else>
+                                            <input
+                                                type="checkbox"
+                                                name="file-selection[{metadata.uid}]"
+                                                id="file-selection[{metadata.uid}]"
+                                                value="{metadata.uid}"
+                                            >
+                                            <f:if condition="{metadata.mode} == 'NEW'">
+                                                <span class="badge badge-success badge-new"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.badge.new" /></span>
+                                            </f:if>
+                                        </f:else>
+                                    </f:if>
+                                    <span>{metadata.name}</span>
+                                </label>
+                                <f:if condition="{taskStatus} === '' && {hasSourceContent} == '1'}">
+                                    <div class="translation-content-wrapper">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6><strong><f:translate key="tx_aisuite.module.translation.sourceContent" extensionName="ai_suite"/></strong></h6>
+                                                <f:if condition="{metadata.sourceMetadata.title} != ''">
+                                                    <div class="filelist-input title source-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'title\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.title" extensionName="ai_suite"/></label>
+                                                        <input
+                                                            class="w-100 file-metadata-field-readonly"
+                                                            name="filesSourceContent[{metadata.uid}][title]"
+                                                            value="{metadata.sourceMetadata.title}"
+                                                            data-mode="{metadata.mode}"
+                                                            readonly="readonly"
+                                                        />
+                                                    </div>
+                                                </f:if>
+                                                <f:if condition="{metadata.sourceMetadata.alternative} != ''">
+                                                    <div class="filelist-input alternative source-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'alternative\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.alternativeText" extensionName="ai_suite"/></label>
+                                                        <input class="w-100 file-metadata-field-readonly"
+                                                               name="filesSourceContent[{metadata.uid}][alternative]"
+                                                               value="{metadata.sourceMetadata.alternative}"
+                                                               data-mode="{metadata.mode}"
+                                                               readonly="readonly"
+                                                        />
+                                                    </div>
+                                                </f:if>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6><strong><f:translate key="tx_aisuite.module.translation.targetContent" extensionName="ai_suite"/></strong></h6>
+                                                <f:if condition="{metadata.sourceMetadata.title} != ''">
+                                                    <div class="filelist-input title target-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'title\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.title" extensionName="ai_suite"/></label>
+                                                        <input
+                                                            class="w-100 file-metadata-field"
+                                                            name="filesTargetContent[{metadata.uid}][title]"
+                                                            value="{metadata.title}"
+                                                            data-mode="{metadata.mode}"
+                                                            readonly="readonly"
+                                                        />
+                                                    </div>
+                                                </f:if>
+                                                <f:if condition="{metadata.sourceMetadata.alternative} != ''">
+                                                    <div class="filelist-input alternative target-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'alternative\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.alternativeText" extensionName="ai_suite"/></label>
+                                                        <input class="w-100 file-metadata-field"
+                                                               name="filesTargetContent[{metadata.uid}][alternative]"
+                                                               value="{metadata.alternative}"
+                                                               data-mode="{metadata.mode}"
+                                                               readonly="readonly"
+                                                        />
+                                                    </div>
+                                                </f:if>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </f:if>
+                            </div>
+                        </div>
+                    </div>
+                </f:for>
+                </div>
+            </f:if>
+            <f:if condition="{fileMetadata -> f:count()} > 0">
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="filesTranslationExecuteFormSubmitBtn">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.module.massAction.executeTranslationBtn" extensionName="ai_suite" />
+                    </button>
+                </div>
+                <p class="calculated-requests"></p>
+            </f:if>
+            <f:if condition="{fileMetadata -> f:count()} == 0">
+                <div class="my-4">
+                    <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'AiSuite.module.massAction.noFilesForTranslation'}"/>
+                </div>
+            </f:if>
+        </div>
+    </div>
+</div>
+</html>

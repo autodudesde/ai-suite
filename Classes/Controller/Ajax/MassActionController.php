@@ -21,6 +21,7 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\DirectiveService;
 use AutoDudes\AiSuite\Service\GlobalInstructionService;
+use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
@@ -64,6 +65,8 @@ class MassActionController extends AbstractAjaxController
 
     protected DirectiveService $directiveService;
 
+    protected GlossarService $glossarService;
+
     public function __construct(
         BackendUserService $backendUserService,
         SendRequestService $requestService,
@@ -84,7 +87,8 @@ class MassActionController extends AbstractAjaxController
         MetadataService $metadataService,
         MassActionService $massActionService,
         SysFileReferenceRepository $sysFileReferenceRepository,
-        DirectiveService $directiveService
+        DirectiveService $directiveService,
+        GlossarService $glossarService
     ) {
         parent::__construct(
             $backendUserService,
@@ -108,6 +112,7 @@ class MassActionController extends AbstractAjaxController
         $this->massActionService = $massActionService;
         $this->sysFileReferenceRepository = $sysFileReferenceRepository;
         $this->directiveService = $directiveService;
+        $this->glossarService = $glossarService;
 
         $this->supportedMimeTypes = [
             "image/jpeg",
@@ -654,6 +659,56 @@ class MassActionController extends AbstractAjaxController
         return $response;
     }
 
+    public function filelistFilesTranslateUpdateViewAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
+        $response = new Response();
+        try {
+            $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::TRANSLATE, 'translate', ['text']);
+            if ($librariesAnswer->getType() === 'Error') {
+                $response->getBody()->write(
+                    json_encode(
+                        [
+                            'success' => true,
+                            'output' => $librariesAnswer->getResponseData()['message']
+                        ]
+                    )
+                );
+                return $response;
+            }
+
+            $viewProperties = $this->massActionService->filelistFileTranslationDirectorySupport($librariesAnswer);
+
+            $output = $this->getContentFromTemplate(
+                $serverRequest,
+                'FilelistFilesTranslateViewUpdate',
+                'EXT:ai_suite/Resources/Private/Templates/Ajax/MassAction/',
+                $viewProperties
+            );
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => true,
+                        'output' => [
+                            'content' => $output,
+                        ],
+                    ]
+                )
+            );
+
+        } catch (\Exception $e) {
+            $this->logger->error('Error while filelistFilesTranslateUpdateViewAction: ' . $e->getMessage());
+            $response->getBody()->write(
+                json_encode(
+                    [
+                        'success' => false,
+                        'error' => $this->translationService->translate('AiSuite.backgroundTasks.errorFilesPrepareExecuteAction')
+                    ]
+                )
+            );
+        }
+        return $response;
+    }
+
     public function filelistFilesExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
     {
         $response = new Response();
@@ -682,6 +737,7 @@ class MassActionController extends AbstractAjaxController
                     $files[$sysFileMetaUid][$column] = $value;
                 }
             }
+            $files[$sysFileMetaUid]['mode'] = $fileMetaData['mode'];
         }
         $metadataListFromRepo = [];
         if (count($filesMetadataUidList) > 0) {
@@ -745,7 +801,7 @@ class MassActionController extends AbstractAjaxController
                         'uid',
                         $defaultSysFileMetaUid,
                         $targetLanguageId,
-                        $columns['mode'] ?? ''
+                        $columns['mode']
                     );
                     $folderCombinedIdentifier = $this->massActionService->getFolderCombinedIdentifier($fileUid);
                     $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
@@ -1029,6 +1085,154 @@ class MassActionController extends AbstractAjaxController
                     'failedPages' => $failedPages,
                 ],
             ])
+        );
+        return $response;
+    }
+
+    public function filelistFilesTranslateExecuteAction(ServerRequestInterface $serverRequest): ResponseInterface
+    {
+        $response = new Response();
+
+        $parsedBody = $serverRequest->getParsedBody();
+        if (!is_array($parsedBody) || !array_key_exists('massActionFilesTranslationExecute', $parsedBody)) {
+            $this->logger->error('Invalid request: empty parsedBody or missing massActionFilesTranslationExecute key in filelistFilesTranslateExecuteAction');
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'error' => $this->translationService->translate('AiSuite.error.invalidRequest')
+            ]));
+            return $response;
+        }
+
+        $massActionData = $parsedBody['massActionFilesTranslationExecute'];
+        $scope = 'metadata';
+
+        $filesMetadataUidList = [];
+        $files = [];
+        $massActionDataFiles = json_decode($massActionData['files'], true);
+        foreach ($massActionDataFiles as $sysFileMetaUid => $data) {
+            $filesMetadataUidList[] = $sysFileMetaUid;
+            $fileMetaData = $massActionDataFiles[$sysFileMetaUid];
+            foreach ($fileMetaData as $column => $value) {
+                if ($massActionData['column'] === $column || $massActionData['column'] === 'all') {
+                    $files[$sysFileMetaUid][$column] = $value;
+                }
+            }
+            $files[$sysFileMetaUid]['mode'] = $fileMetaData['mode'];
+        }
+
+        $metadataListFromRepo = [];
+        if (count($filesMetadataUidList) > 0) {
+            $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
+        }
+
+        $sourceLanguageParts = explode('__', $massActionData['sourceLanguage']);
+        $targetLanguageParts = explode('__', $massActionData['targetLanguage']);
+        $payload = [];
+        $bulkPayload = [];
+        $failedFilesMetadata = [];
+        $translatableContentForGlossary = [];
+
+        foreach ($files as $sysFileMetaUid => $columns) {
+            foreach ($columns as $column => $value) {
+                try {
+                    if ($column === 'mode') {
+                        continue;
+                    }
+                    $fileUid = (int)$metadataListFromRepo[$sysFileMetaUid]['file'];
+                    $defaultSysFileMetaUid = (int)$sysFileMetaUid;
+                    $targetLanguageId = (int)$targetLanguageParts[1];
+
+                    $uuid = $this->uuidService->generateUuid();
+
+                    $bulkPayload[] = new BackgroundTask(
+                        $scope,
+                        'translation',
+                        $massActionData['parentUuid'],
+                        $uuid,
+                        $column,
+                        'sys_file_metadata',
+                        'uid',
+                        $defaultSysFileMetaUid,
+                        $targetLanguageId,
+                        $columns['mode']
+                    );
+                    // TODO:
+                    $folderCombinedIdentifier = $this->massActionService->getFolderCombinedIdentifier($fileUid);
+                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
+                    $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folderCombinedIdentifier]);
+                    $translatableContent = [
+                        'sys_file_metadata' => [
+                            $defaultSysFileMetaUid => [
+                                $column => $value,
+                            ]
+                        ]
+                    ];
+                    $translatableContentForGlossary[] = $value;
+                    $payload[] = [
+                        'translatable_content' => $translatableContent,
+                        'source_language' => $sourceLanguageParts[0],
+                        'target_language' => $targetLanguageParts[0],
+                        'uuid' => $uuid,
+                        'global_instructions' => $globalInstructions,
+                        'override_predefined_prompt' => $globalInstructionsOverride
+                    ];
+                } catch (\Exception $e) {
+                    $this->logger->error('Error while processing file ' . $fileUid . ' with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
+                    $failedFilesMetadata[] = $fileUid;
+                }
+            }
+        }
+
+        $glossarEntries = [];
+        $deeplGlossary = [];
+        if (!empty($massActionData['glossary'])) {
+            $glossaryParts = explode('__', $massActionData['glossary']);
+            if (count($glossaryParts) === 3) {
+                $rootPageId = (int)$glossaryParts[0];
+                $sourceLanguageId = (int)$glossaryParts[1];
+                $targetLanguageId = (int)$glossaryParts[2];
+
+                $translatableContent = json_encode($translatableContentForGlossary, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
+                $glossarEntries = $this->glossarService->findGlossarEntries($translatableContent, $targetLanguageId, $sourceLanguageId);
+                $deeplGlossary = $this->glossarService->findDeeplGlossary($rootPageId, $sourceLanguageId, $targetLanguageId);
+            }
+        }
+
+        if (count($payload) > 0) {
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $answer = $requestService->sendDataRequest(
+                'createMassAction',
+                [
+                    'uuid' => $massActionData['parentUuid'],
+                    'payload' => $payload,
+                    'scope' => $scope,
+                    'type' => 'translation',
+                    'glossary' => json_encode($glossarEntries, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
+                    'deepl_glossary_id' => $deeplGlossary['glossar_uuid'] ?? '',
+                ],
+                '',
+                '',
+                [
+                    'translate' => $massActionData['textAiModel'],
+                ]
+            );
+            if ($answer->getType() === 'Error') {
+                $this->logError($answer->getResponseData()['message'], $response, 503);
+                return $response;
+            }
+            $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+        }
+
+        $response->getBody()->write(
+            json_encode(
+                [
+                    'success' => true,
+                    'output' => [
+                        'message' => $this->translationService->translate('AiSuite.massAction.processing', ['files']),
+                        'failedFiles' => $failedFilesMetadata,
+                    ],
+                ]
+            )
         );
         return $response;
     }

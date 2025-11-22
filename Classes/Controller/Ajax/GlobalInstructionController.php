@@ -74,7 +74,7 @@ class GlobalInstructionController extends AbstractAjaxController
                 $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction($parsedBody['context'], $parsedBody['scope'], null, $parsedBody['targetFolder']);
             }
             if ($parsedBody['context'] === 'pages' && !empty($parsedBody['pageId'])) {
-                $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction($parsedBody['context'], $parsedBody['scope'], $parsedBody['pageId']);
+                $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction($parsedBody['context'], $parsedBody['scope'], (int)$parsedBody['pageId']);
             }
             $output = $this->getContentFromTemplate(
                 $request,

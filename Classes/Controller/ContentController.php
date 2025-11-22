@@ -116,15 +116,15 @@ class ContentController extends AbstractBackendController
                     return $this->createContentAction($request);
             }
         } catch (AiSuiteException $e) {
-            if (!empty($e->getReturnUrl())) {
-                return new RedirectResponse($e->getReturnUrl());
-            }
             $this->view->assign('error', true);
             $this->view->addFlashMessage(
                 !empty($e->getMessage()) ? $e->getMessage() : $this->translationService->translate('' . $e->getMessageKey()),
                 $this->translationService->translate('' . $e->getTitleKey()),
                 ContextualFeedbackSeverity::ERROR
             );
+            if (!empty($e->getReturnUrl())) {
+                return new RedirectResponse($e->getReturnUrl());
+            }
             return $this->view->renderResponse($e->getTemplate());
         } catch (\Throwable $e) {
             $this->view->assign('error', true);

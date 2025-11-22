@@ -63,7 +63,14 @@
                         </f:be.infobox>
                     </f:if>
                     <f:for each="{columnsTask}" as="backgroundTask" iteration="it">
-                        <f:render partial="BackgroundTask/TaskItem" arguments="{task: backgroundTask, column: column, type: type, position: it.index, columnIndex: columnIt.index}" />
+                        <f:if condition="{type} == 'FileMetadataTranslation'">
+                            <f:then>
+                                <f:render partial="BackgroundTask/FileMetadataTranslationTaskItem" arguments="{task: backgroundTask, column: column, type: type, position: it.index, columnIndex: columnIt.index}" />
+                            </f:then>
+                            <f:else>
+                                <f:render partial="BackgroundTask/TaskItem" arguments="{task: backgroundTask, column: column, type: type, position: it.index, columnIndex: columnIt.index}" />
+                            </f:else>
+                        </f:if>
                     </f:for>
                 </div>
             </div>

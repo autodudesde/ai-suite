@@ -588,6 +588,9 @@
             <trans-unit id="AiSuite.generation.twitterTitleSuggestions" resname="AiSuite.generation.twitterTitleSuggestions">
                 <source>Generate Twitter title suggestions (1 Credit)</source>
             </trans-unit>
+            <trans-unit id="AiSuite.generation.abstractSuggestions" resname="AiSuite.generation.abstractSuggestions">
+                <source>Generate abstract suggestions (1 Credit)</source>
+            </trans-unit>
             <trans-unit id="AiSuite.generation.newsAlternativeTitleSuggestions" resname="AiSuite.generation.newsAlternativeTitleSuggestions">
                 <source>Generate alternative title suggestions for news article (1 Credit)</source>
             </trans-unit>
@@ -1084,7 +1087,7 @@
                 <source>"Synchronize DeepL glossaries" button within list module</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSyncDescription" xml:space="preserve">
-                <source>If active "Synchronize DeepL glossaries" button will be displayed within the list module (if at least one glossar entry is available on selected page)</source>
+                <source>If active "Synchronize DeepL glossaries" button will be displayed within the list module (if at least one glossary entry is available on selected page)</source>
             </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
                 <source>Buttons "Generate image with AI"</source>
@@ -1330,13 +1333,13 @@
                 <source>Error while preparing files</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.page" resname="tx_aisuite.backgroundTaskSection.filter.page">
-                <source>Page metadata TaskEngine</source>
+                <source>Page metadata</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadata" resname="tx_aisuite.backgroundTaskSection.filter.fileMetadata">
-                <source>File metadata TaskEngine</source>
+                <source>File metadata</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileReference" resname="tx_aisuite.backgroundTaskSection.filter.fileReference">
-                <source>File reference metdata TaskEngine</source>
+                <source>File reference metdata</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.massActionSection.filter.depth.onlyThisPage" resname="tx_aisuite.massActionSection.filter.depth.onlyThisPage">
                 <source>0 (only this page)</source>
@@ -1453,7 +1456,7 @@
                 <source>Content of the following files could not be fetched: </source>
             </trans-unit>
             <trans-unit id="tx_aisuite_domain_model_glossar" resname="tx_aisuite_domain_model_glossar">
-                <source>Glossar entry</source>
+                <source>Glossary entry</source>
             </trans-unit>
             <trans-unit id="tx_aisuite_domain_model_glossar.input" resname="tx_aisuite_domain_model_glossar.input">
                 <source>Word/paragraph</source>
@@ -1511,6 +1514,9 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata">
                 <source>File Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadataTranslation">
+                <source>File Metadata Translation</source>
             </trans-unit>
             <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn">
                 <source>By Column</source>
@@ -1955,6 +1961,84 @@
             </trans-unit>
             <trans-unit id="AiSuite.massAction.batchFailed">
                 <source>Batch {0} failed, continuing with remaining files...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translateFileMetadata">
+                <source>Translate File Metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationSysFileMetadata">
+                <source>Enable translation of file metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.enableTranslationSysFileMetadataDescription">
+                <source>Allow users to translate file metadata using AI translation services</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.title">
+                <source>Translate File Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.description">
+                <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.prepareFilesTranslation.showPrepareResults">
+                <source>Show Files for Translation</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.foundFilesForTranslation">
+                <source>Found Files for Translation</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.notification.emptySourceContent">
+                <source>No source content</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.translation.sourceContent">
+                <source>Source Content</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.translation.targetContent">
+                <source>Target Content</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.executeTranslationBtn">
+                <source>Execute Translation</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.saveTranslationMetadataBtn">
+                <source>Save Translation Metadata</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.module.massAction.noFilesForTranslation">
+                <source>No files found for translation with the current filter settings.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.general.spinner.massActionFilesTranslation">
+                <source>Processing file metadata translation...</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.generation.massAction.selectGlossary">
+                <source>Select a glossary (optional)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.generation.massAction.selectGlossaryLabel">
+                <source>Glossary for %s to %s translations (%s)</source>
+            </trans-unit>
+            <trans-unit id="AiSuite.metadataTranslateSaveButton" resname="AiSuite.metadataTranslateSaveButton">
+                <source>Save metadata translation</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistSection.title">
+                <source>File Management</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.title">
+                <source>Generate File Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.description">
+                <source>Generate metadata (title, alternative text) for files using AI services.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.linklabel">
+                <source>Generate Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.title">
+                <source>Translate File Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.description">
+                <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.linklabel">
+                <source>Translate Metadata</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.module.massActionFilelist.equalLanguagesWarning">
+                <source>Please execute the filter once.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadataTranslation">
+                <source>File metadata translation</source>
             </trans-unit>
         </body>
     </file>

@@ -185,7 +185,7 @@ class BackgroundTaskRepository
             ->fetchAssociative();
     }
 
-    public function findFileUid(int $uidLocal, string $uuid): array
+    public function findFileUid(int $uidLocal, string $uuid, string $type, string $scope): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         return $queryBuilder
@@ -198,9 +198,10 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('sfm.uid', $queryBuilder->createNamedParameter($uidLocal))
             )
             ->where(
-                $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid)),
-                $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('fileMetadata')),
-                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('sys_file_metadata')),
+                $queryBuilder->expr()->eq('bt.uuid', $queryBuilder->createNamedParameter($uuid)),
+                $queryBuilder->expr()->eq('bt.type', $queryBuilder->createNamedParameter($type)),
+                $queryBuilder->expr()->eq('bt.scope', $queryBuilder->createNamedParameter($scope)),
+                $queryBuilder->expr()->eq('bt.table_name', $queryBuilder->createNamedParameter('sys_file_metadata')),
                 $queryBuilder->expr()->gt('sfm.file', 0)
             )
             ->executeQuery()
@@ -238,7 +239,7 @@ class BackgroundTaskRepository
     /**
      * @throws Exception
      */
-    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column, string $mode = ''): array
+    public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column, string $mode = '', string $type = '', int $sysLanguageUid = 0): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
@@ -246,6 +247,12 @@ class BackgroundTaskRepository
             $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName)),
             $queryBuilder->expr()->eq('mode', $queryBuilder->createNamedParameter($mode))
         ];
+        if (!empty($type)) {
+            $constraints[] = $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($type));
+        }
+        if($sysLanguageUid > 0) {
+            $constraints[] = $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid));
+        }
         if ($column === 'all') {
             $constraints[] = $queryBuilder->expr()->or(
                 $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('title')),
@@ -439,5 +446,62 @@ class BackgroundTaskRepository
             ->orderBy('crdate', 'DESC')
             ->executeQuery()
             ->fetchAllAssociative();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function findAllFileMetadataTranslationBackgroundTasks(): array
+    {
+        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+        return $queryBuilder->select(
+            'bt.*',
+            'sf.name AS fileName',
+            'sf.uid AS fileUid',
+            'sf.storage',
+            'sfm.title',
+            'sfm.description',
+            'sfm.alternative'
+        )
+            ->from($this->table, 'bt')
+            ->leftJoin(
+                'bt',
+                'sys_file_metadata',
+                'sfm',
+                $queryBuilder->expr()->eq('sfm.uid', $queryBuilder->quoteIdentifier('bt.table_uid'))
+            )
+            ->leftJoin(
+                'sfm',
+                'sys_file',
+                'sf',
+                $queryBuilder->expr()->eq('sf.uid', $queryBuilder->quoteIdentifier('sfm.file'))
+            )
+            ->where(
+                $queryBuilder->expr()->eq('bt.scope', $queryBuilder->createNamedParameter('metadata')),
+                $queryBuilder->expr()->eq('bt.type', $queryBuilder->createNamedParameter('translation')),
+                $queryBuilder->expr()->eq('bt.table_name', $queryBuilder->createNamedParameter('sys_file_metadata')),
+                $queryBuilder->expr()->eq('sf.missing', 0),
+                $queryBuilder->expr()->gt('sfm.file', 0)
+            )
+            ->orderBy('sf.name', 'ASC')
+            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function findSourceColumnValueByFileUidAndDefaultLanguage(int $fileUid): array
+    {
+        $queryBuilder = $this->connectionPool->getConnectionForTable('sys_file_metadata')->createQueryBuilder();
+        return $queryBuilder->select('title', 'alternative')
+            ->from('sys_file_metadata')
+            ->where(
+                $queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($fileUid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            )
+            ->executeQuery()
+            ->fetchAssociative() ?: [];
     }
 }

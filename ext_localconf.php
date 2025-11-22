@@ -51,6 +51,12 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410683] = [
     'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoTwitterDescription::class
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410686] = [
+    'nodeName' => 'aiSeoAbstract',
+    'priority' => 30,
+    'class' => \AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoAbstract::class
+];
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410687] = [
     'nodeName' => 'aiSysFileAlternative',
     'priority' => 30,

@@ -42,6 +42,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSyncDescription',
         ],
+        'enable_translation_sys_file_metadata' => [
+            $lll . 'aiSuite.customPermOptions.enableTranslationSysFileMetadata',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.enableTranslationSysFileMetadataDescription',
+        ],
         'enable_image_generation' => [
             $lll . 'aiSuite.customPermOptions.enableImageGeneration',
             'tx-aisuite-permissions',

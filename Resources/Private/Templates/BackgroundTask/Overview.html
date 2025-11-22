@@ -47,6 +47,9 @@
                                                         <option value="FileMetadata">
                                                             <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileMetadata" extensionName="ai_suite"/>
                                                         </option>
+                                                        <option value="FileMetadataTranslation">
+                                                            <f:translate key="tx_aisuite.backgroundTaskSection.filter.fileMetadataTranslation" extensionName="ai_suite" />
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -70,6 +73,7 @@
                                         <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.page, type: 'Page'}" />
                                         <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileReference, type: 'FileReference'}" />
                                         <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileMetadata, type: 'FileMetadata'}" />
+                                        <f:render partial="BackgroundTask/Metadata" arguments="{backgroundTasks: backgroundTasks.fileMetadataTranslation, type: 'FileMetadataTranslation'}" />
                                     </div>
                                 </div>
                             </div>

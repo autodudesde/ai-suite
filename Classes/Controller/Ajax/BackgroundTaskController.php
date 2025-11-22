@@ -85,57 +85,13 @@ class BackgroundTaskController extends AbstractAjaxController
                 throw new \Exception('Background task with uuid ' . $data['uuid'] . ' has invalid table_name');
             }
 
-            if ($backgroundTask['mode'] === 'NEW') {
-                $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid']);
-                if (empty($sysFileMetadataRow)) {
-                    throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
-                }
-                $fileUid = $sysFileMetadataRow['fileUid'];
-                $existingMetadataTranslation = $this->sysFileMetadataRepository->findTranslatedMetadataUid($backgroundTask['table_uid'], $fileUid, $backgroundTask['sys_language_uid']);
-                if (empty($existingMetadataTranslation)) {
-                    $cmdmap = [
-                        $backgroundTask['table_name'] =>
-                            [
-                                $backgroundTask['table_uid'] =>
-                                    [
-                                        'localize' => $backgroundTask['sys_language_uid'],
-                                    ],
-                            ],
-                    ];
-                    $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                    $dataHandler->start([], $cmdmap);
-                    $dataHandler->process_cmdmap();
-                    if (count($dataHandler->errorLog) > 0) {
-                        throw new \Exception(implode(', ', $dataHandler->errorLog));
-                    }
-                    $translatedMetadataUid = $dataHandler->copyMappingArray_merged[$backgroundTask['table_name']][$backgroundTask['table_uid']];
-                } else {
-                    $translatedMetadataUid = $existingMetadataTranslation[0];
-                }
-
-                $datamap = array(
-                    $backgroundTask['table_name'] =>
-                        array(
-                            $translatedMetadataUid =>
-                                array(
-                                    $data['column'] => $data['inputValue'],
-                                ),
-                        ),
-                );
-                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                $dataHandler->start($datamap, []);
-                $dataHandler->process_datamap();
-                if (count($dataHandler->errorLog) > 0) {
-                    throw new \Exception(implode(', ', $dataHandler->errorLog));
-                }
+            // Handle file metadata translation tasks
+            if ($backgroundTask['type'] === 'translation' && $backgroundTask['table_name'] === 'sys_file_metadata') {
+                $this->handleFileMetadataTranslationSave($backgroundTask, $data);
+            } elseif ($backgroundTask['mode'] === 'NEW') {
+                $this->handleNewMetadataRecordSave($backgroundTask, $data);
             } else {
-                $datamap[$backgroundTask['table_name']][$backgroundTask['table_uid']][$backgroundTask['column']] = $data['inputValue'];
-                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                $dataHandler->start($datamap, []);
-                $dataHandler->process_datamap();
-                if (count($dataHandler->errorLog) > 0) {
-                    throw new \Exception(implode(', ', $dataHandler->errorLog));
-                }
+                $this->handleExistingMetadataRecordSave($backgroundTask, $data);
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
@@ -233,6 +189,11 @@ class BackgroundTaskController extends AbstractAjaxController
             if (empty($backgroundTask)) {
                 throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.notFound', [$uuid]));
             }
+
+            if ($backgroundTask['type'] === 'translation') {
+                $scope = 'translation';
+            }
+
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
                 [
@@ -271,5 +232,119 @@ class BackgroundTaskController extends AbstractAjaxController
             );
         }
         return $response;
+    }
+
+    private function handleFileMetadataTranslationSave(array $backgroundTask, array $data): void
+    {
+        if ($backgroundTask['mode'] === 'NEW') {
+            $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'translation', 'metadata');
+            if (empty($sysFileMetadataRow)) {
+                throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
+            }
+            $fileUid = $sysFileMetadataRow['fileUid'];
+            $existingMetadataTranslation = $this->sysFileMetadataRepository->findTranslatedMetadataUid($backgroundTask['table_uid'], $fileUid, $backgroundTask['sys_language_uid']);
+
+            if (empty($existingMetadataTranslation)) {
+                $cmdmap = [
+                    $backgroundTask['table_name'] => [
+                        $backgroundTask['table_uid'] => [
+                            'localize' => $backgroundTask['sys_language_uid'],
+                        ],
+                    ],
+                ];
+                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                $dataHandler->start([], $cmdmap);
+                $dataHandler->process_cmdmap();
+                if (count($dataHandler->errorLog) > 0) {
+                    throw new \Exception(implode(', ', $dataHandler->errorLog));
+                }
+                $translatedMetadataUid = $dataHandler->copyMappingArray_merged[$backgroundTask['table_name']][$backgroundTask['table_uid']];
+            } else {
+                $translatedMetadataUid = $existingMetadataTranslation[0];
+            }
+
+            $datamap = [
+                $backgroundTask['table_name'] => [
+                    $translatedMetadataUid => [
+                        $backgroundTask['column'] => $data['inputValue'],
+                    ],
+                ],
+            ];
+        } else {
+            $datamap = [
+                $backgroundTask['table_name'] => [
+                    $backgroundTask['table_uid'] => [
+                        $backgroundTask['column'] => $data['inputValue'],
+                    ],
+                ],
+            ];
+        }
+
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
+    }
+
+    private function handleNewMetadataRecordSave(array $backgroundTask, array $data): void
+    {
+        $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'metadata', 'fileMetadata');
+        if (empty($sysFileMetadataRow)) {
+            throw new \Exception($this->translationService->translate('tx_aisuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
+        }
+        $fileUid = $sysFileMetadataRow['fileUid'];
+        $existingMetadataTranslation = $this->sysFileMetadataRepository->findTranslatedMetadataUid($backgroundTask['table_uid'], $fileUid, $backgroundTask['sys_language_uid']);
+
+        if (empty($existingMetadataTranslation)) {
+            $cmdmap = [
+                $backgroundTask['table_name'] => [
+                    $backgroundTask['table_uid'] => [
+                        'localize' => $backgroundTask['sys_language_uid'],
+                    ],
+                ],
+            ];
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], $cmdmap);
+            $dataHandler->process_cmdmap();
+            if (count($dataHandler->errorLog) > 0) {
+                throw new \Exception(implode(', ', $dataHandler->errorLog));
+            }
+            $translatedMetadataUid = $dataHandler->copyMappingArray_merged[$backgroundTask['table_name']][$backgroundTask['table_uid']];
+        } else {
+            $translatedMetadataUid = $existingMetadataTranslation[0];
+        }
+
+        $datamap = [
+            $backgroundTask['table_name'] => [
+                $translatedMetadataUid => [
+                    $data['column'] => $data['inputValue'],
+                ],
+            ],
+        ];
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
+    }
+
+    private function handleExistingMetadataRecordSave(array $backgroundTask, array $data): void
+    {
+        $datamap = [
+            $backgroundTask['table_name'] => [
+                $backgroundTask['table_uid'] => [
+                    $backgroundTask['column'] => $data['inputValue'],
+                ],
+            ],
+        ];
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
     }
 }

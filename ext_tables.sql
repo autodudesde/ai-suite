@@ -76,5 +76,7 @@ CREATE TABLE tx_aisuite_domain_model_deepl (
     glossar_uuid varchar(255) DEFAULT '' NOT NULL,
     root_page_uid int(11) DEFAULT 0,
     source_lang varchar(10) DEFAULT '' NOT NULL,
-    target_lang varchar(10) DEFAULT '' NOT NULL
+    target_lang varchar(10) DEFAULT '' NOT NULL,
+    default_language_id int(11) DEFAULT 0,
+    target_language_id int(11) DEFAULT 0
 );

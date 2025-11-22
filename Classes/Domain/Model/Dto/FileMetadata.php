@@ -32,6 +32,7 @@ class FileMetadata
     protected int $size;
     protected int $fileUid;
     protected string $mode;
+    protected array $sourceMetadata;
 
     public function __construct(
         string $uid = '0',
@@ -47,7 +48,8 @@ class FileMetadata
         bool $userCanDelete = false,
         int $size = 0,
         int $fileUid = 0,
-        string $mode = ''
+        string $mode = '',
+        array $sourceMetadata = []
     ) {
         $this->uid = $uid;
         $this->identifier = $identifier;
@@ -63,6 +65,7 @@ class FileMetadata
         $this->size = $size;
         $this->fileUid = $fileUid;
         $this->mode = $mode;
+        $this->sourceMetadata = $sourceMetadata;
     }
 
     public static function createFromFileObject(File $file, array $metadata = []): self
@@ -83,6 +86,7 @@ class FileMetadata
         $fileMeta->size = $file->getSize();
         $fileMeta->fileUid = $meta['file'] ?? 0;
         $fileMeta->mode = $meta['mode'] ?? '';
+        $fileMeta->sourceMetadata = $meta['sourceMetadata'] ?? [];
         return $fileMeta;
     }
 
@@ -226,6 +230,16 @@ class FileMetadata
         $this->mode = $mode;
     }
 
+    public function getSourceMetadata(): array
+    {
+        return $this->sourceMetadata;
+    }
+
+    public function setSourceMetadata(array $sourceMetadata): void
+    {
+        $this->sourceMetadata = $sourceMetadata;
+    }
+
     public function toArray(): array
     {
         return [
@@ -242,6 +256,7 @@ class FileMetadata
             'size' => $this->size,
             'fileUid' => $this->fileUid,
             'mode' => $this->mode,
+            'sourceMetadata' => $this->sourceMetadata,
         ];
     }
 }

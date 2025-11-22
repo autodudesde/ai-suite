@@ -1,0 +1,157 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+    <f:asset.css identifier="backend-aisuite-sortable-styles" href="EXT:ai_suite/Resources/Public/Css/sortable.css" />
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="apps-filetree-folder-media" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        <f:translate key="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.description" extensionName="ai_suite"/>
+                    </p>
+                    <p>
+                        <strong>
+                            <f:translate key="tx_aisuite.module.massActionFilelist.selectedDirectory" extensionName="ai_suite"/>:
+                            <f:if condition="{directory} == ''">
+                                <f:then>
+                                    -
+                                </f:then>
+                                <f:else>
+                                    {directory}
+                                </f:else>
+                            </f:if>
+                        </strong>
+                    </p>
+
+                    <form id="ai-suite-filelist-files-translation" name="filesTranslationPrepareExecute" enctype="multipart/form-data">
+            <input type="hidden" name="options[directory]" id="directory" value="{directory}" />
+            <input type="hidden" name="options[parentUuid]" id="parentUuid" value="{parentUuid}" />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="fw-bold mb-2">
+                                <f:translate key="tx_aisuite.module.preparePages.column" extensionName="ai_suite" />
+                            </label>
+                            <select class="form-select" id="column" name="options[column]">
+                                <f:for each="{columns}" as="column" key="value">
+                                    <f:if condition="{preSelection} && {preSelection.column} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{column}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <option value="{value}">{column}</option>
+                                        </f:else>
+                                    </f:if>
+                                </f:for>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="fw-bold mb-2">
+                                <f:translate key="tx_aisuite.module.preparePagesTranslation.sourceLanguage" extensionName="ai_suite"/>
+                            </label>
+                            <select name="options[sourceLanguage]" class="form-select" id="sourceLanguage">
+                                <f:for each="{sourceLanguages}" as="sourceLanguage" key="value">
+                                    <f:if condition="{preSelection} && {preSelection.sourceLanguage} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{sourceLanguage}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <option value="{value}">{sourceLanguage}</option>
+                                        </f:else>
+                                    </f:if>
+                                </f:for>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label class="fw-bold mb-2">
+                                <f:translate key="tx_aisuite.module.preparePagesTranslation.targetLanguage" extensionName="ai_suite"/>
+                            </label>
+                            <select name="options[targetLanguage]" class="form-select" id="targetLanguage">
+                                <f:for each="{targetLanguages}" as="targetLanguage" key="value" iteration="iteration">
+                                    <f:if condition="{preSelection} && {preSelection.targetLanguage} == {value}">
+                                        <f:then>
+                                            <option value="{value}" selected="selected">{targetLanguage}</option>
+                                        </f:then>
+                                        <f:else>
+                                            <f:if condition="{preSelection}">
+                                                <f:then>
+                                                    <option value="{value}">{targetLanguage}</option>
+                                                </f:then>
+                                                <f:else>
+                                                    <f:if condition="{iteration.index} == 1 && {value} != '0'">
+                                                        <f:then>
+                                                            <option value="{value}" selected="selected">{targetLanguage}</option>
+                                                        </f:then>
+                                                        <f:else>
+                                                            <option value="{value}">{targetLanguage}</option>
+                                                        </f:else>
+                                                    </f:if>
+                                                </f:else>
+                                            </f:if>
+                                        </f:else>
+                                    </f:if>
+                                </f:for>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <label class="fw-bold d-flex gap-2 mb-4">
+                        <f:if condition="{preSelection} && {preSelection.showOnlyUsed}">
+                            <f:then>
+                                <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1" checked="checked"/>
+                            </f:then>
+                            <f:else>
+                                <input type="checkbox" name="options[showOnlyUsed]" id="showOnlyUsed" value="1"/>
+                            </f:else>
+                        </f:if>
+                        <span>
+                            <f:translate key="tx_aisuite.module.prepareFiles.showOnlyUsed" extensionName="ai_suite"/>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="submit" class="btn btn-primary" value="{f:translate(key: 'tx_aisuite.module.prepareFilesTranslation.showPrepareResults', extensionName: 'ai_suite')}" />
+                </div>
+            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section id="resultsToExecute">
+        <f:if condition="{equalLanguages}">
+            <f:then>
+                <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'AiSuite.module.massAction.info', messageKey: 'tx_aisuite.module.massActionFilelist.equalLanguagesWarning'}"/>
+            </f:then>
+            <f:else>
+                <f:render partial="MassAction/FileListTranslationTask" arguments="{_all}"/>
+            </f:else>
+        </f:if>
+    </section>
+    <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.massActionFilesTranslation'}" />
+</f:section>
+</html>

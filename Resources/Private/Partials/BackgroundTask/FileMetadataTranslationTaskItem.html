@@ -1,0 +1,105 @@
+<html
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<div class="panel panel-default mb-2" data-uuid="{task.uuid}" data-column="{column}">
+    <div class="panel-heading" role="tab">
+        <div class="panel-heading-row">
+            <button class="panel-button collapsed w-100 text-start pe-none" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#task{task.uuid}"
+                    aria-expanded="false"
+                    aria-controls="task{task.uuid}">
+                <div class="panel-title d-flex align-items-center justify-content-between w-100 pe-none">
+                    <f:render partial="BackgroundTask/TaskHeader" arguments="{task: task, column: column, type: type}" />
+                    <f:render partial="BackgroundTask/TaskActions" arguments="{task: task, column: column, type: type}" />
+                </div>
+            </button>
+        </div>
+    </div>
+    <f:if condition="{task.status} == 'finished'">
+        <div class="collapse panel-collapse finished-item" id="task{task.uuid}"
+             data-bs-parent="#columnCollapse{type}{columnIndex}"
+             data-persist-collapse-state="true" role="tabpanel">
+            <div class="panel-body" data-column="{column}">
+                <div class="d-flex mb-3">
+                    <div class="preview-image me-3">
+                        <f:image src="{task.fileUid}" style="max-height: 200px; width: auto;" />
+                    </div>
+                    <div class="flex-grow-1 position-relative">
+                        <div class="file-meta-content-info badge badge-info position-absolute d-inline-flex align-items-center"
+                             style="right: 0;"
+                             data-table="{task.table_name}"
+                             data-uid="{task.table_uid}">
+                            <core:icon identifier="actions-document-info" size="small" /> Info
+                        </div>
+
+                        <h3 class="my-2">
+                            <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />"</strong> ({column}):
+                        </h3>
+
+                        <div class="translation-content-wrapper mb-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h6>
+                                        <strong><f:translate key="tx_aisuite.module.translation.sourceContent" extensionName="ai_suite"/></strong>
+                                        (
+                                        <f:for each="{task.sourceLanguageFlags}" as="flagIdentifier" iteration="it">
+                                            <core:icon identifier="{flagIdentifier}" size="small" />
+                                            <f:if condition="{it.isLast} == FALSE">
+                                                 /
+                                            </f:if>
+                                        </f:for>
+                                        )
+                                    </h6>
+                                    <div class="form-group">
+                                        <input
+                                            type="text"
+                                            class="form-control mb-2 file-metadata-field-readonly"
+                                            value="{task.sourceColumnValue}"
+                                            readonly="readonly"
+                                        />
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <h6>
+                                        <strong><f:translate key="tx_aisuite.module.translation.targetContent" extensionName="ai_suite"/></strong>
+                                        (
+                                        <f:for each="{task.targetLanguageFlags}" as="flagIdentifier" iteration="it">
+                                            <core:icon identifier="{flagIdentifier}" size="small" />
+                                            <f:if condition="{it.isLast} == FALSE">
+                                                /
+                                            </f:if>
+                                        </f:for>
+                                        )
+                                    </h6>
+                                    <div class="form-group">
+                                        <input
+                                            type="text"
+                                            class="form-control mb-2 metadata-value"
+                                            data-sys-file-metadata-uid="{task.table_uid}"
+                                            data-column="{column}"
+                                            data-uuid="{task.uuid}"
+                                            value="{task.translationSuggestions.0}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <button class="btn btn-primary w-100 save-accordion-item" data-uuid="{task.uuid}" data-column="{column}">
+                            <core:icon identifier="actions-check" size="small" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataTranslateSaveButton" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </f:if>
+</div>
+</html>

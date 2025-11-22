@@ -150,4 +150,15 @@ return [
         'path' => '/aisuite/backgroundtask',
         'target' => \AutoDudes\AiSuite\Controller\BackgroundTaskController::class . '::handleRequest',
     ],
+    'ai_suite_massaction_filelist_files_translate_prepare' => [
+        'path' => '/aisuite/massaction/files-translate-prepare',
+        'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+    ],
+    /**
+     * Filelist routes
+     */
+    'ai_suite_filelist' => [
+        'path' => '/aisuite/filelist',
+        'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+    ],
 ];
