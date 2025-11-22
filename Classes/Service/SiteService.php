@@ -68,6 +68,23 @@ class SiteService implements SingletonInterface
         return $availableLanguages;
     }
 
+    public function getLanguageFlagsByLanguageId(int $languageId): array
+    {
+        $languageFlags = [];
+        $sites = $this->siteFinder->getAllSites();
+
+        foreach ($sites as $site) {
+            $siteLanguages = $site->getAvailableLanguages($GLOBALS['BE_USER'], true);
+            foreach ($siteLanguages as $language) {
+                if($language->getLanguageId() === $languageId) {
+                    $languageFlags[] = $language->getFlagIdentifier();
+                }
+            }
+        }
+
+        return array_unique($languageFlags);
+    }
+
     public function getSiteRootPageId(int $pageId): int
     {
         try {
@@ -103,6 +120,16 @@ class SiteService implements SingletonInterface
             throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         } catch (\Exception $e) {
             throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+        }
+    }
+
+    public function getDomainByRootPageId(int $rootPageId): string
+    {
+        try {
+            $site = $this->siteFinder->getSiteByRootPageId($rootPageId);
+            return $site->getBase()->getHost();
+        } catch (\Exception $e) {
+            return 'Unknown Domain (ID: ' . $rootPageId . ')';
         }
     }
 

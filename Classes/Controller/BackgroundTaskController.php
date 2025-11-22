@@ -127,13 +127,14 @@ class BackgroundTaskController extends AbstractBackendController
             $backgroundTasks = [
                 'page' => [],
                 'fileReference' => [],
-                'fileMetadata' => []
+                'fileMetadata' => [],
+                'fileMetadataTranslation' => []
             ];
             $uuidStatus = [];
 
             $this->backgroundTaskService->prefillArrays($backgroundTasks, $uuidStatus);
 
-            if (count($backgroundTasks['page']) > 0 || count($backgroundTasks['fileReference']) > 0 || count($backgroundTasks['fileMetadata']) > 0) {
+            if (count($backgroundTasks['page']) > 0 || count($backgroundTasks['fileReference']) > 0 || count($backgroundTasks['fileMetadata']) > 0 || count($backgroundTasks['fileMetadataTranslation']) > 0) {
                 $answer = $this->requestService->sendDataRequest(
                     'massActionStatus',
                     [

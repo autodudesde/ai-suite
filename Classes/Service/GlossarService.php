@@ -16,6 +16,7 @@ class GlossarService implements SingletonInterface
     protected PageRepository $pageRepository;
     protected LoggerInterface $logger;
     protected ExtensionConfiguration $extensionConfiguration;
+    protected TranslationService $translationService;
 
     protected array $extConf;
 
@@ -25,7 +26,8 @@ class GlossarService implements SingletonInterface
         SiteService $siteService,
         PageRepository $pageRepository,
         LoggerInterface $logger,
-        ExtensionConfiguration $extensionConfiguration
+        ExtensionConfiguration $extensionConfiguration,
+        TranslationService $translationService
     ) {
         $this->sendRequestService = $sendRequestService;
         $this->glossarRepository = $glossarRepository;
@@ -33,6 +35,7 @@ class GlossarService implements SingletonInterface
         $this->pageRepository = $pageRepository;
         $this->logger = $logger;
         $this->extensionConfiguration = $extensionConfiguration;
+        $this->translationService = $translationService;
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
 
@@ -55,97 +58,188 @@ class GlossarService implements SingletonInterface
         return $glossary;
     }
 
-    public function findDeeplGlossary(int $rootPageId, string $sourceLang, string $targetLang)
+    public function findDeeplGlossary(int $rootPageId, int $sourceLangId, int $targetLangId)
     {
-        return $this->glossarRepository->findDeeplGlossaryEntry($rootPageId, $sourceLang, $targetLang);
+        return $this->glossarRepository->findDeeplGlossaryEntry($rootPageId, $sourceLangId, $targetLangId);
     }
 
-    public function syncDeeplGlossar($pid): bool
+    public function syncDeeplGlossar($pid, int $defaultLanguageId = 0): bool
     {
-        $rootPageId = $this->siteService->getSiteRootPageId($pid);
-        $foundPages = $this->pageRepository->getDescendantPageIdsRecursive($rootPageId, 99);
-        $glossarEntries = $this->glossarRepository->findAllEntriesForPages($foundPages);
+        try {
+            $rootPageId = $this->siteService->getSiteRootPageId($pid);
+            $foundPages = $this->pageRepository->getDescendantPageIdsRecursive($rootPageId, 99);
+            $glossarEntries = $this->glossarRepository->findAllEntriesForPages($foundPages);
 
-        $defaultLanguageRecords = [];
-        $translationRecords = [];
-        foreach ($glossarEntries as $entry) {
-            if ((int)$entry['sys_language_uid'] === 0) {
-                $defaultLanguageRecords[$entry['uid']] = $entry;
-            } elseif ((int)$entry['sys_language_uid'] > 0 && (int)$entry['l18n_parent'] > 0) {
-                if (!isset($translationRecords[$entry['l18n_parent']])) {
-                    $translationRecords[$entry['l18n_parent']] = [];
-                }
-                $translationRecords[$entry['l18n_parent']][(int)$entry['sys_language_uid']] = $entry;
-            }
-        }
-
-        $defaultLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId(0, $pid);
-        $inputCombinations = [];
-        foreach ($defaultLanguageRecords as $defaultUid => $defaultRecord) {
-            $defaultInput = $defaultRecord['input'] ?? '';
-            if (isset($translationRecords[$defaultUid])) {
-                foreach ($translationRecords[$defaultUid] as $languageId => $translationRecord) {
-                    $translationInput = $translationRecord['input'] ?? '';
-                    $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId, $pid);
-                    if (empty($targetLanguageIsoCode)) {
-                        $this->logger->warning('Empty target language isoCode for languageId: ' . $languageId . ', input: ' . $translationInput . ', pid: ' . $pid);
-                        continue;
+            $defaultLanguageRecords = [];
+            $translationRecords = [];
+            foreach ($glossarEntries as $entry) {
+                if ((int)$entry['sys_language_uid'] === $defaultLanguageId) {
+                    $defaultLanguageRecords[$entry['uid']] = $entry;
+                } elseif ((int)$entry['sys_language_uid'] > 0 && (int)$entry['l18n_parent'] > 0) {
+                    if (!isset($translationRecords[$entry['l18n_parent']])) {
+                        $translationRecords[$entry['l18n_parent']] = [];
                     }
-                    $combinationKey = $defaultLanguageIsoCode . '__' . $targetLanguageIsoCode;
-                    $inputCombinations[$combinationKey][$defaultInput] = $translationInput;
+                    $translationRecords[$entry['l18n_parent']][(int)$entry['sys_language_uid']] = $entry;
+                }
+            }
+
+            $defaultLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($defaultLanguageId, $pid);
+            $inputCombinations = [];
+            $languageIdCombinations = [];
+
+            foreach ($defaultLanguageRecords as $defaultUid => $defaultRecord) {
+                $defaultInput = $defaultRecord['input'] ?? '';
+                if (isset($translationRecords[$defaultUid])) {
+                    foreach ($translationRecords[$defaultUid] as $languageId => $translationRecord) {
+                        $translationInput = $translationRecord['input'] ?? '';
+                        $targetLanguageIsoCode = $this->siteService->getIsoCodeByLanguageId($languageId, $pid);
+                        if (empty($targetLanguageIsoCode)) {
+                            $this->logger->warning('Empty target language isoCode for languageId: ' . $languageId . ', input: ' . $translationInput . ', pid: ' . $pid);
+                            continue;
+                        }
+                        $combinationKey = $defaultLanguageIsoCode . '__' . $targetLanguageIsoCode;
+                        $inputCombinations[$combinationKey][$defaultInput] = $translationInput;
+                        $languageIdCombinations[$combinationKey] = [
+                            'defaultLanguageId' => $defaultLanguageId,
+                            'targetLanguageId' => $languageId
+                        ];
+                    }
+                }
+            }
+
+            $deeplGlossaryUuids = [];
+            $languageCombinations = array_keys($inputCombinations);
+            $deeplGlossaries = $this->glossarRepository->findDeeplGlossaryUuidsByRootPageId($rootPageId);
+
+            $existingGlossariesByLang = [];
+            foreach ($deeplGlossaries as $glossary) {
+                $langKey = strtolower($glossary['source_lang']) . '__' . strtolower($glossary['target_lang']);
+                $existingGlossariesByLang[$langKey] = $glossary['glossar_uuid'];
+            }
+
+            foreach ($languageCombinations as $languageCombination) {
+                $langIsoCodes = explode('__', $languageCombination);
+
+                if (count($langIsoCodes) !== 2) {
+                    continue;
+                }
+
+                $sourceLang = strtolower($langIsoCodes[0]);
+                $targetLang = strtolower($langIsoCodes[1]);
+                $langKey = $sourceLang . '__' . $targetLang;
+
+                if (isset($existingGlossariesByLang[$langKey])) {
+                    $deeplGlossaryUuids[$languageCombination] = $existingGlossariesByLang[$langKey];
+                }
+            }
+
+            $answer = $this->sendRequestService->sendDataRequest(
+                'glossary',
+                [
+                    'glossaries' => json_encode($inputCombinations, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
+                    'deepl_glossary_uuids' => json_encode($deeplGlossaryUuids),
+                ],
+                '',
+                strtoupper($defaultLanguageIsoCode),
+                [
+                    'translate' => 'DeeplGlossaryManager'
+                ]
+            );
+            if ($answer->getType() === 'Error') {
+                $this->logger->error('Error while synchronizing glossary: ' . $answer->getResponseData()['message']);
+                return false;
+            } else {
+                $createdGlossaries = $answer->getResponseData()['createdGlossaries'];
+                foreach ($createdGlossaries as $glossaryId => $glossaryName) {
+                    $nameParts = explode('__', $glossaryName);
+                    $combinationKey = $nameParts[1] . '__' . $nameParts[2];
+                    $langIds = $languageIdCombinations[$combinationKey];
+                    $existingRecord = $this->glossarRepository->findDeeplGlossaryEntry($rootPageId, (int)$langIds['defaultLanguageId'], (int)$langIds['targetLanguageId']);
+
+                    $this->glossarRepository->insertOrUpdateDeeplGlossaryEntry(
+                        $existingRecord,
+                        $glossaryId,
+                        $rootPageId,
+                        $nameParts,
+                        $langIds['defaultLanguageId'],
+                        $langIds['targetLanguageId']
+                    );
+                }
+            }
+            return true;
+        } catch (\Exception $e) {
+            $this->logger->error('Error while syncing DeepL glossaries: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getAvailableGlossariesForFileTranslation(
+        int $sourceLanguageId,
+        int $targetLanguageId,
+        string $sourceLanguageIso,
+        string $targetLanguageIso,
+        string $textAiModel
+    ): array {
+        $availableGlossaries = [];
+
+        if (empty($sourceLanguageIso) || empty($targetLanguageIso)) {
+            return $availableGlossaries;
+        }
+
+        $hasGlossaryEntries = $this->hasGlossaryEntriesForLanguageCombination($sourceLanguageId, $targetLanguageId);
+
+        if ($hasGlossaryEntries) {
+            if($textAiModel === 'DeepL') {
+                $glossaries = $this->glossarRepository->findDeeplGlossaryUuidsBySourceAndTargetLanguage($sourceLanguageIso, $targetLanguageIso);
+
+                foreach ($glossaries as $glossary) {
+                    $rootPageId = $glossary['root_page_uid'];
+                    $siteName = $this->siteService->getDomainByRootPageId($rootPageId);
+                    $key = $rootPageId . '__' . $sourceLanguageId . '__' . $targetLanguageId;
+                    $labelArguments = [
+                        strtoupper($sourceLanguageIso),
+                        strtoupper($targetLanguageIso),
+                        $siteName
+                    ];
+                    $availableGlossaries[$key] = $this->translationService->translate('AiSuite.generation.massAction.selectGlossaryLabel', $labelArguments);
+                }
+            } else {
+                $rootPageUids = $this->glossarRepository->findDistinctRootPageUidsWithGlossaryEntries();
+
+                foreach ($rootPageUids as $rootPageId) {
+                    $siteName = $this->siteService->getDomainByRootPageId($rootPageId);
+                    $key = $rootPageId . '__' . $sourceLanguageId . '__' . $targetLanguageId;
+                    $labelArguments = [
+                        strtoupper($sourceLanguageIso),
+                        strtoupper($targetLanguageIso),
+                        $siteName
+                    ];
+                    $availableGlossaries[$key] = $this->translationService->translate('AiSuite.generation.massAction.selectGlossaryLabel', $labelArguments);
                 }
             }
         }
 
-        $deeplGlossaryUuids = [];
-        $languageCombinations = array_keys($inputCombinations);
-        $deeplGlossaries = $this->glossarRepository->findDeeplGlossaryUuidsByRootPageId($rootPageId);
+        return $availableGlossaries;
+    }
 
-        $existingGlossariesByLang = [];
-        foreach ($deeplGlossaries as $glossary) {
-            $langKey = strtolower($glossary['source_lang']) . '__' . strtolower($glossary['target_lang']);
-            $existingGlossariesByLang[$langKey] = $glossary['glossar_uuid'];
-        }
+    public function hasGlossaryEntriesForLanguageCombination(int $sourceLanguageId, int $targetLanguageId): bool
+    {
+        $glossarExpressions = $this->glossarRepository->findBySysLanguageUid($targetLanguageId);
 
-        foreach ($languageCombinations as $languageCombination) {
-            $langIsoCodes = explode('__', $languageCombination);
+        foreach ($glossarExpressions as $glossarExpression) {
+            if ($glossarExpression['l18n_parent'] > 0) {
+                if ($sourceLanguageId === 0) {
+                    $parentExpression = $this->glossarRepository->findEntryByUid($glossarExpression['l18n_parent']);
+                } else {
+                    $parentExpression = $this->glossarRepository->findEntryByL18nParentAndUid($glossarExpression['l18n_parent'], $sourceLanguageId);
+                }
 
-            if (count($langIsoCodes) !== 2) {
-                continue;
-            }
-
-            $sourceLang = strtolower($langIsoCodes[0]);
-            $targetLang = strtolower($langIsoCodes[1]);
-            $langKey = $sourceLang . '__' . $targetLang;
-
-            if (isset($existingGlossariesByLang[$langKey])) {
-                $deeplGlossaryUuids[$languageCombination] = $existingGlossariesByLang[$langKey];
+                if (!empty($parentExpression["input"])) {
+                    return true;
+                }
             }
         }
 
-        $answer = $this->sendRequestService->sendDataRequest(
-            'glossary',
-            [
-                'glossaries' => json_encode($inputCombinations, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
-                'deepl_glossary_uuids' => json_encode($deeplGlossaryUuids),
-            ],
-            '',
-            strtoupper($defaultLanguageIsoCode),
-            [
-                'translate' => 'DeeplGlossaryManager'
-            ]
-        );
-        if ($answer->getType() === 'Error') {
-            $this->logger->error('Error while synchronizing glossary: ' . $answer->getResponseData()['message']);
-            return false;
-        } else {
-            $createdGlossaries = $answer->getResponseData()['createdGlossaries'];
-            foreach ($createdGlossaries as $glossaryId => $glossaryName) {
-                $nameParts = explode('__', $glossaryName);
-                $existingRecord = $this->glossarRepository->findDeeplGlossaryEntry($rootPageId, $nameParts[1], $nameParts[2]);
-                $this->glossarRepository->insertOrUpdateDeeplGlossaryEntry($existingRecord, $glossaryId, $rootPageId, $nameParts);
-            }
-        }
-        return true;
+        return false;
     }
 }

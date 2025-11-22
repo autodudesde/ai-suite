@@ -8,6 +8,7 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Site\SiteFinder;
 
 class SessionService implements SingletonInterface
 {
@@ -18,6 +19,7 @@ class SessionService implements SingletonInterface
         'ajax_aisuite_massaction_filereferences_prepare' => 'ai_suite_massaction_filereferences_prepare',
         'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare',
         'ajax_aisuite_massaction_pages_translation_prepare' => 'ai_suite_massaction_pages_translation_prepare',
+        'ajax_aisuite_massaction_filelist_files_translate_update_view' => 'ai_suite_massaction_filelist_files_translate_prepare',
         'ai_suite_global_instructions' => 'ai_suite_global_instructions',
         'ai_suite_prompt_manage_customprompttemplates' => 'ai_suite_prompt_manage_customprompttemplates',
     ];
@@ -37,19 +39,27 @@ class SessionService implements SingletonInterface
 
     protected UriBuilder $uriBuilder;
 
+    protected SiteFinder $siteFinder;
+
     public function __construct(
         BackendUserService  $backendUserService,
         UriBuilder $uriBuilder,
+        SiteFinder $siteFinder
     ) {
         $this->backendUserService = $backendUserService;
         $this->uriBuilder = $uriBuilder;
+        $this->siteFinder = $siteFinder;
     }
 
     public function trackRequestParameters(ServerRequestInterface $request, string $route): void
     {
+        $queryParams = $request->getQueryParams();
+        if (isset($queryParams['token']) && $queryParams['token'] === '--AnonymizedToken--') {
+            return;
+        }
+
         $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
 
-        $queryParams = $request->getQueryParams();
         $this->storeQueryParams($sessionData, $queryParams);
 
         $postParams = $request->getParsedBody() ?? [];
@@ -97,7 +107,7 @@ class SessionService implements SingletonInterface
                 $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] = $queryParams['id'];
             } else {
                 $pageId = (int)$queryParams['id'];
-                if ($pageId > 0) {
+                if ($this->isValidPageId($pageId)) {
                     $sessionData[self::AI_SUITE_WEB_PAGE_ID] = $pageId;
                 }
             }
@@ -144,7 +154,7 @@ class SessionService implements SingletonInterface
             $lastRoute = $this->getLastRoute();
             if (!empty($lastRoute)) {
                 $currentContext = $this->getCurrentContext();
-                if ($currentContext === 'ai_suite_workflowmanager_files') {
+                if ($currentContext === 'ai_suite_workflowmanager_files' || $currentContext === 'ai_suite_massaction_filelist_files_translate_prepare') {
                     $id = $this->getFilelistFolderId();
                 } elseif ($currentContext === 'ai_suite_global_instructions' || $currentContext === 'ai_suite_prompt_manage_customprompttemplates') {
                     $id = $this->getWebPageId();
@@ -155,6 +165,19 @@ class SessionService implements SingletonInterface
                 $response = new RedirectResponse((string)$uri);
                 throw new PropagateResponseException($response, 303);
             }
+        }
+    }
+
+    private function isValidPageId(int $pageId): bool
+    {
+        try {
+            if($pageId <= 0) {
+                return false;
+            }
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

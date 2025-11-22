@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/test-special-characters.xlf" date="2023-05-09T20:22:32Z" product-name="ai_suite">
+		<body>
+			<trans-unit id="specialCharactersTransUnit" xml:space="preserve">
+                <source>Date is a &quot;Date&quot; or &quot;Date &amp; Time&quot;</source>
+            </trans-unit>
+		</body>
+	</file>
+</xliff>

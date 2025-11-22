@@ -65,3 +65,14 @@ $GLOBALS['TCA']['pages']['columns']['twitter_description']['config'] = array_mer
         ]
     ]
 );
+
+$GLOBALS['TCA']['pages']['columns']['abstract']['config'] = array_merge_recursive(
+    $GLOBALS['TCA']['pages']['columns']['abstract']['config'],
+    [
+        'fieldControl' => [
+            'tx_aisuite_custom_field' => [
+                'renderType' => 'aiSeoAbstract'
+            ]
+        ]
+    ]
+);

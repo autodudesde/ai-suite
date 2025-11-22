@@ -136,7 +136,7 @@ class PageContentFactory
                         'tablenames' => $table,
                         'uid_foreign' => ($table === 'tt_content' || $table === 'tx_news_domain_model_news') ? $newStrings[$table] : $newStrings[$table][$key],
                         'fieldname' => $fieldName,
-                        'pid' => $content['uidPid'],
+                        'pid' => $content['pid'],
                         'title' => $fieldData['imageTitle'] ?? '',
                         'alternative' => $fieldData['imageTitle'] ?? '',
                     ];
@@ -148,10 +148,13 @@ class PageContentFactory
                 }
             }
         }
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start($data, []);
-        $dataHandler->process_datamap();
-
+        try {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start($data, []);
+            $dataHandler->process_datamap();
+        } catch (\Exception $e) {
+            throw new AiSuiteException('Content/SaveContent', '', '', $e->getMessage(), $content['regenerateReturnUrl']);
+        }
         if (count($dataHandler->errorLog) > 0) {
             throw new AiSuiteException('Content/SaveContent', '', '', $dataHandler->errorLog[0], $content['regenerateReturnUrl']);
         }

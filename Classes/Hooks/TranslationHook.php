@@ -127,7 +127,7 @@ class TranslationHook
         $translateFields = json_encode($translateFields, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
 
         $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
-        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangIsoCode, $destLangIsoCode);
+        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
         $answer = $this->sendRequestService->sendDataRequest(
             'translate',
             [
@@ -224,7 +224,7 @@ class TranslationHook
         $rootPageId = (int)$aiSuiteConfig['rootPageId'];
 
         $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
-        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangIsoCode, $destLangIsoCode);
+        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
 
         $answer = $this->sendRequestService->sendDataRequest(
             'translate',

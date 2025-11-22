@@ -18,7 +18,22 @@
         </f:then>
         <f:else>
             <f:image src="{task.fileUid}" class="me-2" style="height: 32px; width: auto;" />
-            <span class="task-title text-decoration-none">{task.fileName}</span>
+            <span class="task-title text-decoration-none">
+                {task.fileName}
+                <f:if condition="{task.flag} != ''">
+                    <span class="mx-1"><core:icon identifier="{task.flag}" size="small" /></span>
+                </f:if>
+                <f:if condition="{task.sourceLanguageFlags}">
+                    <span class="mx-1">
+                        <f:for each="{task.sourceLanguageFlags}" as="flagIdentifier" iteration="it">
+                            <core:icon identifier="{flagIdentifier}" size="small" />
+                            <f:if condition="{it.isLast} == FALSE">
+                                 /
+                            </f:if>
+                        </f:for>
+                    </span>
+                </f:if>
+            </span>
             <f:if condition="{task.mode} === 'NEW'">
                 <span class="badge badge-success mx-2"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.badge.new" /></span>
             </f:if>

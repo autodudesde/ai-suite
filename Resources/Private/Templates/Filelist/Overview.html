@@ -1,0 +1,42 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="apps-clipboard-images" />
+                        <f:translate key="tx_aisuite.module.dashboard.card.filelistSection.title" extensionName="ai_suite"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <div class="d-flex flex-wrap gap-3 align-items-stretch">
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-folder',
+                                cardname: 'filelistFiles',
+                                controller: 'Filelist',
+                                route: 'ai_suite_massaction_filelist_files_prepare',
+                                status: 'active'
+                            }" />
+                        </div>
+
+                        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                            <f:render partial="DashboardCards/DynamicCard" arguments="{
+                                icon: 'actions-localize',
+                                cardname: 'filelistFilesTranslation',
+                                controller: 'Filelist',
+                                route: 'ai_suite_massaction_filelist_files_translate_prepare',
+                                status: 'active'
+                            }" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:section>
