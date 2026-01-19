@@ -142,7 +142,14 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(\AutoDudes\AiSuite\EventListener\RenderAdditionalContentToRecordListEventListener::class)
         ->tag('event.listener', [
             'method' => '__invoke',
-            'event' => \TYPO3\CMS\Recordlist\Event\RenderAdditionalContentToRecordListEvent::class,
+            'event' => \TYPO3\CMS\Backend\Controller\Event\RenderAdditionalContentToRecordListEvent::class,
             'identifier' => 'tx-ai-suite/render-additional-content-to-record-list-event-listener'
+        ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\AfterFileAddedEventListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent::class,
+            'identifier' => 'tx-ai-suite/after-file-added-event-listener'
         ]);
 };

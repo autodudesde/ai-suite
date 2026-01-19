@@ -14,13 +14,17 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
 use AutoDudes\AiSuite\Domain\Model\Dto\FileMetadata;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MassActionService implements SingletonInterface
 {
@@ -52,7 +56,8 @@ class MassActionService implements SingletonInterface
         SessionService $sessionService,
         SysFileMetadataRepository $sysFileMetadataRepository,
         DirectiveService $directiveService,
-        GlobalInstructionService $globalInstructionService
+        GlobalInstructionService $globalInstructionService,
+        LoggerInterface $logger
     ) {
         $this->metadataService = $metadataService;
         $this->resourceFactory = $resourceFactory;
@@ -66,6 +71,7 @@ class MassActionService implements SingletonInterface
         $this->sysFileMetadataRepository = $sysFileMetadataRepository;
         $this->directiveService = $directiveService;
         $this->globalInstructionService = $globalInstructionService;
+        $this->logger = $logger;
 
         $this->supportedMimeTypes = [
             "image/jpeg",
@@ -396,4 +402,213 @@ class MassActionService implements SingletonInterface
         ];
     }
 
+    /**
+     * Processes filelist files for metadata generation with batch processing
+     *
+     * @param array $massActionData Mass action data from request
+     * @param array $massActionDataFiles Decoded files data
+     * @param array $languageParts Language parts [locale, id]
+     * @param string $scope Processing scope (e.g., 'fileMetadata')
+     * @param SendRequestService $requestService Request service for API calls
+     * @return array Returns ['payload', 'bulkPayload', 'failedFilesMetadata']
+     */
+    public function processFilelistFilesForMetadataGeneration(
+        array $massActionData,
+        array $massActionDataFiles,
+        array $languageParts,
+        string $scope,
+        SendRequestService $requestService
+    ): array {
+        $filesMetadataUidList = [];
+        $files = [];
+        foreach ($massActionDataFiles as $sysFileMetaUid => $data) {
+            $filesMetadataUidList[] = $sysFileMetaUid;
+            $fileMetaData = $massActionDataFiles[$sysFileMetaUid];
+            foreach ($fileMetaData as $column => $value) {
+                if ($massActionData['column'] === $column || $massActionData['column'] === 'all') {
+                    $files[$sysFileMetaUid][$column] = $value;
+                }
+            }
+            $files[$sysFileMetaUid]['mode'] = $fileMetaData['mode'];
+        }
+
+        $metadataListFromRepo = [];
+        if (count($filesMetadataUidList) > 0) {
+            $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
+        }
+
+        $payload = [];
+        $bulkPayload = [];
+        $failedFilesMetadata = [];
+        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
+        $fileSizeSumInBytes = 0;
+
+        foreach ($files as $sysFileMetaUid => $columns) {
+            foreach ($columns as $column => $value) {
+                try {
+                    if ($column === 'mode') {
+                        continue;
+                    }
+                    $fileUid = (int)$metadataListFromRepo[$sysFileMetaUid]['file'];
+                    $defaultSysFileMetaUid = (int)$sysFileMetaUid;
+                    $targetLanguageId = (int)$languageParts[1];
+
+                    $fileContent = $this->metadataService->getFileContent($fileUid);
+                    $fileSize = strlen($fileContent);
+                    $filename = $this->metadataService->getFilename($fileUid);
+
+                    if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
+                        $answer = $requestService->sendDataRequest(
+                            'createMassAction',
+                            [
+                                'uuid' => $massActionData['parentUuid'],
+                                'payload' => $payload,
+                                'scope' => $scope,
+                                'type' => 'metadata'
+                            ],
+                            '',
+                            $languageParts[0],
+                            [
+                                'text' => $massActionData['textAiModel'],
+                            ]
+                        );
+
+                        if ($answer->getType() === 'Error') {
+                            throw new \Exception($answer->getResponseData()['message']);
+                        }
+                        $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+                        $payload = [];
+                        $bulkPayload = [];
+                        $fileSizeSumInBytes = 0;
+                    }
+
+                    $uuid = $this->uuidService->generateUuid();
+
+                    $bulkPayload[] = new BackgroundTask(
+                        $scope,
+                        'metadata',
+                        $massActionData['parentUuid'],
+                        $uuid,
+                        $column,
+                        'sys_file_metadata',
+                        'uid',
+                        $defaultSysFileMetaUid,
+                        $targetLanguageId,
+                        $columns['mode']
+                    );
+                    $folderCombinedIdentifier = $this->getFolderCombinedIdentifier($fileUid);
+                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
+                    $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folderCombinedIdentifier]);
+                    $payload[] = [
+                        'field_label' => $column,
+                        'request_content' => $fileContent,
+                        'uuid' => $uuid,
+                        'global_instructions' => $globalInstructions,
+                        'override_predefined_prompt' => $globalInstructionsOverride,
+                        'filename' => $filename,
+                    ];
+                    $fileSizeSumInBytes += $fileSize;
+                } catch (\Exception $e) {
+                    $this->logger->error('Error while fetching file content for file ' . $fileUid . ' with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
+                    $failedFilesMetadata[] = $fileUid;
+                }
+            }
+        }
+
+        return [
+            'payload' => $payload,
+            'bulkPayload' => $bulkPayload,
+            'failedFilesMetadata' => $failedFilesMetadata
+        ];
+    }
+
+    public function handleMetadaGenerationAfterFileAdded(
+        FileInterface $file,
+        array $extConf
+    ): void {
+        try {
+            $fileMetadata = $file->getMetaData();
+            $fileMetadataUid = (int)$fileMetadata->offsetGet('uid');
+            $massActionDataFiles = [
+                $fileMetadataUid => [
+                    'mode' => ''
+                ]
+            ];
+            if ((bool)$extConf['metadataAutogenerateAlternative'] && (bool)$extConf['metadataAutogenerateTitle']) {
+                $column = 'all';
+                $massActionDataFiles[$fileMetadataUid]['title'] = '';
+                $massActionDataFiles[$fileMetadataUid]['alternative'] = '';
+            } elseif ((bool)$extConf['metadataAutogenerateTitle']) {
+                $column = 'title';
+                $massActionDataFiles[$fileMetadataUid]['title'] = '';
+            } else {
+                $column = 'alternative';
+                $massActionDataFiles[$fileMetadataUid]['alternative'] = '';
+            }
+
+            $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, 0, true);
+            $firstLanguageKey = array_key_first($availableSourceLanguages);
+            $massActionData = [
+                'parentUuid' => $this->uuidService->generateUuid(),
+                'column' => $column,
+                'sysLanguage' => $firstLanguageKey,
+                'textAiModel' => $extConf['metadataAutogenerateModel'],
+            ];
+            $scope = 'fileMetadata';
+            $languageParts = explode('__', $massActionData['sysLanguage']);
+
+            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+            $result = $this->processFilelistFilesForMetadataGeneration(
+                $massActionData,
+                $massActionDataFiles,
+                $languageParts,
+                $scope,
+                $requestService
+            );
+
+            $payload = $result['payload'];
+            $bulkPayload = $result['bulkPayload'];
+            if (count($payload) > 0) {
+                $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+                $answer = $requestService->sendDataRequest(
+                    'createMassAction',
+                    [
+                        'uuid' => $massActionData['parentUuid'],
+                        'payload' => $payload,
+                        'scope' => $scope,
+                        'type' => 'metadata'
+                    ],
+                    '',
+                    $languageParts[0],
+                    [
+                        'text' => $extConf['metadataAutogenerateModel'],
+                    ]
+                );
+
+                if ($answer->getType() === 'Error') {
+                    $this->logger->error('Error generating metadata for file UID ' . $file->getUid() . ': ' . $answer->getResponseData()['message']);
+                    $this->metadataService->flashMessage(
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.message', [$file->getName()]),
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.title'),
+                        ContextualFeedbackSeverity::ERROR
+                    );
+                    return;
+                }
+
+                $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+                $this->metadataService->flashMessage(
+                    $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.autoGenerationSuccess.message'),
+                    $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.autoGenerationSuccess.title'),
+                    ContextualFeedbackSeverity::INFO
+                );
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error('Exception while generating metadata for uploaded file ' . $file->getName() . ': ' . $e->getMessage());
+            $this->metadataService->flashMessage(
+                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.message'),
+                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+        }
+    }
 }

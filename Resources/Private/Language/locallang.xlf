@@ -2010,6 +2010,9 @@
             <trans-unit id="AiSuite.generation.massAction.selectGlossaryLabel">
                 <source>Glossary for %s to %s translations (%s)</source>
             </trans-unit>
+            <trans-unit id="AiSuite.generation.massAction.selectGlossaryExternal">
+                <source> (is managed directly in DeepL)</source>
+            </trans-unit>
             <trans-unit id="AiSuite.metadataTranslateSaveButton" resname="AiSuite.metadataTranslateSaveButton">
                 <source>Save metadata translation</source>
             </trans-unit>
@@ -2039,6 +2042,75 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadataTranslation">
                 <source>File metadata translation</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl">
+                <source>DeepL Glossary</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.glossar_uuid">
+                <source>DeepL Glossary UUID</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.root_page_uid">
+                <source>Root Page UID</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.source_lang">
+                <source>Source Language</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.target_lang">
+                <source>Target Language</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.default_language_id">
+                <source>Source Language ID</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.target_language_id">
+                <source>Target Language ID</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.external">
+                <source>External</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_deepl.external_enable">
+                <source>Is managed directly in DeepL</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.generatedField.message">
+                <source>Metadata for field %s was generated.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.generatedField.title">
+                <source>Metadata generation successful</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingField.message">
+                <source>Error generating metadata for field %s</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingField.title">
+                <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorSavingFile.message">
+                <source>Error while saving metadata for file %s</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorSavingFile.title">
+                <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message">
+                <source>Unexpected error during automatically generation of metadata for %s</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title">
+                <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.message">
+                <source>Error generating metadata automatically for uploaded file: %s</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.title">
+                <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.autoGenerationSuccess.message">
+                <source>Executed automatically metadata generation (as configured) and add tasks to TaskEngine</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.autoGenerationSuccess.title">
+                <source>Metadata generation successful</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.message">
+                <source>Unexpected error while trying to automatically generate file metadata.</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
+                <source>Metadata generation error</source>
             </trans-unit>
         </body>
     </file>

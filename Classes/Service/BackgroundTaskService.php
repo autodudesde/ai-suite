@@ -7,6 +7,7 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use Doctrine\DBAL\DBALException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -26,7 +27,7 @@ class BackgroundTaskService
     protected IconFactory $iconFactory;
     protected SiteService $siteService;
 
-    protected array $extConf = [];
+    protected ExtensionConfiguration $extensionConfiguration;
 
     public function __construct(
         BackendUserService $backendUserService,
@@ -39,7 +40,8 @@ class BackgroundTaskService
         SendRequestService $sendRequestService,
         TranslationService $translationService,
         IconFactory $iconFactory,
-        SiteService $siteService
+        SiteService $siteService,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         $this->backendUserService = $backendUserService;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
@@ -52,6 +54,7 @@ class BackgroundTaskService
         $this->translationService = $translationService;
         $this->iconFactory = $iconFactory;
         $this->siteService = $siteService;
+        $this->extensionConfiguration = $extensionConfiguration;
     }
 
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
@@ -205,6 +208,9 @@ class BackgroundTaskService
                     if (isset($answer['type'])) {
                         if ($answer['type'] === 'Metadata' && isset($answer['body']['metadataResult'])) {
                             $result = array_filter($answer['body']['metadataResult'], 'is_string');
+                            $extConf = $this->extensionConfiguration->get('ai_suite');
+                            $suggestionCount = (int) $extConf['metadataSuggestionCount'];
+                            $result = array_slice($result, 0, $suggestionCount);
                             $backgroundTasks[$scope][$column][$key]['metadataSuggestions'] = $result;
                         } elseif ($answer['type'] === 'Translate' && isset($answer['body']['translationResults']['sys_file_metadata'])) {
                             $translationSuggestionAnswer = $answer['body']['translationResults']['sys_file_metadata'];

@@ -35,6 +35,7 @@ class ScopeItemsProcFunc
                 ['News Record', 'newsRecord'],
                 ['RTE Content Editing', 'editContent'],
                 ['Metadata pages', 'metadata'],
+                ['Translation', 'translation'],
             ];
         }
     }

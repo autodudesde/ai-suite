@@ -11,7 +11,6 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendLayoutView;
 use TYPO3\CMS\Backend\View\Drawing\DrawingConfiguration;
 use TYPO3\CMS\Backend\View\PageLayoutContext;
-use TYPO3\CMS\Backend\View\PageViewMode;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -45,7 +44,7 @@ class RenderAdditionalContentToRecordListEventListener
         $pageinfo = BackendUtility::readPageAccess($pageId, '') ?: [];
 
         $backendLayout = $this->backendLayoutView->getBackendLayoutForPage($pageId);
-        $configuration = DrawingConfiguration::create($backendLayout, [], PageViewMode::LayoutView);
+        $configuration = GeneralUtility::makeInstance(DrawingConfiguration::class);
 
         return GeneralUtility::makeInstance(
             PageLayoutContext::class,

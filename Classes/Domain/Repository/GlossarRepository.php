@@ -115,7 +115,8 @@ class GlossarRepository extends AbstractRepository
         return $queryBuilder->select('source_lang', 'target_lang', 'glossar_uuid')
             ->from('tx_aisuite_domain_model_deepl')
             ->where(
-                $queryBuilder->expr()->eq('root_page_uid', $queryBuilder->createNamedParameter($rootPageId, ParameterType::INTEGER))
+                $queryBuilder->expr()->eq('root_page_uid', $queryBuilder->createNamedParameter($rootPageId, ParameterType::INTEGER)),
+                $queryBuilder->expr()->eq('external', 0)
             )
             ->executeQuery()
             ->fetchAllAssociative();

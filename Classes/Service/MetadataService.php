@@ -9,15 +9,21 @@ use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\RequestFactory;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Routing\UnableToLinkToPageException;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MetadataService
@@ -31,6 +37,10 @@ class MetadataService
     protected TranslationService $translationService;
     protected SiteService $siteService;
     protected BasicAuthService $basicAuthService;
+    protected SendRequestService $sendRequestService;
+    protected GlobalInstructionService $globalInstructionService;
+    protected UuidService $uuidService;
+    protected LoggerInterface $logger;
 
     protected array $pageMetadataColumns = [
         'title',
@@ -54,7 +64,11 @@ class MetadataService
         BackendUserService $backendUserService,
         TranslationService $translationService,
         SiteService $siteService,
-        BasicAuthService $basicAuthService
+        BasicAuthService $basicAuthService,
+        SendRequestService $sendRequestService,
+        GlobalInstructionService $globalInstructionService,
+        UuidService $uuidService,
+        LoggerInterface $logger
     ) {
         $this->pagesRepository = $pagesRepository;
         $this->pageRepository = $pageRepository;
@@ -65,6 +79,10 @@ class MetadataService
         $this->translationService = $translationService;
         $this->siteService = $siteService;
         $this->basicAuthService = $basicAuthService;
+        $this->sendRequestService = $sendRequestService;
+        $this->globalInstructionService = $globalInstructionService;
+        $this->uuidService = $uuidService;
+        $this->logger = $logger;
     }
 
     /**
@@ -107,6 +125,16 @@ class MetadataService
             $data = $file->getContents();
         }
         return 'data:' . $file->getMimeType() . ';base64,' . base64_encode($data);
+    }
+
+    public function getFilename(int $sysFileId): string
+    {
+        $file = $this->resourceFactory->getFileObject($sysFileId);
+        try {
+            return $file->getName();
+        } catch (\Throwable $e) {
+            return "";
+        }
     }
 
     /**
@@ -280,5 +308,128 @@ class MetadataService
             }
         }
         return $availableColumns;
+    }
+
+    public function generateAndSaveMetadataDirectly(FileInterface $file, int $fileMetadataUid, array $extConf): void
+    {
+        try {
+            $fieldsToGenerate = [];
+            if ((bool)$extConf['metadataAutogenerateTitle']) {
+                $fieldsToGenerate[] = 'title';
+            }
+            if ((bool)$extConf['metadataAutogenerateAlternative']) {
+                $fieldsToGenerate[] = 'alternative';
+            }
+
+            $fileContent = $this->getFileContent($file->getUid());
+
+            $folder = $file->getParentFolder();
+            $folderCombinedIdentifier = $folder->getCombinedIdentifier();
+
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction(
+                'files',
+                'metadata',
+                null,
+                $folderCombinedIdentifier
+            );
+            $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt(
+                'files',
+                'metadata',
+                [$folderCombinedIdentifier]
+            );
+
+            $textAiModel = $extConf['metadataAutogenerateModel'] ?? '';
+
+            $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, 0, true);
+            $firstLanguageKey = array_key_first($availableSourceLanguages);
+            $languageParts = explode('__', $firstLanguageKey);
+
+            $datamap = [
+                'sys_file_metadata' => [
+                    $fileMetadataUid => []
+                ]
+            ];
+
+            foreach ($fieldsToGenerate as $fieldName) {
+                try {
+                    $uuid = $this->uuidService->generateUuid();
+
+                    $answer = $this->sendRequestService->sendDataRequest(
+                        'createMetadata',
+                        [
+                            'uuid' => $uuid,
+                            'field_label' => $fieldName,
+                            'request_content' => $fileContent,
+                            'global_instructions' => $globalInstructions,
+                            'override_predefined_prompt' => $globalInstructionsOverride,
+                        ],
+                        '',
+                        $languageParts[0],
+                        [
+                            'text' => $textAiModel,
+                        ]
+                    );
+
+                    if ($answer->getType() === 'Error') {
+                        $this->logger->error('Error generating metadata for field ' . $fieldName . ' of file ' . $file->getUid() . ': ' . $answer->getResponseData()['message']);
+                        continue;
+                    }
+
+                    $metadataResult = $answer->getResponseData()['metadataResult'] ?? [];
+                    if (!empty($metadataResult) && is_array($metadataResult)) {
+                        $generatedValue = $metadataResult[0] ?? '';
+                        if (!empty($generatedValue)) {
+                            $datamap['sys_file_metadata'][$fileMetadataUid][$fieldName] = $generatedValue;
+                            $this->flashMessage(
+                                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.generatedField.message', [$fieldName]),
+                                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.generatedField.title'),
+                                ContextualFeedbackSeverity::OK
+                            );
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->logger->error('Error generating metadata for field ' . $fieldName . ' of file ' . $file->getUid() . ': ' . $e->getMessage());
+                    $this->flashMessage(
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingField.message', [$fieldName]),
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingField.title'),
+                        ContextualFeedbackSeverity::ERROR
+                    );
+                }
+            }
+
+            if (!empty($datamap['sys_file_metadata'][$fileMetadataUid])) {
+                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                $dataHandler->start($datamap, []);
+                $dataHandler->process_datamap();
+
+                if (count($dataHandler->errorLog) > 0) {
+                    $this->logger->error('Error saving metadata for file ' . $file->getUid() . ': ' . implode(', ', $dataHandler->errorLog));
+                    $this->flashMessage(
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorSavingFile.message', [$file->getName()]),
+                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorSavingFile.title'),
+                        ContextualFeedbackSeverity::ERROR
+                    );
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error in generateAndSaveMetadataDirectly for file ' . $file->getUid() . ': ' . $e->getMessage());
+            $this->flashMessage(
+                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message', [$file->getName()]),
+                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+        }
+    }
+
+    public function flashMessage(string $message, string $title, ContextualFeedbackSeverity $severity): void
+    {
+        $message = GeneralUtility::makeInstance(FlashMessage::class,
+            $message,
+            $title,
+            $severity,
+            true);
+        $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
+        $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
+        $messageQueue->addMessage($message);
     }
 }

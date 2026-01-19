@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Hooks;
 
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use Doctrine\DBAL\Exception;
@@ -31,6 +32,8 @@ class TranslationHook
 
     protected PagesRepository $pagesRepository;
 
+    protected GlobalInstructionService $globalInstructionService;
+
     public function __construct(
         TranslationService $translationService,
         SendRequestService $sendRequestService,
@@ -39,7 +42,8 @@ class TranslationHook
         GlossarService $glossarService,
         LoggerInterface $logger,
         MetadataService $metadataService,
-        PagesRepository $pagesRepository
+        PagesRepository $pagesRepository,
+        GlobalInstructionService  $globalInstructionService
     ) {
         $this->translationService = $translationService;
         $this->sendRequestService = $sendRequestService;
@@ -49,6 +53,7 @@ class TranslationHook
         $this->logger = $logger;
         $this->metadataService = $metadataService;
         $this->pagesRepository = $pagesRepository;
+        $this->globalInstructionService = $globalInstructionService;
     }
 
     /**
@@ -94,7 +99,7 @@ class TranslationHook
             return;
         }
 
-        $this->sendTranslationRequest($allTranslateFields, $aiSuiteConfig, $dataHandler);
+        $this->sendTranslationRequest($allTranslateFields, $aiSuiteConfig, $dataHandler, $pageId);
     }
 
     protected function processSingleRecordTranslation(DataHandler $dataHandler, array $aiSuiteConfig): void
@@ -105,6 +110,7 @@ class TranslationHook
         $destLangId = (int)$aiSuiteConfig['destLangId'];
         $translateAi = $aiSuiteConfig['translateAi'];
         $rootPageId = (int)$aiSuiteConfig['rootPageId'];
+        $pageId = (int)$aiSuiteConfig['pageId'];
 
         $request = $GLOBALS['TYPO3_REQUEST'];
         $translateFields = [];
@@ -128,6 +134,9 @@ class TranslationHook
 
         $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
         $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
+
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+
         $answer = $this->sendRequestService->sendDataRequest(
             'translate',
             [
@@ -138,6 +147,7 @@ class TranslationHook
                 'target_lang' => $destLangIsoCode,
                 'uuid' => $aiSuiteConfig['uuid'] ?? '',
                 'deepl_glossary_id' => $glossary['glossar_uuid'] ?? '',
+                'global_instructions' => $globalInstructions,
             ],
             '',
             strtoupper($destLangIsoCode),
@@ -211,7 +221,7 @@ class TranslationHook
         return $allTranslateFields;
     }
 
-    protected function sendTranslationRequest(array $allTranslateFields, array $aiSuiteConfig, DataHandler $dataHandler): void
+    protected function sendTranslationRequest(array $allTranslateFields, array $aiSuiteConfig, DataHandler $dataHandler, int $pageId): void
     {
         $translateFields = json_encode($allTranslateFields, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
         $elementsCount = $this->countTranslatableElements($allTranslateFields);
@@ -226,6 +236,8 @@ class TranslationHook
         $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
         $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
 
+        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+
         $answer = $this->sendRequestService->sendDataRequest(
             'translate',
             [
@@ -238,6 +250,7 @@ class TranslationHook
                 'deepl_glossary_id' => $glossary['glossar_uuid'] ?? '',
                 'whole_page_mode' => true,
                 'scope' => $aiSuiteConfig['scope'] ?? '',
+                'global_instructions' => $globalInstructions,
             ],
             '',
             strtoupper($destLangIsoCode),

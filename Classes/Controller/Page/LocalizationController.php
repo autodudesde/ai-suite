@@ -181,6 +181,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         $cmd['localization'][0]['aiSuite']['srcLangId'] = $srcLanguageId;
                         $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                         $cmd['localization'][0]['aiSuite']['rootPageId'] = $siteService->getSiteRootPageId($pageId);
+                        $cmd['localization'][0]['aiSuite']['pageId'] = $pageId;
                     }
                 } else {
                     $cmd['tt_content'][$currentUid] = [
@@ -194,13 +195,13 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);
-                        ;
                         $cmd['localization'][0]['aiSuite']['srcLangIsoCode'] = $siteService->getIsoCodeByLanguageId($srcLanguageId, $pageId);
                         $cmd['localization'][0]['aiSuite']['destLangIsoCode'] = $siteService->getIsoCodeByLanguageId($destLanguageId, $pageId);
                         $cmd['localization'][0]['aiSuite']['destLangId'] = $destLanguageId;
                         $cmd['localization'][0]['aiSuite']['srcLangId'] = $srcLanguageId;
                         $cmd['localization'][0]['aiSuite']['uuid'] = $params['uuid'];
                         $cmd['localization'][0]['aiSuite']['rootPageId'] = $siteService->getSiteRootPageId($pageId);
+                        $cmd['localization'][0]['aiSuite']['pageId'] = $pageId;
                     }
                 }
             }

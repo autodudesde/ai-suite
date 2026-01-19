@@ -136,4 +136,16 @@ class SysFileMetadataRepository extends AbstractRepository
             );
         return $queryBuilder->executeQuery()->fetchOne() > 0;
     }
+
+    public function findUidByFile(int $fileUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder
+            ->select('uid')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('file', $fileUid),
+            );
+        return $queryBuilder->executeQuery()->fetchFirstColumn();
+    }
 }

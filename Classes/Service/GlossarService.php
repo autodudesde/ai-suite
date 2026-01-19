@@ -189,7 +189,7 @@ class GlossarService implements SingletonInterface
         $hasGlossaryEntries = $this->hasGlossaryEntriesForLanguageCombination($sourceLanguageId, $targetLanguageId);
 
         if ($hasGlossaryEntries) {
-            if($textAiModel === 'DeepL') {
+            if($textAiModel === 'Deepl') {
                 $glossaries = $this->glossarRepository->findDeeplGlossaryUuidsBySourceAndTargetLanguage($sourceLanguageIso, $targetLanguageIso);
 
                 foreach ($glossaries as $glossary) {
@@ -201,7 +201,13 @@ class GlossarService implements SingletonInterface
                         strtoupper($targetLanguageIso),
                         $siteName
                     ];
-                    $availableGlossaries[$key] = $this->translationService->translate('AiSuite.generation.massAction.selectGlossaryLabel', $labelArguments);
+                    $label = $this->translationService->translate('AiSuite.generation.massAction.selectGlossaryLabel', $labelArguments);
+
+                    if (array_key_exists('external', $glossary) && $glossary['external']) {
+                        $label .= $this->translationService->translate('AiSuite.generation.massAction.selectGlossaryExternal');
+                    }
+
+                    $availableGlossaries[$key] = $label;
                 }
             } else {
                 $rootPageUids = $this->glossarRepository->findDistinctRootPageUidsWithGlossaryEntries();
