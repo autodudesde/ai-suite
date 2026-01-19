@@ -3,6 +3,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 
 
 class PagesTranslationPrepare {
@@ -11,6 +12,7 @@ class PagesTranslationPrepare {
         this.pagesTranslationPrepareExecuteFormEventListener();
         Generation.cancelGeneration();
         this.pageTranslationSelectionEventDelegation();
+        GlobalInstructions.metadataTooltipEventDelegation();
         this.parentUuid = '';
         this.init();
     }

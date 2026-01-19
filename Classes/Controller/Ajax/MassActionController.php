@@ -475,6 +475,7 @@ class MassActionController extends AbstractAjaxController
                     $sysFileUid = (int)$fileReferenceRow[0]["uid_local"];
                 }
                 $fileContent = $this->metadataService->getFileContent((int)$sysFileUid);
+                $filename = $this->metadataService->getFilename((int)$sysFileUid);
                 $fileSize = strlen($fileContent);
 
                 if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
@@ -525,7 +526,8 @@ class MassActionController extends AbstractAjaxController
                     'request_content' => $fileContent,
                     'uuid' => $uuid,
                     'global_instructions' => $globalInstructions,
-                    'override_predefined_prompt' => $globalInstructionsOverride
+                    'override_predefined_prompt' => $globalInstructionsOverride,
+                    'filename' => $filename,
                 ];
                 $fileSizeSumInBytes += $fileSize;
             } catch (\Exception $e) {
@@ -726,102 +728,23 @@ class MassActionController extends AbstractAjaxController
         $massActionData = $parsedBody['massActionFilesExecute'];
         $scope = 'fileMetadata';
 
-        $filesMetadataUidList = [];
-        $files = [];
         $massActionDataFiles = json_decode($massActionData['files'], true);
-        foreach ($massActionDataFiles as $sysFileMetaUid => $data) {
-            $filesMetadataUidList[] = $sysFileMetaUid;
-            $fileMetaData = $massActionDataFiles[$sysFileMetaUid];
-            foreach ($fileMetaData as $column => $value) {
-                if ($massActionData['column'] === $column || $massActionData['column'] === 'all') {
-                    $files[$sysFileMetaUid][$column] = $value;
-                }
-            }
-            $files[$sysFileMetaUid]['mode'] = $fileMetaData['mode'];
-        }
-        $metadataListFromRepo = [];
-        if (count($filesMetadataUidList) > 0) {
-            $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList($filesMetadataUidList);
-        }
         $languageParts = explode('__', $massActionData['sysLanguage']);
-        $payload = [];
-        $bulkPayload = [];
-        $failedFilesMetadata = [];
-        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
-        $fileSizeSumInBytes = 0;
-        foreach ($files as $sysFileMetaUid => $columns) {
-            foreach ($columns as $column => $value) {
-                try {
-                    if ($column === 'mode') {
-                        continue;
-                    }
-                    $fileUid = (int)$metadataListFromRepo[$sysFileMetaUid]['file'];
-                    $defaultSysFileMetaUid = (int)$sysFileMetaUid;
-                    $targetLanguageId = (int)$languageParts[1];
 
-                    $fileContent = $this->metadataService->getFileContent($fileUid);
-                    $fileSize = strlen($fileContent);
+        $requestService = GeneralUtility::makeInstance(SendRequestService::class);
+        $result = $this->massActionService->processFilelistFilesForMetadataGeneration(
+            $massActionData,
+            $massActionDataFiles,
+            $languageParts,
+            $scope,
+            $requestService
+        );
 
-                    if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                        $requestService = GeneralUtility::makeInstance(SendRequestService::class);
-                        $answer = $requestService->sendDataRequest(
-                            'createMassAction',
-                            [
-                                'uuid' => $massActionData['parentUuid'],
-                                'payload' => $payload,
-                                'scope' => $scope,
-                                'type' => 'metadata'
-                            ],
-                            '',
-                            $languageParts[0],
-                            [
-                                'text' => $massActionData['textAiModel'],
-                            ]
-                        );
+        $payload = $result['payload'];
+        $bulkPayload = $result['bulkPayload'];
+        $failedFilesMetadata = $result['failedFilesMetadata'];
 
-                        if ($answer->getType() === 'Error') {
-                            $this->logError($answer->getResponseData()['message'], $response, 503);
-                            return $response;
-                        }
-                        $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
-                        $payload = [];
-                        $bulkPayload = [];
-                        $fileSizeSumInBytes = 0;
-                    }
-
-                    $uuid = $this->uuidService->generateUuid();
-
-                    $bulkPayload[] = new BackgroundTask(
-                        $scope,
-                        'metadata',
-                        $massActionData['parentUuid'],
-                        $uuid,
-                        $column,
-                        'sys_file_metadata',
-                        'uid',
-                        $defaultSysFileMetaUid,
-                        $targetLanguageId,
-                        $columns['mode']
-                    );
-                    $folderCombinedIdentifier = $this->massActionService->getFolderCombinedIdentifier($fileUid);
-                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
-                    $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folderCombinedIdentifier]);
-                    $payload[] = [
-                        'field_label' => $column,
-                        'request_content' => $fileContent,
-                        'uuid' => $uuid,
-                        'global_instructions' => $globalInstructions,
-                        'override_predefined_prompt' => $globalInstructionsOverride
-                    ];
-                    $fileSizeSumInBytes += $fileSize;
-                } catch (\Exception $e) {
-                    $this->logger->error('Error while fetching file content for file ' . $fileUid . ' with sys file metadata uid ' . $sysFileMetaUid . ': ' . $e->getMessage());
-                    $failedFilesMetadata[] = $fileUid;
-                }
-            }
-        }
         if (count($payload) > 0) {
-            $requestService = GeneralUtility::makeInstance(SendRequestService::class);
             $answer = $requestService->sendDataRequest(
                 'createMassAction',
                 [
@@ -968,6 +891,8 @@ class MassActionController extends AbstractAjaxController
                 }, []);
             }
 
+            $params['globalInstructions'] = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+
             $output = $this->getContentFromTemplate(
                 $request,
                 'PagesTranslationPrepareExecute',
@@ -1039,6 +964,7 @@ class MassActionController extends AbstractAjaxController
                     (int)$targetLanguageParts[1],
                     ''
                 );
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageUid);
                 $payload[] = [
                     'source_page_uid' => $pageUid,
                     'source_language' => $sourceLanguageParts[0],
@@ -1046,6 +972,7 @@ class MassActionController extends AbstractAjaxController
                     'translation_scope' => $massActionData['translationScope'],
                     'translatable_content' => $translatableContent,
                     'uuid' => $uuid,
+                    'global_instructions' => $globalInstructions,
                 ];
             } catch (\Exception $e) {
                 $this->logger->error('Error while collecting translatable content for page ' . $pageUid . ': ' . $e->getMessage());
@@ -1156,7 +1083,7 @@ class MassActionController extends AbstractAjaxController
                         $targetLanguageId,
                         $columns['mode']
                     );
-                    // TODO:
+
                     $folderCombinedIdentifier = $this->massActionService->getFolderCombinedIdentifier($fileUid);
                     $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
                     $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folderCombinedIdentifier]);

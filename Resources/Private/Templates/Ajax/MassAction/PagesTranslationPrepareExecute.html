@@ -11,18 +11,19 @@
             <div class="panel-body">
                 <f:if condition="{pages -> f:count()} > 0">
                     <f:then>
-                        <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textTranslationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-
-                <label class="mb-3 d-flex gap-2 fw-bold">
-                    <input type="checkbox" id="togglePageTranslationSelection" value="1" />
-                    <span>
-                        <f:translate key="AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
-                    </span>
-                </label>
-
-                        <div id="sortable-pages-translation">
-                            <f:render partial="MassAction/PageTranslationTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, translationScope: translationScope}" />
-                        </div>
+                    <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textTranslationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                    <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
+                        <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
+                    </label>
+                    <label class="mb-3 d-flex gap-2 fw-bold">
+                        <input type="checkbox" id="togglePageTranslationSelection" value="1" />
+                        <span>
+                            <f:translate key="AiSuite.module.massAction.toggleAll" extensionName="ai_suite"/>
+                        </span>
+                    </label>
+                    <div id="sortable-pages-translation">
+                        <f:render partial="MassAction/PageTranslationTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, translationScope: translationScope}" />
+                    </div>
 
                 <div class="d-flex">
                     <button class="btn btn-primary mt-4" type="submit" id="pagesTranslationExecuteFormSubmitBtn">

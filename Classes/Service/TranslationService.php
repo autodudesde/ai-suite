@@ -232,6 +232,7 @@ class TranslationService
         $params['cmd']['localization'][0]['aiSuite']['rootPageId'] = $this->siteService->getSiteRootPageId($pageId);
         $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
         $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
+        $params['cmd']['localization'][0]['aiSuite']['pageId'] = $pageId;
         $href = (string)$this->uriBuilder->buildUriFromRoute('tce_db', $params);
         $title = $this->translate('aiSuite.translateRecord');
 

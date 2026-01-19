@@ -19,6 +19,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
+use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
@@ -35,6 +38,8 @@ class MetadataController extends AbstractAjaxController
 
     protected array $metadataAdditionalFields = [];
 
+    protected ExtensionConfiguration $extensionConfiguration;
+
     public function __construct(
         BackendUserService $backendUserService,
         SendRequestService $requestService,
@@ -49,7 +54,8 @@ class MetadataController extends AbstractAjaxController
         EventDispatcher $eventDispatcher,
         MetadataService $metadataService,
         PagesRepository $pagesRepository,
-        SiteFinder $siteFinder
+        SiteFinder $siteFinder,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         parent::__construct(
             $backendUserService,
@@ -62,11 +68,12 @@ class MetadataController extends AbstractAjaxController
             $translationService,
             $viewFactory,
             $logger,
-            $eventDispatcher
+            $eventDispatcher,
         );
         $this->metadataService = $metadataService;
         $this->pagesRepository = $pagesRepository;
         $this->siteFinder = $siteFinder;
+        $this->extensionConfiguration = $extensionConfiguration;
         $this->metadataAdditionalFields = [
             'seo_title' => [
                 'og_title' => $this->translationService->translate('aiSuite.modal.metadata.useFor', ['Open Graph Title']),
@@ -157,18 +164,24 @@ class MetadataController extends AbstractAjaxController
     /**
      * @throws SiteNotFoundException
      * @throws AspectNotFoundException
+     * @throws ExtensionConfigurationExtensionNotConfiguredException
+     * @throws ExtensionConfigurationPathDoesNotExistException
      */
     public function getMetadataWizardSlideTwoAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
         $params = $request->getParsedBody();
         $pageUid = $params['id'] ?? 0;
+        $filename = "";
         if ($params['context'] === 'pages') {
             $globalInstructions = $this->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', (int)$pageUid);
             $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]);
         } else {
             $globalInstructions = $this->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', null, $params['targetFolder'] ?? null);
             $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$params['targetFolder'] ?? '']);
+
+            $sysFileId = $params['sysFileId'] ? (int)$params['sysFileId'] : 0;
+            $filename = $this->metadataService->getFileName($sysFileId);
         }
 
         $answer = $this->requestService->sendDataRequest(
@@ -179,6 +192,7 @@ class MetadataController extends AbstractAjaxController
                 'request_content' => $this->metadataService->fetchContent($request),
                 'global_instructions' => $globalInstructions,
                 'override_predefined_prompt' => $globalInstructionsOverride,
+                'filename' => $filename,
             ],
             '',
             $request->getParsedBody()['langIsoCode'],
@@ -194,9 +208,12 @@ class MetadataController extends AbstractAjaxController
         if ($request->getParsedBody()['table'] === 'sys_file_metadata' && $request->getParsedBody()['fieldName'] === 'description') {
             $additionalFields = [];
         }
+
+        $extConf = $this->extensionConfiguration->get('ai_suite');
+        $suggestionCount = (int)$extConf['metadataSuggestionCount'];
         $params = [
             'textAiModel' => $request->getParsedBody()['textAiModel'],
-            'metadataSuggestions' => $answer->getResponseData()['metadataResult'],
+            'metadataSuggestions' => array_slice($answer->getResponseData()['metadataResult'], 0, $suggestionCount),
             'fieldName' => $request->getParsedBody()['fieldName'] ?? '',
             'table' => $request->getParsedBody()['table'] ?? '',
             'id' => $pageUid,

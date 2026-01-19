@@ -78,5 +78,6 @@ CREATE TABLE tx_aisuite_domain_model_deepl (
     source_lang varchar(10) DEFAULT '' NOT NULL,
     target_lang varchar(10) DEFAULT '' NOT NULL,
     default_language_id int(11) DEFAULT 0,
-    target_language_id int(11) DEFAULT 0
+    target_language_id int(11) DEFAULT 0,
+    external tinyint(3) DEFAULT '0' NOT NULL
 );

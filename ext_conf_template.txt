@@ -14,6 +14,8 @@ updateDeeplGlossaries = 1
 easyLanguageLibrary = ChatGPT
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:disableTranslationFunctionality
 disableTranslationFunctionality = 0
+# cat=Metadata; type=options[1=1,2=2,3=3,4=4,5=5]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataSuggestionCount
+metadataSuggestionCount = 5
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
 openAiApiKey =
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:anthropicApiKey
@@ -38,4 +40,12 @@ basicAuth.enable = 0
 basicAuth.user =
 # cat=HTTP Basic Auth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthPass
 basicAuth.pass =
+# cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateTitle
+metadataAutogenerateTitle =
+# cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateAlternative
+metadataAutogenerateAlternative =
+# cat=Metadata; type=options[Vision=Vision]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateModel
+metadataAutogenerateModel = Vision
+# cat=Metadata; type=options[Add generated suggestions to TaskEngine=taskEngine,Save (first suggestion) directly=saveDirectly]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateApproach
+metadataAutogenerateApproach = taskEngine
 
