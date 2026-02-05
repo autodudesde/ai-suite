@@ -8,6 +8,9 @@
             <trans-unit id="mlang_labels_tablabel">
                 <source>AI Suite Dashboard</source>
             </trans-unit>
+            <trans-unit id="mlang_labels_tabdescr">
+                <source>The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
