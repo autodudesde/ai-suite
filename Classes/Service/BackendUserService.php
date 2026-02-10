@@ -200,4 +200,9 @@ class BackendUserService implements SingletonInterface
     {
         return $GLOBALS['BE_USER'];
     }
+
+    public function hasBackendUser(): bool
+    {
+        return ($GLOBALS['BE_USER'] ?? null) instanceof BackendUserAuthentication;
+    }
 }
