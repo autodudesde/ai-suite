@@ -198,7 +198,8 @@ class Overview {
                 let accordionBackgroundTasksElement = ev.target.closest('.background-tasks-wrapper');
                 let uuid = ev.target.dataset.uuid;
                 let column = ev.target.dataset.column;
-                let inputValue = document.querySelector('.panel[data-uuid="'+uuid+'"] .panel-body[data-column="'+column+'"] input.metadata-value').value;
+                let inputElement = document.querySelector('.panel[data-uuid="'+uuid+'"] .panel-body[data-column="'+column+'"] .metadata-value');
+                let inputValue = inputElement ? inputElement.value : '';
                 if(inputValue.trim() === '') {
                     Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noMetadataInputTitle'], TYPO3.lang['aiSuite.module.notification.modal.noMetadataInputMessage']);
                     return;

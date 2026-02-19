@@ -55,12 +55,23 @@
                                         )
                                     </h6>
                                     <div class="form-group">
-                                        <input
-                                            type="text"
-                                            class="form-control mb-2 file-metadata-field-readonly"
-                                            value="{task.sourceColumnValue}"
-                                            readonly="readonly"
-                                        />
+                                        <f:if condition="{column} == 'description'">
+                                            <f:then>
+                                                <textarea
+                                                    class="form-control mb-2 file-metadata-field-readonly"
+                                                    readonly="readonly"
+                                                    rows="3"
+                                                >{task.sourceColumnValue}</textarea>
+                                            </f:then>
+                                            <f:else>
+                                                <input
+                                                    type="text"
+                                                    class="form-control mb-2 file-metadata-field-readonly"
+                                                    value="{task.sourceColumnValue}"
+                                                    readonly="readonly"
+                                                />
+                                            </f:else>
+                                        </f:if>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -76,14 +87,27 @@
                                         )
                                     </h6>
                                     <div class="form-group">
-                                        <input
-                                            type="text"
-                                            class="form-control mb-2 metadata-value"
-                                            data-sys-file-metadata-uid="{task.table_uid}"
-                                            data-column="{column}"
-                                            data-uuid="{task.uuid}"
-                                            value="{task.translationSuggestions.0}"
-                                        />
+                                        <f:if condition="{column} == 'description'">
+                                            <f:then>
+                                                <textarea
+                                                    class="form-control mb-2 metadata-value"
+                                                    data-sys-file-metadata-uid="{task.table_uid}"
+                                                    data-column="{column}"
+                                                    data-uuid="{task.uuid}"
+                                                    rows="3"
+                                                >{task.translationSuggestions.0}</textarea>
+                                            </f:then>
+                                            <f:else>
+                                                <input
+                                                    type="text"
+                                                    class="form-control mb-2 metadata-value"
+                                                    data-sys-file-metadata-uid="{task.table_uid}"
+                                                    data-column="{column}"
+                                                    data-uuid="{task.uuid}"
+                                                    value="{task.translationSuggestions.0}"
+                                                />
+                                            </f:else>
+                                        </f:if>
                                     </div>
                                 </div>
                             </div>

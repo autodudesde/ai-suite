@@ -23,11 +23,14 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
     public const ACTION_LOCALIZE_GOOGLE_TRANSLATE = 'localizeGoogleTranslate';
     public const ACTION_LOCALIZE_DEEPL = 'localizeDeepl';
     public const ACTION_LOCALIZE_AISUITETEXTULTIMATE = 'localizeAiSuiteTextUltimate';
+
+    public const ACTION_LOCALIZE_MITTWALDMINISTRAL14B = 'localizeMittwaldMinistral14B';
     public const ACTION_COPY_OPEN_AI = 'copyFromLanguageChatGPT';
     public const ACTION_COPY_ANTHROPIC = 'copyFromLanguageAnthropic';
     public const ACTION_COPY_GOOGLE_TRANSLATE = 'copyFromLanguageGoogleTranslate';
     public const ACTION_COPY_DEEPL = 'copyFromLanguageDeepl';
     public const ACTION_COPY_AISUITETEXTULTIMATE = 'copyFromLanguageAiSuiteTextUltimate';
+    public const ACTION_COPY_MITTWALDMINISTRAL14B = 'copyFromLanguageMittwaldMinistral14B';
 
     // Whole page translation actions
     public const ACTION_LOCALIZE_WHOLE_PAGE_OPEN_AI = 'localizeWholePageChatGPT';
@@ -35,6 +38,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
     public const ACTION_LOCALIZE_WHOLE_PAGE_GOOGLE_TRANSLATE = 'localizeWholePageGoogleTranslate';
     public const ACTION_LOCALIZE_WHOLE_PAGE_DEEPL = 'localizeWholePageDeepl';
     public const ACTION_LOCALIZE_WHOLE_PAGE_AISUITETEXTULTIMATE = 'localizeWholePageAiSuiteTextUltimate';
+    public const ACTION_LOCALIZE_WHOLE_PAGE_MITTWALDMINISTRAL14B = 'localizeWholePageMittwaldMinistral14B';
 
     protected MetadataService $metadataService;
     protected TranslationService $translationService;
@@ -110,16 +114,19 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             && $params['action'] !== static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
             && $params['action'] !== static::ACTION_LOCALIZE_DEEPL
             && $params['action'] !== static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
+            && $params['action'] !== static::ACTION_LOCALIZE_MITTWALDMINISTRAL14B
             && $params['action'] !== static::ACTION_COPY_OPEN_AI
             && $params['action'] !== static::ACTION_COPY_ANTHROPIC
             && $params['action'] !== static::ACTION_COPY_GOOGLE_TRANSLATE
             && $params['action'] !== static::ACTION_COPY_DEEPL
             && $params['action'] !== static::ACTION_COPY_AISUITETEXTULTIMATE
+            && $params['action'] !== static::ACTION_COPY_MITTWALDMINISTRAL14B
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_OPEN_AI
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_ANTHROPIC
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_GOOGLE_TRANSLATE
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_DEEPL
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_AISUITETEXTULTIMATE
+            && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_MITTWALDMINISTRAL14B
         ) {
             $response = new Response('php://temp', 400, ['Content-Type' => 'application/json; charset=utf-8']);
             $response->getBody()->write('Invalid action "' . $params['action'] . '" called.');
@@ -162,6 +169,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                     || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                     || $params['action'] === static::ACTION_LOCALIZE_DEEPL
                     || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
+                    || $params['action'] === static::ACTION_LOCALIZE_MITTWALDMINISTRAL14B
                 ) {
                     $cmd['tt_content'][$currentUid] = [
                         'localize' => $destLanguageId,
@@ -172,6 +180,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_LOCALIZE_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_LOCALIZE_DEEPL
                         || $params['action'] === static::ACTION_LOCALIZE_AISUITETEXTULTIMATE
+                        || $params['action'] === static::ACTION_LOCALIZE_MITTWALDMINISTRAL14B
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('localize', '', $params['action']);
@@ -192,6 +201,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
                         || $params['action'] === static::ACTION_COPY_GOOGLE_TRANSLATE
                         || $params['action'] === static::ACTION_COPY_DEEPL
                         || $params['action'] === static::ACTION_COPY_AISUITETEXTULTIMATE
+                        || $params['action'] === static::ACTION_COPY_MITTWALDMINISTRAL14B
                     ) {
                         $siteService = GeneralUtility::makeInstance(SiteService::class);
                         $cmd['localization'][0]['aiSuite']['translateAi'] = str_replace('copyFromLanguage', '', $params['action']);
@@ -232,6 +242,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             self::ACTION_LOCALIZE_WHOLE_PAGE_GOOGLE_TRANSLATE,
             self::ACTION_LOCALIZE_WHOLE_PAGE_DEEPL,
             self::ACTION_LOCALIZE_WHOLE_PAGE_AISUITETEXTULTIMATE,
+            self::ACTION_LOCALIZE_WHOLE_PAGE_MITTWALDMINISTRAL14B,
         ]);
     }
 

@@ -138,14 +138,14 @@ class PagesController extends AbstractBackendController
             $parsedBody = $this->request->getParsedBody();
             $textAi = isset($parsedBody['libraries']['textGenerationLibrary']) ? $parsedBody['libraries']['textGenerationLibrary'] : '';
             $paidRequestsAvailable = isset($parsedBody['paidRequestsAvailable']) ? $parsedBody['paidRequestsAvailable'] === '1' : false;
-            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
+            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', (int)$parsedBody['startStructureFromPid']);
             $prompt = $globalInstructions . "\n" . ($this->request->getParsedBody()['plainPrompt'] ?? '');
             if ((int)$parsedBody['startStructureFromPid'] === -1) {
                 $langIsoCode = $parsedBody['sysLanguage'];
             } else {
                 $langIsoCode = $this->siteService->getIsoCodeByLanguageId(0, (int)$parsedBody['startStructureFromPid']);
             }
-            $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
+            //$globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
             $answer = $this->requestService->sendDataRequest(
                 'pageTree',
                 [
@@ -198,7 +198,7 @@ class PagesController extends AbstractBackendController
         try {
             $selectedPageTreeContent = $this->request->getParsedBody()['selectedPageTreeContent'] ?? '';
             $startStructureFromPid = $this->request->getParsedBody()['startStructureFromPid'] ?? 0;
-            $this->pageStructureFactory->createFromArray(json_decode($selectedPageTreeContent, true), $startStructureFromPid);
+            $this->pageStructureFactory->createFromArray(json_decode($selectedPageTreeContent, true), (int)$startStructureFromPid);
             BackendUtility::setUpdateSignal('updatePageTree');
             $this->view->addFlashMessage(
                 $this->translationService->translate('aiSuite.module.pagetreeGenerationSuccessful.title'),
@@ -219,7 +219,7 @@ class PagesController extends AbstractBackendController
     private function getPagesInWebMount(): array
     {
         $pagesSelect = [];
-        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+        if ($this->backendUserService->getBackendUser()?->isAdmin() ?? false) {
             $pagesSelect = [
                 -1 => $this->translationService->translate('aiSuite.module.pages.newRootPage')
             ];

@@ -114,7 +114,9 @@ class SendRequestService
         );
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
+            if(!empty($this->extConf['aiSuiteApiKey'])) {
+                $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
+            }
             return $this->buildErrorAnswer('<div class="alert alert-danger" role="alert">' . $this->translationService->translate('aiSuite.module.errorFetchingLibraries.title') . '</div>');
         }
         return $librariesAnswer;

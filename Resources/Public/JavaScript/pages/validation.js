@@ -15,7 +15,7 @@ class Validation {
         PromptTemplate.loadPromptTemplates('plainPrompt');
         Generation.languageSelectionEventListener();
         this.addGlobalInstructionEventListener().then();
-        GlobalInstructions.initializeAllModals();
+        GlobalInstructions.initializeAllTooltips();
     }
 
     addEventListenerGeneratePageStructure() {

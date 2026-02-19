@@ -69,7 +69,7 @@ class BackgroundTaskService
             'twitter_description' => 0
         ];
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
-            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+            if (!($this->backendUserService->getBackendUser()?->isInWebMount($foundBackgroundTask['table_uid']) ?? false)) {
                 continue;
             }
             try {
@@ -101,6 +101,7 @@ class BackgroundTaskService
         $counter = [
             'title' => 0,
             'alternative' => 0,
+            'description' => 0,
         ];
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
             if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
@@ -135,12 +136,14 @@ class BackgroundTaskService
         $counter = [
             'title' => 0,
             'alternative' => 0,
+            'description' => 0,
         ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
             if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
                 if ($foundBackgroundTask['mode'] === 'NEW') {
                     $foundBackgroundTask['title'] = '';
                     $foundBackgroundTask['alternative'] = '';
+                    $foundBackgroundTask['description'] = '';
                     $foundBackgroundTask['columnValue'] = '';
                 } else {
                     $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
@@ -345,7 +348,7 @@ class BackgroundTaskService
     {
         $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
-            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+            if (!($this->backendUserService->getBackendUser()?->isInWebMount($foundBackgroundTask['table_uid']) ?? false)) {
                 continue;
             }
 
@@ -387,7 +390,7 @@ class BackgroundTaskService
     {
         $foundBackgroundTasksPageTranslation = $this->backgroundTaskRepository->findAllPageTranslationBackgroundTasks();
         foreach ($foundBackgroundTasksPageTranslation as $foundBackgroundTask) {
-            if (!$this->backendUserService->getBackendUser()->isInWebMount($foundBackgroundTask['table_uid'])) {
+            if (!($this->backendUserService->getBackendUser()?->isInWebMount($foundBackgroundTask['table_uid']) ?? false)) {
                 continue;
             }
 
@@ -406,7 +409,7 @@ class BackgroundTaskService
 
     public function generateTranslationPageButtons(ServerRequestInterface $request): string
     {
-        if (!$this->backendUserService->getBackendUser()->check('custom_options', 'tx_aisuite_features:enable_translation_whole_page')) {
+        if (!($this->backendUserService->getBackendUser()?->check('custom_options', 'tx_aisuite_features:enable_translation_whole_page') ?? false)) {
             return '';
         }
 
@@ -415,7 +418,7 @@ class BackgroundTaskService
             return '';
         }
 
-        if (!$this->backendUserService->getBackendUser()->isInWebMount($pageId)) {
+        if (!($this->backendUserService->getBackendUser()?->isInWebMount($pageId) ?? false)) {
             return '';
         }
 

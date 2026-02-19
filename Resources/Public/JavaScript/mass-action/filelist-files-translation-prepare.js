@@ -41,7 +41,7 @@ class FilelistFilesTranslationPrepare {
                         let selectedFiles = {};
                         checkboxes.forEach(function(checkbox) {
                             if(checkbox.checked) {
-                                let inputValues = document.querySelectorAll('input[name^="filesSourceContent[' + checkbox.value + ']"]');
+                                let inputValues = document.querySelectorAll('input[name^="filesSourceContent[' + checkbox.value + ']"], textarea[name^="filesSourceContent[' + checkbox.value + ']"]');
                                 inputValues.forEach(function(input) {
                                     let column = input.name.replace('filesSourceContent[' + checkbox.value + '][', '').replace(']', '');
                                     let obj = {};
@@ -325,12 +325,19 @@ class FilelistFilesTranslationPrepare {
             if (this.hasValidFieldContent(listItem, 'alternative')) {
                 count++;
             }
+            if (this.hasValidFieldContent(listItem, 'description')) {
+                count++;
+            }
         } else if (column === 'title') {
             if (this.hasValidFieldContent(listItem, 'title', false)) {
                 count++;
             }
         } else if (column === 'alternative') {
             if (this.hasValidFieldContent(listItem, 'alternative', false)) {
+                count++;
+            }
+        } else if (column === 'description') {
+            if (this.hasValidFieldContent(listItem, 'description', false)) {
                 count++;
             }
         }

@@ -21,6 +21,7 @@ class Creation {
         this.handleCheckboxChange('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]', '.text-generation-library', this.calculateRequestAmount);
         GlobalInstructions.initializeAllTooltips();
         this.intervalId = null;
+        this.updateSubmitButtonState();
     }
 
     hideShowImageLibraries() {
@@ -140,6 +141,20 @@ class Creation {
             marker = TYPO3.lang['aiSuite.module.oneCredit'];
         }
         document.querySelector('div[data-module-id="aiSuite"] .calculated-requests').textContent = '(' + calculatedRequests + ' ' + marker + ')';
+    }
+
+    updateSubmitButtonState() {
+        const submitButton = document.querySelector('div[data-module-id="aiSuite"] form.with-spinner button[type="submit"]');
+        if (!submitButton) {
+            return;
+        }
+
+        const libraries = document.querySelectorAll('.library input[type="radio"]');
+
+        if (libraries.length === 0) {
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.75';
+        }
     }
 }
 export default new Creation();

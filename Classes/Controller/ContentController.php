@@ -176,10 +176,10 @@ class ContentController extends AbstractBackendController
         $this->view->assignMultiple([
             'content' => $content,
             'table' => $table,
-            'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'], $params['textGenerationLibraryKey'] ?? ''),
-            'imageGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'], $params['imageGenerationLibraryKey'] ?? ''),
+            'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [], $params['textGenerationLibraryKey'] ?? ''),
+            'imageGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'] ?? [], $params['imageGenerationLibraryKey'] ?? ''),
             'additionalImageSettings' => $this->libraryService->prepareAdditionalImageSettings($params['additionalImageSettings'] ?? ''),
-            'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
+            'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'] ?? false,
             'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates(
                 count($defVals) > 0 ? 'contentElement' : 'newsRecord',
                 count($defVals) > 0 ? $params['defVals'][$table]['CType'] : '',

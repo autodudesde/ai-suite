@@ -4,7 +4,6 @@ namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
-use AutoDudes\AiSuite\Service\FileListService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
@@ -26,7 +25,6 @@ class ModifyButtonBarEventListener
     protected IconFactory $iconFactory;
     protected UriBuilder $uriBuilder;
     protected BackendUserService $backendUserService;
-    protected FileListService $fileListService;
     protected SiteService $siteService;
     protected UuidService $uuidService;
     protected TranslationService $translationService;
@@ -42,7 +40,6 @@ class ModifyButtonBarEventListener
         IconFactory $iconFactory,
         UriBuilder $uriBuilder,
         BackendUserService $backendUserService,
-        FileListService $fileListService,
         SiteService $siteService,
         UuidService $uuidService,
         TranslationService $translationService,
@@ -54,7 +51,6 @@ class ModifyButtonBarEventListener
         $this->iconFactory = $iconFactory;
         $this->uriBuilder = $uriBuilder;
         $this->backendUserService = $backendUserService;
-        $this->fileListService = $fileListService;
         $this->siteService = $siteService;
         $this->uuidService = $uuidService;
         $this->translationService = $translationService;

@@ -32,4 +32,7 @@ final class ModelTypeEnumeration
     public const DEEPL = 'deeplApiKey,deeplApiMode';
     public const DEEPLGLOSSARYMANAGER = 'deeplApiKey,deeplApiMode';
     public const AISUITETEXTULTIMATE = '';
+
+    public const MITTWALDMINISTRAL14B = 'mittwaldAiModelHubApiKey';
+    public const MITTWALDMINISTRAL14BVISION = 'mittwaldAiModelHubApiKey';
 }

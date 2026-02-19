@@ -47,14 +47,27 @@
                 </h3>
 
                 <div class="form-group">
-                    <input
-                        type="text"
-                        class="form-control mb-4 metadata-value"
-                        data-sys-file-reference-uid="{task.table_uid}"
-                        data-column="{column}"
-                        data-uuid="{task.uuid}"
-                        value="{task.columnValue}"
-                    />
+                    <f:if condition="{column} == 'description'">
+                        <f:then>
+                            <textarea
+                                class="form-control mb-4 metadata-value"
+                                data-sys-file-reference-uid="{task.table_uid}"
+                                data-column="{column}"
+                                data-uuid="{task.uuid}"
+                                rows="3"
+                            >{task.columnValue}</textarea>
+                        </f:then>
+                        <f:else>
+                            <input
+                                type="text"
+                                class="form-control mb-4 metadata-value"
+                                data-sys-file-reference-uid="{task.table_uid}"
+                                data-column="{column}"
+                                data-uuid="{task.uuid}"
+                                value="{task.columnValue}"
+                            />
+                        </f:else>
+                    </f:if>
                 </div>
             </div>
         </div>

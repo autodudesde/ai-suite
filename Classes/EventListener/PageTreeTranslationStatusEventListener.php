@@ -41,7 +41,7 @@ class PageTreeTranslationStatusEventListener
             if (!array_key_exists('translation', $this->backgroundTasks)) {
                 continue;
             }
-            if (!$this->backendUserService->getBackendUser()->isInWebMount($pageUid)) {
+            if (!($this->backendUserService->getBackendUser()?->isInWebMount($pageUid) ?? false)) {
                 continue;
             }
             $this->addTranslationStatusIndicators($item, $pageUid);

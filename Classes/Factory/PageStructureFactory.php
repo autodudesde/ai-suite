@@ -38,16 +38,15 @@ class PageStructureFactory
         $this->pagePermissionAssembler = $pagePermissionAssembler;
     }
 
-    public function createFromArray(array $data, string $parentPageUid): int
+    public function createFromArray(array $data, int $parentPageUid): int
     {
         $newPagesCount = 0;
-        $parentPageUid = (int)$parentPageUid;
         if ($parentPageUid === -1) {
             $parentPageUid = 0;
         }
         foreach ($data as $pageData) {
-            $beUserUid = $this->backendUserService->getBackendUser()->user['uid'];
-            $beUserGroup = $this->backendUserService->getBackendUser()->firstMainGroup;
+            $beUserUid = $this->backendUserService->getBackendUser()?->user['uid'] ?? 0;
+            $beUserGroup = $this->backendUserService->getBackendUser()?->firstMainGroup ?? 0;
             $permissions = $this->pagePermissionAssembler->applyDefaults([], $parentPageUid, $beUserUid, $beUserGroup);
             $page = Pages::createEmpty();
             $page

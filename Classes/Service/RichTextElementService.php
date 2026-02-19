@@ -294,7 +294,7 @@ class RichTextElementService implements SingletonInterface
         if (empty($configuration['language']) ||
             (is_array($configuration['language']) && empty($configuration['language']['ui']))
         ) {
-            $userLang = (string)($this->backendUserService->getBackendUser()->user['lang'] ?: 'en');
+            $userLang = (string)($this->backendUserService->getBackendUser()?->user['lang'] ?: 'en');
             $configuration['language']['ui'] = $userLang === 'default' ? 'en' : $userLang;
         } elseif (!is_array($configuration['language'])) {
             $configuration['language'] = [

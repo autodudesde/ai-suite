@@ -236,7 +236,7 @@ class MetadataService
     public function getFileMetadataColumns(): array
     {
         $metadataColumns = [
-            'title', 'alternative'
+            'title', 'alternative', 'description'
         ];
         return $this->getAvailableColumns($metadataColumns, 'sys_file_reference');
     }
@@ -269,7 +269,7 @@ class MetadataService
 
     public function hasFilePermissions(int $fileUid): bool
     {
-        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+        if ($this->backendUserService->getBackendUser()?->isAdmin() ?? false) {
             return true;
         }
 
@@ -278,7 +278,7 @@ class MetadataService
 
             return $file->isIndexed()
                 && $file->checkActionPermission('editMeta')
-                && $this->backendUserService->getBackendUser()->check('tables_modify', 'sys_file_metadata');
+                && ($this->backendUserService->getBackendUser()?->check('tables_modify', 'sys_file_metadata') ?? false);
         } catch (\Exception $e) {
             return false;
         }
@@ -303,7 +303,7 @@ class MetadataService
     {
         $availableColumns = [];
         foreach ($columns as $columnName) {
-            if ($this->backendUserService->getBackendUser()->check('non_exclude_fields', $xlfPrefix . ':' . $columnName)) {
+            if ($this->backendUserService->getBackendUser()?->check('non_exclude_fields', $xlfPrefix . ':' . $columnName) ?? false) {
                 $availableColumns[$columnName] = $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.' . $xlfPrefix . '.' . $columnName);
             }
         }

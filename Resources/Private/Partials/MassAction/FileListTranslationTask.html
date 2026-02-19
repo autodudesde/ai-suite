@@ -30,7 +30,7 @@
                     <f:variable name="hasSourceContent">
                         <f:if condition="{activeColumn} == 'all'">
                             <f:then>
-                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative}', then: '1', else: '0')}
+                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative} || {metadata.sourceMetadata.description}', then: '1', else: '0')}
                             </f:then>
                             <f:else if="{activeColumn} == 'title'">
                                 {f:if(condition: '{metadata.sourceMetadata.title}', then: '1', else: '0')}
@@ -38,8 +38,11 @@
                             <f:else if="{activeColumn} == 'alternative'">
                                 {f:if(condition: '{metadata.sourceMetadata.alternative}', then: '1', else: '0')}
                             </f:else>
+                            <f:else if="{activeColumn} == 'description'">
+                                {f:if(condition: '{metadata.sourceMetadata.description}', then: '1', else: '0')}
+                            </f:else>
                             <f:else>
-                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative}', then: '1', else: '0')}
+                                {f:if(condition: '{metadata.sourceMetadata.title} || {metadata.sourceMetadata.alternative} || {metadata.sourceMetadata.description}', then: '1', else: '0')}
                             </f:else>
                         </f:if>
                     </f:variable>
@@ -119,6 +122,18 @@
                                                         />
                                                     </div>
                                                 </f:if>
+                                                <f:if condition="{metadata.sourceMetadata.description} != ''">
+                                                    <div class="filelist-input description source-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'description\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.description" extensionName="ai_suite"/></label>
+                                                        <textarea
+                                                            class="w-100 file-metadata-field-readonly"
+                                                            name="filesSourceContent[{metadata.uid}][description]"
+                                                            data-mode="{metadata.mode}"
+                                                            readonly="readonly"
+                                                            rows="3"
+                                                        >{metadata.sourceMetadata.description}</textarea>
+                                                    </div>
+                                                </f:if>
                                             </div>
                                             <div class="col-md-6">
                                                 <h6><strong><f:translate key="tx_aisuite.module.translation.targetContent" extensionName="ai_suite"/></strong></h6>
@@ -143,6 +158,18 @@
                                                                data-mode="{metadata.mode}"
                                                                readonly="readonly"
                                                         />
+                                                    </div>
+                                                </f:if>
+                                                <f:if condition="{metadata.sourceMetadata.description} != ''">
+                                                    <div class="filelist-input description target-content {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'description\'', then: 'd-block', else: 'd-none')}">
+                                                        <label><f:translate key="tx_aisuite.form.label.description" extensionName="ai_suite"/></label>
+                                                        <textarea
+                                                            class="w-100 file-metadata-field"
+                                                            name="filesTargetContent[{metadata.uid}][description]"
+                                                            data-mode="{metadata.mode}"
+                                                            readonly="readonly"
+                                                            rows="3"
+                                                        >{metadata.description}</textarea>
                                                     </div>
                                                 </f:if>
                                             </div>

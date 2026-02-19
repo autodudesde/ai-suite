@@ -196,13 +196,8 @@ class BackendUserService implements SingletonInterface
         return str_starts_with($currentNormalized, $parentNormalized);
     }
 
-    public function getBackendUser(): BackendUserAuthentication
+    public function getBackendUser(): ?BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
-    }
-
-    public function hasBackendUser(): bool
-    {
-        return ($GLOBALS['BE_USER'] ?? null) instanceof BackendUserAuthentication;
     }
 }

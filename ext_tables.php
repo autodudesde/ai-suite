@@ -147,5 +147,15 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
             'tx-aisuite-permissions',
             $lll . 'aiSuite.customPermOptions.modelDescription',
         ],
+        'MittwaldMinistral14B' => [
+            $lll . 'aiSuite.customPermOptions.modelMittwaldMinistral',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
+        'MittwaldMinistral14BVision' => [
+            $lll . 'aiSuite.customPermOptions.modelMittwaldMinistralVision',
+            'tx-aisuite-permissions',
+            $lll . 'aiSuite.customPermOptions.modelDescription',
+        ],
     ],
 ];

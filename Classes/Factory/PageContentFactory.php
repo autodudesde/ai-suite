@@ -170,11 +170,11 @@ class PageContentFactory
         $title = empty($imageTitle) ? 'ai-generated-image-' . time() : $imageTitle;
 
         $defaultFolder = null;
-        if ($this->backendUserService->getBackendUser()->isAdmin()) {
+        if ($this->backendUserService->getBackendUser()?->isAdmin()) {
             $storage = $this->storageRepository->getDefaultStorage();
             $defaultFolder = $storage->getDefaultFolder();
         } else {
-            $availableFileMounts = $this->backendUserService->getBackendUser()->getFileMountRecords();
+            $availableFileMounts = $this->backendUserService->getBackendUser()?->getFileMountRecords() ?? [];
             if (count($availableFileMounts) === 0) {
                 throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
             }

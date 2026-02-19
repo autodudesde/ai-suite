@@ -101,6 +101,7 @@ class BackgroundTaskRepository
             'sf.storage',
             'sfr.title',
             'sfr.alternative',
+            'sfr.description',
             'sfr.sys_language_uid',
             'sfr.pid AS pageId'
         )
@@ -495,7 +496,7 @@ class BackgroundTaskRepository
     public function findSourceColumnValueByFileUidAndDefaultLanguage(int $fileUid): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable('sys_file_metadata')->createQueryBuilder();
-        return $queryBuilder->select('title', 'alternative')
+        return $queryBuilder->select('title', 'alternative', 'description')
             ->from('sys_file_metadata')
             ->where(
                 $queryBuilder->expr()->eq('file', $queryBuilder->createNamedParameter($fileUid, Connection::PARAM_INT)),
