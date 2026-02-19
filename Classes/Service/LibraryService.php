@@ -30,7 +30,7 @@ class LibraryService implements SingletonInterface
         $processedLibraries = [];
 
         foreach ($libraries as $library) {
-            if (!$this->backendUserService->getBackendUser()->isAdmin() &&
+            if (!($this->backendUserService->getBackendUser()?->isAdmin() ?? false) &&
                 !$this->backendUserService->checkPermissions('tx_aisuite_models:' . $library['model_identifier'])
             ) {
                 continue;

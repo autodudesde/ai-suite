@@ -70,7 +70,6 @@ class CkeditorController extends AbstractAjaxController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::RTE_CONTENT, 'editContent', ['text']);
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             $response->getBody()->write(
                 json_encode(
                     [
@@ -104,7 +103,6 @@ class CkeditorController extends AbstractAjaxController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::RTE_CONTENT, 'editContent', ['text']);
 
         if ($librariesAnswer->getType() === 'Error') {
-            $this->logger->error($this->translationService->translate('aiSuite.module.errorFetchingLibraries.title'));
             $response->getBody()->write(
                 json_encode(
                     [

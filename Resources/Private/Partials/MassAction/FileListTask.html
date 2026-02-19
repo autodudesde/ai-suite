@@ -91,6 +91,15 @@
                                                data-mode="{metadata.mode}"
                                         />
                                     </div>
+                                    <div class="filelist-input description {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'description\'', then: 'd-block', else: 'd-none')}">
+                                        <label><f:translate key="tx_aisuite.form.label.description" extensionName="ai_suite"/></label>
+                                        <textarea class="w-100 h-50 file-metadata-field"
+                                                  name="files[{metadata.uid}][description]"
+                                                  data-sys-file-uid="{metadata.fileUid}"
+                                                  data-mode="{metadata.mode}"
+                                                  rows="5"
+                                        >{metadata.description}</textarea>
+                                    </div>
                                 </f:if>
                             </div>
                         </div>

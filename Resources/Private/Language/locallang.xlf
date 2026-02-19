@@ -738,6 +738,12 @@
             <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
                 <source>Please enter your prompt with at least ten characters</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.modal.noPageSelectedTitle" xml:space="preserve">
+                <source>No page selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.noPageSelectedMessage" xml:space="preserve">
+                <source>Please select a page before submitting</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.generalImageGenerationSettings" xml:space="preserve">
                 <source>General image generation settings</source>
             </trans-unit>
@@ -1170,6 +1176,12 @@
             <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
                 <source>Meta Llama-3.3 (70B-Instruct)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistral" xml:space="preserve">
+                <source>Ministral-3-14B-Instruct-2512</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistralVision" xml:space="preserve">
+                <source>Ministral-3-14B-Instruct-2512 (Vision)</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataGeneration" xml:space="preserve">
                 <source>Generated metadata suggestions</source>
             </trans-unit>
@@ -1382,6 +1394,9 @@
             </trans-unit>
             <trans-unit id="massActionSection.sys_file_reference.alternative" resname="massActionSection.sys_file_reference.alternative">
                 <source>Image alternative text</source>
+            </trans-unit>
+            <trans-unit id="massActionSection.sys_file_reference.description" resname="massActionSection.sys_file_reference.description">
+                <source>Description</source>
             </trans-unit>
             <trans-unit id="translation.failed" resname="translation.failed">
                 <source>Translation failed for one or more elements.</source>
@@ -2111,6 +2126,9 @@
             </trans-unit>
             <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
                 <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite.form.label.description">
+                <source>Description</source>
             </trans-unit>
         </body>
     </file>

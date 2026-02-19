@@ -134,11 +134,11 @@ class MetadataController extends AbstractAjaxController
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         if ($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] !== 'Vision';
+                return $library['name'] !== 'Vision' && $library['model_identifier'] !== 'MittwaldMinistral14BVision';
             });
         } else {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] === 'Vision';
+                return $library['name'] === 'Vision' || $library['model_identifier'] === 'MittwaldMinistral14BVision';
             });
         }
         $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);

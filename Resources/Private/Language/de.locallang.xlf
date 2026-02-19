@@ -37,7 +37,7 @@
             <trans-unit id="tx_aisuite.module.actionmenu.agencies" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Agency</source>
             <target>Agentur</target></trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.promptTemplate">
+            <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.agencies">
                 <source>Prompt Manager</source>
             <target>Prompt-Manager</target></trans-unit>
             <trans-unit id="tx_aisuite.module.actionmenu.globalInstructions" resname="tx_aisuite.module.actionmenu.globalInstructions">
@@ -738,6 +738,12 @@
             <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
                 <source>Please enter your prompt with at least ten characters</source>
             <target>Bitte gebe deinen Prompt mit mindestens zehn Zeichen ein</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noPageSelectedTitle" xml:space="preserve">
+                <source>No page selected</source>
+            <target>Keine Seite ausgewählt</target></trans-unit>
+            <trans-unit id="aiSuite.module.modal.noPageSelectedMessage" xml:space="preserve">
+                <source>Please select a page before submitting</source>
+            <target>Bitte wähle eine Seite aus, bevor du das Formular absendest</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.generalImageGenerationSettings" xml:space="preserve">
                 <source>General image generation settings</source>
             <target>Allgemeine Einstellungen zur Bildgenerierung</target></trans-unit>
@@ -1170,6 +1176,12 @@
             <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
                 <source>Meta Llama-3.3 (70B-Instruct)</source>
             <target>Meta Llama-3.3 (70B-Instruct)</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistral" xml:space="preserve">
+                <source>Ministral-3-14B-Instruct-2512</source>
+            <target>Ministral-3-14B-Instruct-2512</target></trans-unit>
+            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistralVision" xml:space="preserve">
+                <source>Ministral-3-14B-Instruct-2512 (Vision)</source>
+            <target>Ministral-3-14B-Instruct-2512 (Vision)</target></trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataGeneration" xml:space="preserve">
                 <source>Generated metadata suggestions</source>
             <target>Generierte Metadatenvorschläge</target></trans-unit>

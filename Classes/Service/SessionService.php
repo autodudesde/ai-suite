@@ -58,7 +58,7 @@ class SessionService implements SingletonInterface
             return;
         }
 
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
 
         $this->storeQueryParams($sessionData, $queryParams);
 
@@ -66,7 +66,7 @@ class SessionService implements SingletonInterface
 
         $this->storeContextForRoute($sessionData, $route, $postParams);
 
-        $this->backendUserService->getBackendUser()->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
+        $this->backendUserService->getBackendUser()?->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
     }
 
     protected function storeContextForRoute(array &$sessionData, string $route, array $postParams): void
@@ -84,19 +84,19 @@ class SessionService implements SingletonInterface
 
     public function getParametersForRoute(string $route): array
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[$route] ?? [];
     }
 
     public function getCurrentContext(): string
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData['ai_suite_context'] ?? 'default';
     }
 
     public function getLastRoute(): string
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData['ai_suite_last_route'] ?? '';
     }
 
@@ -122,25 +122,25 @@ class SessionService implements SingletonInterface
 
     public function getFilelistFolderId(): string
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] ?? '';
     }
 
     public function getWebPageId(): int
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_WEB_PAGE_ID] ?? 0;
     }
 
     public function getBackgroundTaskFilter(): string
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] ?? '';
     }
 
     public function getClickAndSaveState(): bool
     {
-        $sessionData = $this->backendUserService->getBackendUser()->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
         return $sessionData[self::AI_SUITE_CLICK_AND_SAVE] ?? false;
     }
 

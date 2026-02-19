@@ -58,6 +58,8 @@ class ContentService
         ]
     ];
 
+    protected int $maxDepth = 5;
+
     public function cleanupRequestField(array $requestFields, $table): array
     {
         if (array_key_exists($table, $this->ignoreFieldsByRecord)) {
@@ -81,7 +83,8 @@ class ContentService
 
         $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
+        $depthTracker = [];
+        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table, $depthTracker);
         return $this->cleanupRequestField($requestFields, $table);
     }
 
@@ -103,7 +106,8 @@ class ContentService
         array &$requestFields,
         array $formData,
         int $pid,
-        string $table
+        string $table,
+        array &$depthTracker
     ): void {
         if (empty($paletteName) || empty($GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'])) {
             return;
@@ -115,7 +119,7 @@ class ContentService
             if ($fieldName === '--linebreak--') {
                 continue;
             } else {
-                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
+                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table, $depthTracker);
             }
         }
     }
@@ -125,7 +129,8 @@ class ContentService
         string $fieldName,
         array &$requestFields,
         int $pid,
-        string $table
+        string $table,
+        array &$depthTracker
     ): void {
         if (!is_array($formData['processedTca']['columns'][$fieldName] ?? null) || in_array($fieldName, $this->ignoredTcaFields)) {
             return;
@@ -152,7 +157,7 @@ class ContentService
             $foreignTable = $parameterArray['fieldConf']['config']['foreign_table'];
             $requestFields[$foreignTable]['label'] = $parameterArray['fieldConf']['label'];
             $requestFields[$foreignTable]['foreignField'] = $table;
-            $this->fetchIrreRequestFields($formData['request'], $formData['defaultValues'], $requestFields, $foreignTable, $pid);
+            $this->fetchIrreRequestFields($formData['request'], $formData['defaultValues'], $requestFields, $foreignTable, $pid, $depthTracker);
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
             $renderType = $parameterArray['fieldConf']['config']['renderType'];
@@ -204,14 +209,27 @@ class ContentService
         array $defaultValues,
         array &$requestFields,
         string $table,
-        int $pid
+        int $pid,
+        array &$depthTracker
     ): void {
+        $trackingKey = $table . '-' . $pid;
+
+        if (!isset($depthTracker[$trackingKey])) {
+            $depthTracker[$trackingKey] = 0;
+        }
+
+        if ($depthTracker[$trackingKey] >= $this->maxDepth) {
+            return;
+        }
+
+        $depthTracker[$trackingKey]++;
+
         $formData = $this->getFormData($request, $defaultValues, $pid, $table);
 
         $showItemKey = array_key_first($GLOBALS['TCA'][$table]['types']);
         $itemList = $GLOBALS['TCA'][$table]['types'][$showItemKey]['showitem'];
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
-        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table);
+        $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table, $depthTracker);
     }
 
     protected function getFormData(ServerRequestInterface $request, array $defaultValues, int $pid, string $table)
@@ -233,18 +251,19 @@ class ContentService
         array &$requestFields,
         array $formData,
         int $pid,
-        string $table
+        string $table,
+        array &$depthTracker
     ): void {
         foreach ($fieldsArray as $fieldString) {
             $fieldConfiguration = $this->explodeSingleFieldShowItemConfiguration($fieldString);
             $fieldName = $fieldConfiguration['fieldName'];
             if ($fieldName === '--palette--') {
-                $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $requestFields, $formData, $pid, $table);
+                $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $requestFields, $formData, $pid, $table, $depthTracker);
             } else {
                 if (!is_array($formData['processedTca']['columns'][$fieldName] ?? null)) {
                     continue;
                 }
-                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table);
+                $this->checkSingleField($formData, $fieldName, $requestFields, $pid, $table, $depthTracker);
             }
         }
     }

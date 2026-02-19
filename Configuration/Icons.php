@@ -37,6 +37,14 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/AiSuiteTextUltimate.svg',
     ],
+    'tx-aisuite-model-MittwaldMinistral14B' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/MittwaldMinistral14B.svg',
+    ],
+    'tx-aisuite-model-MittwaldMinistral14BVision' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/MittwaldMinistral14B.svg',
+    ],
     'tx-aisuite-model-DALL-E' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/DALL-E.svg',

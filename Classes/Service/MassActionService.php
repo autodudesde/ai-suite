@@ -32,7 +32,6 @@ class MassActionService implements SingletonInterface
     protected ResourceFactory $resourceFactory;
     protected BackgroundTaskRepository $backgroundTaskRepository;
     protected LoggerInterface $logger;
-    protected FileListService $fileListService;
     protected UuidService $uuidService;
 
     protected SiteService $siteService;
@@ -48,7 +47,6 @@ class MassActionService implements SingletonInterface
         MetadataService $metadataService,
         ResourceFactory $resourceFactory,
         BackgroundTaskRepository $backgroundTaskRepository,
-        FileListService $fileListService,
         UuidService $uuidService,
         SiteService $siteService,
         LibraryService $libraryService,
@@ -62,7 +60,6 @@ class MassActionService implements SingletonInterface
         $this->metadataService = $metadataService;
         $this->resourceFactory = $resourceFactory;
         $this->backgroundTaskRepository = $backgroundTaskRepository;
-        $this->fileListService = $fileListService;
         $this->uuidService = $uuidService;
         $this->siteService = $siteService;
         $this->libraryService = $libraryService;
@@ -88,7 +85,7 @@ class MassActionService implements SingletonInterface
 
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-            return $library['name'] === 'Vision';
+            return $library['name'] === 'Vision' || $library['model_identifier'] === 'MittwaldMinistral14BVision';
         });
 
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
@@ -248,7 +245,11 @@ class MassActionService implements SingletonInterface
             return empty($metadata['alternative']);
         }
 
-        return empty($metadata['title']) && empty($metadata['alternative']);
+        if ($column === 'description') {
+            return empty($metadata['description']);
+        }
+
+        return empty($metadata['title']) && empty($metadata['alternative']) && empty($metadata['description']);
     }
 
     public function getFolderCombinedIdentifier(int $fileUid): ?string
@@ -286,7 +287,9 @@ class MassActionService implements SingletonInterface
             if (count($files) > 0) {
                 $fileUids = [0];
                 foreach ($files as $file) {
-                    if ($this->metadataService->hasFilePermissions($file->getUid()) && $file->getType() === 2) {
+                    if ($this->metadataService->hasFilePermissions($file->getUid()) &&
+                        ($file->getType() === 2 || $file->getType() === 4 || $file->getType() === 5)
+                    ) {
                         $fileUids[] = $file->getUid();
                     }
                 }
@@ -369,7 +372,9 @@ class MassActionService implements SingletonInterface
                 $pendingFileMetadata = $pendingTranslatedFileMetadata + $pendingNonTranslatedFileMetadata;
 
                 foreach ($files as $file) {
-                    if ($file->checkActionPermission('write') && $file->getType() === 2) {
+                    if ($file->checkActionPermission('write') &&
+                        ($file->getType() === 2 || $file->getType() === 4 || $file->getType() === 5)
+                    ) {
                         if (array_key_exists($file->getUid(), $translationData)) {
                             $data = $translationData[$file->getUid()];
                             $fileMeta = $data['target'];

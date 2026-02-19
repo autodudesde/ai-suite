@@ -35,7 +35,7 @@ class FilelistFilesPrepare {
                         let selectedFiles = {};
                         checkboxes.forEach(function(checkbox) {
                             if(checkbox.checked) {
-                                let inputValues = document.querySelectorAll('input[name^="files[' + checkbox.value + ']"]');
+                                let inputValues = document.querySelectorAll('input[name^="files[' + checkbox.value + ']"], textarea[name^="files[' + checkbox.value + ']"]');
                                 inputValues.forEach(function(input) {
                                     let column = input.name.replace('files[' + checkbox.value + '][', '').replace(']', '');
                                     let obj = {};
@@ -65,7 +65,7 @@ class FilelistFilesPrepare {
                         let selectedFiles = {};
                         checkboxes.forEach(function(checkbox) {
                             if(checkbox.checked) {
-                                let inputValues = document.querySelectorAll('input[name^="files[' + checkbox.value + ']"]');
+                                let inputValues = document.querySelectorAll('input[name^="files[' + checkbox.value + ']"], textarea[name^="files[' + checkbox.value + ']"]');
                                 inputValues.forEach(function(input) {
                                     let column = input.name.replace('files[' + checkbox.value + '][', '').replace(']', '');
                                     let obj = {};
@@ -107,7 +107,7 @@ class FilelistFilesPrepare {
                         });
                         self.calculateRequestAmount();
                     }
-                    if(ev.target.nodeName === 'INPUT' && ev.target.classList.contains('file-metadata-field')) {
+                    if((ev.target.nodeName === 'INPUT' || ev.target.nodeName === 'TEXTAREA') && ev.target.classList.contains('file-metadata-field')) {
                         if(ev.target.closest('.list-group-item').querySelector('input[name^="file-selection"]')) {
                             ev.target.closest('.list-group-item').querySelector('input[name^="file-selection"]').checked = true;
                         }
@@ -264,7 +264,7 @@ class FilelistFilesPrepare {
             }
         });
         if (document.querySelector('form[name="filesPrepareExecute"] #column').value === 'all') {
-            selectedFiles *= 2;
+            selectedFiles *= 3;
         }
         calculatedRequests *= selectedFiles;
         let marker = TYPO3.lang['aiSuite.module.multipleCredits'];

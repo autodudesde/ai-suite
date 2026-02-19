@@ -377,6 +377,11 @@ div[data-module-id="aiSuite"] {
     textarea {
         min-height: 150px;
     }
+    textarea.metadata-value,
+    textarea.file-metadata-field,
+    textarea.file-metadata-field-readonly {
+        min-height: 25px;
+    }
 }
 
 .spinner,

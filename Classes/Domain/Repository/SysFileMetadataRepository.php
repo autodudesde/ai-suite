@@ -56,6 +56,11 @@ class SysFileMetadataRepository extends AbstractRepository
                     $queryBuilder->expr()->eq('alternative', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('alternative')
                 );
+            } elseif ($column === 'description') {
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('description', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('description')
+                );
             } else {
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter('')),
@@ -64,6 +69,10 @@ class SysFileMetadataRepository extends AbstractRepository
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('alternative', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('alternative')
+                );
+                $constraints[] = $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('description', $queryBuilder->createNamedParameter('')),
+                    $queryBuilder->expr()->isNull('description')
                 );
             }
         }

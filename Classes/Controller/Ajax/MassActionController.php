@@ -140,7 +140,7 @@ class MassActionController extends AbstractAjaxController
             }
             $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] !== 'Vision';
+                return $library['name'] !== 'Vision' && $library['model_identifier'] !== 'MittwaldMinistral14BVision';
             });
             $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
@@ -361,7 +361,7 @@ class MassActionController extends AbstractAjaxController
             }
             $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] === 'Vision';
+                return $library['name'] === 'Vision' || $library['model_identifier'] === 'MittwaldMinistral14BVision';
             });
             $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
             $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
