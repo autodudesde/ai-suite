@@ -4,14 +4,14 @@
             <div class="d-flex justify-content-center align-items-center mx-3" style="height:45px;">
                 <core:icon identifier="tx-aisuite-extension" size="small"/>
                 <span class="mx-2">
-                    Free: {f:if(condition: requests, then: '{requests.free_requests}', else: '-')}
+                    <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite" />: {f:if(condition: requests, then: '{requests.free_requests}', else: '-')} <small class="opacity-75">(<f:translate key="aiSuite.module.creditsRemaining" extensionName="ai_suite" />)</small>
                 </span>
                 <span>
-                    Paid: {f:if(condition: requests, then: '{requests.paid_requests}', else: '-')}
+                    <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite" />: {f:if(condition: requests, then: '{requests.paid_requests}', else: '-')} <small class="opacity-75">(<f:translate key="aiSuite.module.creditsRemaining" extensionName="ai_suite" />)</small>
                 </span>
                 <f:if condition="{requests.abo_requests}">
                     <span class="mx-2">
-                        Plan: {f:if(condition: requests, then: '{requests.abo_requests}', else: '-')}
+                        <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite" />: {f:if(condition: requests, then: '{requests.abo_requests}', else: '-')} <small class="opacity-75">(<f:translate key="aiSuite.module.creditsUsed" extensionName="ai_suite" />)</small>
                     </span>
                 </f:if>
             </div>

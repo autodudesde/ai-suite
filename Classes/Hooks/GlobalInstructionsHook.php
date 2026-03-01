@@ -20,27 +20,32 @@ class GlobalInstructionsHook
         try {
             if ($table === 'tx_aisuite_domain_model_global_instructions') {
                 $globalInstructionsRepository = GeneralUtility::makeInstance(GlobalInstructionsRepository::class);
+                $context = $incomingFieldArray['context'] ?? null;
+                $scope = $incomingFieldArray['scope'] ?? null;
+                if (empty($context) || empty($scope)) {
+                    return;
+                }
                 $incomingFieldArray['selected_directories'] = $incomingFieldArray['selected_directories'] ?? '';
-                $selectedTree = $incomingFieldArray['context'] === 'pages' ? $incomingFieldArray['selected_pages'] : $incomingFieldArray['selected_directories'];
+                $selectedTree = $context === 'pages' ? $incomingFieldArray['selected_pages'] : $incomingFieldArray['selected_directories'];
                 $selectedTreeArray = GeneralUtility::trimExplode(',', $selectedTree, true);
                 $globalInstruction = $globalInstructionsRepository->findExistingGlobalInstruction(
-                    $incomingFieldArray['context'],
-                    $incomingFieldArray['scope'],
+                    $context,
+                    $scope,
                     $selectedTreeArray
                 );
                 if (!empty($globalInstruction)) {
-                    $existingSelectedTree = $incomingFieldArray['context'] === 'pages' ? $globalInstruction['selected_pages'] : $globalInstruction['selected_directories'];
+                    $existingSelectedTree = $context === 'pages' ? $globalInstruction['selected_pages'] : $globalInstruction['selected_directories'];
                     $existingSelectedTreeArray = GeneralUtility::trimExplode(',', $existingSelectedTree, true);
-                    $fieldName = $incomingFieldArray['context'] === 'pages' ? 'selected_pages' : 'selected_directories';
+                    $fieldName = $context === 'pages' ? 'selected_pages' : 'selected_directories';
                     $uniqueTreeIds = array_diff($selectedTreeArray, $existingSelectedTreeArray);
                     $duplicateTreeIds = array_intersect($existingSelectedTreeArray, $selectedTreeArray);
                     if (str_starts_with($id, 'NEW')) {
                         $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);
-                        $this->buildFlashMessage($incomingFieldArray['context'], $incomingFieldArray['scope'], $duplicateTreeIds);
+                        $this->buildFlashMessage($context, $scope, $duplicateTreeIds);
                     } else {
                         if ((int)$id !== $globalInstruction['uid']) {
                             $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);
-                            $this->buildFlashMessage($incomingFieldArray['context'], $incomingFieldArray['scope'], $duplicateTreeIds);
+                            $this->buildFlashMessage($context, $scope, $duplicateTreeIds);
                         }
                     }
                 }

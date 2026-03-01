@@ -118,18 +118,29 @@ class TranslationHook
         foreach ($dataHandler->copyMappingArray_merged as $tableKey => $table) {
             foreach ($table as $ceSrcLangUid => $ceDestLangUid) {
                 $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
+                $fields = array_filter($fields, function ($field) {
+                    return !is_array($field) || isset($field['data']);
+                });
                 if (count($fields) > 0) {
-                    $fields = array_filter($fields, function ($field, $key) {
-                        if ($key === 'pi_flexform') {
-                            return true;
-                        }
-                        return !is_array($field);
-                    }, ARRAY_FILTER_USE_BOTH);
                     $translateFields[$tableKey][$ceDestLangUid] = $fields;
                     $elementsCount++;
                 }
             }
         }
+        if (empty($translateFields)) {
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                $this->translationService->translate('translation.noTranslatableFields'),
+                '',
+                ContextualFeedbackSeverity::WARNING,
+                true
+            );
+            $this->flashMessageService
+                ->getMessageQueueByIdentifier()
+                ->addMessage($flashMessage);
+            return;
+        }
+
         $translateFields = json_encode($translateFields, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE);
 
         $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
@@ -210,7 +221,7 @@ class TranslationHook
                         $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
                         if (count($fields) > 0) {
                             $fields = array_filter($fields, function ($field) {
-                                return !is_array($field);
+                                return !is_array($field) || isset($field['data']);
                             });
                             $allTranslateFields[$tableKey][$ceDestLangUid] = $fields;
                         }

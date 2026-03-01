@@ -687,6 +687,12 @@
             <trans-unit id="aiSuite.module.aboCredits" xml:space="preserve">
                 <source>Plan</source>
             <target>Plan</target></trans-unit>
+            <trans-unit id="aiSuite.module.creditsRemaining" xml:space="preserve">
+                <source>rem.</source>
+            <target>verbl.</target></trans-unit>
+            <trans-unit id="aiSuite.module.creditsUsed" xml:space="preserve">
+                <source>used</source>
+            <target>genutzt</target></trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
             <target>Bei der Beantwortung ist ein Fehler aufgetreten. Bitte versuche es erneut und überprüfe deine Einstellungen/Eingaben.</target></trans-unit>
@@ -1398,6 +1404,9 @@
             <trans-unit id="translation.failed" resname="translation.failed">
                 <source>Translation failed for one or more elements.</source>
             <target>Die Übersetzung ist bei einem oder mehreren Elementen fehlgeschlagen.</target></trans-unit>
+            <trans-unit id="translation.noTranslatableFields" resname="translation.noTranslatableFields">
+                <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
+            <target>Keine übersetzbaren Felder gefunden. Die ausgewählten Inhaltselemente haben möglicherweise keinen Textinhalt oder verwenden unbekannte Inhaltstypen.</target></trans-unit>
             <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
                 <source>Select (target) language:</source>
             <target>Wähle die (Ziel-) Sprache aus:</target></trans-unit>

@@ -75,6 +75,7 @@ class TranslationService
     protected array $consideredTextRenderTypes = [
         'input',
         'text',
+        'flex',
     ];
 
     protected ContentService $contentService;
@@ -171,6 +172,9 @@ class TranslationService
         $parameterArray['fieldConf']['config'] = FormEngineUtility::overrideFieldConf($parameterArray['fieldConf']['config'], $parameterArray['fieldTSConfig']);
 
         if ($parameterArray['fieldConf']['config']['type'] === 'inline') {
+            return;
+        }
+        if ($parameterArray['fieldConf']['config']['type'] === 'flex') {
             return;
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
@@ -280,7 +284,7 @@ class TranslationService
                 $translatableContent['pages'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
                 break;
             case 'content':
-                $translatableContent[] = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
+                $translatableContent = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
                 break;
             case 'all':
                 $translatableContent = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
@@ -603,8 +607,11 @@ class TranslationService
             $fieldName = $fieldConfiguration['fieldName'];
             if ($fieldName === '--palette--') {
                 $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $translateFields, $formData, $table);
-            } elseif ($fieldName === 'pi_flexform' && $this->extensionConfiguration->get('ai_suite', 'translateFlexFormFields')) {
-                $this->flexFormTranslationService->convertFlexFormToTranslateFields($formData, $translateFields);
+            } elseif (
+                $this->extensionConfiguration->get('ai_suite', 'translateFlexFormFields')
+                && ($fieldName === 'pi_flexform' || ($formData['processedTca']['columns'][$fieldName]['config']['type'] ?? '') === 'flex')
+            ) {
+                $this->flexFormTranslationService->convertFlexFormToTranslateFields($formData, $translateFields, $fieldName);
             } else {
                 if (!is_array($formData['processedTca']['columns'][$fieldName] ?? null)) {
                     continue;

@@ -40,13 +40,13 @@ class FlexFormTranslationService implements SingletonInterface
         $this->flexFormTools = $flexFormTools;
     }
 
-    public function convertFlexFormToTranslateFields(array $formData, array &$translateFields): void
+    public function convertFlexFormToTranslateFields(array $formData, array &$translateFields, string $fieldName = 'pi_flexform'): void
     {
-        $flexForm = $formData['databaseRow']['pi_flexform'] ?? '';
+        $flexForm = $formData['databaseRow'][$fieldName] ?? '';
         if (empty($flexForm)) {
             return;
         }
-        $newStructure = $formData["processedTca"]["columns"]["pi_flexform"]["config"]["ds"];
+        $newStructure = $formData['processedTca']['columns'][$fieldName]['config']['ds'];
         $flexFormData = $flexForm['data'] ?? [];
         foreach ($flexFormData as $sKey => $sheetDef) {
             if (isset($newStructure['sheets'][$sKey]) && is_array($newStructure['sheets'][$sKey]) && is_array($sheetDef)) {
@@ -61,7 +61,7 @@ class FlexFormTranslationService implements SingletonInterface
         }
         $this->removeEmptyArraysRecursively($flexFormData);
         if (!empty($flexFormData)) {
-            $translateFields['pi_flexform'] = [
+            $translateFields[$fieldName] = [
                 'data' => $flexFormData
             ];
         }
@@ -87,9 +87,6 @@ class FlexFormTranslationService implements SingletonInterface
                             continue;
                         }
 
-                        if (!is_array($dataValues[$key]['el'] ?? false)) {
-                            $dataValues[$key]['el'] = [];
-                        }
                         $theKey = key($el);
                         if (!is_array($dataValues[$key]['el'][$ik][$theKey]['el'] ?? false)) {
                             continue;
@@ -115,10 +112,6 @@ class FlexFormTranslationService implements SingletonInterface
                         // If is new record and a default is specified for field, use it.
                         $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
                     }
-                    if (!empty($fieldConfiguration['default'])) {
-                        // If is new record and a default is specified for field, use it.
-                        $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
-                    }
                 }
                 if (!is_array($fieldConfiguration) || !isset($dataValues[$key]) || !is_array($dataValues[$key])) {
                     continue;
@@ -139,6 +132,8 @@ class FlexFormTranslationService implements SingletonInterface
                 if (empty($flexFormData[$key])) {
                     unset($flexFormData[$key]);
                 }
+            } elseif ($value === '') {
+                unset($flexFormData[$key]);
             }
         }
     }
