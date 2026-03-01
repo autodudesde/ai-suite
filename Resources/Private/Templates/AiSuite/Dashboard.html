@@ -21,14 +21,14 @@
                     <div class="panel-body">
                         <div class="request-state d-flex gap-5 my-1">
                         <span class="badge badge-warning">
-                            <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite"/>: {freeRequests}
+                            <f:translate key="aiSuite.module.freeCredits" extensionName="ai_suite"/>: {freeRequests} <small class="ms-1">(<f:translate key="aiSuite.module.creditsRemaining" extensionName="ai_suite" />)</small>
                         </span>
                             <span class="badge badge-warning">
-                            <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests}
+                            <f:translate key="aiSuite.module.paidCredits" extensionName="ai_suite"/>: {paidRequests} <small class="ms-1">(<f:translate key="aiSuite.module.creditsRemaining" extensionName="ai_suite" />)</small>
                         </span>
                             <f:if condition="{modelType} != ''">
                             <span class="badge badge-warning">
-                                <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests}
+                                <f:translate key="aiSuite.module.aboCredits" extensionName="ai_suite"/>: {aboRequests} <small class="ms-1">(<f:translate key="aiSuite.module.creditsUsed" extensionName="ai_suite" />)</small>
                             </span>
                             </f:if>
                         </div>

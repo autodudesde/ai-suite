@@ -40,13 +40,13 @@ class FlexFormTranslationService implements SingletonInterface
         $this->flexFormTools = $flexFormTools;
     }
 
-    public function convertFlexFormToTranslateFields(array $formData, array &$translateFields): void
+    public function convertFlexFormToTranslateFields(array $formData, array &$translateFields, string $fieldName = 'pi_flexform'): void
     {
-        $flexForm = $formData['databaseRow']['pi_flexform'] ?? '';
+        $flexForm = $formData['databaseRow'][$fieldName] ?? '';
         if (empty($flexForm)) {
             return;
         }
-        $originalFlexFormStructure = $formData["processedTca"]["columns"]["pi_flexform"]["config"]["ds"];
+        $originalFlexFormStructure = $formData["processedTca"]["columns"][$fieldName]["config"]["ds"];
         $newStructure = $this->flexFormTools->removeElementTceFormsRecursive($originalFlexFormStructure);
         $newStructure = $this->flexFormTools->migrateFlexFormTcaRecursive($newStructure);
 
@@ -64,7 +64,7 @@ class FlexFormTranslationService implements SingletonInterface
         }
         $this->removeEmptyArraysRecursively($flexFormData);
         if (!empty($flexFormData)) {
-            $translateFields['pi_flexform'] = [
+            $translateFields[$fieldName] = [
                 'data' => $flexFormData
             ];
         }
@@ -89,7 +89,7 @@ class FlexFormTranslationService implements SingletonInterface
                         if (!is_array($el)) {
                             continue;
                         }
-                        // @todo: Ugly! This relies on the fact that _TOGGLE and _ACTION are *below* the business fields!
+
                         $theKey = key($el);
                         if (!is_array($dataValues[$key]['el'][$ik][$theKey]['el'] ?? false)) {
                             continue;
@@ -135,6 +135,8 @@ class FlexFormTranslationService implements SingletonInterface
                 if (empty($flexFormData[$key])) {
                     unset($flexFormData[$key]);
                 }
+            } elseif ($value === '') {
+                unset($flexFormData[$key]);
             }
         }
     }

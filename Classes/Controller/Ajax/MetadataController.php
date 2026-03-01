@@ -131,11 +131,11 @@ class MetadataController extends AbstractAjaxController
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         if ($request->getParsedBody()['table'] !== 'sys_file_metadata' && $request->getParsedBody()['table'] !== 'sys_file_reference') {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] !== 'Vision' && $library['model_identifier'] !== 'MittwaldMinistral14BVision';
+                return $library['model_identifier'] !== 'Vision' && $library['model_identifier'] !== 'MittwaldMinistral14BVision';
             });
         } else {
             $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return $library['name'] === 'Vision' || $library['model_identifier'] === 'MittwaldMinistral14BVision';
+                return $library['model_identifier'] === 'Vision' || $library['model_identifier'] === 'MittwaldMinistral14BVision';
             });
         }
         $params['textGenerationLibraries'] = $this->libraryService->prepareLibraries($textGenerationLibraries);
@@ -182,12 +182,19 @@ class MetadataController extends AbstractAjaxController
             $filename = $this->metadataService->getFileName($sysFileId);
         }
 
+        try {
+            $requestContent = $this->metadataService->fetchContent($request);
+        } catch (\Throwable $e) {
+            $this->logError($e->getMessage(), $response, 503);
+            return $response;
+        }
+
         $answer = $this->requestService->sendDataRequest(
             'createMetadata',
             [
                 'uuid' => $request->getParsedBody()['uuid'],
                 'field_label' => $request->getParsedBody()['fieldLabel'],
-                'request_content' => $this->metadataService->fetchContent($request),
+                'request_content' => $requestContent,
                 'global_instructions' => $globalInstructions,
                 'override_predefined_prompt' => $globalInstructionsOverride,
                 'filename' => $filename,
