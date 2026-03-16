@@ -15,6 +15,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -74,34 +75,35 @@ class ModifyButtonBarEventListener
         $request = $GLOBALS['TYPO3_REQUEST'];
         $entryPoint = rtrim($GLOBALS['TYPO3_CONF_VARS']['BE']['entryPoint'] ?? '/typo3', '/');
         $buttons = $event->getButtons();
-        if ($request->getUri()->getPath() === $entryPoint . '/module/file/list' &&
-            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
+        if ($request->getUri()->getPath() === $entryPoint.'/module/file/list'
+            && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
             $buttonText = htmlspecialchars($this->translationService->translate('aiSuite.generateImageWithAiButton'));
             $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image-filelist.js');
-            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', 'small');
+            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', IconSize::SMALL);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setClasses('btn btn-default t3js-ai-suite-image-generation-filelist-add-btn')
                 ->setDataAttributes([
                     'target-folder' => $request->getQueryParams()['id'] ?? '1:/',
-                    'uuid' => $this->uuidService->generateUuid()
+                    'uuid' => $this->uuidService->generateUuid(),
                 ])
                 ->setTitle($buttonText)
                 ->setShowLabelText(true)
-                ->setIcon($buttonIcon);
+                ->setIcon($buttonIcon)
+            ;
             $event->setButtons($buttons);
         }
 
-        if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' &&
-            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_deepl_sync') &&
-            $this->glossarRepository->findGlossarEntriesByPid($request->getQueryParams()['id'] ?? 0) > 0
+        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+            && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_deepl_sync')
+            && $this->glossarRepository->findGlossarEntriesByPid($request->getQueryParams()['id'] ?? 0) > 0
         ) {
             $buttonText = htmlspecialchars($this->translationService->translate('AiSuite.synchronizeDeeplGlossary'));
             $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/glossar/sync.js');
-            $buttonIcon = $this->iconFactory->getIcon('tx-aisuite-model-Deepl', 'small');
+            $buttonIcon = $this->iconFactory->getIcon('tx-aisuite-model-Deepl', IconSize::SMALL);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][6][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setClasses('btn btn-default t3js-ai-suite-sync-glossary-btn')
@@ -110,26 +112,27 @@ class ModifyButtonBarEventListener
                 ])
                 ->setTitle($buttonText)
                 ->setShowLabelText(true)
-                ->setIcon($buttonIcon);
+                ->setIcon($buttonIcon)
+            ;
             $event->setButtons($buttons);
         }
 
-        if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' &&
-            ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams()) &&
-            $this->backendUserService->checkPermissions('tx_aisuite_features:enable_news_generation')
+        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+            && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams())
+            && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_news_generation')
         ) {
             $buttonText = htmlspecialchars($this->translationService->translate('aiSuite.generateNewsWithAiButton'));
-            $buttonIcon = $this->iconFactory->getIcon('content-news', 'small');
-            $uri = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
+            $buttonIcon = $this->iconFactory->getIcon('content-news', IconSize::SMALL);
+            $uri = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                 'edit' => [
                     'tx_news_domain_model_news' => [
                         $request->getQueryParams()['id'] => 'new',
                     ],
                 ],
-                'returnUrl' => $entryPoint . '/module/web/list?token=' . $request->getQueryParams()['token'] .'&id=' . $request->getQueryParams()['id'],
+                'returnUrl' => $entryPoint.'/module/content/records?id='.$request->getQueryParams()['id'],
                 'recordType' => '0',
                 'recordTable' => 'tx_news_domain_model_news',
-                'pid' => $request->getQueryParams()['id']
+                'pid' => $request->getQueryParams()['id'],
             ]);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
@@ -137,33 +140,32 @@ class ModifyButtonBarEventListener
                 ->setTitle($buttonText)
                 ->setShowLabelText(true)
                 ->setHref($uri)
-                ->setIcon($buttonIcon);
+                ->setIcon($buttonIcon)
+            ;
 
             $event->setButtons($buttons);
         }
-        if (array_key_exists('disableTranslationFunctionality', $this->extConf) && (bool)$this->extConf['disableTranslationFunctionality'] === false) {
-            if ($request->getUri()->getPath() === $entryPoint . '/module/web/layout') {
+        if (array_key_exists('disableTranslationFunctionality', $this->extConf) && false === (bool) $this->extConf['disableTranslationFunctionality']) {
+            if ($request->getUri()->getPath() === $entryPoint.'/module/web/layout') {
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
-                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/page-localization.js');
             }
             $returnUrl = $request->getQueryParams()['returnUrl'] ?? '';
-            if ($request->getUri()->getPath() === $entryPoint . '/module/web/list' ||
-                $request->getUri()->getPath() === $entryPoint . '/record/edit' &&
-                !str_starts_with($returnUrl, '/typo3/record/info') &&
-                $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')
+            if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+                || $request->getUri()->getPath() === $entryPoint.'/record/edit'
+                && !str_starts_with($returnUrl, '/typo3/record/info')
+                && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')
             ) {
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
             }
         }
-        if (($request->getUri()->getPath() === $entryPoint . '/module/web/list' ||
-            $request->getUri()->getPath() === $entryPoint . '/module/web/layout')) {
-
+        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+            || $request->getUri()->getPath() === $entryPoint.'/module/web/layout') {
             $pageUid = $request->getQueryParams()['id'] ?? 0;
-            $result = $this->translationService->processFinishedTranslationTasksForPage((int)$pageUid);
+            $result = $this->translationService->processFinishedTranslationTasksForPage((int) $pageUid);
 
             if ($result['processedCount'] > 0) {
                 BackendUtility::setUpdateSignal('updatePageTree', $pageUid);
@@ -172,7 +174,7 @@ class ModifyButtonBarEventListener
                         ->instance([
                             'success' => $result['success'],
                             'notificationTitle' => $result['success'] ? 'Translation Tasks Processed' : 'Translation Task Error',
-                            'notificationMessage' => $result['message']
+                            'notificationMessage' => $result['message'],
                         ])
                 );
             }

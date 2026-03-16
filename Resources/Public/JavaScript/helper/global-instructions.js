@@ -115,7 +115,7 @@ class GlobalInstructions {
         const tooltip = this.createTooltip(buttonElement);
         tooltip.innerHTML = this.generateTooltipContent(globalInstructions, textareaContent);
 
-        const targetElement = context === document ? document.body : context;
+        const targetElement = context === document ? document.body : (context.querySelector('dialog') ?? context);
         targetElement.appendChild(tooltip);
         callback?.();
     }
@@ -126,7 +126,12 @@ class GlobalInstructions {
         const tooltip = this.createTooltip(buttonElement);
         tooltip.innerHTML = this.generateTooltipContent(globalInstructions, textareaContent);
 
-        modal.append(tooltip);
+        const modalDialog = modal[0]?.querySelector('dialog');
+        if (modalDialog) {
+            modalDialog.appendChild(tooltip);
+        } else {
+            modal.append(tooltip);
+        }
         callback?.();
     }
 

@@ -106,13 +106,6 @@ class FlexFormTranslationService implements SingletonInterface
                 }
             } else {
                 $fieldConfiguration = $dsConf['config'] ?? null;
-                // init with value from config for passthrough fields
-                if (!empty($fieldConfiguration['type']) && $fieldConfiguration['type'] === 'passthrough') {
-                    if (!empty($fieldConfiguration['default'])) {
-                        // If is new record and a default is specified for field, use it.
-                        $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
-                    }
-                }
                 if (!is_array($fieldConfiguration) || !isset($dataValues[$key]) || !is_array($dataValues[$key])) {
                     continue;
                 }

@@ -15,17 +15,17 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
 {
     protected function wizardAction(ServerRequestInterface $request): ResponseInterface
     {
-        if (!$this->id || $this->pageInfo === []) {
+        if (!$this->id || [] === $this->pageInfo) {
             // No pageId or no access.
             return new HtmlResponse('No Access');
         }
         // Whether position selection must be performed (no colPos was yet defined)
-        $positionSelection = $this->colPos === null;
+        $positionSelection = null === $this->colPos;
 
         // Get processed and modified wizard items
         $wizardItems = $this->eventDispatcher->dispatch(
             new ModifyNewContentElementWizardItemsEvent(
-                $this->getWizards(),
+                $this->getWizards($request),
                 $this->pageInfo,
                 $this->colPos,
                 $this->sys_language,
@@ -55,12 +55,12 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                 ];
 
                 // Get default values for the wizard item
-                $defVals = (array)($wizardItem['defaultValues'] ?? []);
+                $defVals = (array) ($wizardItem['defaultValues'] ?? []);
                 if (!$positionSelection) {
                     // In case no position has to be selected, we can just add the target
-                    if (($wizardItem['saveAndClose'] ?? false)) {
+                    if ($wizardItem['saveAndClose'] ?? false) {
                         // Go to DataHandler directly instead of FormEngine
-                        $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('tce_db', [
+                        $item['url'] = (string) $this->uriBuilder->buildUriFromRoute('tce_db', [
                             'data' => [
                                 'tt_content' => [
                                     StringUtility::getUniqueId('NEW') => array_replace($defVals, [
@@ -73,8 +73,8 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                             'redirect' => $this->returnUrl,
                         ]);
                     } else {
-                        if ($key === 'aisuite') {
-                            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
+                        if ('aisuite' === $key) {
+                            $item['url'] = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                                 'edit' => [
                                     'tt_content' => [
                                         $this->uid_pid => 'new',
@@ -90,7 +90,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                                 ],
                             ]);
                         } else {
-                            $item['url'] = (string)$this->uriBuilder->buildUriFromRoute('record_edit', [
+                            $item['url'] = (string) $this->uriBuilder->buildUriFromRoute('record_edit', [
                                 'edit' => [
                                     'tt_content' => [
                                         $this->uid_pid => 'new',
@@ -107,7 +107,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                         }
                     }
                 } else {
-                    $item['url'] = (string)$this->uriBuilder
+                    $item['url'] = (string) $this->uriBuilder
                         ->buildUriFromRoute(
                             'new_content_element_wizard',
                             [
@@ -116,10 +116,11 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                                 'sys_language_uid' => $this->sys_language,
                                 'returnUrl' => $this->returnUrl,
                             ]
-                        );
+                        )
+                    ;
                     $item['requestType'] = 'ajax';
                     $item['defaultValues'] = $defVals;
-                    $item['saveAndClose'] = (bool)($wizardItem['saveAndClose'] ?? false);
+                    $item['saveAndClose'] = (bool) ($wizardItem['saveAndClose'] ?? false);
                 }
                 $categories[$key]['items'][] = $item;
             }
@@ -127,7 +128,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
 
         // Unset empty categories
         foreach ($categories as $key => $category) {
-            if ($category['items'] === []) {
+            if ([] === $category['items']) {
                 unset($categories[$key]);
             }
         }
@@ -137,6 +138,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
             'positionSelection' => $positionSelection,
             'categoriesJson' => GeneralUtility::jsonEncodeForHtmlAttribute($categories, false),
         ]);
+
         return new HtmlResponse($view->render('NewContentElement/Wizard'));
     }
 }

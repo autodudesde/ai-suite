@@ -9,12 +9,8 @@ return [
         'delete' => 'deleted',
         'default_sortby' => 'input',
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
-        'searchFields' => 'input',
         'enablecolumns' => [
-            'fe_group' => 'fe_group',
             'disabled' => 'hidden',
-            'starttime' => 'starttime',
-            'endtime' => 'endtime',
         ],
         'transOrigPointerField' => 'l18n_parent',
         'transOrigDiffSourceField' => 'l18n_diffsource',

@@ -24,7 +24,104 @@ class PagesTranslationPrepare {
         }
         let pagesTranslationPrepareExecuteForm = document.querySelector('form[name="pagesTranslationPrepareExecute"]');
         const formData = new FormData(pagesTranslationPrepareExecuteForm);
-        this.preparePagesTranslation(formData).then(() => {});
+        this.preparePagesTranslation(formData).then(() => {
+            this.initGlossaries();
+        });
+    }
+
+    async initGlossaries() {
+        await this.glossarySelectionEventDelegation();
+        const checkedRadio = document.querySelector('.text-generation-library input[type="radio"]:checked');
+        await this.handleTextAiModelChange(checkedRadio ? checkedRadio.value : 'ChatGPT');
+    }
+
+    async glossarySelectionEventDelegation() {
+        const self = this;
+        document.addEventListener('change', async function(ev) {
+            if (ev.target.type === 'radio' && ev.target.name === 'libraries[textGenerationLibrary]') {
+                await self.handleTextAiModelChange(ev.target.value);
+            }
+        });
+    }
+
+    async handleTextAiModelChange(textAiModel) {
+        const globalInstructionWrapper = document.querySelector('.global-instruction-wrapper');
+        if (globalInstructionWrapper !== null) {
+            if (textAiModel === 'GoogleTranslate' || textAiModel === 'Deepl') {
+                globalInstructionWrapper.classList.add('d-none');
+                globalInstructionWrapper.classList.remove('d-inline-flex');
+            } else {
+                globalInstructionWrapper.classList.remove('d-none');
+                globalInstructionWrapper.classList.add('d-inline-flex');
+            }
+        }
+
+        const glossarySelection = document.getElementById('glossarySelection');
+        if (glossarySelection === null) {
+            return;
+        }
+        glossarySelection.style.display = 'none';
+
+        const sourceLanguageSelect = document.querySelector('select[name="massActionPagesTranslationPrepare[sourceLanguage]"]');
+        const targetLanguageSelect = document.querySelector('select[name="massActionPagesTranslationPrepare[targetLanguage]"]');
+
+        if (!sourceLanguageSelect?.value || !targetLanguageSelect?.value) {
+            this.updateGlossarySelect([]);
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('sourceLanguageId', sourceLanguageSelect.value);
+            formData.append('targetLanguageId', targetLanguageSelect.value);
+            formData.append('textAiModel', textAiModel);
+
+            const response = await Ajax.sendAjaxRequest('aisuite_glossary_fetch_page_translation', formData);
+            if (response && response.glossaries) {
+                this.updateGlossarySelect(response.glossaries);
+            } else {
+                this.updateGlossarySelect([]);
+            }
+        } catch (error) {
+            console.error('Error fetching glossaries:', error);
+            this.updateGlossarySelect([]);
+        }
+    }
+
+    updateGlossarySelect(glossaries) {
+        const glossarySelection = document.getElementById('glossarySelection');
+        if (!glossarySelection) {
+            return;
+        }
+
+        const existingSelect = glossarySelection.querySelector('select');
+        if (existingSelect) {
+            existingSelect.remove();
+        }
+
+        if (Object.keys(glossaries).length === 0) {
+            return;
+        }
+
+        const select = document.createElement('select');
+        select.name = 'options[glossary]';
+        select.className = 'form-select mb-4';
+        select.id = 'glossarySelect';
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = TYPO3.lang['AiSuite.generation.massAction.selectGlossary'];
+        select.appendChild(defaultOption);
+
+        Object.entries(glossaries).forEach(([key, value]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = value;
+            select.appendChild(option);
+        });
+
+        glossarySelection.appendChild(select);
+        glossarySelection.style.display = 'block';
     }
 
     pagesTranslationPrepareExecuteFormEventListener() {
@@ -49,6 +146,7 @@ class PagesTranslationPrepare {
             Generation.showSpinner();
             const formData = new FormData(pagesTranslationPrepareExecuteForm);
             await self.preparePagesTranslation(formData);
+            await self.initGlossaries();
             Generation.hideSpinner();
         });
     }
@@ -98,11 +196,14 @@ class PagesTranslationPrepare {
                             let handledPages = {};
                             Generation.showSpinner();
                             let formData = new FormData();
+                            const glossarySelect = document.getElementById('glossarySelect');
+                            const selectedGlossary = glossarySelect ? glossarySelect.value : '';
                             formData.append('massActionPagesTranslationExecute[parentUuid]', self.parentUuid);
                             formData.append('massActionPagesTranslationExecute[sourceLanguage]', document.querySelector('select[name="massActionPagesTranslationPrepare[sourceLanguage]"]').value);
                             formData.append('massActionPagesTranslationExecute[targetLanguage]', document.querySelector('select[name="massActionPagesTranslationPrepare[targetLanguage]"]').value);
                             formData.append('massActionPagesTranslationExecute[translationScope]', document.querySelector('select[name="massActionPagesTranslationPrepare[translationScope]"]').value);
                             formData.append('massActionPagesTranslationExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
+                            formData.append('massActionPagesTranslationExecute[glossary]', selectedGlossary);
 
                             for (let key in selectedPages) {
                                 if(counter === 3) { // Smaller batches for translation
@@ -132,7 +233,9 @@ class PagesTranslationPrepare {
 
                             let pagesTranslationPrepareExecuteForm = document.querySelector('form[name="pagesTranslationPrepareExecute"]');
                             formData = new FormData(pagesTranslationPrepareExecuteForm);
-                            self.preparePagesTranslation(formData).then(() => {});
+                            self.preparePagesTranslation(formData).then(() => {
+                                self.initGlossaries();
+                            });
                         }
                     }
                 }

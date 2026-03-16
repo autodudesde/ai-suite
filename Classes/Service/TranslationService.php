@@ -5,7 +5,6 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\TranslationRepository;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -24,6 +23,7 @@ use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -76,6 +76,7 @@ class TranslationService
         'input',
         'text',
         'flex',
+        'textTable',
     ];
 
     protected ContentService $contentService;
@@ -102,7 +103,7 @@ class TranslationService
         'og_title',
         'og_description',
         'twitter_title',
-        'twitter_description'
+        'twitter_description',
     ];
 
     public function __construct(
@@ -142,6 +143,7 @@ class TranslationService
         $formData = $this->getFormData($request, $defaultValues, $ceSrcLangUid, $table);
         $translateFields = [];
         $this->getAllFieldsFromTableTypes($table, $formData, $translateFields);
+
         return $this->contentService->cleanupRequestField($translateFields, $table);
     }
 
@@ -157,12 +159,12 @@ class TranslationService
         $parameterArray['fieldConf'] = $formData['processedTca']['columns'][$fieldName];
 
         $fieldIsExcluded = $parameterArray['fieldConf']['exclude'] ?? false;
-        $fieldNotExcludable = $GLOBALS['BE_USER']->check('non_exclude_fields', $formData['tableName'] . ':' . $fieldName);
+        $fieldNotExcludable = $GLOBALS['BE_USER']->check('non_exclude_fields', $formData['tableName'].':'.$fieldName);
         if ($fieldIsExcluded && !$fieldNotExcludable) {
             return;
         }
 
-        $tsConfig = $formData['pageTsConfig']['TCEFORM.'][$formData['tableName'] . '.'][$fieldName . '.'] ?? [];
+        $tsConfig = $formData['pageTsConfig']['TCEFORM.'][$formData['tableName'].'.'][$fieldName.'.'] ?? [];
         $parameterArray['fieldTSConfig'] = is_array($tsConfig) ? $tsConfig : [];
 
         if ($parameterArray['fieldTSConfig']['disabled'] ?? false) {
@@ -171,10 +173,10 @@ class TranslationService
 
         $parameterArray['fieldConf']['config'] = FormEngineUtility::overrideFieldConf($parameterArray['fieldConf']['config'], $parameterArray['fieldTSConfig']);
 
-        if ($parameterArray['fieldConf']['config']['type'] === 'inline') {
+        if ('inline' === $parameterArray['fieldConf']['config']['type']) {
             return;
         }
-        if ($parameterArray['fieldConf']['config']['type'] === 'flex') {
+        if ('flex' === $parameterArray['fieldConf']['config']['type']) {
             return;
         }
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
@@ -199,6 +201,13 @@ class TranslationService
     }
 
     /**
+     * @param mixed $table
+     * @param mixed $id
+     * @param mixed $lUid_OnPage
+     * @param mixed $returnUrl
+     * @param mixed $pageId
+     * @param mixed $flagIcon
+     *
      * @throws ExtensionConfigurationPathDoesNotExistException
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws RouteNotFoundException
@@ -215,19 +224,7 @@ class TranslationService
         $params = [];
         $uuid = $this->uuidService->generateUuid();
         $site = $this->siteFinder->getSiteByPageId($pageId);
-        $openTranslatedRecordInEditMode = $this->extensionConfiguration->get('ai_suite', 'openTranslatedRecordInEditMode');
-        if ($openTranslatedRecordInEditMode) {
-            $redirectUrl = (string)$this->uriBuilder->buildUriFromRoute(
-                'record_edit',
-                [
-                    'justLocalized' => $table . ':' . $id . ':' . $lUid_OnPage,
-                    'returnUrl' => $returnUrl,
-                ]
-            );
-            $params['redirect'] = $redirectUrl;
-        } else {
-            $params['redirect'] = $returnUrl;
-        }
+        $params['redirect'] = $returnUrl;
         $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
         $params['cmd']['localization'][0]['aiSuite']['srcLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId(), $pageId);
         $params['cmd']['localization'][0]['aiSuite']['destLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($lUid_OnPage, $pageId);
@@ -237,25 +234,26 @@ class TranslationService
         $params['cmd']['localization'][0]['aiSuite']['translateAi'] = 'AI_SUITE_MODEL';
         $params['cmd']['localization'][0]['aiSuite']['uuid'] = $uuid;
         $params['cmd']['localization'][0]['aiSuite']['pageId'] = $pageId;
-        $href = (string)$this->uriBuilder->buildUriFromRoute('tce_db', $params);
+        $href = (string) $this->uriBuilder->buildUriFromRoute('tce_db', $params);
         $title = $this->translate('aiSuite.translateRecord');
 
         if ($flagIcon) {
-            $icon = $this->iconFactory->getIcon($flagIcon, 'small', 'tx-aisuite-extension');
+            $icon = $this->iconFactory->getIcon($flagIcon, IconSize::SMALL, 'tx-aisuite-extension');
             $lC = $icon->render();
         } else {
             $lC = $this->iconFactory
-                ->getIcon('tx-aisuite-extension', 'small')
-                ->render();
+                ->getIcon('tx-aisuite-extension', IconSize::SMALL)
+                ->render()
+            ;
         }
 
         return '<a href="#" '
-            . 'class="btn btn-default t3js-action-localize ai-suite-record-localization" '
-            . 'data-href="' . htmlspecialchars($href) . '" '
-            . 'data-page-id="' . $pageId . '" '
-            . 'data-uuid="' . $uuid . '" '
-            . 'title="' . $title . '">'
-            . $lC . '</a> ';
+            .'class="btn btn-default t3js-action-localize ai-suite-record-localization" '
+            .'data-href="'.htmlspecialchars($href).'" '
+            .'data-page-id="'.$pageId.'" '
+            .'data-uuid="'.$uuid.'" '
+            .'title="'.$title.'">'
+            .$lC.'</a> ';
     }
 
     public function getAvailableTargetLanguages(array $sysLanguages, int $pageId): array
@@ -263,8 +261,8 @@ class TranslationService
         $availableTargetLanguages = [];
 
         foreach ($sysLanguages as $language) {
-            $languageUid = (int)$language['uid'];
-            if ($languageUid === 0 || $languageUid === -1) {
+            $languageUid = (int) $language['uid'];
+            if (0 === $languageUid || -1 === $languageUid) {
                 continue;
             }
             if (!$this->pagesRepository->checkPageTranslationExists($pageId, $languageUid)) {
@@ -282,25 +280,31 @@ class TranslationService
         switch ($translationScope) {
             case 'metadata':
                 $translatableContent['pages'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
+
                 break;
+
             case 'content':
                 $translatableContent = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
+
                 break;
+
             case 'all':
                 $translatableContent = $this->collectPageContentElementFields($pageUid, $sourceLanguageUid, $targetLanguageUid);
                 $translatableContent['pages'] = $this->collectPageMetadataFields($pageUid, $sourceLanguageUid);
+
                 break;
         }
 
         if (empty($translatableContent)) {
-            throw new \RuntimeException('No translatable content found for the specified scope ' . $translationScope . ' and page.');
+            throw new \RuntimeException('No translatable content found for the specified scope '.$translationScope.' and page.');
         }
 
-        if ($translationScope === 'all') {
+        if ('all' === $translationScope) {
             $hasContent = false;
             foreach ($translatableContent as $section) {
                 if (!empty($section)) {
                     $hasContent = true;
+
                     break;
                 }
             }
@@ -318,14 +322,15 @@ class TranslationService
         $parsedBody = $request->getParsedBody();
 
         $directId = $queryParams['id'] ?? $parsedBody['id'] ?? null;
-        if ($directId !== null) {
-            return (int)$directId;
+        if (null !== $directId) {
+            return (int) $directId;
         }
 
         $editPages = $queryParams['edit']['pages'] ?? $parsedBody['edit']['pages'] ?? null;
         if ($editPages && is_array($editPages)) {
             $pageIds = array_keys($editPages);
-            return (int)$pageIds[0];
+
+            return (int) $pageIds[0];
         }
 
         return 0;
@@ -339,7 +344,7 @@ class TranslationService
         }
 
         $status = $taskData['status'] ?? '';
-        if ($status === '') {
+        if ('' === $status) {
             return '';
         }
 
@@ -350,13 +355,13 @@ class TranslationService
             'pending' => [
                 'message' => 'AiSuite.notification.translation.pending.message',
                 'title' => 'AiSuite.notification.translation.pending.title',
-                'severity' => ContextualFeedbackSeverity::NOTICE
+                'severity' => ContextualFeedbackSeverity::NOTICE,
             ],
             'task-error' => [
                 'message' => 'AiSuite.notification.translation.failed.message',
                 'title' => 'AiSuite.notification.translation.failed.title',
-                'severity' => ContextualFeedbackSeverity::ERROR
-            ]
+                'severity' => ContextualFeedbackSeverity::ERROR,
+            ],
         ];
 
         if (isset($notificationConfig[$status])) {
@@ -370,7 +375,7 @@ class TranslationService
             $flashMessageQueue->addMessage($message);
 
             if (!empty($uuid)) {
-                return ($status === 'pending' ? 'pending__' : 'error__') . $uuid;
+                return ('pending' === $status ? 'pending__' : 'error__').$uuid;
             }
         }
 
@@ -390,44 +395,43 @@ class TranslationService
                     'success' => true,
                     'processedCount' => 0,
                     'errorCount' => 0,
-                    'message' => ''
+                    'message' => '',
                 ];
             }
 
             foreach ($finishedTasks as $task) {
                 try {
                     $this->processTranslationTask($task);
-                    $processedCount++;
+                    ++$processedCount;
                 } catch (\Exception $e) {
-                    $errorCount++;
+                    ++$errorCount;
                     $this->logger->error('Error processing translation task', [
                         'uuid' => $task['uuid'],
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
 
-            $success = $errorCount === 0;
+            $success = 0 === $errorCount;
             $message = $this->buildResultMessage($processedCount, $errorCount);
 
             return [
                 'success' => $success,
                 'processedCount' => $processedCount,
                 'errorCount' => $errorCount,
-                'message' => $message
+                'message' => $message,
             ];
-
         } catch (\Exception $e) {
             $this->logger->error('Error processing finished translation tasks for page', [
                 'pageUid' => $pageUid,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'success' => false,
                 'processedCount' => $processedCount,
                 'errorCount' => $errorCount + 1,
-                'message' => 'Error processing translation tasks: ' . $e->getMessage()
+                'message' => 'Error processing translation tasks: '.$e->getMessage(),
             ];
         }
     }
@@ -443,7 +447,42 @@ class TranslationService
         if (!str_starts_with($xlfKey, 'LLL:')) {
             $xlfPrefix = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
         }
-        return sprintf($this->getLanguageService()->sL($xlfPrefix . $xlfKey), ...$arguments);
+
+        return sprintf($this->getLanguageService()->sL($xlfPrefix.$xlfKey), ...$arguments);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function updatePageSlug(int $pageUid): void
+    {
+        $fieldConfig = $GLOBALS['TCA']['pages']['columns']['slug']['config'];
+        $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);
+        $pageRecord = BackendUtility::getRecord('pages', $pageUid);
+
+        if ($pageRecord) {
+            $slug = $slugHelper->generate($pageRecord, $pageRecord['pid']);
+
+            $datamap = [
+                'pages' => [
+                    $pageUid => [
+                        'slug' => $slug,
+                    ],
+                ],
+            ];
+
+            $this->executeDataHandler($datamap, []);
+        }
+    }
+
+    public function copyRecord_procBasedOnFieldType(&$copyMappingArray, $table, $uid, $value, $row, $conf, $language = 0): void
+    {
+        $relationFieldType = $this->getRelationFieldType($conf);
+        if ($this->isReferenceField($conf) || 'mm' === $relationFieldType) {
+            $this->copyRecord_processManyToMany($copyMappingArray, $table, $uid, $value, $conf, $language);
+        } elseif (false !== $relationFieldType) {
+            $this->copyRecord_processRelation($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
+        }
     }
 
     protected function getAllFieldsFromTableTypes(string $table, array $formData, array &$translateFields, bool $extendendMode = true): void
@@ -454,7 +493,7 @@ class TranslationService
             return;
         }
 
-        if ($table === 'tt_content') {
+        if ('tt_content' === $table) {
             $cType = $formData['databaseRow']['CType'][0] ?? '';
             if (!empty($cType) && isset($types[$cType]['showitem'])) {
                 $itemList = $types[$cType]['showitem'];
@@ -477,6 +516,7 @@ class TranslationService
         if (empty($fieldArray[0])) {
             throw new \RuntimeException($this->translate('tx_aisuite.error.field.mustNotBeEmpty'), 1426448465);
         }
+
         return [
             'fieldName' => $fieldArray[0],
             'fieldLabel' => !empty($fieldArray[1]) ? $fieldArray[1] : null,
@@ -495,11 +535,10 @@ class TranslationService
             foreach ($fieldsArray as $fieldString) {
                 $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
                 $fieldName = $fieldArray['fieldName'];
-                if ($fieldName === '--linebreak--') {
+                if ('--linebreak--' === $fieldName) {
                     continue;
-                } else {
-                    $this->checkSingleField($formData, $fieldName, $translateFields);
                 }
+                $this->checkSingleField($formData, $fieldName, $translateFields);
             }
         }
     }
@@ -527,7 +566,7 @@ class TranslationService
     protected function collectInlineChildFields(array $parentFormData, string $parentFieldName, string $foreignTable): array
     {
         $childFields = [];
-        $childUidList = isset($parentFormData['databaseRow'][$parentFieldName]) ? $parentFormData['databaseRow'][$parentFieldName] : [];
+        $childUidList = $parentFormData['databaseRow'][$parentFieldName] ?? [];
         $childUids = explode(',', $childUidList);
         if (!is_array($childUids)) {
             return $childFields;
@@ -542,7 +581,7 @@ class TranslationService
                 $childFormData = $this->getFormData(
                     $parentFormData['request'],
                     [],
-                    (int)$childUid,
+                    (int) $childUid,
                     $foreignTable
                 );
 
@@ -564,18 +603,19 @@ class TranslationService
 
     protected function getShowItemListForTable(string $table, array $formData): string
     {
-        if ($table === 'tt_content') {
+        if ('tt_content' === $table) {
             return $GLOBALS['TCA'][$table]['types'][$formData['databaseRow']['CType'][0] ?? 'text']['showitem'] ?? '';
-        } elseif ($table === 'sys_file_reference') {
-            return $GLOBALS['TCA'][$table]['types'][2]['showitem'] ?? '';
-        } else {
-            $types = $GLOBALS['TCA'][$table]['types'] ?? [];
-            if (empty($types)) {
-                return '';
-            }
-            $firstKey = array_key_first($types);
-            return $types[$firstKey]['showitem'] ?? '';
         }
+        if ('sys_file_reference' === $table) {
+            return $GLOBALS['TCA'][$table]['types'][2]['showitem'] ?? '';
+        }
+        $types = $GLOBALS['TCA'][$table]['types'] ?? [];
+        if (empty($types)) {
+            return '';
+        }
+        $firstKey = array_key_first($types);
+
+        return $types[$firstKey]['showitem'] ?? '';
     }
 
     protected function getFormData(ServerRequestInterface $request, array $defaultValues, int $ceSrcLangUid, string $table)
@@ -589,6 +629,7 @@ class TranslationService
             'returnUrl' => '',
             'defaultValues' => $defaultValues,
         ];
+
         return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
     }
 
@@ -605,11 +646,11 @@ class TranslationService
         foreach ($fieldsArray as $fieldString) {
             $fieldConfiguration = $this->explodeSingleFieldShowItemConfiguration($fieldString);
             $fieldName = $fieldConfiguration['fieldName'];
-            if ($fieldName === '--palette--') {
+            if ('--palette--' === $fieldName) {
                 $this->createPaletteContentArray($fieldConfiguration['paletteName'] ?? '', $translateFields, $formData, $table);
             } elseif (
                 $this->extensionConfiguration->get('ai_suite', 'translateFlexFormFields')
-                && ($fieldName === 'pi_flexform' || ($formData['processedTca']['columns'][$fieldName]['config']['type'] ?? '') === 'flex')
+                && ('pi_flexform' === $fieldName || ($formData['processedTca']['columns'][$fieldName]['config']['type'] ?? '') === 'flex')
             ) {
                 $this->flexFormTranslationService->convertFlexFormToTranslateFields($formData, $translateFields, $fieldName);
             } else {
@@ -639,7 +680,7 @@ class TranslationService
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     protected function collectPageContentElementFields(int $pageUid, int $sourceLanguageUid, int $targetLanguageUid = 0): array
     {
@@ -664,7 +705,7 @@ class TranslationService
                         [
                             'sys_language_uid' => $targetLanguageUid,
                         ],
-                        (int)$sourceUid,
+                        (int) $sourceUid,
                         $table
                     );
                     if (count($fields) > 0) {
@@ -678,7 +719,7 @@ class TranslationService
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @throws Exception
      */
     protected function filterUntranslatedContentElements(array $sourceElements, int $pageUid, int $targetLanguageUid): array
     {
@@ -690,7 +731,7 @@ class TranslationService
         $translatedParentUids = array_column($targetElements, 'l18n_parent');
 
         return array_filter($sourceElements, function ($element) use ($translatedParentUids) {
-            return !in_array((int)$element['uid'], $translatedParentUids);
+            return !in_array((int) $element['uid'], $translatedParentUids);
         });
     }
 
@@ -701,18 +742,19 @@ class TranslationService
             $translationData = $taskAnswer['body']['translationResults'] ?? [];
             if (empty($translationData)) {
                 $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
+
                 throw new \Exception('Invalid translation result format');
             }
             $this->applyTranslationResult($task, $translationData);
             $this->logger->info('Successfully processed translation task', ['uuid' => $task['uuid']]);
             $affectedRows = $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
-            if ($affectedRows === 0) {
+            if (0 === $affectedRows) {
                 throw new \Exception($this->translate('tx_aisuite.error.backgroundTask.notFound', [$task['uuid']]));
             }
         } catch (\Exception $e) {
-            $this->logger->error('Error processing translation task: ' . $e->getMessage(), [
+            $this->logger->error('Error processing translation task: '.$e->getMessage(), [
                 'uuid' => $task['uuid'],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -723,8 +765,8 @@ class TranslationService
      */
     protected function applyTranslationResult(array $task, array $translationData): void
     {
-        $pageUid = (int)$task['table_uid'];
-        $targetLanguageUid = (int)$task['sys_language_uid'];
+        $pageUid = (int) $task['table_uid'];
+        $targetLanguageUid = (int) $task['sys_language_uid'];
         $translationScope = $task['column']; // This contains the translation scope
 
         $existingTranslation = $this->pagesRepository->checkPageTranslationExists($pageUid, $targetLanguageUid);
@@ -743,16 +785,22 @@ class TranslationService
             case 'metadata':
                 $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
                 $this->updatePageSlug($translatedPageUid);
+
                 break;
+
             case 'content':
                 $this->applyContentElementTranslations($targetLanguageUid, $translationData);
+
                 break;
+
             case 'all':
                 $this->applyCompletePageTranslation($translatedPageUid, $targetLanguageUid, $translationData);
                 $this->updatePageSlug($translatedPageUid);
+
                 break;
+
             default:
-                throw new \Exception('Unknown translation scope: ' . $translationScope);
+                throw new \Exception('Unknown translation scope: '.$translationScope);
         }
         BackendUtility::setUpdateSignal('updatePageTree', $pageUid);
     }
@@ -776,7 +824,7 @@ class TranslationService
 
     protected function applyContentElementTranslations(int $targetLanguageUid, array $translationData): void
     {
-        $datamap =  [];
+        $datamap = [];
         $alreadyTranslatedUids = [];
 
         $sortedTranslationData = [];
@@ -789,7 +837,7 @@ class TranslationService
         foreach ($sortedTranslationData as $table => $elements) {
             foreach ($elements as $sourceUid => $element) {
                 try {
-                    $languageParentField = $table === 'tt_content' ? 'l18n_parent' : 'l10n_parent';
+                    $languageParentField = 'tt_content' === $table ? 'l18n_parent' : 'l10n_parent';
                     $existingTranslation = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $languageParentField);
                     if ($existingTranslation) {
                         if (!array_key_exists($table, $datamap)) {
@@ -837,49 +885,25 @@ class TranslationService
         }
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function updatePageSlug(int $pageUid): void
-    {
-        $fieldConfig = $GLOBALS['TCA']['pages']['columns']['slug']['config'];
-        $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);
-        $pageRecord = BackendUtility::getRecord('pages', $pageUid);
-
-        if ($pageRecord) {
-            $slug = $slugHelper->generate($pageRecord, $pageRecord['pid']);
-
-            $datamap = [
-                'pages' => [
-                    $pageUid => [
-                        'slug' => $slug
-                    ]
-                ]
-            ];
-
-            $this->executeDataHandler($datamap, []);
-        }
-    }
-
     protected function buildResultMessage(int $processedCount, int $errorCount): string
     {
-        if ($processedCount === 0 && $errorCount === 0) {
+        if (0 === $processedCount && 0 === $errorCount) {
             return '';
         }
 
         $messages = [];
         if ($processedCount > 0) {
-            $messages[] = $processedCount === 1
+            $messages[] = 1 === $processedCount
                 ? 'Successfully processed 1 translation task'
                 : "Successfully processed {$processedCount} translation tasks";
         }
         if ($errorCount > 0) {
-            $messages[] = $errorCount === 1
+            $messages[] = 1 === $errorCount
                 ? '1 task failed'
                 : "{$errorCount} tasks failed";
         }
 
-        return implode(', ', $messages) . '.';
+        return implode(', ', $messages).'.';
     }
 
     /**
@@ -893,7 +917,7 @@ class TranslationService
         $dataHandler->process_cmdmap();
 
         if (!empty($dataHandler->errorLog)) {
-            throw new \Exception('DataHandler error: ' . implode(', ', $dataHandler->errorLog));
+            throw new \Exception('DataHandler error: '.implode(', ', $dataHandler->errorLog));
         }
     }
 
@@ -906,28 +930,32 @@ class TranslationService
         $cmd = [
             $table => [
                 $uid => [
-                    'localize' => $targetLanguageUid
-                ]
-            ]
+                    'localize' => $targetLanguageUid,
+                ],
+            ],
         ];
 
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
 
         if (!empty($dataHandler->errorLog)) {
-            throw new \Exception("Error creating {$table} translation: " . implode(', ', $dataHandler->errorLog));
+            throw new \Exception("Error creating {$table} translation: ".implode(', ', $dataHandler->errorLog));
         }
 
         return $dataHandler->copyMappingArray_merged ?? [];
     }
 
     /**
-     * DATAHANDLER FUNCTIONS
+     * DATAHANDLER FUNCTIONS.
+     *
+     * @param mixed $copyMappingArray
+     * @param mixed $table
+     * @param mixed $uid
+     * @param mixed $language
      */
-
     protected function localize(&$copyMappingArray, $table, $uid, $language): void
     {
-        $uid = (int)$uid;
+        $uid = (int) $uid;
 
         if (!$this->tcaSchemaFactory->has($table) || !$uid) {
             return;
@@ -950,48 +978,48 @@ class TranslationService
             return;
         }
         $pageRecord = [];
-        if ($table === 'pages') {
+        if ('pages' === $table) {
             $pageRecord = $row;
-        } elseif ((int)$row['pid'] > 0) {
+        } elseif ((int) $row['pid'] > 0) {
             $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
             if (!is_array($pageRecord)) {
                 return;
             }
         }
-        if (($pageRecord === [] && $row['pid'] === 0 && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table)))
+        if ([] === $pageRecord && 0 === $row['pid'] && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table))
         ) {
             return;
         }
 
         [$pageId] = BackendUtility::getTSCpid($table, $uid, '');
         // Try to fetch the site language from the pages' associated site
-        $siteLanguage = $this->getSiteLanguageForPage((int)$pageId, (int)$language);
-        if ($siteLanguage === null) {
+        $siteLanguage = $this->getSiteLanguageForPage((int) $pageId, (int) $language);
+        if (null === $siteLanguage) {
             return;
         }
 
         // Make sure that records which are translated from another language than the default language have a correct
         // localization source set themselves, before translating them to another language.
-        if ((int)$row[$translationOriginPointerFieldName] !== 0
+        if (0 !== (int) $row[$translationOriginPointerFieldName]
             && $row[$languageFieldName] > 0) {
             $localizationParentRecord = BackendUtility::getRecord(
                 $table,
                 $row[$translationOriginPointerFieldName]
             );
-            if ((int)$localizationParentRecord[$languageFieldName] !== 0) {
+            if (0 !== (int) $localizationParentRecord[$languageFieldName]) {
                 return;
             }
         }
 
         // Default language records must never have a localization parent as they are the origin of any translation.
-        if ((int)$row[$translationOriginPointerFieldName] !== 0
-            && (int)$row[$languageFieldName] === 0) {
+        if (0 !== (int) $row[$translationOriginPointerFieldName]
+            && 0 === (int) $row[$languageFieldName]) {
             return;
         }
 
         $overrideValues = [];
-        $overrideValues[$languageFieldName] = (int)$language;
-        if ((int)$row[$languageFieldName] === 0) {
+        $overrideValues[$languageFieldName] = (int) $language;
+        if (0 === (int) $row[$languageFieldName]) {
             $overrideValues[$translationOriginPointerFieldName] = $uid;
         }
         if ($languageCapability->hasTranslationSourceField()) {
@@ -1003,9 +1031,9 @@ class TranslationService
         }
         foreach ($schema->getFields() as $field) {
             $fieldContent = $row[$field->getName()];
-            if ($field->getTranslationBehaviour() === FieldTranslationBehaviour::PrefixLanguageTitle
+            if (FieldTranslationBehaviour::PrefixLanguageTitle === $field->getTranslationBehaviour()
                 && $field->isType(TableColumnType::TEXT, TableColumnType::INPUT, TableColumnType::EMAIL, TableColumnType::LINK)
-                && (string)$row[$field->getName()] !== ''
+                && '' !== (string) $row[$field->getName()]
             ) {
                 $overrideValues[$field->getName()] = $fieldContent;
             }
@@ -1016,15 +1044,15 @@ class TranslationService
             }
         }
 
-        if ($table !== 'pages') {
+        if ('pages' !== $table) {
             $this->copyRecord($copyMappingArray, $table, $uid, $overrideValues, '', $language);
         }
     }
 
     protected function copyRecord(&$copyMappingArray, $table, $uid, $overrideValues = [], $excludeFields = '', $language = 0, $ignoreLocalization = false): void
     {
-        $uid = ($origUid = (int)$uid);
-        if (!$this->tcaSchemaFactory->has($table) || $uid === 0) {
+        $uid = ($origUid = (int) $uid);
+        if (!$this->tcaSchemaFactory->has($table) || 0 === $uid) {
             return;
         }
 
@@ -1034,29 +1062,29 @@ class TranslationService
         }
         BackendUtility::workspaceOL($table, $row, $GLOBALS['BE_USER']->workspace);
         $pageRecord = [];
-        if ($table === 'pages') {
+        if ('pages' === $table) {
             $pageRecord = $row;
-        } elseif ((int)$row['pid'] > 0) {
+        } elseif ((int) $row['pid'] > 0) {
             $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
             if (!is_array($pageRecord)) {
                 return;
             }
         }
-        if (($pageRecord === [] && $row['pid'] === 0 && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table)))
+        if ([] === $pageRecord && 0 === $row['pid'] && !($GLOBALS['BE_USER']->isAdmin() || BackendUtility::isRootLevelRestrictionIgnored($table))
         ) {
             return;
         }
 
-        $fullLanguageCheckNeeded = $table !== 'pages';
+        $fullLanguageCheckNeeded = 'pages' !== $table;
         if (!$ignoreLocalization && ($language <= 0 || !$GLOBALS['BE_USER']->checkLanguageAccess($language)) && !$GLOBALS['BE_USER']->recordEditAccessInternals($table, $row, false, null, $fullLanguageCheckNeeded)) {
             return;
         }
 
-        $nonFields = array_unique(GeneralUtility::trimExplode(',', 'uid,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,' . $excludeFields, true));
+        $nonFields = array_unique(GeneralUtility::trimExplode(',', 'uid,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,'.$excludeFields, true));
         BackendUtility::workspaceOL($table, $row, $GLOBALS['BE_USER']->workspace);
         if (BackendUtility::isTableWorkspaceEnabled($table)
             && $GLOBALS['BE_USER']->workspace > 0
-            && VersionState::tryFrom($row['t3ver_state'] ?? 0) === VersionState::DELETE_PLACEHOLDER
+            && VersionState::DELETE_PLACEHOLDER === VersionState::tryFrom($row['t3ver_state'] ?? 0)
         ) {
             return;
         }
@@ -1067,10 +1095,9 @@ class TranslationService
             if (!in_array($field, $nonFields, true)) {
                 if (array_key_exists($field, $overrideValues)) {
                     continue;
-                } else {
-                    $conf = $schema->hasField($field) ? $schema->getField($field)->getConfiguration() : [];
-                    $this->copyRecord_procBasedOnFieldType($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
                 }
+                $conf = $schema->hasField($field) ? $schema->getField($field)->getConfiguration() : [];
+                $this->copyRecord_procBasedOnFieldType($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
             }
         }
         $copyMappingArray[$table][$origUid] = 1;
@@ -1080,8 +1107,9 @@ class TranslationService
     {
         try {
             $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageId);
+
             return $site->getLanguageById($languageId);
-        } catch (SiteNotFoundException | \InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException|SiteNotFoundException $e) {
             $sites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
             foreach ($sites as $site) {
                 try {
@@ -1093,16 +1121,6 @@ class TranslationService
         }
 
         return null;
-    }
-
-    public function copyRecord_procBasedOnFieldType(&$copyMappingArray, $table, $uid, $value, $row, $conf, $language = 0): void
-    {
-        $relationFieldType = $this->getRelationFieldType($conf);
-        if ($this->isReferenceField($conf) || $relationFieldType === 'mm') {
-            $this->copyRecord_processManyToMany($copyMappingArray, $table, $uid, $value, $conf, $language);
-        } elseif ($relationFieldType !== false) {
-            $this->copyRecord_processRelation($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
-        }
     }
 
     protected function copyRecord_processRelation(
@@ -1128,7 +1146,7 @@ class TranslationService
 
     protected function copyRecord_processManyToMany(&$copyMappingArray, $table, $uid, $value, $conf, $language)
     {
-        $allowedTables = $conf['type'] === 'group' ? $conf['allowed'] : $conf['foreign_table'];
+        $allowedTables = 'group' === $conf['type'] ? $conf['allowed'] : $conf['foreign_table'];
         $allowedTablesArray = GeneralUtility::trimExplode(',', $allowedTables, true);
         $mmTable = !empty($conf['MM']) ? $conf['MM'] : '';
 
@@ -1137,11 +1155,11 @@ class TranslationService
 
         // Check if referenced records of select or group fields should also be localized in general.
         // A further check is done in the loop below for each table name.
-        if ($language > 0 && $mmTable === '' && !empty($conf['localizeReferencesAtParentLocalization'])) {
+        if ($language > 0 && '' === $mmTable && !empty($conf['localizeReferencesAtParentLocalization'])) {
             // Check whether allowed tables can be localized.
             $localizeTables = [];
             foreach ($allowedTablesArray as $allowedTable) {
-                $localizeTables[$allowedTable] = (bool)$this->tcaSchemaFactory->get($allowedTable)->isLanguageAware();
+                $localizeTables[$allowedTable] = (bool) $this->tcaSchemaFactory->get($allowedTable)->isLanguageAware();
             }
 
             foreach ($dbAnalysis->itemArray as $index => $item) {
@@ -1166,6 +1184,7 @@ class TranslationService
         $relationHandler->setWorkspaceId($GLOBALS['BE_USER']->workspace);
         $relationHandler->setUseLiveReferenceIds($isWorkspacesLoaded);
         $relationHandler->setUseLiveParentIds($isWorkspacesLoaded);
+
         return $relationHandler;
     }
 
@@ -1174,7 +1193,7 @@ class TranslationService
         if (
             empty($conf['foreign_table'])
             || !in_array($conf['type'] ?? '', ['inline', 'file'], true)
-            || ($conf['type'] === 'file' && !($conf['foreign_field'] ?? false))
+            || ('file' === $conf['type'] && !($conf['foreign_field'] ?? false))
         ) {
             return false;
         }
@@ -1184,6 +1203,7 @@ class TranslationService
         if ($conf['MM'] ?? false) {
             return 'mm';
         }
+
         return 'list';
     }
 
@@ -1192,6 +1212,7 @@ class TranslationService
         if (!isset($conf['type'])) {
             return false;
         }
-        return ($conf['type'] === 'group') || (($conf['type'] === 'select' || $conf['type'] === 'category') && !empty($conf['foreign_table']));
+
+        return ('group' === $conf['type']) || (('select' === $conf['type'] || 'category' === $conf['type']) && !empty($conf['foreign_table']));
     }
 }

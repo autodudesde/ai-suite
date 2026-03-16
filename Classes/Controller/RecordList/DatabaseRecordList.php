@@ -8,9 +8,14 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
+use TYPO3\CMS\Backend\Domain\Repository\Localization\LocalizationRepository;
 use TYPO3\CMS\Backend\Module\ModuleProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Template\Components\ComponentFactory;
+use TYPO3\CMS\Backend\View\BackendLayoutView;
 use TYPO3\CMS\Backend\View\BackendViewFactory;
+use TYPO3\CMS\Core\Domain\RecordFactory;
+use TYPO3\CMS\Core\Domain\RecordInterface;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Schema\SearchableSchemaFieldsCollector;
 use TYPO3\CMS\Core\Schema\TcaSchemaFactory;
@@ -19,7 +24,6 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
 {
     protected BackendUserService $backendUserService;
     protected TranslationService $translationService;
-    protected readonly TcaSchemaFactory $tcaSchemaFactory;
 
     public function __construct(
         IconFactory $iconFactory,
@@ -29,9 +33,13 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
         BackendViewFactory $backendViewFactory,
         ModuleProvider $moduleProvider,
         SearchableSchemaFieldsCollector $searchableSchemaFieldsCollector,
+        TcaSchemaFactory $tcaSchemaFactory,
+        RecordFactory $recordFactory,
+        ComponentFactory $componentFactory,
+        LocalizationRepository $localizationRepository,
+        BackendLayoutView $backendLayoutView,
         BackendUserService $backendUserService,
         TranslationService $translationService,
-        ?TcaSchemaFactory $tcaSchemaFactory = null
     ) {
         parent::__construct(
             $iconFactory,
@@ -41,39 +49,36 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
             $backendViewFactory,
             $moduleProvider,
             $searchableSchemaFieldsCollector,
-            $tcaSchemaFactory
+            $tcaSchemaFactory,
+            $recordFactory,
+            $componentFactory,
+            $localizationRepository,
+            $backendLayoutView,
         );
         $this->backendUserService = $backendUserService;
         $this->translationService = $translationService;
     }
 
-    /**
-     * Creates the localization panel
-     *
-     * @param string $table The table
-     * @param mixed[] $row The record for which to make the localization panel.
-     */
-    public function makeLocalizationPanel($table, $row, array $translations): string
+    public function makeLocalizationPanel(string $table, RecordInterface $record, array $translations): string
     {
-
-        $out = parent::makeLocalizationPanel($table, $row, $translations);
+        $out = parent::makeLocalizationPanel($table, $record, $translations);
         if ($out && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_list_wizard')) {
-            $pageId = (int)($table === 'pages' ? $row['uid'] : $row['pid']);
+            $pageId = 'pages' === $table ? $record->getUid() : $record->getPid();
             $possibleTranslations = $this->possibleTranslations;
-            if ($table === 'pages') {
+            if ('pages' === $table) {
                 $possibleTranslations = array_map(static fn ($siteLanguage) => $siteLanguage->getLanguageId(), $this->languagesAllowedForUser);
                 $possibleTranslations = array_filter($possibleTranslations, static fn ($languageUid) => $languageUid > 0);
             }
             $languageInformation = $this->translateTools->getSystemLanguages($pageId);
             foreach ($possibleTranslations as $lUid_OnPage) {
                 if ($this->isEditable($table)
-                    && !$this->isRecordDeletePlaceholder($row)
+                    && !$this->isRecordDeletePlaceholder($record)
                     && !isset($translations[$lUid_OnPage])
                     && $this->getBackendUserAuthentication()->checkLanguageAccess($lUid_OnPage)
                 ) {
                     $out .= $this->translationService->buildTranslateButton(
                         $table,
-                        $row['uid'],
+                        $record->getUid(),
                         $lUid_OnPage,
                         $this->listURL(),
                         $pageId,
@@ -82,6 +87,7 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
                 }
             }
         }
+
         return $out;
     }
 }

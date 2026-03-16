@@ -24,17 +24,17 @@
     "AutoDudes",
     "AI Suite"
   ],
-  "version": "13.11.1",
+  "version": "14.0.0",
   "support": {
     "issues": "https://github.com/autodudesde/ai-suite/issues"
   },
   "require": {
     "php": "^8.2",
-    "typo3/cms-backend": "^13.4.1",
-    "typo3/cms-filelist": "^13.4.1",
-    "typo3/cms-fluid": "^13.4.1",
-    "typo3/cms-rte-ckeditor": "^13.4.1",
-    "typo3/cms-seo": "^13.4.1"
+    "typo3/cms-backend": "^14.0",
+    "typo3/cms-filelist": "^14.0",
+    "typo3/cms-fluid": "^14.0",
+    "typo3/cms-rte-ckeditor": "^14.0",
+    "typo3/cms-seo": "^14.0"
   },
   "suggest": {
     "b13/container": "*",
@@ -60,23 +60,22 @@
     }
   },
   "require-dev": {
-    "b13/container": "^3.0",
-    "bk2k/bootstrap-package": "^15.0",
+    "b13/container": "^3.2",
+    "bk2k/bootstrap-package": "^16.0",
     "friendsofphp/php-cs-fixer": "^3.52",
-    "friendsoftypo3/content-blocks": "^1.0",
-    "georgringer/news": "^12.0",
-    "helhum/typo3-console": "^8.2",
-    "ichhabrecht/content-defender": "^3.5",
+    "friendsoftypo3/content-blocks": "^2.0",
+    "georgringer/news": "^14.0",
+    "helhum/typo3-console": "^8.3",
     "phpstan/phpstan": "^1.10",
-    "typo3/cms-beuser": "^13.4.1",
-    "typo3/cms-filemetadata": "^13.4.1",
-    "typo3/cms-form": "^13.4.1",
-    "typo3/cms-impexp": "^13.4.1",
-    "typo3/cms-indexed-search": "^13.4.1",
-    "typo3/cms-install": "^13.4.1",
-    "typo3/cms-lowlevel": "^13.4.1",
-    "typo3/cms-tstemplate": "^13.4.1",
-    "typo3/cms-workspaces": "^13.4.1",
+    "typo3/cms-beuser": "^14.0",
+    "typo3/cms-filemetadata": "^14.0",
+    "typo3/cms-form": "^14.0",
+    "typo3/cms-impexp": "^14.0",
+    "typo3/cms-indexed-search": "^14.0",
+    "typo3/cms-install": "^14.0",
+    "typo3/cms-lowlevel": "^14.0",
+    "typo3/cms-tstemplate": "^14.0",
+    "typo3/cms-workspaces": "^14.0",
     "typo3/coding-standards": "^0.8"
   },
   "minimum-stability": "dev",

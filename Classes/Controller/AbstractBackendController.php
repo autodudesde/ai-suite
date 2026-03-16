@@ -1,6 +1,6 @@
 <?php
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,11 +8,12 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Events\AfterAiSuiteModuleInitalizeEvent;
+use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
@@ -21,17 +22,17 @@ use AutoDudes\AiSuite\Service\SessionService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Template\Components\Buttons\AiSuiteLinkButton;
-use AutoDudes\AiSuite\Service\BackendUserService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 class AbstractBackendController
 {
@@ -145,13 +146,15 @@ class AbstractBackendController
             'id' => $this->request->getQueryParams()['id'] ?? $rootPageId,
         ];
         $uriParameters = array_merge_recursive($uriParameters, $additionalParams);
-        $url = (string)$this->uriBuilder->buildUriFromRoute($route, $uriParameters);
+        $url = (string) $this->uriBuilder->buildUriFromRoute($route, $uriParameters);
         $button = GeneralUtility::makeInstance(AiSuiteLinkButton::class);
+
         return $button
-            ->setIcon($this->iconFactory->getIcon($iconIdentifier, 'small'))
+            ->setIcon($this->iconFactory->getIcon($iconIdentifier, IconSize::SMALL))
             ->setTitle($this->translationService->translate($translationKey))
             ->setShowLabelText(true)
             ->setClasses($classes)
-            ->setHref($url);
+            ->setHref($url)
+        ;
     }
 }

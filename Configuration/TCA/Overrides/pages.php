@@ -5,9 +5,9 @@ $GLOBALS['TCA']['pages']['columns']['description']['config'] = array_merge_recur
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoMetaDescription'
-            ]
-        ]
+                'renderType' => 'aiSeoMetaDescription',
+            ],
+        ],
     ]
 );
 
@@ -16,9 +16,9 @@ $GLOBALS['TCA']['pages']['columns']['seo_title']['config'] = array_merge_recursi
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoPageTitle'
-            ]
-        ]
+                'renderType' => 'aiSeoPageTitle',
+            ],
+        ],
     ]
 );
 
@@ -27,9 +27,9 @@ $GLOBALS['TCA']['pages']['columns']['og_title']['config'] = array_merge_recursiv
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoOpenGraphTitle'
-            ]
-        ]
+                'renderType' => 'aiSeoOpenGraphTitle',
+            ],
+        ],
     ]
 );
 
@@ -38,9 +38,9 @@ $GLOBALS['TCA']['pages']['columns']['twitter_title']['config'] = array_merge_rec
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoTwitterTitle'
-            ]
-        ]
+                'renderType' => 'aiSeoTwitterTitle',
+            ],
+        ],
     ]
 );
 
@@ -49,9 +49,9 @@ $GLOBALS['TCA']['pages']['columns']['og_description']['config'] = array_merge_re
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoOpenGraphDescription'
-            ]
-        ]
+                'renderType' => 'aiSeoOpenGraphDescription',
+            ],
+        ],
     ]
 );
 
@@ -60,9 +60,9 @@ $GLOBALS['TCA']['pages']['columns']['twitter_description']['config'] = array_mer
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoTwitterDescription'
-            ]
-        ]
+                'renderType' => 'aiSeoTwitterDescription',
+            ],
+        ],
     ]
 );
 
@@ -71,8 +71,8 @@ $GLOBALS['TCA']['pages']['columns']['abstract']['config'] = array_merge_recursiv
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSeoAbstract'
-            ]
-        ]
+                'renderType' => 'aiSeoAbstract',
+            ],
+        ],
     ]
 );

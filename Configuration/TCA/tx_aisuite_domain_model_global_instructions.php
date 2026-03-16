@@ -1,6 +1,6 @@
 <?php
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,8 +8,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
-
+ */
 
 return [
     'ctrl' => [
@@ -17,7 +16,6 @@ return [
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'versioningWS' => true,
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
@@ -25,14 +23,11 @@ return [
         'delete' => 'deleted',
         'enablecolumns' => [
             'disabled' => 'hidden',
-            'starttime' => 'starttime',
-            'endtime' => 'endtime',
         ],
-        'searchFields' => 'name, instructions, scope, context',
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
         'security' => [
             'ignorePageTypeRestriction' => true,
-        ]
+        ],
     ],
     'types' => [
         '1' => [
@@ -61,7 +56,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['', 0],
+                    ['label' => '', 'value' => 0],
                 ],
                 'foreign_table' => 'tx_aisuite_domain_model_global_instructions',
                 'foreign_table_where' => 'AND tx_aisuite_domain_model_global_instructions.pid=###CURRENT_PID### AND tx_aisuite_domain_model_global_instructions.sys_language_uid IN (-1,0)',
@@ -89,38 +84,9 @@ return [
                     [
                         'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
                         '',
-                    ]
+                    ],
                 ],
             ],
-        ],
-        'starttime' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
-            'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
-                'eval' => 'datetime',
-                'default' => 0,
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ]
-            ]
-        ],
-        'endtime' => [
-            'exclude' => true,
-            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
-            'config' => [
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
-                'eval' => 'datetime',
-                'default' => 0,
-                'range' => [
-                    'upper' => mktime(0, 0, 0, 1, 1, 2038),
-                ],
-                'behaviour' => [
-                    'allowLanguageSynchronization' => true,
-                ]
-            ]
         ],
         'name' => [
             'exclude' => true,
@@ -129,7 +95,7 @@ return [
                 'type' => 'input',
                 'size' => 50,
                 'eval' => 'trim',
-                'required' => true
+                'required' => true,
             ],
         ],
         'instructions' => [
@@ -149,8 +115,8 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.pages', 'pages'],
-                    ['LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.files', 'files'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.pages', 'value' => 'pages'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.files', 'value' => 'files'],
                 ],
                 'default' => 'pages',
                 'size' => 1,
@@ -163,7 +129,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'AutoDudes\\AiSuite\\Tca\\ScopeItemsProcFunc->getScopeItems',
+                'itemsProcFunc' => 'AutoDudes\AiSuite\Tca\ScopeItemsProcFunc->getScopeItems',
                 'default' => 'general',
                 'size' => 1,
                 'eval' => 'trim',
@@ -218,10 +184,10 @@ return [
                 'default' => 1,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
         'extend_previous_instructions' => [
             'exclude' => true,
@@ -231,10 +197,10 @@ return [
                 'default' => 1,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
         'override_predefined_prompt' => [
             'exclude' => true,
@@ -245,10 +211,10 @@ return [
                 'default' => 0,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable',
                     ],
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ],
 ];

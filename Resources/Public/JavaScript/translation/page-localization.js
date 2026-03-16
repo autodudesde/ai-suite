@@ -15,6 +15,7 @@ class PageLocalization {
     constructor() {
         this.currentPageId = null;
         this.currentUuid = null;
+        this.currentPageMetadataFieldCount = 0;
         this.selectedSourceLanguageId = null;
         this.selectedTargetLanguageId = null;
         this.selectedTranslationServiceId = null;
@@ -76,6 +77,7 @@ class PageLocalization {
                 if (response && response.output) {
                     slide.html(response.output);
                     self.currentUuid = response.uuid;
+                    self.currentPageMetadataFieldCount = response.pageMetadataFieldCount ?? 0;
 
                     self.addLanguageSelectionEventListeners();
 
@@ -182,7 +184,7 @@ class PageLocalization {
             summaryContent.html(Generation.showSpinnerModal(TYPO3.lang['tx_aisuite.js.loading.translationSummary']));
         }
         try {
-            const response = await this.getSummary();
+            const response = await this.getContent();
             const result = await response.resolve();
 
             let summaryHtml = '<h3>' + TYPO3.lang['tx_aisuite.js.summary.wholePageTranslation'] + '</h3>';
@@ -190,16 +192,14 @@ class PageLocalization {
 
             summaryHtml += '<p>';
 
-            if(result && result.pageMetadata && result.pageMetadata.fields) {
-                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.pageProperties'] + ' <strong>' + result.pageMetadata.fields.length + ' ' + TYPO3.lang['tx_aisuite.js.summary.fields'] + '</strong></h4>';
+            if (this.currentPageMetadataFieldCount > 0) {
+                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.pageProperties'] + ' <strong>' + this.currentPageMetadataFieldCount + ' ' + TYPO3.lang['tx_aisuite.js.summary.fields'] + '</strong></h4>';
+            } else {
+                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.pageProperties'] + '</h4>';
             }
 
-            if (result && result.records) {
-                Object.keys(result.records).forEach(colPos => {
-                    if (result.records[colPos]) {
-                        totalElements += result.records[colPos].length;
-                    }
-                });
+            if (result && result.layout) {
+                totalElements = result.layout.elementCount ?? 0;
 
                 if (totalElements > 0) {
                     summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.contentElements'] + ' <strong>' + totalElements + ' ' + TYPO3.lang['tx_aisuite.js.summary.elements'] + '</strong></h4>';
@@ -213,57 +213,58 @@ class PageLocalization {
             }
             MultiStepWizard.unlockNextStep();
         } catch (error) {
+            console.error('AiSuite: Failed to load translation summary', error);
             if (summaryContent.length) {
                 summaryContent.html('<span class="text-warning">' + TYPO3.lang['tx_aisuite.js.warning.couldNotLoadSummary'] + '</span>');
             }
         }
     }
 
-    getSummary() {
-        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize_summary).withQueryArguments({
-            pageId: parseInt(this.currentPageId),
-            destLanguageId: parseInt(this.selectedTargetLanguageId),
-            languageId: parseInt(this.selectedSourceLanguageId),
+    getContent() {
+        return new AjaxRequest(TYPO3.settings.ajaxUrls.wizard_localization_get_content).withQueryArguments({
+            pageUid: parseInt(this.currentPageId),
+            targetLanguage: parseInt(this.selectedTargetLanguageId),
+            sourceLanguage: parseInt(this.selectedSourceLanguageId),
         }).get();
     }
 
     async startWholePageTranslation() {
         try {
-            const response = await this.getSummary();
+            const response = await this.getContent();
             const result = await response.resolve();
 
             let uidList = [];
 
-            if (result && result.records) {
-                Object.keys(result.records).forEach(colPos => {
-                    if (result.records[colPos]) {
-                        result.records[colPos].forEach(record => {
+            if (result && result.layout && result.layout.rows) {
+                result.layout.rows.forEach(row => {
+                    (row.columns || []).forEach(column => {
+                        (column.records || []).forEach(record => {
                             uidList.push(record.uid);
                         });
-                    }
+                    });
                 });
             }
 
-            if (uidList.length === 0) {
-                uidList = [0];
-            }
-
-            const action = `localizeWholePage${this.selectedTranslationServiceId}`;
-            await this.localizeRecords(action, uidList);
+            await this.localizeRecords(uidList);
         } catch (error) {
             Modal.show(TYPO3.lang['tx_aisuite.js.error.general'], TYPO3.lang['tx_aisuite.js.error.failedToStartTranslation'], Severity.error);
         }
     }
 
-    localizeRecords(localizationMode, uidList) {
-        return new AjaxRequest(TYPO3.settings.ajaxUrls.records_localize).withQueryArguments({
-            pageId: parseInt(this.currentPageId),
-            srcLanguageId: parseInt(this.selectedSourceLanguageId),
-            destLanguageId: parseInt(this.selectedTargetLanguageId),
-            action: localizationMode,
-            uidList: uidList,
-            uuid: this.currentUuid
-        }).get();
+    localizeRecords(uidList) {
+        return new AjaxRequest(TYPO3.settings.ajaxUrls.wizard_localization_localize).post({
+            recordType: 'pages',
+            recordUid: parseInt(this.currentPageId),
+            data: {
+                sourceLanguage: parseInt(this.selectedSourceLanguageId),
+                targetLanguage: parseInt(this.selectedTargetLanguageId),
+                localizationMode: 'localize',
+                localizationHandler: this.selectedTranslationServiceId,
+                wholePageMode: true,
+                selectedRecordUids: uidList,
+                uuid: this.currentUuid,
+            },
+        });
     }
 
     addDeleteEventListener() {

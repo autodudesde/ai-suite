@@ -16,6 +16,7 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\SiteService;
@@ -46,6 +47,7 @@ class TranslationController extends AbstractAjaxController
         ViewFactoryInterface $viewFactory,
         LoggerInterface $logger,
         EventDispatcher $eventDispatcher,
+        protected readonly MetadataService $metadataService,
     ) {
         parent::__construct(
             $backendUserService,
@@ -155,11 +157,14 @@ class TranslationController extends AbstractAjaxController
                 ]
             );
 
+            $pageMetadata = $this->metadataService->getPageMetadataForTranslation($pageId);
+
             $response->getBody()->write(
                 json_encode([
                     'success' => true,
                     'output' => $content,
-                    'uuid' => $this->uuidService->generateUuid()
+                    'uuid' => $this->uuidService->generateUuid(),
+                    'pageMetadataFieldCount' => $pageMetadata['count'],
                 ])
             );
         } catch (\Exception $e) {
