@@ -67,14 +67,6 @@ $beGroupColumns =  [
             'type' => 'input',
             'eval' => 'trim',
         ],
-    ],
-    'openTranslatedRecordInEditMode' => [
-        'label' => $lll . 'aiSuite.beGroups.field.openTranslatedRecordInEditMode',
-        'config' => [
-            'type' => 'check',
-            'renderType' => 'checkboxToggle',
-            'default' => 1,
-        ],
     ]
 ];
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(
@@ -83,7 +75,7 @@ $beGroupColumns =  [
 );
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
     'be_groups',
-    '--div--;' . $lll . 'aiSuite.beGroups.tab.settings, aiSuiteApiKey, openAiApiKey, anthropicApiKey, googleTranslateApiKey, deeplApiKey, deeplApiMode, midjourneyApiKey, midjourneyId, mediaStorageFolder, openTranslatedRecordInEditMode',
+    '--div--;' . $lll . 'aiSuite.beGroups.tab.settings, aiSuiteApiKey, openAiApiKey, anthropicApiKey, googleTranslateApiKey, deeplApiKey, deeplApiMode, midjourneyApiKey, midjourneyId, mediaStorageFolder',
     '',
     'after:category_perms'
 );

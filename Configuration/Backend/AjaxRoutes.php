@@ -173,6 +173,10 @@ return [
         'path' => '/glossary/fetch-file-translation',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::fetchGlossariesForFileTranslationAction'
     ],
+    'aisuite_glossary_fetch_page_translation' => [
+        'path' => '/glossary/fetch-page-translation',
+        'target' => \AutoDudes\AiSuite\Controller\Ajax\GlossarController::class . '::fetchGlossariesForPageTranslationAction'
+    ],
     'aisuite_translation_wizard_slide_one' => [
         'path' => '/translation/wizard-slide-one',
         'target' => \AutoDudes\AiSuite\Controller\Ajax\TranslationController::class . '::getTranslationWizardSlideOneAction'

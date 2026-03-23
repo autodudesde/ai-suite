@@ -1059,9 +1059,6 @@
             <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder" xml:space="preserve">
                 <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.openTranslatedRecordInEditMode" xml:space="preserve">
-                <source>Open translated record in edit mode</source>
-            </trans-unit>
             <trans-unit id="aiSuite.customPermOptions.headerAiSuiteFeatures" xml:space="preserve">
                 <source>AI Suite Features</source>
             </trans-unit>
@@ -1409,6 +1406,15 @@
             </trans-unit>
             <trans-unit id="translation.noTranslatableFields" resname="translation.noTranslatableFields">
                 <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
+            </trans-unit>
+            <trans-unit id="translation.wholePageNoContentElements" resname="translation.wholePageNoContentElements">
+                <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
+            </trans-unit>
+            <trans-unit id="translation.contentElementLocalizationFailed" resname="translation.contentElementLocalizationFailed">
+                <source>Content element localization failed during whole page translation.</source>
+            </trans-unit>
+            <trans-unit id="translation.pageMetadataLocalizationFailed" resname="translation.pageMetadataLocalizationFailed">
+                <source>Page metadata localization failed.</source>
             </trans-unit>
             <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
                 <source>Select (target) language:</source>
@@ -1940,6 +1946,39 @@
             </trans-unit>
             <trans-unit id="tx_aisuite_domain_model_global_instructions.scope">
                 <source>Scope</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.general">
+                <source>General (Files)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.imageWizard">
+                <source>ImageWizard (Files)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.metadata">
+                <source>Metadata (Files)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.general">
+                <source>General (Pages)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.pageTree">
+                <source>PageTree</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.imageWizard">
+                <source>ImageWizard (Pages)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.contentElement">
+                <source>ContentElementsw</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.newsRecord">
+                <source>News Records</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.editContent">
+                <source>RTE Content Editing</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.metadata">
+                <source>Metadata (Pages)</source>
+            </trans-unit>
+            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.translation">
+                <source>Translations (DeepL and Google Translate are excluded)</source>
             </trans-unit>
             <trans-unit id="tx_aisuite_domain_model_global_instructions.selected_pages">
                 <source>Selected Pages</source>

@@ -96,6 +96,7 @@ class GenerationHandling {
                     }
                 }
             } catch (error) {
+                console.log(error);
                 if (error.message === 'Invalid URL for --sref parameter') {
                     Notification.warning(
                         TYPO3.lang['AiSuite.notification.invalidUrlTitle'],

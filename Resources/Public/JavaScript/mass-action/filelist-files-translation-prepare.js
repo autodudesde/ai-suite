@@ -123,10 +123,6 @@ class FilelistFilesTranslationPrepare {
         }
         glossarySelection.style.display = 'none';
 
-        if (textAiModel === 'GoogleTranslate') {
-            return;
-        }
-
         const sourceLanguageSelect = document.getElementById('sourceLanguage');
         const targetLanguageSelect = document.getElementById('targetLanguage');
 
