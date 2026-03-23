@@ -8,16 +8,23 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
+use B13\Container\Service\RecordLocalizeSummaryModifier;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController
+class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\LocalizationController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
     public const ACTION_LOCALIZE_OPEN_AI = 'localizeChatGPT';
     public const ACTION_LOCALIZE_ANTHROPIC = 'localizeAnthropic';
     public const ACTION_LOCALIZE_GOOGLE_TRANSLATE = 'localizeGoogleTranslate';
@@ -59,38 +66,18 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
 
         if (ExtensionManagementUtility::isLoaded('container')) {
             $payload = json_decode($response->getBody()->getContents(), true);
-            $recordLocalizeSummaryModifier = GeneralUtility::makeInstance(\B13\Container\Service\RecordLocalizeSummaryModifier::class);
+            $recordLocalizeSummaryModifier = GeneralUtility::makeInstance(RecordLocalizeSummaryModifier::class);
             $payload = $recordLocalizeSummaryModifier->rebuildPayload($payload);
 
             $payload = $this->enhanceLocalizationSummary($payload, $request);
+
             return new JsonResponse($payload);
         }
 
         $payload = json_decode($response->getBody()->getContents(), true);
         $payload = $this->enhanceLocalizationSummary($payload, $request);
+
         return new JsonResponse($payload);
-    }
-
-    protected function enhanceLocalizationSummary(array $payload, ServerRequestInterface $request): array
-    {
-        $params = $request->getQueryParams();
-
-        if (!isset($params['pageId'], $params['languageId'])) {
-            return $payload;
-        }
-
-        $pageId = (int)$params['pageId'];
-        $srcLanguageId = (int)$params['languageId'];
-        $destLanguageId = (int)($params['destLanguageId']);
-
-        try {
-            $payload['pageMetadata'] = $this->metadataService->getPageMetadataForTranslation($pageId);
-            $payload['pageTranslationNecessary'] = !$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId);
-        } catch (\Exception $e) {
-            $payload['pageTranslationNecessary'] = false;
-        }
-
-        return $payload;
     }
 
     public function localizeRecords(ServerRequestInterface $request): ResponseInterface
@@ -129,16 +116,33 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             && $params['action'] !== static::ACTION_LOCALIZE_WHOLE_PAGE_MITTWALDMINISTRAL14B
         ) {
             $response = new Response('php://temp', 400, ['Content-Type' => 'application/json; charset=utf-8']);
-            $response->getBody()->write('Invalid action "' . $params['action'] . '" called.');
+            $response->getBody()->write('Invalid action "'.$params['action'].'" called.');
+
             return $response;
         }
 
+        $isWholePageTranslation = $this->isWholePageTranslationAction($request->getQueryParams()['action']);
+
         $params['uidList'] = $this->filterInvalidUids(
-            (int)$params['pageId'],
-            (int)$params['destLanguageId'],
+            (int) $params['pageId'],
+            (int) $params['destLanguageId'],
             $this->getSourceLanguageId($params['srcLanguageId']),
             $params['uidList']
         );
+
+        if ($isWholePageTranslation && empty($params['uidList'])) {
+            $this->logger->warning('Whole page translation: no content elements found', [
+                'pageId' => $params['pageId'],
+                'srcLanguageId' => $params['srcLanguageId'],
+                'destLanguageId' => $params['destLanguageId'],
+            ]);
+            $this->addFlashMessage(
+                $this->translationService->translate('translation.wholePageNoContentElements'),
+                ContextualFeedbackSeverity::WARNING
+            );
+
+            return new JsonResponse([]);
+        }
 
         $this->process($params);
 
@@ -146,15 +150,50 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
     }
 
     /**
-     * Processes the localization actions
+     * Return source language ID from source language string.
+     */
+    public function getSourceLanguageId(string $srcLanguage): int
+    {
+        $langParam = explode('-', $srcLanguage);
+        if (count($langParam) > 1) {
+            return (int) $langParam[1];
+        }
+
+        return (int) $langParam[0];
+    }
+
+    protected function enhanceLocalizationSummary(array $payload, ServerRequestInterface $request): array
+    {
+        $params = $request->getQueryParams();
+
+        if (!isset($params['pageId'], $params['languageId'])) {
+            return $payload;
+        }
+
+        $pageId = (int) $params['pageId'];
+        $srcLanguageId = (int) $params['languageId'];
+        $destLanguageId = (int) $params['destLanguageId'];
+
+        try {
+            $payload['pageMetadata'] = $this->metadataService->getPageMetadataForTranslation($pageId);
+            $payload['pageTranslationNecessary'] = !$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId);
+        } catch (\Exception $e) {
+            $payload['pageTranslationNecessary'] = false;
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Processes the localization actions.
      *
      * @param array $params
      */
     protected function process($params): void
     {
-        $destLanguageId = (int)$params['destLanguageId'];
-        $srcLanguageId = (int)$params['srcLanguageId'];
-        $pageId = (int)$params['pageId'];
+        $destLanguageId = (int) $params['destLanguageId'];
+        $srcLanguageId = (int) $params['srcLanguageId'];
+        $pageId = (int) $params['pageId'];
 
         $cmd = [
             'tt_content' => [],
@@ -220,18 +259,19 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
-    }
 
-    /**
-     * Return source language ID from source language string
-     */
-    public function getSourceLanguageId(string $srcLanguage): int
-    {
-        $langParam = explode('-', $srcLanguage);
-        if (count($langParam) > 1) {
-            return (int)$langParam[1];
+        if (!empty($dataHandler->errorLog)) {
+            $this->logger->error('Content element localization failed', [
+                'pageId' => $pageId,
+                'srcLanguageId' => $srcLanguageId,
+                'destLanguageId' => $destLanguageId,
+                'errors' => $dataHandler->errorLog,
+            ]);
+            $this->addFlashMessage(
+                $this->translationService->translate('translation.contentElementLocalizationFailed'),
+                ContextualFeedbackSeverity::ERROR
+            );
         }
-        return (int)$langParam[0];
     }
 
     protected function isWholePageTranslationAction(string $action): bool
@@ -248,9 +288,9 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
 
     protected function processWholePageTranslation(array $params): void
     {
-        $pageId = (int)$params['pageId'];
-        $srcLanguageId = (int)$params['srcLanguageId'];
-        $destLanguageId = (int)$params['destLanguageId'];
+        $pageId = (int) $params['pageId'];
+        $srcLanguageId = (int) $params['srcLanguageId'];
+        $destLanguageId = (int) $params['destLanguageId'];
         $action = $params['action'];
         $uuid = $params['uuid'];
 
@@ -261,7 +301,7 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
     {
         $pageUid = $this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId);
         if (!$pageUid) {
-            $cmd['pages'][$pageId] = [ 'localize' => $destLanguageId ];
+            $cmd['pages'][$pageId] = ['localize' => $destLanguageId];
         } else {
             $cmd['pages'][$pageUid] = [];
         }
@@ -287,5 +327,33 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
+
+        if (!empty($dataHandler->errorLog)) {
+            $this->logger->error('Page metadata localization failed', [
+                'pageId' => $pageId,
+                'srcLanguageId' => $srcLanguageId,
+                'destLanguageId' => $destLanguageId,
+                'errors' => $dataHandler->errorLog,
+            ]);
+            $this->addFlashMessage(
+                $this->translationService->translate('translation.pageMetadataLocalizationFailed'),
+                ContextualFeedbackSeverity::ERROR
+            );
+        }
+    }
+
+    protected function addFlashMessage(string $message, ContextualFeedbackSeverity $severity): void
+    {
+        $flashMessage = GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $message,
+            '',
+            $severity,
+            true
+        );
+        GeneralUtility::makeInstance(FlashMessageService::class)
+            ->getMessageQueueByIdentifier()
+            ->addMessage($flashMessage)
+        ;
     }
 }

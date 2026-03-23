@@ -64,8 +64,7 @@ CREATE TABLE be_groups (
     deeplApiMode tinyint(3) DEFAULT '0' NOT NULL,
     midjourneyApiKey text,
     midjourneyId text,
-    mediaStorageFolder text,
-    openTranslatedRecordInEditMode tinyint(3) DEFAULT '1' NOT NULL
+    mediaStorageFolder text
 );
 
 CREATE TABLE tx_aisuite_domain_model_glossar (

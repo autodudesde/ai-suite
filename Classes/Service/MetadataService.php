@@ -116,12 +116,12 @@ class MetadataService
             $data = $file->getContents();
             if (empty($data)) {
                 $decodedIdentifier = urldecode($file->getIdentifier());
-                $file->setIdentifier($decodedIdentifier);
+                $file = $file->getStorage()->getFile($decodedIdentifier);
                 $data = $file->getContents();
             }
         } catch (\Throwable $e) {
             $decodedIdentifier = urldecode($file->getIdentifier());
-            $file->setIdentifier($decodedIdentifier);
+            $file = $file->getStorage()->getFile($decodedIdentifier);
             $data = $file->getContents();
         }
         return 'data:' . $file->getMimeType() . ';base64,' . base64_encode($data);

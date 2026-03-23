@@ -22,20 +22,20 @@ class ScopeItemsProcFunc
 
         if ($context === 'files') {
             $config['items'] = [
-                ['General files', 'general'],
-                ['ImageWizard files', 'imageWizard'],
-                ['Metadata files', 'metadata'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.general', 'value' => 'general'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.imageWizard', 'value' => 'imageWizard'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.metadata', 'value' => 'metadata'],
             ];
         } else {
             $config['items'] = [
-                ['General pages', 'general'],
-                ['PageTree', 'pageTree'],
-                ['ImageWizard pages', 'imageWizard'],
-                ['ContentElement', 'contentElement'],
-                ['News Record', 'newsRecord'],
-                ['RTE Content Editing', 'editContent'],
-                ['Metadata pages', 'metadata'],
-                ['Translation', 'translation'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.general', 'value' => 'general'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.pageTree', 'value' => 'pageTree'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.imageWizard', 'value' => 'imageWizard'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.contentElement', 'value' => 'contentElement'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.newsRecord', 'value' => 'newsRecord'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.editContent', 'value' => 'editContent'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.metadata', 'value' => 'metadata'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.translation', 'value' => 'translation'],
             ];
         }
     }

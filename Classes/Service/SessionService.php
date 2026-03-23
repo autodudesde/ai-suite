@@ -20,6 +20,12 @@ class SessionService implements SingletonInterface
         'ajax_aisuite_massaction_filelist_files_update_view' => 'ai_suite_massaction_filelist_files_prepare',
         'ajax_aisuite_massaction_pages_translation_prepare' => 'ai_suite_massaction_pages_translation_prepare',
         'ajax_aisuite_massaction_filelist_files_translate_update_view' => 'ai_suite_massaction_filelist_files_translate_prepare',
+        'ajax_aisuite_glossary_fetch_page_translation' => 'ai_suite_massaction_pages_translation_prepare',
+        'ai_suite_massaction_pages_prepare' => 'ai_suite_massaction_pages_prepare',
+        'ai_suite_massaction_filereferences_prepare' => 'ai_suite_massaction_filereferences_prepare',
+        'ai_suite_massaction_filelist_files_prepare' => 'ai_suite_massaction_filelist_files_prepare',
+        'ai_suite_massaction_pages_translation_prepare' => 'ai_suite_massaction_pages_translation_prepare',
+        'ai_suite_massaction_filelist_files_translate_prepare' => 'ai_suite_massaction_filelist_files_translate_prepare',
         'ai_suite_global_instructions' => 'ai_suite_global_instructions',
         'ai_suite_prompt_manage_customprompttemplates' => 'ai_suite_prompt_manage_customprompttemplates',
     ];
@@ -77,7 +83,10 @@ class SessionService implements SingletonInterface
             $sessionData['ai_suite_context'] = self::AI_SUITE_ROUTES[$route];
             $sessionData['ai_suite_last_route'] = self::AI_SUITE_ROUTES[$route];
             if (!empty($postParams)) {
-                $sessionData[self::AI_SUITE_ROUTES[$route]] = $postParams;
+                $sessionData[self::AI_SUITE_ROUTES[$route]] = array_merge(
+                    $sessionData[self::AI_SUITE_ROUTES[$route]] ?? [],
+                    $postParams
+                );
             }
         }
     }

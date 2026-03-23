@@ -12,9 +12,6 @@
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
             </trans-unit>
-            <trans-unit id="openTranslatedRecordInEditMode" resname="openTranslatedRecordInEditMode">
-                <source>Open translated record in edit mode</source>
-            </trans-unit>
             <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
             </trans-unit>

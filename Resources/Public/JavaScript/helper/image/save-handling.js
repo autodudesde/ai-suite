@@ -1,6 +1,5 @@
 import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import Notification from "@typo3/backend/notification.js";
-import ImageManipulation from "@typo3/backend/image-manipulation.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import General from "@autodudes/ai-suite/helper/general.js";
@@ -59,6 +58,7 @@ class SaveHandling {
                     }
                     self.addInputFieldKeyupListener(dataKey);
                     self.addLinkTooltipFunctionality(dataKey, res);
+                    const ImageManipulation = (await import('@typo3/backend/image-manipulation.js')).default;
                     ImageManipulation.initializeTrigger();
                     MultiStepWizard.dismiss();
                 }
