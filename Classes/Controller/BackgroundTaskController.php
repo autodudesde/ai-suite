@@ -144,7 +144,10 @@ class BackgroundTaskController extends AbstractBackendController
                 if ($answer->getType() === 'Error') {
                     $this->view->addFlashMessage($answer->getResponseData()['message'], 'Warning', ContextualFeedbackSeverity::WARNING);
                 }
-                $this->backgroundTaskService->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $answer->getResponseData()['statusData']);
+                $statusData = $responseData['statusData'] ?? null;
+                if ($statusData !== null) {
+                    $this->backgroundTaskService->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $statusData);
+                }
             }
             $taskStatistics = $this->backgroundTaskService->getBackgroundTasksStatistics($backgroundTasks);
             $this->view->assign('taskStatistics', $taskStatistics);
