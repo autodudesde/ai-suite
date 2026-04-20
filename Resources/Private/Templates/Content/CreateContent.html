@@ -13,7 +13,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <label class="panel-title fw-bold">
-                            <f:translate key="tx_aisuite.module.dashboard.card.createContent.title" extensionName="ai_suite"/> "{contentTypeTitle}"
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.createContent.title"/> "{contentTypeTitle}"
                         </label>
                     </div>
                     <div class="panel-body">
@@ -39,14 +39,14 @@
                                     data-page-id="{content.pid}"
                                 >
                                     <core:icon identifier="actions-file-text" size="small"/>
-                                    <f:translate key="tx_aisuite.module.PageContent.submit" extensionName="ai_suite"/>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.PageContent.submit"/>
                                 </button>
                                 <p class="calculated-requests"></p>
                             </div>
                         </form>
                     </div>
                 </div>
-                <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
+                <f:render partial="Spinner" arguments="{messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.spinner.contentCreation'}" />
             </f:else>
         </f:if>
     </section>

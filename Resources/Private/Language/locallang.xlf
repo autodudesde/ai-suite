@@ -1,2182 +1,825 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<xliff version="1.0">
-    <file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf" date="2023-05-14UTC21:34:060" product-name="ai_suite">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="messages" date="2026-04-04T12:00:00Z" product-name="ai_suite">
+        <header/>
         <body>
-            <trans-unit id="mlang_tabs_tab">
-                <source>AI Suite</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.general.prompt" resname="tx_aisuite.module.general.prompt">
-                <source>Input statement for the AI (prompt)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.promptTemplates" resname="tx_aisuite.module.general.promptTemplates">
-                <source>Prompt Templates</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
-                <source>Select prompt template</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.spinner.default" resname="tx_aisuite.module.general.spinner.default">
-                <source>Request is being processed...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.spinner.contentCreation" resname="tx_aisuite.module.general.spinner.contentCreation">
-                <source>Content is being generated, this may take a moment...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.error.try_again" resname="tx_aisuite.module.error.try_again">
-                <source>Try again</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.actionmenu.dashboard" resname="tx_aisuite.module.actionmenu.dashboard">
-                <source>Dashboard</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.pages" resname="tx_aisuite.module.actionmenu.pages">
-                <source>Pages</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.translate" resname="tx_aisuite.module.actionmenu.translate">
-                <source>Translate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.agencies" resname="tx_aisuite.module.actionmenu.agencies">
-                <source>Agency</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.promptTemplate" resname="tx_aisuite.module.actionmenu.agencies">
-                <source>Prompt Manager</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.globalInstructions" resname="tx_aisuite.module.actionmenu.globalInstructions">
-                <source>Global Instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.massAction" resname="tx_aisuite.module.actionmenu.massAction">
-                <source>WorkflowManager</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.actionmenu.backgroundTask" resname="tx_aisuite.module.actionmenu.backgroundTask">
-                <source>TaskEngine</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.creditState" resname="tx_aisuite.module.dashboard.creditState">
-                <source>Available Credits</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.header" resname="tx_aisuite.module.dashboard.header">
-                <source>AI Suite Dashboard</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.headerSections" resname="tx_aisuite.module.dashboard.headerSections">
-                <source>Available sections</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.createContent.overview.header" resname="tx_aisuite.module.createContent.overview.header">
-                <source>Create content</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.comming-soon" resname="tx_aisuite.module.dashboard.card.comming-soon">
-                <source>(Coming soon)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.title" resname="tx_aisuite.module.dashboard.card.pagesSection.title">
-                <source>Manage pages and page trees</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.description" resname="tx_aisuite.module.dashboard.card.pagesSection.description">
-                <source>Speed up your daily work and get better results from AI by preparing your pages or page trees.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.pagesSection.linklabel" resname="tx_aisuite.module.dashboard.card.pagesSection.linklabel">
-                <source>Open pages section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.title" resname="tx_aisuite.module.dashboard.card.agencySection.title">
-                <source>Agency features</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.description" resname="tx_aisuite.module.dashboard.card.agencySection.description">
-                <source>Do very special stuff like translating a XLF file.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.agencySection.linklabel" resname="tx_aisuite.module.dashboard.card.agencySection.linklabel">
-                <source>Open agency section</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.title" resname="tx_aisuite.module.dashboard.card.createPagetree.title">
-                <source>Create page tree</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.description" resname="tx_aisuite.module.dashboard.card.createPagetree.description">
-                <source>With the help of AI, you can have a page tree created. This is created with the pages you want.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetree.linklabel" resname="tx_aisuite.module.dashboard.card.createPagetree.linklabel">
-                <source>Create page tree</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.title">
-                <source>Create page tree advanced</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.subtitle" resname="tx_aisuite.module.dashboard.card.createPagetree.subtitle">
-                <source>Generate page tree with content as you like.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.description" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.description">
-                <source>Advanced page tree creation: Workflow to create a page tree with page metadata and content inside the new pages.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createPagetreeWithContent.linklabel" resname="tx_aisuite.module.dashboard.card.createPagetreeWithContent.linklabel">
-                <source>Advanced page tree creation</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.title" resname="tx_aisuite.module.dashboard.card.translateXlfFile.title">
-                <source>Translate an extensions XLF file</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.description" resname="tx_aisuite.module.dashboard.card.translateXlfFile.description">
-                <source>Translate an extensions XLF language file in a choosen language. Remember that there has to be a destination directory for the translation.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel" resname="tx_aisuite.module.dashboard.card.translateXlfFile.linklabel">
-                <source>Translate XLF file</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.title" resname="tx_aisuite.module.dashboard.card.translatePage.title">
-                <source>Translate a page</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.description" resname="tx_aisuite.module.dashboard.card.translatePage.description">
-                <source>Translate a complete page with page properties and content inside.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translatePage.linklabel" resname="tx_aisuite.module.dashboard.card.translatePage.linklabel">
-                <source>Translate Page</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.title" resname="tx_aisuite.module.dashboard.card.massActionSection.title">
-                <source>WorkflowManager</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionSection.description" resname="tx_aisuite.module.dashboard.card.massActionSection.description">
-                <source>Handle stuff via WorkflowManager at once.</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskSection.title" resname="tx_aisuite.module.dashboard.card.backgroundTaskSection.title">
-                <source>TaskEngine</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.title" resname="tx_aisuite.module.dashboard.card.massActionPages.title">
-                <source>WorkflowManager for page metas</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.description" resname="tx_aisuite.module.dashboard.card.massActionPages.description">
-                <source>Edit or update multiple page meta properties and subpages at once.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPages.linklabel" resname="tx_aisuite.module.dashboard.card.massActionPages.linklabel">
-                <source>Edit pages metas</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.title" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.title">
-                <source>WorkflowManager for file relation metas</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.description" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.description">
-                <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel" resname="tx_aisuite.module.dashboard.card.massActionFileReferences.linklabel">
-                <source>Edit file relation metas</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.title">
-                <source>WorkflowManager for file metas</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.description">
-                <source>Edit or update the meta properties of multiple files at once.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelist.linklabel">
-                <source>Edit file metas</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.massActionFilelist.allColumns">
-                <source>All columns</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.massActionFilelist.selectedDirectory">
-                <source>Selected directory</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.title" resname="tx_aisuite.module.dashboard.card.massActionTranslations.title">
-                <source>WorkflowManager for translations</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.description" resname="tx_aisuite.module.dashboard.card.massActionTranslations.description">
-                <source>Edit or update multiple translations at once.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel" resname="tx_aisuite.module.dashboard.card.massActionTranslations.linklabel">
-                <source>Start translation WorkflowManager</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.title" resname="tx_aisuite.module.dashboard.card.translateContentElement.title">
-                <source>Translate a content element</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.description" resname="tx_aisuite.module.dashboard.card.translateContentElement.description">
-                <source>Translate a single content element. Remember that there has to be a mapping file for custom content elements.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateContentElement.linklabel" resname="tx_aisuite.module.dashboard.card.translateContentElement.linklabel">
-                <source>Translate content</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.title" resname="tx_aisuite.module.dashboard.card.translateFileProperties.title">
-                <source>Translate file properties</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.description" resname="tx_aisuite.module.dashboard.card.translateFileProperties.description">
-                <source>Translate a single file, e.g. alt and title attributes of a image file.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.translateFileProperties.linklabel" resname="tx_aisuite.module.dashboard.card.translateFileProperties.linklabel">
-                <source>Translate file</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.title" resname="tx_aisuite.module.dashboard.card.createImageFile.title">
-                <source>Create an image</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.description" resname="tx_aisuite.module.dashboard.card.createImageFile.description">
-                <source>Create a single image or a set of images for using it as content anywhere.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createImageFile.linklabel" resname="tx_aisuite.module.dashboard.card.createImageFile.linklabel">
-                <source>Create image</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.title" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.title">
-                <source>Update prompt templates from server</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.description" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.description">
-                <source>The AI Suite provides prompt templates. You can also add your own custom prompt templates. This action only updates the server prompt templates. Your custom prompt templates remain untouched.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.updatePromptTemplates.linklabel">
-                <source>Update server prompt templates</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
-                <source>Custom prompt templates</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.title" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.title">
-                <source>Manage your custom prompt templates</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.description" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.description">
-                <source>Speed up your daily work and get better results from AI by preparing your prompts efficiently.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.linklabel">
-                <source>Manage custom prompt templates</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.name" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.name">
-                <source>Name</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scope">
-                <source>Scope</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral">
-                <source>General available</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard">
-                <source>Image generation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree">
-                <source>Page tree generation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement">
-                <source>ContentElements</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
-                <source>News</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent">
-                <source>RTE Content Editing</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate">
-                <source>Prompt template</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope">
-                <source>ContentElements (leave empty for all elements)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.language" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.language">
-                <source>Language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions">
-                <source>Actions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel">
-                <source>Edit</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel">
-                <source>Activate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel">
-                <source>Deactivate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel">
-                <source>Delete</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.customGlobalInstructionsLabel">
-                <source>Global Instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.title" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.title">
-                <source>Manage your global instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.description" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.description">
-                <source>Change the general outcome of your requests using Global Instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.linklabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.linklabel">
-                <source>Manage global instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name">
-                <source>Name</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context">
-                <source>Context</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope">
-                <source>Scope</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral">
-                <source>General available</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard">
-                <source>Image generation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopePageTree" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopePageTree">
-                <source>Page tree generation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement">
-                <source>ContentElements</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord">
-                <source>News</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent">
-                <source>RTE Content Editing</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
-                <source>Metatdata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructions">
-                <source>Global instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage">
-                <source>Storage page</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScope" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScope">
-                <source>ContentElements (leave empty for all elements)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScopeHeader" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.cTypeScopeHeader">
-                <source>ContentElements</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.language" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.language">
-                <source>Language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree">
-                <source>Use for subtree</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions">
-                <source>Extend previous</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection">
-                <source>Selected pages/directories</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions">
-                <source>Actions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel">
-                <source>Edit</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel">
-                <source>Activate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel">
-                <source>Deactivate</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel">
-                <source>Delete</source>
-            </trans-unit>
-
-
-            <trans-unit id="tx_aisuite.module.preparePages.title" resname="tx_aisuite.module.preparePages.title">
-                <source>Select pages and field</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.pageChooser" resname="tx_aisuite.module.preparePages.pageChooser">
-                <source>Select the page you want to start from:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.pageSelected" resname="tx_aisuite.module.preparePages.pageSelected">
-                <source>Selected page:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.pageType" resname="tx_aisuite.module.preparePages.pageType">
-                <source>Select page type:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.allPageTypes" resname="tx_aisuite.module.preparePages.allPageTypes">
-                <source>All</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.depth" resname="tx_aisuite.module.preparePages.depth">
-                <source>Select levels of subpages:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.column" resname="tx_aisuite.module.preparePages.column">
-                <source>Select field:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.sysLanguages" resname="tx_aisuite.module.preparePages.sysLanguages">
-                <source>Select language:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.showOnlyEmpty" resname="tx_aisuite.module.preparePages.showOnlyEmpty">
-                <source>Show only empty fields</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.prepareFiles.showOnlyUsed" resname="tx_aisuite.module.prepareFiles.showOnlyUsed">
-                <source>Show only in content included files</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePages.showPrepareResults" resname="tx_aisuite.module.preparePages.showPrepareResults">
-                <source>Show results</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.noPagesFound" resname="AiSuite.module.massAction.noPagesFound">
-                <source>No pages available for your selection.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.info" resname="AiSuite.module.massAction.info">
-                <source>Info</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.noFileReferencesFound" resname="AiSuite.module.massAction.noFileReferencesFound">
-                <source>No file references available for your selection.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.noFilesFound" resname="AiSuite.module.massAction.noFilesFound">
-                <source>No files available for your selection.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.headline" resname="tx_aisuite.module.pageStructure.headline">
-                <source>Generate page structure</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.defaultPrompt" resname="tx_aisuite.module.pageStructure.defaultPrompt">
-                <source>Create me a page structure for [...].</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.pageChooser" resname="tx_aisuite.module.pageStructure.pageChooser">
-                <source>Paste the new structure under the following page:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.submit" resname="tx_aisuite.module.pageStructure.submit">
-                <source>Generate page structure</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.validatePageStructure.submit" resname="tx_aisuite.module.validatePageStructure.submit">
-                <source>Create structure</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.sortable-input.title" resname="tx_aisuite.module.pageStructure.sortable-input.title">
-                <source>Insert the new page title:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.pageStructure.sortable-input.submit" resname="tx_aisuite.module.pageStructure.sortable-input.submit">
-                <source>Submit</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.PageContent.description" resname="tx_aisuite.module.PageContent.description">
-                <source>This module works on the active page, which is selected in the page tree on the left.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.submit" resname="tx_aisuite.module.PageContent.submit">
-                <source>Generate content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.whichPosition" resname="tx_aisuite.module.PageContent.whichPosition">
-                <source>Position of the new element</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.positionFirst" resname="tx_aisuite.module.PageContent.positionFirst">
-                <source>Insert on first position [0]</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.positionAfter" resname="tx_aisuite.module.PageContent.whichPosition">
-                <source>Insert after</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.headline" resname="tx_aisuite.module.PageContent.validate.headline">
-                <source>Validate AI result</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.explanation" resname="tx_aisuite.module.PageContent.validate.explanation">
-                <source>Validate your AI result before adding this to your page.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.addContent" resname="tx_aisuite.module.PageContent.validate.addContent">
-                <source>Add content to page</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.regenerateContent" resname="tx_aisuite.module.PageContent.validate.regenerateContent">
-                <source>Regenerate content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.addSocialContent" resname="tx_aisuite.module.PageContent.validate.addSocialContent">
-                <source>Add / generate post</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.imagePrompt" resname="tx_aisuite.module.PageContent.validate.imagePrompt">
-                <source>The image prompt. You can refactor the image prompt and reorder a for a new image.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.PageContent.validate.requestImage" resname="tx_aisuite.module.PageContent.validate.requestImage">
-                <source>Request for a new image.</source>
-            </trans-unit>
-
-
-
-            <trans-unit id="tx_aisuite.module.File.overview.header" resname="tx_aisuite.module.File.overview.header">
-                <source>Create new files or file metadata</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.contentElementPromptHeader" resname="AiSuite.contentElementPromptHeader">
-                <source>Prompt</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.imageWizardPromptHeader" resname="AiSuite.imageWizardPromptHeader">
-                <source>Image prompt</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.translateXlfHeader" resname="AiSuite.translateXlfHeader">
-                <source>XLF file properties</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.Translate.overview.header" resname="tx_aisuite.module.Translate.overview.header">
-                <source>Translate for language support</source>
-            </trans-unit>
-
-
-
-            <trans-unit id="AiSuite.module.Agencies.overview.header" resname="AiSuite.module.Agencies.overview.header">
-                <source>Support for agencies for the daily work</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.header" resname="AiSuite.module.Agencies.translateXlf.header">
-                <source>Translate XLF file</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.header.validate" resname="AiSuite.module.Agencies.translateXlf.header.validate">
-                <source>Validate translations before writing to the file system</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.insertExtKey" resname="AiSuite.module.Agencies.translateXlf.insertExtKey">
-                <source>Insert the extension key (e.g. 'sitepackage')</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.destinationLang" resname="AiSuite.module.Agencies.translateXlf.destinationLang">
-                <source>Target language</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.label" resname="AiSuite.module.Agencies.translateXlf.translationMode.label">
-                <source>Translation mode:</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.optionAll" resname="AiSuite.module.Agencies.translateXlf.translationMode.optionAll">
-                <source>Translate the whole file, overwrite existing translations</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly" resname="AiSuite.module.Agencies.translateXlf.translationMode.missingOnly">
-                <source>Translate only missing items</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.fileName" resname="AiSuite.module.Agencies.translateXlf.fileName">
-                <source>Insert default language file name</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.fileNamePlaceholder" resname="AiSuite.module.Agencies.translateXlf.fileNamePlaceholder">
-                <source>e.g. locallang.xlf</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.submit" resname="AiSuite.module.Agencies.translateXlf.submit">
-                <source>Translate file</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Agencies.translateXlf.submit.validate" resname="AiSuite.module.Agencies.translateXlf.submit.validate">
-                <source>Write translations to file system</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.misc.searchableDropdown.search" resname="AiSuite.module.misc.searchableDropdown.search">
-                <source>Search...</source>
-            </trans-unit>
-
-            <trans-unit id="tx_aisuite.module.Pages.overview.header" resname="tx_aisuite.module.Agencies.overview.header">
-                <source>Work on pages and page tree</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.Pages.pagesSelect" resname="AiSuite.module.Pages.pagesSelect">
-                <source>Selected page</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder">
-                <source>Search...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit">
-                <source>Search</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset">
-                <source>Reset</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate" resname="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate">
-                <source>Create prompt template</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder">
-                <source>Search...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit">
-                <source>Search</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset">
-                <source>Reset</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions" resname="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewPromptTemplate">
-                <source>Create global instructions</source>
-            </trans-unit>
-
-            <trans-unit id="AiSuite.generation.keywordsSuggestions" resname="AiSuite.generation.keywordsSuggestions">
-                <source>Generate keywords suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.newsKeywordsSuggestions" resname="AiSuite.generation.newsKeywordsSuggestions">
-                <source>Generate keywords suggestions for news article (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.metaDescriptionSuggestions" resname="AiSuite.generation.metaDescriptionSuggestions">
-                <source>Generate meta description suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.pageTitleSuggestions" resname="AiSuite.generation.pageTitleSuggestions">
-                <source>Generate page title suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.ogTitleSuggestions" resname="AiSuite.generation.ogTitleSuggestions">
-                <source>Generate Open Graph title suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.twitterTitleSuggestions" resname="AiSuite.generation.twitterTitleSuggestions">
-                <source>Generate Twitter title suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.abstractSuggestions" resname="AiSuite.generation.abstractSuggestions">
-                <source>Generate abstract suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.newsAlternativeTitleSuggestions" resname="AiSuite.generation.newsAlternativeTitleSuggestions">
-                <source>Generate alternative title suggestions for news article (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.ogDescriptionSuggestions" resname="AiSuite.generation.ogDescriptionSuggestions">
-                <source>Generate Open Graph description suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.twitterDescriptionSuggestions" resname="AiSuite.generation.twitterDescriptionSuggestions">
-                <source>Generate Twitter description suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.newsDescriptionSuggestions" resname="AiSuite.generation.newsDescriptionSuggestions">
-                <source>Generate description suggestions for news article (1 Credit)</source>
-           </trans-unit>
-            <trans-unit id="AiSuite.generation.alternativeSuggestions" resname="AiSuite.generation.alternativeSuggestions">
-                <source>Generate alternative suggestions for file (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.titleSuggestions" resname="AiSuite.generation.titleSuggestions">
-                <source>Generate title suggestions for file (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.descriptionSuggestions" resname="AiSuite.generation.descriptionSuggestions">
-                <source>Generate description suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.error" resname="AiSuite.notification.generation.error">
-                <source>Unexpected error</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.requestError" resname="AiSuite.notification.generation.requestError">
-                <source>Request error</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.suggestions.missingSelection" resname="AiSuite.notification.generation.suggestions.missingSelection">
-                <source>Missing selection</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.suggestions.missingSelectionInfo" resname="AiSuite.notification.generation.suggestions.missingSelectionInfo">
-                <source>Please select a suggestion.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.unableToLinkToPage" resname="AiSuite.unableToLinkToPage">
-                <source>Unable to link to page with ID %s and language ID %s</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.unableToFetchNewsRecord" resname="AiSuite.unableToFetchNewsRecord">
-                <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the "Metadata" tab for fetching the news record.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.fetchContentFailed" resname="AiSuite.fetchContentFailed">
-                <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSuggestionsHeader" resname="AiSuite.imageSuggestionsHeader">
-                <source>Generated image suggestions</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.useImageSuggestion" resname="AiSuite.useImageSuggestion">
-                <source>Use selected suggestion</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.regenerateSuggestions" resname="AiSuite.regenerateSuggestions">
-                <source>Regenerate suggestion</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageTitleSuggestionsHeader" resname="AiSuite.imageTitleSuggestionsHeader">
-                <source>Generated image title suggestions</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageWizardSlideOneHeader" resname="AiSuite.imageWizardSlideOneHeader">
-                <source>Enter prompt and image generation library</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageWizardSlideOneImagePrompt" resname="AiSuite.imageWizardSlideOneImagePrompt">
-                <source>Image prompt</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageWizardSlideOneButton" resname="AiSuite.imageWizardSlideOneButton">
-                <source>Generate image and title suggestions</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.textGenerationLibrary" resname="AiSuite.textGenerationLibrary">
-                <source>Select text generation AI</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.translateGenerationLibrary" resname="AiSuite.translateGenerationLibrary">
-                <source>Select translation generation AI</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageGenerationLibrary" resname="AiSuite.imageGenerationLibrary">
-                <source>Select image generation AI</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.createContent.title" resname="tx_aisuite.module.dashboard.card.createContent.title">
-                <source>Create new content of type </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openDocumentation" xml:space="preserve">
-                <source>Open documentation</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.manageLicense" xml:space="preserve">
-                <source>Manage license</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.watchIntroductionVideo" xml:space="preserve">
-                <source>Watch introduction video</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.aiSuiteTrailer" xml:space="preserve">
-                <source>AI Suite trailer</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.freeCredits" xml:space="preserve">
-                <source>Free Credits</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.paidCredits" xml:space="preserve">
-                <source>Paid Credits</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.aboCredits" xml:space="preserve">
-                <source>Plan</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.creditsRemaining" xml:space="preserve">
-                <source>rem.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.creditsUsed" xml:space="preserve">
-                <source>used</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorDuringResponse" xml:space="preserve">
-                <source>We received an error during the response. Please try again and check your settings/inputs.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.updatePromptTemplatesSuccess" xml:space="preserve">
-                <source>Update prompt templates from server successfully.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.updatePromptTemplatesError" xml:space="preserve">
-                <source>Error: Could not fetch prompt templates from server</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.validateAiResult" xml:space="preserve">
-                <source>Validate the AI result</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.requestStructureAgain" xml:space="preserve">
-                <source>Request structure again</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.availableInputFields" xml:space="preserve">
-                <source>Available input fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.availableFileFields" xml:space="preserve">
-                <source>Available file fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.noSearchableList" xml:space="preserve">
-                <source>No searchableList given.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.hideShowButtons" xml:space="preserve">
-                <source>Hide / show buttons</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.close" xml:space="preserve">
-                <source>Close</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedTitle" xml:space="preserve">
-                <source>No fields selected</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedMessage" xml:space="preserve">
-                <source>You don't have selected any fields. Please select at least one field to continue.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.warning" xml:space="preserve">
-                <source>Warning</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationWizard" xml:space="preserve">
-                <source>Image generation wizard</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imagePromptSettings" xml:space="preserve">
-                <source>Image prompt settings</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.enteredPromptTitle" xml:space="preserve">
-                <source>Prompt is too short</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.enteredPromptMessage" xml:space="preserve">
-                <source>Please enter your prompt with at least ten characters</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noPageSelectedTitle" xml:space="preserve">
-                <source>No page selected</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noPageSelectedMessage" xml:space="preserve">
-                <source>Please select a page before submitting</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.generalImageGenerationSettings" xml:space="preserve">
-                <source>General image generation settings</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.generatedPreselectionImageOptions" xml:space="preserve">
-                <source>Generated pre-selection image options</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.preselectionUseImage" xml:space="preserve">
-                <source>Use image</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessDalle" xml:space="preserve">
-                <source>Image suggestions will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imagePreSelectionGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Pre-selection image options will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney" xml:space="preserve">
-                <source>Selected image will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessFlux" xml:space="preserve">
-                <source>Selected image will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imagePreSelection" xml:space="preserve">
-                <source>Select pre-selection image option</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageSelection" xml:space="preserve">
-                <source>Select image and title</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.dalleSlideOne" xml:space="preserve">
-                <source>Generated image suggestions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.midjourneySlideOne" xml:space="preserve">
-                <source>Pre-selection image options</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.midjourneySlideTwo" xml:space="preserve">
-                <source>Select image and title</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageSavingProcess" xml:space="preserve">
-                <source>Image is saved. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.midjourneyPreSelectionError" xml:space="preserve">
-                <source>Unable to load Midjourney pre-selection image options</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.midjourneySelectionError" xml:space="preserve">
-                <source>Unable to load selected Midjourney image</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.fluxSelectionError" xml:space="preserve">
-                <source>Unable to load selected Flux image</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.dalleSelectionError" xml:space="preserve">
-                <source>Unable to load DALL-E image suggestions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationFailed" xml:space="preserve">
-                <source>Image generation failed with the following error: </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noImageSelectedTitle" xml:space="preserve">
-                <source>No image selected</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noImageSelectedMessage" xml:space="preserve">
-                <source>Please select your favorite image</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.oneCredit" xml:space="preserve">
-                <source>Credit</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.multipleCredits" xml:space="preserve">
-                <source>Credits</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorMissingArguments.title" xml:space="preserve">
-                <source>Missing action arguments</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorMissingArguments.message" xml:space="preserve">
-                <source>Could not fetch required action arguments.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorValidContentElementResponse.title" xml:space="preserve">
-                <source>Could not fetch valid content element response.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.contentElementDataGenerate.message" xml:space="preserve">
-                <source>Content element data successfully created.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.contentElementDataGenerate.title" xml:space="preserve">
-                <source>Request successful</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorPageContentNotCreated.title" xml:space="preserve">
-                <source>Page content could not be created.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorFetchingLibraries.title" xml:space="preserve">
-                <source>Could not fetch available libraries.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorFetchingPagetreeResponse.title" xml:space="preserve">
-                <source>Could not fetch valid page tree response.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.fetchingDataSuccessful.title" xml:space="preserve">
-                <source>Successfully fetched data</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.fetchingDataSuccessful.message" xml:space="preserve">
-                <source>Please check and confirm the results.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.pagetreeGenerationSuccessful.title" xml:space="preserve">
-                <source>Page tree generated successfully.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.pagetreeGenerationSuccessful.message" xml:space="preserve">
-                <source>Check your selected root page for new page tree.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.warningFetchingCreditsState.title" xml:space="preserve">
-                <source>Could not fetch your current Credits state.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.missingAiSuiteApiKey.title" xml:space="preserve">
-                <source>Please enter your AI Suite API key in the extension configuration.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.missingAiSuiteApiKey.message" xml:space="preserve">
-                <source>If you don't have an API key yet, you can get one at https://www.autodudes.de</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title" xml:space="preserve">
-                <source>Could not fetch the current status of the OpenAI API.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.detailedInfo" xml:space="preserve">
-                <source>For a detailed status overview visit the </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.linkTitle" xml:space="preserve">
-                <source>OpenAI status page</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.ok" xml:space="preserve">
-                <source>All Systems Operational</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.warning" xml:space="preserve">
-                <source>Partial System Outage</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.critical" xml:space="preserve">
-                <source>Major Service Outage</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorTargetLangMissing.title" xml:space="preserve">
-                <source>Target language missing.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorTargetLangMissing.message" xml:space="preserve">
-                <source>You must choose a target language.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.destinationFileNotFound.title" xml:space="preserve">
-                <source>Destination file not found</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.destinationFileNotFound.message.prefix" xml:space="preserve">
-                <source>Destination file </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.destinationFileNotFound.message.suffix" xml:space="preserve">
-                <source> not found, will create a new one.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorFetchingTranslationResponse.title" xml:space="preserve">
-                <source>Could not fetch a valid translation response.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorExtensionNotFound.title" xml:space="preserve">
-                <source>Extension not found.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorFileNotFound.title" xml:space="preserve">
-                <source>File not found.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorWritingTranslationFile.message" xml:space="preserve">
-                <source>There was a problem while writing the translations.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.sourceXliffFileEmpty.title" xml:space="preserve">
-                <source>XLIFF file is empty</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.sourceXliffFileEmpty.message" xml:space="preserve">
-                <source>No trans-unit entries found in XLIFF file.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.cannotSendRequest.title" xml:space="preserve">
-                <source>Error before sending request to server</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.translationGenerationSuccessful.title" xml:space="preserve">
-                <source>Translation successfully</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.translationGenerationSuccessful.message" xml:space="preserve">
-                <source>The new translations are written to the file system.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.noTranslationsNeeded.title" xml:space="preserve">
-                <source>No translations needed</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.noTranslationsNeeded.message" xml:space="preserve">
-                <source>Your selected file doesn't have any missing properties</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noSelectionForFields" xml:space="preserve">
-                <source>You don't have selected an image for the following field(s): </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.continue" xml:space="preserve">
-                <source>Do you want to continue?</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.saveAnyway" xml:space="preserve">
-                <source>Save anyway</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.abort" xml:space="preserve">
-                <source>Abort</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.spinner.cancel" xml:space="preserve">
-                <source>Cancel</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageTitleFreeTextPlaceholder" xml:space="preserve">
-                <source>Enter custom image title</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney" xml:space="preserve">
-                <source>Additional Midjourney image settings</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.version" xml:space="preserve">
-                <source>Version</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.version.tooltip" xml:space="preserve">
-                <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.aspectRatio" xml:space="preserve">
-                <source>Aspect ratio</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.aspectRatio.tooltip" xml:space="preserve">
-                <source>Changes the aspect ratio of the generated image. An aspect ratio is the width-to-height ratio of an image.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.no" xml:space="preserve">
-                <source>Exclusions (Negative prompting)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.no.tooltip" xml:space="preserve">
-                <source>Tell Midjourney what not to include in your image. Accepts multiple words separated with commas.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.sref" xml:space="preserve">
-                <source>Style Reference (URL of an image)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.imageSettings.midjourney.sref.tooltip" xml:space="preserve">
-                <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generateImageForField" xml:space="preserve">
-                <source>Generate image for field</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.error_no_credits_table" xml:space="preserve">
-                <source>Please run database update (Credits table is missing)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.twoImagesAtFirstRequest" xml:space="preserve">
-                <source><![CDATA[A maximum of <strong>two images</strong> will be created in the course of the first request. Additional images can then be added at any time.]]></source>
-            </trans-unit>
-            <trans-unit id="aiSuite.generateImageWithAiButton" xml:space="preserve">
-                <source>Generate Image with AI</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.synchronizeGlossary" xml:space="preserve">
-                <source>Synchronize Glossary Entries</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageTitle" xml:space="preserve">
-                <source>No page selected</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageMessage" xml:space="preserve">
-                <source>You don't have selected a page. Please select one.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.filelist.upload.success.message" xml:space="preserve">
-                <source>File was uploaded successfully and metadata was set</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.generateNewsWithAiButton" xml:space="preserve">
-                <source>News with AI</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.adjustContentWithAi" xml:space="preserve">
-                <source>Adjust content with AI</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.noContentSelected" xml:space="preserve">
-                <source>No content selected. Please select some content.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.useWholeContent" xml:space="preserve">
-                <source>Use whole content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.contentGenerationInProcess" xml:space="preserve">
-                <source>Content will be generated. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.translateRecord" xml:space="preserve">
-                <source>Translate record (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.translateWholePage" xml:space="preserve">
-                <source>Translate whole page with AI</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.translationInProcess" xml:space="preserve">
-                <source>Translation is in progress </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable" xml:space="preserve">
-                <source>No AI Suite translation libraries available.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.pages.newRootPage" xml:space="preserve">
-                <source>New root page</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.tab.settings" xml:space="preserve">
-                <source>AI Suite Settings</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.aiSuiteApiKey" xml:space="preserve">
-                <source>Group specific AI Suite API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.openAiApiKey" xml:space="preserve">
-                <source>Group specific OpenAI API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.deeplApiKey" xml:space="preserve">
-                <source>Group specific DeepL API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.deeplApiMode" xml:space="preserve">
-                <source>Group uses the free version of DeepL API</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.anthropicApiKey" xml:space="preserve">
-                <source>Group specific Anthropic/Claude API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.googleTranslateApiKey" xml:space="preserve">
-                <source>Group specific GoogleTranslate API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey" xml:space="preserve">
-                <source>Group specific Midjourney API key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.midjourneyId" xml:space="preserve">
-                <source>Group specific Midjourney ID</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder" xml:space="preserve">
-                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.headerAiSuiteFeatures" xml:space="preserve">
-                <source>AI Suite Features</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableRteAiPlugin" xml:space="preserve">
-                <source>AI Plugin in CKEditor / RTE fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableRteAiPluginDescription" xml:space="preserve">
-                <source>If active the AI Plugin will be shown within CKEditor / RTE fields.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin" xml:space="preserve">
-                <source>AI "Einfache Sprache" Plugin in CKEditor / RTE fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription" xml:space="preserve">
-                <source>If active the AI "Einfache Sprache" Plugin will be shown within CKEditor / RTE fields.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslation" xml:space="preserve">
-                <source>AI translation options within page content translation wizard</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationDescription" xml:space="preserve">
-                <source>If active AI translation options will be added within the page content translation wizard</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizard" xml:space="preserve">
-                <source>AI translation options within the list module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationListWizardDescription" xml:space="preserve">
-                <source>If active AI translation options will be added within the list module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePage" xml:space="preserve">
-                <source>Show buttons "Translate whole page with AI" within page and list module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationWholePageDescription" xml:space="preserve">
-                <source>If active buttons with title "Translate whole page with AI" will be added within page and list module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSync" xml:space="preserve">
-                <source>"Synchronize DeepL glossaries" button within list module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationDeeplSyncDescription" xml:space="preserve">
-                <source>If active "Synchronize DeepL glossaries" button will be displayed within the list module (if at least one glossary entry is available on selected page)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableImageGeneration" xml:space="preserve">
-                <source>Buttons "Generate image with AI"</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableImageGenerationDescription" xml:space="preserve">
-                <source>If active buttons with title "Generate image with AI" will be added to file fields within content elements and within filelist module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableContentElementGeneration" xml:space="preserve">
-                <source>"AI Suite Content" tab in NewContentElementWizard</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableContentElementGenerationDescription" xml:space="preserve">
-                <source>An additional "AI Suite Content" tab will be added to NewContentElementWizard</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableNewsGeneration" xml:space="preserve">
-                <source>Button "News with AI" (only evaluated if EXT:news is active)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableNewsGenerationDescription" xml:space="preserve">
-                <source>If active a button with title "News with AI" will be added to the list module header bar (only evaluated if EXT:news is active)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enablePagesGeneration" xml:space="preserve">
-                <source>Enable pages section within backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enablePagesGenerationDescription" xml:space="preserve">
-                <source>If active the "Pages" button will be shown within the backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableMassActionGeneration" xml:space="preserve">
-                <source>Enable WorkflowManager section within backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableMassActionGenerationDescription" xml:space="preserve">
-                <source>If active the "WorkflowManager" button will be shown within the backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandling" xml:space="preserve">
-                <source>Enable TaskEngine section within backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription" xml:space="preserve">
-                <source>If active the "TaskEngine" button will be shown within the backend module</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableToolbarStatsItem" xml:space="preserve">
-                <source>Enable AI Suite toolbar item</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableToolbarStatsItemDescription" xml:space="preserve">
-                <source>If active the AI Suite toolbar item will be shown</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableMetadataGeneration" xml:space="preserve">
-                <source>Show Metadata generation buttons</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableMetadataGenerationDescription" xml:space="preserve">
-                <source>If active the metadata generation buttons will be shown next to the corresponding fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.headerAiSuiteModels" xml:space="preserve">
-                <source>AI Suite Models</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelOpenai" xml:space="preserve">
-                <source>OpenAI</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelDescription" xml:space="preserve">
-                <source>Users are allowed to generate content with this AI model.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelAnthropic" xml:space="preserve">
-                <source>Anthropic/Claude</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelDalle" xml:space="preserve">
-                <source>DALL-E</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelFlux" xml:space="preserve">
-                <source>Flux</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelMidjourney" xml:space="preserve">
-                <source>Midjourney</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelVision" xml:space="preserve">
-                <source>Vision</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelGoogleTranslate" xml:space="preserve">
-                <source>GoogleTranslate</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelDeepl" xml:space="preserve">
-                <source>DeepL</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelAiSuiteTextUltimate" xml:space="preserve">
-                <source>Meta Llama-3.3 (70B-Instruct)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistral" xml:space="preserve">
-                <source>Ministral-3-14B-Instruct-2512</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.modelMittwaldMinistralVision" xml:space="preserve">
-                <source>Ministral-3-14B-Instruct-2512 (Vision)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metaDataGeneration" xml:space="preserve">
-                <source>Generated metadata suggestions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metaDataGenerationSlideOne" xml:space="preserve">
-                <source>Generate suggestions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metaDataGenerationSlideTwo" xml:space="preserve">
-                <source>Generated suggestions</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metaDataWizardPromptHeader" resname="AiSuite.metaDataWizardPromptHeader">
-                <source>Custom metadata prompt</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metadataWizardSlideOneHeader" resname="AiSuite.metadataWizardSlideOneHeader">
-                <source>Enter metadata generation settings</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metadataWizardSlideOnePrompt" resname="AiSuite.metadataWizardSlideOnePrompt">
-                <source>Metadata prompt</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metadataWizardSlideOneButton" resname="AiSuite.metadataWizardSlideOneButton">
-                <source>Generate metadata suggestions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metaDataGenerationInProcess" resname="aiSuite.module.modal.metaDataGenerationInProcess">
-                <source>Metadata suggestion generation in process</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metaDataError" resname="aiSuite.module.modal.metaDataError">
-                <source>Unable to generate metadata suggestions. If HTTP basic auth is active, please activate it within the extension settings and enter the credentials there.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metadataWizardSaveButton" resname="AiSuite.metadataWizardSaveButton">
-                <source>Save metadata</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.metadataAdditionalFields" xml:space="preserve">
-                <source>Additional fields</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.modal.metadata.useFor" xml:space="preserve">
-                <source>Fill field "%s" with selected suggestion</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.newsDetailPlugin.missingSelection" resname="AiSuite.notification.generation.newsDetailPlugin.missingSelection">
-                <source>Missing selection</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo" resname="AiSuite.notification.newsDetailPlugin.suggestions.missingSelectionInfo">
-                <source>Please select a news detail page.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.noLibrariesAvailable" resname="AiSuite.noLibrariesAvailable">
-                <source>No libraries are available. Please contact your system administrator to get access to at least one library.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.feedbackTitle" resname="aiSuite.module.feedbackTitle">
-                <source>What is missing?</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.feedbackDescription" resname="aiSuite.module.feedbackDescription">
-                <source>Tell us what you are still missing or what you would like to have to make your work easier.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.feedbackBtn" resname="aiSuite.module.feedbackBtn">
-                <source>Send feedback</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.addImage.noFileMountsAvailable" resname="aiSuite.addImage.noFileMountsAvailable">
-                <source>No file mounts available for current user</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.addImage.noFolderAvailable" resname="aiSuite.addImage.noFolderAvailable">
-                <source>No folder available for current user</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.missingSelection" resname="AiSuite.notification.generation.massAction.missingSelection">
-                <source>Missing selection</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.missingStartFromPid" resname="AiSuite.notification.generation.massAction.missingStartFromPid">
-                <source>Please select a page where to start from.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.spinner.massActionPages" resname="tx_aisuite.module.general.spinner.massActionPages">
-                <source>Processing data for WorkflowManager. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.foundPagesAndMetadata" resname="AiSuite.module.massAction.foundPagesAndMetadata">
-                <source>Found pages with associated metadata</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.foundFilesAndMetadata" resname="AiSuite.module.massAction.foundFilesAndMetadata">
-                <source>Found files with associated metadata</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.toggleAll" resname="AiSuite.module.massAction.toggleAll">
-                <source>Check / uncheck all</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.onlyUseGlobalInstructions" resname="AiSuite.module.massAction.onlyUseGlobalInstructions">
-                <source>Only use Global Instructions (override predefined prompt)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.executeBtn" resname="AiSuite.module.massAction.executeBtn">
-                <source>Generate metadata with AI</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.saveMetadataBtn" resname="AiSuite.module.massAction.saveMetadataBtn">
-                <source><![CDATA[Update selected metadata <strong>(no credits needed)</strong>]]></source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.missingPages" resname="AiSuite.notification.generation.massAction.missingPages">
-                <source>Please select at least one page.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.missingFiles" resname="AiSuite.notification.generation.massAction.missingFiles">
-                <source>Please select at least one file.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.massAction.processing" resname="AiSuite.massAction.processing">
-                <source>Already handled %s: </source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.success" resname="AiSuite.notification.generation.massAction.success">
-                <source>Tasks successfully created</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.successDescription" resname="AiSuite.notification.generation.massAction.successDescription">
-                <source>Switch to the TaskEngine to check the progress.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.massAction.successUpdate" resname="AiSuite.notification.generation.massAction.successUpdate">
-                <source>Metadata fields successfully updated</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.errorFetchingTasks" resname="AiSuite.backgroundTasks.errorFetchingTasks">
-                <source>Error while fetching TaskEngine tasks</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.noTasksInfo" resname="AiSuite.backgroundTasks.noTasksInfo">
-                <source>No TaskEngine tasks available.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteModalTitle" resname="AiSuite.backgroundTasks.deleteModalTitle">
-                <source>Do you want to continue?</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteModalText" resname="AiSuite.backgroundTasks.deleteModalText">
-                <source>Delete entry</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deleteError" resname="AiSuite.notification.deleteError">
-                <source>Entry could not be removed.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deleteSuccessTitle" resname="AiSuite.notification.deleteSuccessTitle">
-                <source>Delete</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteAbort" resname="AiSuite.backgroundTasks.deleteAbort">
-                <source>Abort</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deleteSuccess" resname="AiSuite.notification.deleteSuccess">
-                <source>Successfully deleted</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.saveSuccess" resname="AiSuite.notification.saveSuccess">
-                <source>Successfully saved</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.saveError" resname="AiSuite.notification.saveError">
-                <source>Entry could not be saved.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.errorSavingTask" resname="AiSuite.notification.errorSavingTask">
-                <source>Error while saving background task data</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.errorDeletingTask" resname="AiSuite.notification.errorDeletingTask">
-                <source>Error while deleting TaskEngine task data</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.failedPages" resname="AiSuite.notification.generation.failedPages">
-                <source>Content of the following pages could not be fetched: </source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.pageUpdateError" resname="AiSuite.notification.generation.pageUpdateError">
-                <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.fileReferencesUpdateError" resname="AiSuite.notification.generation.fileReferencesUpdateError">
-                <source>Unexpected error while saving selected file reference metadata. Please check your logs for further information.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.fileReferencesUpdateError.noFileSelected">
-                <source>No file references selected.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.failedFileReferences" resname="AiSuite.notification.generation.failedFileReferences">
-                <source>Image data of the following files could not be fetched: </source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.errorPagesPrepareExecuteAction" resname="AiSuite.backgroundTasks.errorPagesPrepareExecuteAction">
-                <source>Error while preparing pages</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.errorFileReferencesPrepareExecuteAction" resname="AiSuite.backgroundTasks.errorFilesPrepareExecuteAction">
-                <source>Error while preparing files</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.page" resname="tx_aisuite.backgroundTaskSection.filter.page">
-                <source>Page metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadata" resname="tx_aisuite.backgroundTaskSection.filter.fileMetadata">
-                <source>File metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileReference" resname="tx_aisuite.backgroundTaskSection.filter.fileReference">
-                <source>File reference metdata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.massActionSection.filter.depth.onlyThisPage" resname="tx_aisuite.massActionSection.filter.depth.onlyThisPage">
-                <source>0 (only this page)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.customPromptTemplateStorageTitle" resname="aiSuite.module.customPromptTemplateStorageTitle">
-                <source>Page can not be used to store custom prompt templates</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.customPromptTemplateStorageMessage" resname="aiSuite.module.customPromptTemplateStorageMessage">
-                <source>Please select a page where custom prompt templates could be stored.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound" resname="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound">
-                <source>No records available.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound" resname="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound">
-                <source>No records available.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.error.default.title" resname="aiSuite.error.default.title">
-                <source>An unexpected error occurred</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.seo_title" resname="massActionSection.pages.seo_title">
-                <source>Title for search engines</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.description" resname="massActionSection.pages.description">
-                <source>Description for search engines</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.og_title" resname="massActionSection.pages.og_title">
-                <source>Open Graph Title</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.og_description" resname="massActionSection.pages.og_description">
-                <source>Open Graph Description</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.twitter_title" resname="massActionSection.pages.twitter_title">
-                <source>X / Twitter Title</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.pages.twitter_description" resname="massActionSection.pages.twitter_description">
-                <source>X / Twitter Description</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.sys_file_reference.title" resname="massActionSection.sys_file_reference.title">
-                <source>Image title</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.sys_file_reference.alternative" resname="massActionSection.sys_file_reference.alternative">
-                <source>Image alternative text</source>
-            </trans-unit>
-            <trans-unit id="massActionSection.sys_file_reference.description" resname="massActionSection.sys_file_reference.description">
-                <source>Description</source>
-            </trans-unit>
-            <trans-unit id="translation.failed" resname="translation.failed">
-                <source>Translation failed for one or more elements.</source>
-            </trans-unit>
-            <trans-unit id="translation.noTranslatableFields" resname="translation.noTranslatableFields">
-                <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
-            </trans-unit>
-            <trans-unit id="translation.wholePageNoContentElements" resname="translation.wholePageNoContentElements">
-                <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
-            </trans-unit>
-            <trans-unit id="translation.contentElementLocalizationFailed" resname="translation.contentElementLocalizationFailed">
-                <source>Content element localization failed during whole page translation.</source>
-            </trans-unit>
-            <trans-unit id="translation.pageMetadataLocalizationFailed" resname="translation.pageMetadataLocalizationFailed">
-                <source>Page metadata localization failed.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.selectSysLanguage" resname="AiSuite.selectSysLanguage">
-                <source>Select (target) language:</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.clickAndSave" resname="AiSuite.module.massAction.clickAndSave">
-                <source>Click and Save</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.clickAndSave.tooltip" resname="AiSuite.module.massAction.clickAndSave.tooltip">
-                <source>If "Click and Save" is activated, metadata is saved directly when you click on the desired field.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.aiPlugin.title" resname="AiSuite.aiPlugin.title">
-                <source>AI Suite</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.title" resname="AiSuite.easyLanguagePlugin.title">
-                <source>Einfache Sprache</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.noLibraryFound" resname="AiSuite.easyLanguagePlugin.noLibraryFound">
-                <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.noContentSelectedModalText" resname="AiSuite.easyLanguagePlugin.noContentSelectedModalText">
-                <source>No content selected. Do you want to continue with the whole content?</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.useWholeContent" resname="AiSuite.easyLanguagePlugin.useWholeContent">
-                <source>Continue with whole content</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.abort" resname="AiSuite.easyLanguagePlugin.abort">
-                <source>Abort</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.inProgress" resname="AiSuite.easyLanguagePlugin.inProgress">
-                <source>"Einfache Sprache" translation in progress</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.success" resname="AiSuite.easyLanguagePlugin.success">
-                <source>"Einfache Sprache" translation successful</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.failed" resname="AiSuite.easyLanguagePlugin.failed">
-                <source>"Einfache Sprache" translation failed</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.easyLanguagePlugin.pleaseWait" resname="AiSuite.easyLanguagePlugin.pleaseWait">
-                <source>Please wait...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.file.unsupportedImageFormat" resname="AiSuite.file.unsupportedImageFormat">
-                <source>Unsupported image format</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteAll" resname="AiSuite.backgroundTasks.deleteAll">
-                <source>Delete all visible tasks</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deleteAllSuccess" resname="AiSuite.notification.deleteAllSuccess">
-                <source> task(s) have been deleted successfully.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteAllModalTitle" resname="AiSuite.backgroundTasks.deleteAllModalTitle">
-                <source>Are you sure you want to delete all visible tasks in this scope?</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.deleteAllModalText" resname="AiSuite.backgroundTasks.deleteAllModalText">
-                <source>Delete all visible tasks</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.refresh" resname="AiSuite.backgroundTasks.refresh">
-                <source>Refresh</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.loadMore" resname="AiSuite.backgroundTasks.loadMore">
-                <source>Load more</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.title" resname="AiSuite.backgroundTasks.loadMoreHint.title">
-                <source>More tasks available</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.loadMoreHint.message" resname="AiSuite.backgroundTasks.loadMoreHint.message">
-                <source>The first 50 tasks are displayed. Additional tasks will be loaded automatically as soon as the tasks are completed.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.failedFiles" resname="AiSuite.notification.generation.failedFiles">
-                <source>Content of the following files could not be fetched: </source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_glossar" resname="tx_aisuite_domain_model_glossar">
-                <source>Glossary entry</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_glossar.input" resname="tx_aisuite_domain_model_glossar.input">
-                <source>Word/paragraph</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.synchronizeDeeplGlossary" resname="AiSuite.synchronizeDeeplGlossary">
-                <source>Synchronize DeepL glossaries</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deeplSyncStarted" resname="AiSuite.notification.deeplSyncStarted">
-                <source>Started DeepL glossaries synchronization</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deeplSyncSuccessful" resname="AiSuite.notification.deeplSyncSuccessful">
-                <source>DeepL glossaries synchronization successful</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.deeplSyncFailed" resname="AiSuite.notification.deeplSyncFailed">
-                <source>DeepL glossaries synchronization failed</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.imageSizeTooLargeBadge" resname="AiSuite.notification.imageSizeTooLargeBadge">
-                <source>Image size too large</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.imageSizeTooLarge" resname="AiSuite.notification.imageSizeTooLarge">
-                <source>Image is too large and cannot be processed.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.invalidUrlTitle" resname="AiSuite.notification.invalidUrlTitle">
-                <source>Invalid URL provided for style parameter</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.invalidUrlMessage" resname="AiSuite.notification.invalidUrlMessage">
-                <source>Please check and edit your inputs.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.title">
-                <source>Background Tasks Overview</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.overall">
-                <source>Overall Statistics</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.detailed">
-                <source>Detailed Statistics</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.total">
-                <source>Total</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.finished">
-                <source>Finished</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pending">
-                <source>Pending</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.error">
-                <source>Error</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.pages">
-                <source>Pages</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileReferences">
-                <source>File References</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadata">
-                <source>File Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.fileMetadataTranslation">
-                <source>File Metadata Translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.byColumn">
-                <source>By Column</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.backgroundTaskStats.column">
-                <source>Column</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noMetadataInputTitle" xml:space="preserve">
-                <source>Missing metadata</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noMetadataInputMessage" xml:space="preserve">
-                <source>You don't have entered an input value. Please select your favorite suggestion or enter your own data.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.createContent.fieldsOf" xml:space="preserve">
-                <source>Fields of</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.backgroundTask.notFound">
-                <source>No background task with uuid %s found</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.backgroundTask.noUuidsProvided">
-                <source>No UUIDs provided</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.backgroundTask.noUuidProvided">
-                <source>No UUID provided</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.backgroundTask.fileUidNotFound">
-                <source>No valid fileUid provided/found</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.server.aiSuiteError">
-                <source>AI Suite Server error: %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.server.notAvailable">
-                <source>AI Suite server endpoint is currently not available.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.server.unexpected">
-                <source>Unexpected AI Suite server endpoint error</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.fileReference.notFound">
-                <source>No file reference row found for sys file reference uid %s. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.site.notFound">
-                <source>No site found for language id %s and page uid %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.file.notFound">
-                <source>File %s not found in EXT:%s.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.error.field.mustNotBeEmpty">
-                <source>Field must not be empty</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.sourceLanguage">
-                <source>Source Language:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.targetLanguage">
-                <source>Target Language:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.translationService">
-                <source>Translation Service:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.newsDetailPlugins">
-                <source>News Detail Plugins</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.title">
-                <source>Title</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.alternativeText">
-                <source>Alternative Text</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.dropdown.selectTargetLanguage">
-                <source>-- Select Target Language --</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.dropdown.pleaseSelect">
-                <source>Please select...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.translation.wholePageIncludes">
-                <source>Whole Page Translation will include:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.translation.pageProperties">
-                <source>Page properties (Title, navtitle, subtitle and page metadata)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.translation.allContentElements">
-                <source>All content elements on the page</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.translation.fileReferences">
-                <source>File references (alternative text, titles)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.status.info">
-                <source>Info</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.status.onlyPaid">
-                <source>(only paid)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.image.generatedImageAlt">
-                <source>Generated Image %s %s (%s)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.error.invalidPageId">
-                <source>Invalid page ID.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.wizard.selectLanguages">
-                <source>Select Languages</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.wizard.languageSelection">
-                <source>Language Selection</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.wizard.translationSummary">
-                <source>Translation Summary</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.wizard.translationProgress">
-                <source>Translation Progress</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.wizard.translationInProgress">
-                <source>Translation in Progress</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.error.loadWizardContent">
-                <source>Failed to load translation wizard content.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.loading.translationSummary">
-                <source>Loading translation summary...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.progress.translatingWholePage">
-                <source>Translating Whole Page...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.progress.mayTakeMoments">
-                <source>This may take a few moments.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.progress.translationInProgress">
-                <source>Translation in progress...</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.validation.sourceTargetSame">
-                <source>Source and target languages cannot be the same.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.wholePageTranslation">
-                <source>Whole Page Translation Summary:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.pageAlreadyExists">
-                <source>✓ Page already exists in target language.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.pageProperties">
-                <source>Page properties:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.fields">
-                <source>field(s)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.elements">
-                <source>element(s)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.references">
-                <source>reference(s)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.pageFileReferences">
-                <source>Page file references:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.pageFileReferenceFields">
-                <source>Page file reference fields:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.summary.contentElements">
-                <source>Content Elements:</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.warning.couldNotLoadSummary">
-                <source>Could not load detailed summary - will proceed with whole page translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.error.failedToStartTranslation">
-                <source>Failed to start whole page translation. Please check the console for details.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.button.ok">
-                <source>OK</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.error.general">
-                <source>Error</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.modal.warning">
-                <source>Warning</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.js.button.easyLanguage">
-                <source>Easy Language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPagesTranslation.title">
-                <source>WorkflowManager for page translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPagesTranslation.description">
-                <source>Translate multiple pages at once using AI-powered translation services.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionPagesTranslation.linklabel">
-                <source>Translate pages</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.title">
-                <source>Prepare Pages for Translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.pageChooser">
-                <source>Start from page</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.pageType">
-                <source>Page type</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.depth">
-                <source>Depth</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.sourceLanguage">
-                <source>Source/default language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.targetLanguage">
-                <source>Target language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.translationScope">
-                <source>Translation scope</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.preparePagesTranslation.showPrepareResults">
-                <source>Show pages for translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.spinner.massActionPagesTranslation">
-                <source>Processing pages for translation. This may take a moment. Please wait...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.foundPagesForTranslation">
-                <source>Found pages for translation</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.translation.sourceLanguage">
-                <source>Source/default language</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.translation.targetLanguage">
-                <source>Target Language</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.translation.scope">
-                <source>Translation Scope</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.translation.executeBtn">
-                <source>Translate pages with AI</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.translation.noPagesFound">
-                <source>No pages found for translation with the selected criteria.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.pageType">
-                <source>Page type</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.massAction.translation.processing">
-                <source>Already handled %s translations: </source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.translation.successDescription">
-                <source>Reload the page tree to see the updates.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.translation.error">
-                <source>Translation error</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.generation.translation.sameLanguage">
-                <source>Source and target languages cannot be the same.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.backgroundTasks.errorPagesTranslationPrepareExecuteAction">
-                <source>Error while preparing pages for translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.massActionSection.translation.scope.metadata">
-                <source>Page metadata only</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.massActionSection.translation.scope.content">
-                <source>Content elements only</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.massActionSection.translation.scope.files">
-                <source>Page file references only</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.massActionSection.translation.scope.all">
-                <source>All (metadata, content)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.action.translateWholePage">
-                <source>Translate whole page with AI</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.action.retryTranslationTask">
-                <source>Retry translation task</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.action.removeTranslationTask">
+            <trans-unit id="aiSuite.action.removeTranslationTask">
                 <source>Remove translation task</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.massAction.translation.header.page">
-                <source>Page</source>
+
+            <trans-unit id="aiSuite.action.retryTranslationTask">
+                <source>Retry translation task</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.massAction.translation.header.alreadyTranslated">
-                <source>Already translated</source>
+
+            <trans-unit id="aiSuite.dropdown.pleaseSelect">
+                <source>Please select...</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.massAction.translation.header.contentElements">
-                <source>Content elements</source>
+
+            <trans-unit id="aiSuite.dropdown.selectTargetLanguage">
+                <source>-- Select Target Language --</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.massAction.translation.header.metadataFields">
-                <source>Metadata fields</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.abort">
+                <source>Abort</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.massAction.translation.header.pageFileReferences">
-                <source>Page file references</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.failed">
+                <source>&quot;Einfache Sprache&quot; translation failed</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.translation.pending.title">
-                <source>Translation Pending</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.inProgress">
+                <source>&quot;Einfache Sprache&quot; translation in progress</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.translation.pending.message">
-                <source>Translation task(s) are pending for this page.</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.noContentSelectedModalText">
+                <source>No content selected. Do you want to continue with the whole content?</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.translation.failed.title">
-                <source>Translation Failed</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.noLibraryFound">
+                <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.translation.failed.message">
-                <source>Translation task(s) have failed for this page. You can retry them by clicking the button below.</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.pleaseWait">
+                <source>Please wait...</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.sysLanguage.pageTreeChanged">
-                <source>The page tree has been changed</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.success">
+                <source>&quot;Einfache Sprache&quot; translation successful</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.sysLanguage.selectAvailableLanguageOfPageTree">
-                <source>Changed selection to available language of current page tree.</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.title">
+                <source>Einfache Sprache</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.sourceLanguage.selectAvailableLanguageOfPageTree">
-                <source>Changed selection to available source language of current page tree.</source>
+
+            <trans-unit id="aiSuite.easyLanguagePlugin.useWholeContent">
+                <source>Continue with whole content</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.targetLanguage.selectAvailableLanguageOfPageTree">
-                <source>Changed selection to available target language of current page tree.</source>
+
+            <trans-unit id="aiSuite.error.backgroundTask.fileUidNotFound">
+                <source>No valid fileUid provided/found</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.sysLanguage.selectDefaultLanguageOfPageTree">
-                <source>Changed selection to default language (previous language not available in current page tree).</source>
+            <trans-unit id="aiSuite.error.backgroundTask.noUuidProvided">
+                <source>No UUID provided</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.sourceLanguage.selectDefaultLanguageOfPageTree">
-                <source>Changed selection to default/source language of current page tree.</source>
+            <trans-unit id="aiSuite.error.backgroundTask.noUuidsProvided">
+                <source>No UUIDs provided</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
-                <source>Changed selection to default target language (previous language not available in current page tree).</source>
+            <trans-unit id="aiSuite.error.backgroundTask.notFound">
+                <source>No background task with uuid %s found</source>
             </trans-unit>
-            <trans-unit id="AiSuite.notification.badge.new">
-                <source>New</source>
+
+            <trans-unit id="aiSuite.error.default.title">
+                <source>An unexpected error occurred</source>
             </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.modal.title">
-                <source>Global Instructions &amp; Prompt Preview</source>
+
+            <trans-unit id="aiSuite.error.field.mustNotBeEmpty">
+                <source>Field must not be empty</source>
             </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.label">
-                <source>Global Instructions</source>
+
+            <trans-unit id="aiSuite.error.file.notFound">
+                <source>File %s not found in EXT:%s.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.currentPrompt.label">
-                <source>Current Prompt</source>
+
+            <trans-unit id="aiSuite.error.fileReference.notFound">
+                <source>No file reference row found for sys file reference uid %s. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.</source>
             </trans-unit>
+
+            <trans-unit id="aiSuite.error.invalidFormData">
+                <source>Invalid Form Data: missing required fields</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.error.invalidRequest">
+                <source>Invalid request (Please see logs for further details)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.error.invalidServerResponse">
+                <source>Invalid server response or network error</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.error.server.aiSuiteError">
+                <source>AI Suite Server error: %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.notAvailable">
+                <source>AI Suite server endpoint is currently not available.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.unexpected">
+                <source>Unexpected AI Suite server endpoint error</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.error.site.notFound">
+                <source>No site found for language id %s and page uid %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.error_no_credits_table">
+                <source>Please run database update (Credits table is missing)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.fetchContentFailed">
+                <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.file.unsupportedImageFormat">
+                <source>Unsupported image format</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.flashMessage.metadata.autoGenerationSuccess.message">
+                <source>Executed automatically metadata generation (as configured) and add tasks to TaskEngine</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingAutoUpload.message">
+                <source>Error generating metadata automatically for uploaded file: %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingField.message">
+                <source>Error generating metadata for field %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.errorSavingFile.message">
+                <source>Error while saving metadata for file %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.errorSavingFile.title">
+                <source>Metadata generation error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.generatedField.message">
+                <source>Metadata for field %s was generated.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.generatedField.title">
+                <source>Metadata generation successful</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.message">
+                <source>Unexpected error while trying to automatically generate file metadata.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message">
+                <source>Unexpected error during automatically generation of metadata for %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.form.label.alternativeText">
+                <source>Alternative Text</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.description">
+                <source>Description</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.newsDetailPlugins">
+                <source>News Detail Plugins</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.sourceLanguage">
+                <source>Source Language:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.targetLanguage">
+                <source>Target Language:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.title">
+                <source>Title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.translationService">
+                <source>Translation Service:</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generateImageForField">
+                <source>Generate image for field</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generateImageWithAiButton">
+                <source>Generate Image with AI</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generateNewsWithAiButton">
+                <source>News with AI</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.abstractSuggestions">
+                <source>Generate abstract suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.alternativeSuggestions">
+                <source>Generate alternative suggestions for file (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.descriptionSuggestions">
+                <source>Generate description suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.workflow.selectGlossary">
+                <source>Select a glossary (optional)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.generation.workflow.selectGlossaryExternal">
+                <source>(is managed directly in DeepL)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.generation.workflow.selectGlossaryLabel">
+                <source>Glossary for %s to %s translations (%s)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.metaDescriptionSuggestions">
+                <source>Generate meta description suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.newsAlternativeTitleSuggestions">
+                <source>Generate alternative title suggestions for news article (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.newsDescriptionSuggestions">
+                <source>Generate description suggestions for news article (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.ogDescriptionSuggestions">
+                <source>Generate Open Graph description suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.ogTitleSuggestions">
+                <source>Generate Open Graph title suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.pageTitleSuggestions">
+                <source>Generate page title suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.titleSuggestions">
+                <source>Generate title suggestions for file (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.twitterDescriptionSuggestions">
+                <source>Generate Twitter description suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.generation.twitterTitleSuggestions">
+                <source>Generate Twitter title suggestions (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.globalInstructions.deleteModalText">
+                <source>Are you sure you want to delete the global instruction &quot;{0}&quot;?</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.globalInstructions.duplicate_detected_message">
+                <source>A global instruction for context &quot;%s&quot;, scope &quot;%s&quot; and page/directory IDs %s already exists. The duplicate pages/directories have been removed from the selection. Please check your input.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.globalInstructions.duplicate_detected_title">
+                <source>Duplicate detected</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
                 <source>Global instructions</source>
             </trans-unit>
-            <trans-unit id="aiSuite.yes">
-                <source>Yes</source>
+
+            <trans-unit id="aiSuite.image.generatedImageAlt">
+                <source>Generated Image %s %s (%s)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.imageTitleFreeTextPlaceholder">
+                <source>Enter custom image title</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.imageWizardSlideOneButton">
+                <source>Generate image and title suggestions</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.imageWizardSlideOneHeader">
+                <source>Enter prompt and image generation library</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.error.failedToStartTranslation">
+                <source>Failed to start whole page translation. Please check the console for details.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.error.general">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.error.invalidPageId">
+                <source>Invalid page ID.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.error.loadWizardContent">
+                <source>Failed to load translation wizard content.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.loading.translationSummary">
+                <source>Loading translation summary...</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.modal.warning">
+                <source>Warning</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.progress.mayTakeMoments">
+                <source>This may take a few moments.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.progress.translatingWholePage">
+                <source>Translating Whole Page...</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.summary.contentElements">
+                <source>Content Elements:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.elements">
+                <source>element(s)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.fields">
+                <source>field(s)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.pageProperties">
+                <source>Page properties:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.wholePageTranslation">
+                <source>Whole Page Translation Summary:</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.validation.sourceTargetSame">
+                <source>Source and target languages cannot be the same.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.warning.couldNotLoadSummary">
+                <source>Could not load detailed summary - will proceed with whole page translation</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.js.wizard.languageSelection">
+                <source>Language Selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.wizard.selectLanguages">
+                <source>Select Languages</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.wizard.translationInProgress">
+                <source>Translation in Progress</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.wizard.translationProgress">
+                <source>Translation Progress</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.wizard.translationSummary">
+                <source>Translation Summary</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.metadataTranslateSaveButton">
+                <source>Save metadata translation</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.metadataWizardSaveButton">
+                <source>Save metadata</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.metadataWizardSlideOneButton">
+                <source>Generate metadata suggestions</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.metadataWizardSlideOneHeader">
+                <source>Enter metadata generation settings</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.mlangTabsTab">
+                <source>AI Suite</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.modal.metadata.useFor">
+                <source>Fill field &quot;%s&quot; with selected suggestion</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.badge.new">
+                <source>New</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deeplSyncFailed">
+                <source>DeepL glossaries synchronization failed</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deeplSyncStarted">
+                <source>Started DeepL glossaries synchronization</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deeplSyncSuccessful">
+                <source>DeepL glossaries synchronization successful</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deleteAllSuccess">
+                <source>task(s) have been deleted successfully.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deleteError">
+                <source>Entry could not be removed.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.deleteSuccess">
+                <source>Successfully deleted</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.emptySourceContent">
+                <source>No source content</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.errorDeletingTask">
+                <source>Error while deleting TaskEngine task data</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.errorSavingTask">
+                <source>Error while saving background task data</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.generation.error">
+                <source>Unexpected error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.failedFileReferences">
+                <source>Image data of the following files could not be fetched:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.failedFiles">
+                <source>Content of the following files could not be fetched:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.failedPages">
+                <source>Content of the following pages could not be fetched:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.fileReferencesUpdateError">
+                <source>Unexpected error while saving selected file reference metadata. Please check your logs for further information.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.fileReferencesUpdateError.noFileSelected">
+                <source>No file references selected.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.missingFiles">
+                <source>Please select at least one file.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.missingPages">
+                <source>Please select at least one page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.missingSelection">
+                <source>Missing selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.missingStartFromPid">
+                <source>Please select a page where to start from.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.success">
+                <source>Tasks successfully created</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.successDescription">
+                <source>Switch to the TaskEngine to check the progress.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.workflow.successUpdate">
+                <source>Metadata fields successfully updated</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo">
+                <source>Please select a news detail page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.pageUpdateError">
+                <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.requestError">
+                <source>Request error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.suggestions.missingSelectionInfo">
+                <source>Please select a suggestion.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.translation.error">
+                <source>Translation error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.translation.successDescription">
+                <source>Reload the page tree to see the updates.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.imageSizeTooLarge">
+                <source>Image is too large and cannot be processed.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.imageSizeTooLargeBadge">
+                <source>Image size too large</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.invalidUrlMessage">
+                <source>Please check and edit your inputs.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.invalidUrlTitle">
+                <source>Invalid URL provided for style parameter</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.saveError">
+                <source>Entry could not be saved.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.saveSuccess">
+                <source>Successfully saved</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.sourceLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available source language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.sourceLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default/source language of current page tree.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.sysLanguage.pageTreeChanged">
+                <source>The page tree has been changed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.sysLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.sysLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default language (previous language not available in current page tree).</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.targetLanguage.selectAvailableLanguageOfPageTree">
+                <source>Changed selection to available target language of current page tree.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.targetLanguage.selectDefaultLanguageOfPageTree">
+                <source>Changed selection to default target language (previous language not available in current page tree).</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.notification.translation.failed.message">
+                <source>Translation task(s) have failed for this page. You can retry them by clicking the button below.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.translation.failed.title">
+                <source>Translation Failed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.translation.pending.message">
+                <source>Translation task(s) are pending for this page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.translation.pending.title">
+                <source>Translation Pending</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.promptTemplate.deleteCancel">
+                <source>Cancel</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.promptTemplate.deleteConfirm">
+                <source>Delete</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.promptTemplate.deleteModalText">
+                <source>Are you sure you want to delete the prompt template &quot;{0}&quot;?</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.regenerateSuggestions">
+                <source>Regenerate suggestion</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.selectSysLanguage">
+                <source>Select (target) language:</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.status.info">
+                <source>Info</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.status.onlyPaid">
+                <source>(only paid)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.synchronizeDeeplGlossary">
+                <source>Synchronize DeepL glossaries</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.textGenerationLibrary">
+                <source>Select text generation AI</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translateFileMetadata">
+                <source>Translate File Metadata</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translateRecord">
+                <source>Translate record (1 Credit)</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translateWholePage">
+                <source>Translate whole page with AI</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.contentElementLocalizationFailed">
+                <source>Content element localization failed during whole page translation.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.failed">
+                <source>Translation failed for one or more elements.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.noTranslatableFields">
+                <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.pageMetadataLocalizationFailed">
+                <source>Page metadata localization failed.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.wholePageNoContentElements">
+                <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.unableToFetchNewsRecord">
+                <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the &quot;Metadata&quot; tab for fetching the news record.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.unableToLinkToPage">
+                <source>Unable to link to page with ID %s and language ID %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.useImageSuggestion">
+                <source>Use selected suggestion</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.errorDetails.title">
+                <source>Error Details</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.retryQuestion">
+                <source>Do you want to retry the translation task?</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.retry">
+                <source>Retry</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.retryingTask">
+                <source>Retrying task...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.pleaseWait">
+                <source>Please wait</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.retrySuccess">
+                <source>Task has been queued for retry</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.retryFailed">
+                <source>Retry failed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.close">
+                <source>Close</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.delete">
+                <source>Delete</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.errorDetails.deleteFailed">
+                <source>Delete failed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.createContent.fieldsOf">
+                <source>Fields of</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageGenerationLibrary">
+                <source>Select image generation AI</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney">
+                <source>Additional Midjourney image settings</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.aspectRatio">
+                <source>Aspect ratio</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.no">
+                <source>Exclusions (Negative prompting)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.sref">
+                <source>Style Reference (URL of an image)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.version">
+                <source>Version</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSuggestionsHeader">
+                <source>Generated image suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageTitleSuggestionsHeader">
+                <source>Generated image title suggestions</source>
             </trans-unit>
             <trans-unit id="aiSuite.no">
                 <source>No</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsTitle">
-                <source>Multiple global instruction for scope "image".</source>
+            <trans-unit id="aiSuite.noLibrariesAvailable">
+                <source>No libraries are available. Please contact your system administrator to get access to at least one library.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsMessage">
-                <source>There are more than one global instruction for scope "image". Only the last added instruction will be considered.</source>
+            <trans-unit id="aiSuite.translateGenerationLibrary">
+                <source>Select translation generation AI</source>
             </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enablePromptTemplateButton">
-                <source>Enable "Prompt Template" section within backend module</source>
+            <trans-unit id="aiSuite.translation.allContentElements">
+                <source>All content elements on the page</source>
             </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enablePromptTemplateButtonDescription">
-                <source>If active the "Prompt Template" button will be shown within the backend module</source>
+            <trans-unit id="aiSuite.translation.pageProperties">
+                <source>Page properties (Title, navtitle, subtitle and page metadata)</source>
             </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableGlobalInstructionsButton">
-                <source>Enable "Global Instructions" section within backend module</source>
+            <trans-unit id="aiSuite.translation.wholePageIncludes">
+                <source>Whole Page Translation will include:</source>
             </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableGlobalInstructionsButtonDescription">
-                <source>If active the "Global Instructions" button will be shown within the backend module</source>
+            <trans-unit id="aiSuite.twoImagesAtFirstRequest">
+                <source><![CDATA[A maximum of <strong>two images</strong> will be created in the course of the first request. Additional images can then be added at any time.]]></source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.globalInstructionStorageTitle" resname="aiSuite.module.globalInstructionStorageTitle">
-                <source>Page can not be used to store Global Instructions</source>
+            <trans-unit id="aiSuite.yes">
+                <source>Yes</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.globalInstructionStorageMessage" resname="aiSuite.module.globalInstructionStorageMessage">
-                <source>Please select a page where Global Instructions could be stored.</source>
+            <trans-unit id="aiSuite.notification.errorDeletingAllTasks">
+                <source>Error while deleting tasks</source>
             </trans-unit>
-            <trans-unit id="AiSuite.promptTemplate.deleteModalTitle">
-                <source>Warning</source>
+            <trans-unit id="aiSuite.notification.errorRetryingTask">
+                <source>Error while retrying task</source>
             </trans-unit>
-            <trans-unit id="AiSuite.promptTemplate.deleteModalText">
-                <source>Are you sure you want to delete the prompt template "{0}"?</source>
+            <trans-unit id="aiSuite.notification.generation.fileUpdateError">
+                <source>Error while updating file</source>
             </trans-unit>
-            <trans-unit id="AiSuite.promptTemplate.deleteConfirm">
-                <source>Delete</source>
+            <trans-unit id="aiSuite.notification.generation.fileUpdateError.noFileSelected">
+                <source>No file selected</source>
             </trans-unit>
-            <trans-unit id="AiSuite.promptTemplate.deleteCancel">
-                <source>Cancel</source>
+            <trans-unit id="aiSuite.action.translateWholePage">
+                <source>Translate whole page with AI</source>
             </trans-unit>
-            <trans-unit id="AiSuite.globalInstructions.deleteModalTitle">
-                <source>Warning</source>
+            <trans-unit id="aiSuite.addImage.noFileMountsAvailable">
+                <source>No file mounts available for current user</source>
             </trans-unit>
-            <trans-unit id="AiSuite.globalInstructions.deleteModalText">
-                <source>Are you sure you want to delete the global instruction "{0}"?</source>
+            <trans-unit id="aiSuite.addImage.noFolderAvailable">
+                <source>No folder available for current user</source>
             </trans-unit>
-            <trans-unit id="AiSuite.globalInstructions.deleteConfirm">
-                <source>Delete</source>
+            <trans-unit id="aiSuite.aiPlugin.title">
+                <source>AI Suite</source>
             </trans-unit>
-            <trans-unit id="AiSuite.globalInstructions.deleteCancel">
-                <source>Cancel</source>
+            <trans-unit id="aiSuite.contentElementPromptHeader">
+                <source>Prompt</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions">
-                <source>Global Instructions</source>
+            <trans-unit id="aiSuite.currentPrompt.label">
+                <source>Current Prompt</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.name">
-                <source>Name</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.instructions">
-                <source>Global Instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.context">
-                <source>Context</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope">
-                <source>Scope</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.general">
-                <source>General (Files)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.imageWizard">
-                <source>ImageWizard (Files)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.files.metadata">
-                <source>Metadata (Files)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.general">
-                <source>General (Pages)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.pageTree">
-                <source>PageTree</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.imageWizard">
-                <source>ImageWizard (Pages)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.contentElement">
-                <source>ContentElementsw</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.newsRecord">
-                <source>News Records</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.editContent">
-                <source>RTE Content Editing</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.metadata">
-                <source>Metadata (Pages)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.scope.pages.translation">
-                <source>Translations (DeepL and Google Translate are excluded)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.selected_pages">
-                <source>Selected Pages</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.selected_directories">
-                <source>Selected Directories</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.use_for_subtree">
-                <source>Use for subtree (pages/directories)</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.extend_previous_instructions">
-                <source>Extend previous instructions</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.context.pages">
-                <source>Page/List/AI Suite Web Module</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.context.files">
-                <source>Filelist/AI Suite Filelist Module</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.enable">
-                <source>Enable</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_global_instructions.override_predefined_prompt">
-                <source>Use Global Instruction (instead of predefined server prompt)</source>
-            </trans-unit>
-            <trans-unit id="global_instructions.duplicate_detected_title">
-                <source>Duplicate detected</source>
-            </trans-unit>
-            <trans-unit id="global_instructions.duplicate_detected_message">
-                <source>A global instruction for context "%s", scope "%s" and page/directory IDs %s already exists. The duplicate pages/directories have been removed from the selection. Please check your input.</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.error.invalidRequest">
-                <source>Invalid request (Please see logs for further details)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.error.invalidRequest">
-                <source>Invalid request (Please see logs for further details)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.error.invalidFormData">
-                <source>Invalid Form Data: missing required fields</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.error.invalidServerResponse">
-                <source>Invalid server response or network error</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.massAction.batchFailed">
-                <source>Batch {0} failed, continuing with remaining files...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.translateFileMetadata">
-                <source>Translate File Metadata</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationSysFileMetadata">
-                <source>Enable translation of file metadata</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.customPermOptions.enableTranslationSysFileMetadataDescription">
-                <source>Allow users to translate file metadata using AI translation services</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.title">
-                <source>Translate File Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.massActionFilelistTranslation.description">
-                <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.prepareFilesTranslation.showPrepareResults">
-                <source>Show Files for Translation</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.foundFilesForTranslation">
-                <source>Found Files for Translation</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.notification.emptySourceContent">
-                <source>No source content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.translation.sourceContent">
-                <source>Source Content</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.translation.targetContent">
-                <source>Target Content</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.executeTranslationBtn">
-                <source>Execute Translation</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.saveTranslationMetadataBtn">
-                <source>Save Translation Metadata</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.module.massAction.noFilesForTranslation">
-                <source>No files found for translation with the current filter settings.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.general.spinner.massActionFilesTranslation">
-                <source>Processing file metadata translation...</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.massAction.selectGlossary">
-                <source>Select a glossary (optional)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.massAction.selectGlossaryLabel">
-                <source>Glossary for %s to %s translations (%s)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.generation.massAction.selectGlossaryExternal">
-                <source> (is managed directly in DeepL)</source>
-            </trans-unit>
-            <trans-unit id="AiSuite.metadataTranslateSaveButton" resname="AiSuite.metadataTranslateSaveButton">
-                <source>Save metadata translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistSection.title">
-                <source>File Management</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.title">
-                <source>Generate File Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.description">
-                <source>Generate metadata (title, alternative text) for files using AI services.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFiles.linklabel">
-                <source>Generate Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.title">
-                <source>Translate File Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.description">
-                <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.dashboard.card.filelistFilesTranslation.linklabel">
-                <source>Translate Metadata</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.module.massActionFilelist.equalLanguagesWarning">
-                <source>Please execute the filter once.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.backgroundTaskSection.filter.fileMetadataTranslation">
-                <source>File metadata translation</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl">
-                <source>DeepL Glossary</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.glossar_uuid">
-                <source>DeepL Glossary UUID</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.root_page_uid">
-                <source>Root Page UID</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.source_lang">
-                <source>Source Language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.target_lang">
-                <source>Target Language</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.default_language_id">
-                <source>Source Language ID</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.target_language_id">
-                <source>Target Language ID</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.external">
-                <source>External</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite_domain_model_deepl.external_enable">
-                <source>Is managed directly in DeepL</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.generatedField.message">
-                <source>Metadata for field %s was generated.</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.generatedField.title">
+            <trans-unit id="aiSuite.flashMessage.metadata.autoGenerationSuccess.title">
                 <source>Metadata generation successful</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingField.message">
-                <source>Error generating metadata for field %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingField.title">
+            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingAutoUpload.title">
                 <source>Metadata generation error</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorSavingFile.message">
-                <source>Error while saving metadata for file %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorSavingFile.title">
+            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingField.title">
                 <source>Metadata generation error</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message">
-                <source>Unexpected error during automatically generation of metadata for %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title">
+            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
                 <source>Metadata generation error</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.message">
-                <source>Error generating metadata automatically for uploaded file: %s</source>
-            </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.errorGeneratingAutoUpload.title">
+            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title">
                 <source>Metadata generation error</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.autoGenerationSuccess.message">
-                <source>Executed automatically metadata generation (as configured) and add tasks to TaskEngine</source>
+            <trans-unit id="aiSuite.generation.keywordsSuggestions">
+                <source>Generate keywords suggestions (1 Credit)</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.autoGenerationSuccess.title">
-                <source>Metadata generation successful</source>
+            <trans-unit id="aiSuite.generation.newsKeywordsSuggestions">
+                <source>Generate keywords suggestions for news article (1 Credit)</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.message">
-                <source>Unexpected error while trying to automatically generate file metadata.</source>
+            <trans-unit id="aiSuite.globalInstructions.deleteCancel">
+                <source>Cancel</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
-                <source>Metadata generation error</source>
+            <trans-unit id="aiSuite.globalInstructions.deleteConfirm">
+                <source>Delete</source>
             </trans-unit>
-            <trans-unit id="tx_aisuite.form.label.description">
-                <source>Description</source>
+            <trans-unit id="aiSuite.globalInstructions.deleteModalTitle">
+                <source>Warning</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.label">
+                <source>Global Instructions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.modal.title">
+                <source>Global Instructions &amp; Prompt Preview</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.aspectRatio.tooltip">
+                <source>Changes the aspect ratio of the generated image. An aspect ratio is the width-to-height ratio of an image.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.no.tooltip">
+                <source>Tell Midjourney what not to include in your image. Accepts multiple words separated with commas.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.sref.tooltip">
+                <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageSettings.midjourney.version.tooltip">
+                <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageWizardPromptHeader">
+                <source>Image prompt</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.imageWizardSlideOneImagePrompt">
+                <source>Image prompt</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.button.easyLanguage">
+                <source>Easy Language</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.button.ok">
+                <source>OK</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.progress.translationInProgress">
+                <source>Translation in progress...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.pageAlreadyExists">
+                <source>✓ Page already exists in target language.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.pageFileReferenceFields">
+                <source>Page file reference fields:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.pageFileReferences">
+                <source>Page file references:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.summary.references">
+                <source>reference(s)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.metaDataWizardPromptHeader">
+                <source>Custom metadata prompt</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.metadataWizardSlideOnePrompt">
+                <source>Metadata prompt</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.deleteSuccessTitle">
+                <source>Delete</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.newsDetailPlugin.missingSelection">
+                <source>Missing selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.suggestions.missingSelection">
+                <source>Missing selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.notification.generation.translation.sameLanguage">
+                <source>Source and target languages cannot be the same.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.promptTemplate.deleteModalTitle">
+                <source>Warning</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.synchronizeGlossary">
+                <source>Synchronize Glossary Entries</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translateXlfHeader">
+                <source>XLF file properties</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translation.fileReferences">
+                <source>File references (alternative text, titles)</source>
             </trans-unit>
         </body>
     </file>

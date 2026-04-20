@@ -36,7 +36,7 @@ export default class ModalView extends View {
             this.dropdown = createDropdown( editorLocale );
 
             this.dropdown.buttonView.set( {
-                label: TYPO3.lang['tx_aisuite.module.general.selectPromptTemplate'],
+                label: TYPO3.lang['aiSuite.module.general.selectPromptTemplate'],
                 withText: true
             } );
 
@@ -66,8 +66,8 @@ export default class ModalView extends View {
             this.dropdown = '';
         }
         const iconPencil = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="m9.293 3.293-8 8A.997.997 0 0 0 1 12v3h3c.265 0 .52-.105.707-.293l8-8-3.414-3.414zM8.999 5l.5.5-5 5-.5-.5 5-5zM4 14H3v-1H2v-1l1-1 2 2-1 1zM13.707 5.707l1.354-1.354a.5.5 0 0 0 0-.707L12.354.939a.5.5 0 0 0-.707 0l-1.354 1.354 3.414 3.414z"/></g></svg>';
-        this.saveButtonView = this._createButton(TYPO3.lang['tx_aisuite.module.PageContent.submit'], iconPencil, 'ck-button-save');
-        this.spinner = new SpinnerView(editorLocale, TYPO3.lang['tx_aisuite.module.general.contentGenerationInProcess']);
+        this.saveButtonView = this._createButton(TYPO3.lang['aiSuite.module.PageContent.submit'], iconPencil, 'ck-button-save');
+        this.spinner = new SpinnerView(editorLocale, TYPO3.lang['aiSuite.module.general.contentGenerationInProcess']);
 
         this.setTemplate({
             tag: 'div',
@@ -105,7 +105,7 @@ export default class ModalView extends View {
                                 }
                             },
                             children: [
-                                TYPO3.lang['tx_aisuite.module.general.adjustContentWithAi'],
+                                TYPO3.lang['aiSuite.module.general.adjustContentWithAi'],
                                 this.cancelButtonView
                             ]
                         },
@@ -121,7 +121,7 @@ export default class ModalView extends View {
                                 }
                             },
                             children: [
-                                TYPO3.lang['tx_aisuite.module.general.promptTemplates'],
+                                TYPO3.lang['aiSuite.module.general.promptTemplates'],
                             ]
                         },
                         {
@@ -158,7 +158,7 @@ export default class ModalView extends View {
                                         }
                                     },
                                     children: [
-                                        TYPO3.lang['tx_aisuite.module.general.prompt']
+                                        TYPO3.lang['aiSuite.module.general.prompt']
                                     ]
                                 },
                                 this.globalInstructions ? this.globalInstructionsButtonView : null,
@@ -190,7 +190,7 @@ export default class ModalView extends View {
                                 }
                             },
                             children: [
-                                TYPO3.lang['AiSuite.textGenerationLibrary'],
+                                TYPO3.lang['aiSuite.textGenerationLibrary'],
                             ]
                         },
                         {

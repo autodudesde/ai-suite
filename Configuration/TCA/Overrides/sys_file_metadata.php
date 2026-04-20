@@ -5,9 +5,9 @@ $GLOBALS['TCA']['sys_file_metadata']['columns']['alternative']['config'] = array
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSysFileAlternative'
-            ]
-        ]
+                'renderType' => 'aiSysFileAlternative',
+            ],
+        ],
     ]
 );
 $GLOBALS['TCA']['sys_file_metadata']['columns']['title']['config'] = array_merge_recursive(
@@ -15,9 +15,9 @@ $GLOBALS['TCA']['sys_file_metadata']['columns']['title']['config'] = array_merge
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSysFileTitle'
-            ]
-        ]
+                'renderType' => 'aiSysFileTitle',
+            ],
+        ],
     ]
 );
 $GLOBALS['TCA']['sys_file_metadata']['columns']['description']['config'] = array_merge_recursive(
@@ -25,8 +25,8 @@ $GLOBALS['TCA']['sys_file_metadata']['columns']['description']['config'] = array
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSysFileDescription'
-            ]
-        ]
+                'renderType' => 'aiSysFileDescription',
+            ],
+        ],
     ]
 );

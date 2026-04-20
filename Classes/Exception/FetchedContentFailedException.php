@@ -1,7 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Exception;
 
-class FetchedContentFailedException extends \Exception
-{
-}
+class FetchedContentFailedException extends \Exception {}

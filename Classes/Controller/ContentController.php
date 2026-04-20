@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,24 +10,21 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Controller;
 
-use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
+use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
-use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\ContentService;
-use AutoDudes\AiSuite\Service\GlobalInstructionService;
-use AutoDudes\AiSuite\Service\LibraryService;
-use AutoDudes\AiSuite\Service\PromptTemplateService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
-use AutoDudes\AiSuite\Service\SessionService;
-use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
+use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -33,72 +32,52 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
-use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 #[AsController]
 class ContentController extends AbstractBackendController
 {
-    protected UuidService $uuidService;
-    protected ContentService $contentService;
-    protected RichTextElementService $richTextElementService;
-    protected Context $context;
-    protected PageContentFactory $pageContentFactory;
-    protected LoggerInterface $logger;
+    use AjaxResponseTrait;
 
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
-        IconFactory $iconFactory,
         UriBuilder $uriBuilder,
         PageRenderer $pageRenderer,
         FlashMessageService $flashMessageService,
         SendRequestService $requestService,
-        BackendUserService $backendUserService,
-        LibraryService $libraryService,
-        PromptTemplateService $promptTemplateService,
-        GlobalInstructionService $globalInstructionService,
-        SiteService $siteService,
         TranslationService $translationService,
-        SessionService $sessionService,
         EventDispatcher $eventDispatcher,
-        UuidService $uuidService,
-        ContentService     $contentService,
-        RichTextElementService $richTextElementService,
-        Context            $context,
-        PageContentFactory $pageContentFactory,
-        LoggerInterface    $logger
+        AiSuiteContext $aiSuiteContext,
+        protected readonly UuidService $uuidService,
+        protected readonly ContentService $contentService,
+        protected readonly RichTextElementService $richTextElementService,
+        protected readonly Context $context,
+        protected readonly PageContentFactory $pageContentFactory,
+        protected readonly LoggerInterface $logger,
+        protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly ViewFactoryService $viewFactoryService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
-            $iconFactory,
             $uriBuilder,
             $pageRenderer,
             $flashMessageService,
             $requestService,
-            $backendUserService,
-            $libraryService,
-            $promptTemplateService,
-            $globalInstructionService,
-            $siteService,
             $translationService,
-            $sessionService,
-            $eventDispatcher
+            $eventDispatcher,
+            $aiSuiteContext,
         );
-        $this->uuidService = $uuidService;
-        $this->contentService = $contentService;
-        $this->richTextElementService = $richTextElementService;
-        $this->context = $context;
-        $this->pageContentFactory = $pageContentFactory;
-        $this->logger = $logger;
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
     }
 
@@ -107,33 +86,38 @@ class ContentController extends AbstractBackendController
         try {
             $this->initialize($request);
             $identifier = $request->getAttribute('route')->getOption('_identifier');
+
             switch ($identifier) {
                 case 'ai_suite_content_request':
                     return $this->requestContentAction($request);
+
                 case 'ai_suite_content_save':
                     return $this->saveContentAction($request);
+
                 default:
                     return $this->createContentAction($request);
             }
         } catch (AiSuiteException $e) {
             $this->view->assign('error', true);
             $this->view->addFlashMessage(
-                !empty($e->getMessage()) ? $e->getMessage() : $this->translationService->translate('' . $e->getMessageKey()),
-                $this->translationService->translate('' . $e->getTitleKey()),
+                !empty($e->getMessage()) ? $e->getMessage() : $this->aiSuiteContext->localizationService->translate(''.$e->getMessageKey()),
+                $this->aiSuiteContext->localizationService->translate(''.$e->getTitleKey()),
                 ContextualFeedbackSeverity::ERROR
             );
             if (!empty($e->getReturnUrl())) {
                 return new RedirectResponse($e->getReturnUrl());
             }
+
             return $this->view->renderResponse($e->getTemplate());
         } catch (\Throwable $e) {
             $this->view->assign('error', true);
             $this->logger->error($e->getMessage());
             $this->view->addFlashMessage(
                 $e->getMessage(),
-                $this->translationService->translate('aiSuite.error.default.title'),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
                 ContextualFeedbackSeverity::ERROR
             );
+
             return $this->view->renderResponse('Content/CreateContent');
         }
     }
@@ -142,21 +126,21 @@ class ContentController extends AbstractBackendController
     {
         $params = $request->getQueryParams();
         $table = array_key_first($params['edit']);
-        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibrariesEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
         $defVals = [];
         if (array_key_exists('defVals', $params)) {
             $defVals = $params['defVals'];
             $content = [
-                'sysLanguageUid' => (int)$defVals[$table]['sys_language_uid'],
-                'colPos' => (int)$defVals[$table]['colPos'],
-                'pid' => (int)$defVals[$table]['pid'],
-                'CType' => $defVals[$table]['CType'] ?? 'text'
+                'sysLanguageUid' => (int) $defVals[$table]['sys_language_uid'],
+                'colPos' => (int) $defVals[$table]['colPos'],
+                'pid' => (int) $defVals[$table]['pid'],
+                'CType' => $defVals[$table]['CType'] ?? 'text',
             ];
-            $content['containerParentUid'] = isset($params['defVals'][$table]['tx_container_parent']) ? (int)$params['defVals'][$table]['tx_container_parent'] : 0;
+            $content['containerParentUid'] = isset($params['defVals'][$table]['tx_container_parent']) ? (int) $params['defVals'][$table]['tx_container_parent'] : 0;
         } else {
-            $content['pid'] = (int)$params['pid'];
+            $content['pid'] = (int) $params['pid'];
             $content['CType'] = $params['recordType'] ?? '';
-            $content['sysLanguageUid'] = !empty($params['sysLanguageUid']) ? (int)$params['sysLanguageUid'] : 0;
+            $content['sysLanguageUid'] = !empty($params['sysLanguageUid']) ? (int) $params['sysLanguageUid'] : 0;
         }
         $content['returnUrl'] = $params['returnUrl'] ?? '';
         if (array_key_exists('edit', $params) && array_key_exists($table, $params['edit'])) {
@@ -168,19 +152,20 @@ class ContentController extends AbstractBackendController
         $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content['CType'], $content['pid'], $table);
         $selectedTcaColumns = isset($params['selectedTcaColumns']) ? json_decode($params['selectedTcaColumns'], true) : $requestFields;
         $scope = count($defVals) > 0 ? 'contentElement' : 'newsRecord';
-        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
+        $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
 
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/creation.js');
 
         $this->view->assignMultiple([
             'content' => $content,
             'table' => $table,
-            'textGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [], $params['textGenerationLibraryKey'] ?? ''),
-            'imageGenerationLibraries' => $this->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'] ?? [], $params['imageGenerationLibraryKey'] ?? ''),
-            'additionalImageSettings' => $this->libraryService->prepareAdditionalImageSettings($params['additionalImageSettings'] ?? ''),
+            'textGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [], $params['textGenerationLibraryKey'] ?? ''),
+            'imageGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['imageGenerationLibraries'] ?? [], $params['imageGenerationLibraryKey'] ?? ''),
+            'additionalImageSettings' => $this->aiSuiteContext->libraryService->prepareAdditionalImageSettings($params['additionalImageSettings'] ?? ''),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'] ?? false,
-            'promptTemplates' => $this->promptTemplateService->getAllPromptTemplates(
+            'promptTemplates' => $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates(
                 count($defVals) > 0 ? 'contentElement' : 'newsRecord',
                 count($defVals) > 0 ? $params['defVals'][$table]['CType'] : '',
                 $content['sysLanguageUid']
@@ -191,9 +176,10 @@ class ContentController extends AbstractBackendController
             'defVals' => $defVals,
             'showMaxImageHint' => true,
             'uuid' => $this->uuidService->generateUuid(),
-            'contentTypeTitle' => $content['CType'] === '0' ? 'news' : $content['CType'],
+            'contentTypeTitle' => '0' === $content['CType'] ? 'news' : $content['CType'],
             'globalInstructions' => $globalInstructions,
         ]);
+
         return $this->view->renderResponse('Content/CreateContent');
     }
 
@@ -205,7 +191,7 @@ class ContentController extends AbstractBackendController
      */
     public function requestContentAction(ServerRequestInterface $request): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = (array) $request->getParsedBody();
         $content = json_decode($parsedBody['content'], true) ?? [];
         $selectedTcaColumns = $parsedBody['selectedTcaColumns'] ?? [];
         $availableTcaColumns = json_decode($parsedBody['availableTcaColumns'], true) ?? [];
@@ -227,26 +213,27 @@ class ContentController extends AbstractBackendController
             'imageGenerationLibraryKey' => $imageAi,
             'additionalImageSettings' => $parsedBody['additionalImageSettings'] ?? '',
         ];
-        if ($request->getQueryParams()['table'] === 'tx_news_domain_model_news') {
+        if ('tx_news_domain_model_news' === $request->getQueryParams()['table']) {
             $uriParams['recordType'] = '0';
             $uriParams['recordTable'] = 'tx_news_domain_model_news';
             $uriParams['pid'] = $content['pid'];
         }
 
-        $regenerateActionUri = (string)$this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', $uriParams);
+        $regenerateActionUri = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', $uriParams);
         $content['regenerateReturnUrl'] = $regenerateActionUri;
         $this->view->assign('regenerateActionUri', $regenerateActionUri);
 
         try {
-            $langIsoCode = $this->siteService->getIsoCodeByLanguageId($content['sysLanguageUid'], $content['pid']);
+            $langIsoCode = $this->aiSuiteContext->siteService->getIsoCodeByLanguageId($content['sysLanguageUid'], $content['pid']);
         } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
             $this->view->addFlashMessage(
                 $exception->getMessage(),
-                $this->translationService->translate('aiSuite.module.cannotSendRequest.title'),
+                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.cannotSendRequest.title'),
                 ContextualFeedbackSeverity::ERROR
             );
             $this->view->assign('error', true);
+
             return $this->view->renderResponse('Content/RequestContent');
         }
 
@@ -260,21 +247,21 @@ class ContentController extends AbstractBackendController
             }
             if (array_key_exists('text', $fields)) {
                 foreach ($fields['text'] as $fieldName => $renderType) {
-                    if ($renderType !== '') {
+                    if ('' !== $renderType) {
                         $requestFields[$type]['text'][$fieldName] = $availableTcaColumns[$type]['text'][$fieldName];
                     }
                 }
             }
             if (array_key_exists('image', $fields)) {
                 foreach ($fields['image'] as $fieldName => $renderType) {
-                    if ($renderType !== '') {
+                    if ('' !== $renderType) {
                         $requestFields[$type]['image'][$fieldName] = $availableTcaColumns[$type]['image'][$fieldName];
                     }
                 }
             }
         }
         $scope = count($defVals) > 0 ? 'contentElement' : 'newsRecord';
-        $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
+        $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
         $models = $this->contentService->checkRequestModels($requestFields, ['text' => $textAi, 'image' => $imageAi]);
         $answer = $this->requestService->sendDataRequest(
             'createContentElement',
@@ -289,7 +276,7 @@ class ContentController extends AbstractBackendController
             strtoupper($langIsoCode),
             $models
         );
-        if ($answer->getType() === 'Error') {
+        if ('Error' === $answer->getType()) {
             throw new AiSuiteException('Content/RequestContent', '', 'aiSuite.module.errorValidContentElementResponse.title', $answer->getResponseData()['message']);
         }
         $contentElementData = json_decode($answer->getResponseData()['contentElementData'], true);
@@ -316,9 +303,10 @@ class ContentController extends AbstractBackendController
         ]);
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/validation.js');
         $this->view->addFlashMessage(
-            $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.message'),
-            $this->translationService->translate('aiSuite.module.fetchingDataSuccessful.title')
+            $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.fetchingDataSuccessful.message'),
+            $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.fetchingDataSuccessful.title')
         );
+
         return $this->view->renderResponse('Content/RequestContent');
     }
 
@@ -328,7 +316,7 @@ class ContentController extends AbstractBackendController
      */
     public function saveContentAction(ServerRequestInterface $request): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = (array) $request->getParsedBody();
         $content = json_decode($parsedBody['content'], true) ?? [];
         $selectedTcaColumns = json_decode($parsedBody['selectedTcaColumns'], true) ?? [];
         $contentElementTextData = $parsedBody['contentElementData'] ?? [];
@@ -356,6 +344,119 @@ class ContentController extends AbstractBackendController
             }
         }
         $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
+
         return new RedirectResponse($content['returnUrl']);
+    }
+
+    public function ckeditorLibrariesAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::RTE_CONTENT, 'editContent', ['text']);
+
+        if ('Error' === $librariesAnswer->getType()) {
+            $response->getBody()->write(
+                (string) json_encode(
+                    [
+                        'success' => false,
+                        'output' => '<div class="alert alert-danger" role="alert">'.$this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title').'</div>',
+                    ]
+                )
+            );
+
+            return $response;
+        }
+        $pageId = ((array) $request->getParsedBody())['pageId'] ?? 0;
+        $response->getBody()->write(
+            (string) json_encode(
+                [
+                    'success' => true,
+                    'output' => [
+                        'libraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
+                        'promptTemplates' => $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates('editContent'),
+                        'globalInstructions' => $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'editContent', (int) $pageId),
+                        'uuid' => $this->uuidService->generateUuid(),
+                    ],
+                ]
+            )
+        );
+
+        return $response;
+    }
+
+    public function ckeditorEasyLanguageLibrariesAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::RTE_CONTENT, 'editContent', ['text']);
+
+        if ('Error' === $librariesAnswer->getType()) {
+            $response->getBody()->write(
+                (string) json_encode(
+                    [
+                        'success' => false,
+                        'output' => '<div class="alert alert-danger" role="alert">'.$this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title').'</div>',
+                    ]
+                )
+            );
+
+            return $response;
+        }
+        $configuredLibrary = $this->extensionConfiguration->get('ai_suite', 'easyLanguageLibrary');
+        $library = array_filter(
+            $librariesAnswer->getResponseData()['textGenerationLibraries'],
+            function ($library) use ($configuredLibrary) {
+                return $library['model_identifier'] === $configuredLibrary;
+            }
+        );
+        $response->getBody()->write(
+            (string) json_encode(
+                [
+                    'success' => true,
+                    'output' => [
+                        'library' => $library,
+                        'uuid' => $this->uuidService->generateUuid(),
+                    ],
+                ]
+            )
+        );
+
+        return $response;
+    }
+
+    public function ckeditorRequestAction(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $parsedBody = (array) $request->getParsedBody();
+        $pageUid = $parsedBody['pageId'] ?? 0;
+        $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'editContent', (int) $pageUid);
+        $answer = $this->requestService->sendDataRequest(
+            'editContent',
+            [
+                'uuid' => $parsedBody['uuid'],
+                'selectedContent' => $parsedBody['selectedContent'] ?? '',
+                'wholeContent' => $parsedBody['wholeContent'] ?? '',
+                'type' => $parsedBody['type'] ?? '',
+                'globalInstructions' => $globalInstructions,
+            ],
+            $parsedBody['prompt'] ?? '',
+            $parsedBody['languageCode'] ?? 'en',
+            [
+                'text' => $parsedBody['textModel'],
+            ],
+        );
+        if ('Error' === $answer->getType()) {
+            $this->logError($answer->getResponseData()['message'], $response, 503);
+
+            return $response;
+        }
+        $response->getBody()->write(
+            (string) json_encode(
+                [
+                    'success' => true,
+                    'output' => $answer->getResponseData()['editContentResult'],
+                ]
+            )
+        );
+
+        return $response;
     }
 }

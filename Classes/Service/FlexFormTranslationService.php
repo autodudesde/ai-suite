@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Service;
 
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
@@ -7,6 +9,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 class FlexFormTranslationService implements SingletonInterface
 {
+    /** @var list<string> */
     protected array $ignoredFlexformFieldTypes = [
         'category',
         'check',
@@ -29,17 +32,17 @@ class FlexFormTranslationService implements SingletonInterface
         'uuid',
         'passthrough',
         'imageManipulation',
-        'user'
+        'user',
     ];
 
-    protected FlexFormTools $flexFormTools;
-
     public function __construct(
-        FlexFormTools $flexFormTools
-    ) {
-        $this->flexFormTools = $flexFormTools;
-    }
+        protected readonly FlexFormTools $flexFormTools
+    ) {}
 
+    /**
+     * @param array<string, mixed> $formData
+     * @param array<string, mixed> $translateFields
+     */
     public function convertFlexFormToTranslateFields(array $formData, array &$translateFields, string $fieldName = 'pi_flexform'): void
     {
         $flexForm = $formData['databaseRow'][$fieldName] ?? '';
@@ -57,7 +60,7 @@ class FlexFormTranslationService implements SingletonInterface
                     $this->checkValue_flex_procInData_travDS(
                         $flexFormData[$sKey][$lKey],
                         $newStructure['sheets'][$sKey]['ROOT']['el'] ?? null,
-                        $sKey . '/' . $lKey . '/'
+                        $sKey.'/'.$lKey.'/'
                     );
                 }
             }
@@ -65,21 +68,21 @@ class FlexFormTranslationService implements SingletonInterface
         $this->removeEmptyArraysRecursively($flexFormData);
         if (!empty($flexFormData)) {
             $translateFields[$fieldName] = [
-                'data' => $flexFormData
+                'data' => $flexFormData,
             ];
         }
     }
 
-    protected function checkValue_flex_procInData_travDS(&$dataValues, $DSelements, $structurePath): void
+    /**
+     * @param array<string, mixed> $DSelements
+     * @param array<string, mixed> $dataValues
+     */
+    protected function checkValue_flex_procInData_travDS(array &$dataValues, array $DSelements, string $structurePath): void
     {
-        if (!is_array($DSelements)) {
-            return;
-        }
-
         // For each DS element:
         foreach ($DSelements as $key => $dsConf) {
             // Array/Section:
-            if (isset($DSelements[$key]['type']) && $DSelements[$key]['type'] === 'array') {
+            if (isset($DSelements[$key]['type']) && 'array' === $DSelements[$key]['type']) {
                 if (!is_array($dataValues[$key]['el'] ?? null)) {
                     continue;
                 }
@@ -98,19 +101,19 @@ class FlexFormTranslationService implements SingletonInterface
                         $this->checkValue_flex_procInData_travDS(
                             $dataValues[$key]['el'][$ik][$theKey]['el'],
                             $DSelements[$key]['el'][$theKey]['el'] ?? [],
-                            $structurePath . $key . '/el/' . $ik . '/' . $theKey . '/el/',
+                            $structurePath.$key.'/el/'.$ik.'/'.$theKey.'/el/',
                         );
                     }
                 } else {
                     if (!isset($dataValues[$key]['el'])) {
                         $dataValues[$key]['el'] = [];
                     }
-                    $this->checkValue_flex_procInData_travDS($dataValues[$key]['el'], $DSelements[$key]['el'], $structurePath . $key . '/el/');
+                    $this->checkValue_flex_procInData_travDS($dataValues[$key]['el'], $DSelements[$key]['el'], $structurePath.$key.'/el/');
                 }
             } else {
                 $fieldConfiguration = $dsConf['config'] ?? null;
                 // init with value from config for passthrough fields
-                if (!empty($fieldConfiguration['type']) && $fieldConfiguration['type'] === 'passthrough') {
+                if (!empty($fieldConfiguration['type']) && 'passthrough' === $fieldConfiguration['type']) {
                     if (!empty($fieldConfiguration['default'])) {
                         // If is new record and a default is specified for field, use it.
                         $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
@@ -127,6 +130,9 @@ class FlexFormTranslationService implements SingletonInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $flexFormData
+     */
     protected function removeEmptyArraysRecursively(array &$flexFormData): void
     {
         foreach ($flexFormData as $key => $value) {
@@ -135,7 +141,7 @@ class FlexFormTranslationService implements SingletonInterface
                 if (empty($flexFormData[$key])) {
                     unset($flexFormData[$key]);
                 }
-            } elseif ($value === '') {
+            } elseif ('' === $value) {
                 unset($flexFormData[$key]);
             }
         }

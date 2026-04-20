@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,7 +10,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
@@ -37,11 +39,17 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
         return $this->connectionPool->getConnectionForTable($this->table)->truncate($this->table);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function insertData(array $data): void
     {
         $this->connectionPool->getConnectionForTable($this->table)->insert($this->table, $data);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function insertList(array $data): void
     {
         if (count($data) > 0) {

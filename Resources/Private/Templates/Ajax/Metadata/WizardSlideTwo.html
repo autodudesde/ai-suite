@@ -4,7 +4,7 @@
     <div class="panel panel-default wizard-slide" id="wizardSlideTwo">
         <div class="panel-heading">
             <h3 class="panel-title fw-bold">
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
             </h3>
         </div>
         <div class="panel-body">
@@ -12,7 +12,7 @@
             <f:if condition="{additionalFields -> f:count()} > 0">
                 <div class="form-section mt-2 mb-3 p-3">
                     <label class="control-label fw-bold mb-3">
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metadataAdditionalFields" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.modal.metadataAdditionalFields" />
                     </label>
                     <div class="row">
                         <f:for each="{additionalFields}" key="useForField" as="useForLabel" iteration="it">
@@ -38,11 +38,11 @@
                 <div class="btn-group gap-2" role="group">
                     <button class="btn btn-default" id="aiSuiteBackToPreviousSlideBtn">
                         <core:icon identifier="actions-refresh" size="small" />
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.regenerateSuggestions" />
                     </button>
                     <button class="btn btn-primary" id="aiSuiteSaveMetadataBtn">
                         <core:icon identifier="actions-check" size="small" />
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.metadataWizardSaveButton" />
                     </button>
                 </div>
             </div>

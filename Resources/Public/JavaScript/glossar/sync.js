@@ -10,13 +10,13 @@ class SyncGlossary {
         if(General.isUsable(document.querySelector('.t3js-ai-suite-sync-glossary-btn'))) {
             document.querySelector('.t3js-ai-suite-sync-glossary-btn').addEventListener("click", async function (ev) {
                 ev.preventDefault();
-                Notification.info(TYPO3.lang['AiSuite.notification.deeplSyncStarted'], '', 8);
+                Notification.info(TYPO3.lang['aiSuite.notification.deeplSyncStarted'], '', 8);
                 let response = await Ajax.sendAjaxRequest('aisuite_glossary_synchronize', {pid: ev.target.getAttribute('data-pid')});
                 if(General.isUsable(response)) {
                     if(response.success === true) {
-                        Notification.success(TYPO3.lang['AiSuite.notification.deeplSyncSuccessful']);
+                        Notification.success(TYPO3.lang['aiSuite.notification.deeplSyncSuccessful']);
                     } else {
-                        Notification.error(TYPO3.lang['AiSuite.notification.deeplSyncFailed']);
+                        Notification.error(TYPO3.lang['aiSuite.notification.deeplSyncFailed']);
                     }
                 }
             });

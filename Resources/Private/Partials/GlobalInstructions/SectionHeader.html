@@ -5,8 +5,7 @@
 <div class="recordlist-heading multi-record-selection-panel">
     <div class="recordlist-heading-row">
         <div class="recordlist-heading-title">
-            <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel"
-                         extensionName="ai_suite"/> - {sectionTitle}
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel"/> - {sectionTitle}
             (
             <f:count subject="{instructions}"/>
             )
@@ -19,23 +18,21 @@
         >
             <core:icon identifier="actions-page-new" size="small"/>
             <f:translate
-                key="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"
-                extensionName="ai_suite"/>
+                key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"/>
         </be:link.newRecord>
         <form action="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
               name="input" enctype="multipart/form-data" method="POST"
               class="manage-global-instructions-search-form">
             <input type="text" id="search" name="search" value="{search}" class="form-control"
-                   placeholder="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder', extensionName: 'ai_suite')}"/>
+                   placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.misc.searchableDropdown.search')}"/>
             <input type="submit"
-                   value="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit', extensionName: 'ai_suite')}"
+                   value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}"
                    class="btn btn-primary"/>
             <a href="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
                class="btn btn-secondary"
-               title="{f:translate(key: 'AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset', extensionName: 'ai_suite')}"
+               title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchReset')}"
             >
-                <f:translate key="AiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset"
-                             extensionName="ai_suite"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchReset"/>
             </a>
         </form>
     </div>

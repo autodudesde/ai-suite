@@ -74,7 +74,7 @@ class GenerateSuggestions {
                 let newsDetailPlugin = modal.find('.panel-body select#newsDetailPlugin');
                 let sysLanguageSelection = modal.find('.panel-body #languageSelection select');
                 if(modal.find('.panel-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
-                    Notification.warning(TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelection'], TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
+                    Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
                 }
                 postData.uuid = ev.target.getAttribute('data-uuid');

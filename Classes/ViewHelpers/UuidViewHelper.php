@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\ViewHelpers;
 
 use AutoDudes\AiSuite\Service\UuidService;
@@ -11,6 +13,7 @@ final class UuidViewHelper extends AbstractViewHelper
     public function render(): string
     {
         $uuidService = GeneralUtility::makeInstance(UuidService::class);
+
         return $uuidService->generateUuid();
     }
 }

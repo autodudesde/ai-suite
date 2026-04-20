@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,67 +10,36 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Model;
 
 class Pages
 {
-    protected int $pid;
-    protected string $title;
-    protected int $doktype;
-    protected int $hidden;
-    protected int $deleted;
-    protected int $navHide;
-    protected string $seoTitle;
-    protected string $description;
-    protected string $slug;
-    protected string $txAiSuiteTopiclist;
-
-    protected int $tstamp;
-    protected int $permsUserid;
-    protected int $permsGroupid;
-    protected int $permsUser;
-    protected int $permsGroup;
-    protected int $permsEverybody;
-    protected int $isSiteroot;
-
     public function __construct(
-        ?int $pid,
-        string $title,
-        int $doktype,
-        int $hidden,
-        int $deleted,
-        int $navHide,
-        string $seoTitle,
-        string $description,
-        string $slug,
-        string $txAiSuiteTopiclist,
-        int $tstamp,
-        int $permsUserid,
-        int $permsGroupid,
-        int $permsUser,
-        int $permsGroup,
-        int $permsEverybody,
-        int $isSiteroot = 0
+        protected ?int $pid,
+        protected string $title,
+        protected int $doktype,
+        protected int $hidden,
+        protected int $deleted,
+        protected int $navHide,
+        protected string $seoTitle,
+        protected string $description,
+        protected string $slug,
+        protected string $txAiSuiteTopiclist,
+        protected int $tstamp,
+        protected int $permsUserid,
+        protected int $permsGroupid,
+        protected int $permsUser,
+        protected int $permsGroup,
+        protected int $permsEverybody,
+        protected int $isSiteroot = 0,
     ) {
-        $this->pid = $pid;
         $this->title = trim($title);
-        $this->doktype = $doktype;
-        $this->hidden = $hidden;
-        $this->deleted = $deleted;
-        $this->navHide = $navHide;
         $this->seoTitle = trim($seoTitle);
         $this->description = trim($description);
         $this->slug = trim($slug);
         $this->txAiSuiteTopiclist = trim($txAiSuiteTopiclist);
-        $this->tstamp = $tstamp;
-        $this->permsUserid = $permsUserid;
-        $this->permsGroupid = $permsGroupid;
-        $this->permsUser = $permsUser;
-        $this->permsGroup = $permsGroup;
-        $this->permsEverybody = $permsEverybody;
-        $this->isSiteroot = $isSiteroot;
     }
 
     public static function createEmpty(): self
@@ -94,7 +65,7 @@ class Pages
         );
     }
 
-    public function getPid(): int
+    public function getPid(): ?int
     {
         return $this->pid;
     }
@@ -102,6 +73,7 @@ class Pages
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
+
         return $this;
     }
 
@@ -113,6 +85,7 @@ class Pages
     public function setTitle(string $title): self
     {
         $this->title = trim($title);
+
         return $this;
     }
 
@@ -124,6 +97,7 @@ class Pages
     public function setDoktype(int $doktype): self
     {
         $this->doktype = $doktype;
+
         return $this;
     }
 
@@ -135,6 +109,7 @@ class Pages
     public function setHidden(int $hidden): self
     {
         $this->hidden = $hidden;
+
         return $this;
     }
 
@@ -146,6 +121,7 @@ class Pages
     public function setDeleted(int $deleted): self
     {
         $this->deleted = $deleted;
+
         return $this;
     }
 
@@ -157,6 +133,7 @@ class Pages
     public function setNavHide(int $navHide): self
     {
         $this->navHide = $navHide;
+
         return $this;
     }
 
@@ -168,6 +145,7 @@ class Pages
     public function setSeoTitle(string $seoTitle): self
     {
         $this->seoTitle = trim($seoTitle);
+
         return $this;
     }
 
@@ -179,6 +157,7 @@ class Pages
     public function setDescription(string $description): self
     {
         $this->description = trim($description);
+
         return $this;
     }
 
@@ -190,6 +169,7 @@ class Pages
     public function setSlug(string $slug): self
     {
         $this->slug = trim($slug);
+
         return $this;
     }
 
@@ -201,6 +181,7 @@ class Pages
     public function setTxAiSuiteTopiclist(string $txAiSuiteTopiclist): self
     {
         $this->txAiSuiteTopiclist = trim($txAiSuiteTopiclist);
+
         return $this;
     }
 
@@ -212,6 +193,7 @@ class Pages
     public function setTstamp(int $tstamp): self
     {
         $this->tstamp = $tstamp;
+
         return $this;
     }
 
@@ -223,6 +205,7 @@ class Pages
     public function setPermsUserid(int $permsUserid): self
     {
         $this->permsUserid = $permsUserid;
+
         return $this;
     }
 
@@ -234,6 +217,7 @@ class Pages
     public function setPermsGroupid(int $permsGroupid): self
     {
         $this->permsGroupid = $permsGroupid;
+
         return $this;
     }
 
@@ -245,6 +229,7 @@ class Pages
     public function setPermsUser(int $permsUser): self
     {
         $this->permsUser = $permsUser;
+
         return $this;
     }
 
@@ -256,6 +241,7 @@ class Pages
     public function setPermsGroup(int $permsGroup): self
     {
         $this->permsGroup = $permsGroup;
+
         return $this;
     }
 
@@ -267,6 +253,7 @@ class Pages
     public function setPermsEverybody(int $permsEverybody): self
     {
         $this->permsEverybody = $permsEverybody;
+
         return $this;
     }
 
@@ -280,6 +267,9 @@ class Pages
         $this->isSiteroot = $isSiteroot;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toDatabase(): array
     {
         return [

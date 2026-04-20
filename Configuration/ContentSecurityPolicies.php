@@ -14,7 +14,6 @@ $aiSuiteCollection = new MutationCollection(
     new Mutation(
         MutationMode::Extend,
         Directive::DefaultSrc,
-        new UriValue('https://oaidalleapiprodscus.blob.core.windows.net'),
         new UriValue('https://cdn.discordapp.com'),
         new UriValue('https://picsum.photos'),
         new UriValue('https://fastly.picsum.photos'),
@@ -24,7 +23,6 @@ $aiSuiteCollection = new MutationCollection(
     new Mutation(
         MutationMode::Extend,
         Directive::ImgSrc,
-        new UriValue('https://oaidalleapiprodscus.blob.core.windows.net'),
         new UriValue('https://cdn.discordapp.com'),
         new UriValue('https://picsum.photos'),
         new UriValue('https://fastly.picsum.photos'),
@@ -34,7 +32,6 @@ $aiSuiteCollection = new MutationCollection(
     new Mutation(
         MutationMode::Extend,
         Directive::ScriptSrc,
-        new UriValue('https://oaidalleapiprodscus.blob.core.windows.net'),
         new UriValue('https://cdn.discordapp.com'),
         new UriValue('https://picsum.photos'),
         new UriValue('https://fastly.picsum.photos'),
@@ -42,6 +39,7 @@ $aiSuiteCollection = new MutationCollection(
         new UriValue('https://api.autodudes.de'),
     ),
 );
+
 return Map::fromEntries(
     [Scope::backend(), $aiSuiteCollection],
 );

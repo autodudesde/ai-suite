@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -22,6 +24,11 @@ class AiSuiteLinkButton extends AbstractButton
 {
     protected string $href = '';
 
+    public function __toString(): string
+    {
+        return $this->render();
+    }
+
     public function getHref(): string
     {
         return $this->href;
@@ -30,19 +37,21 @@ class AiSuiteLinkButton extends AbstractButton
     public function setHref(string $href): self
     {
         $this->href = $href;
+
         return $this;
     }
 
     public function isValid(): bool
     {
         if (
-            trim($this->getHref()) !== ''
-            && trim($this->getTitle()) !== ''
-            && $this->getType() === self::class
-            && $this->getIcon() !== null
+            '' !== trim($this->getHref())
+            && '' !== trim($this->getTitle())
+            && self::class === $this->getType()
+            && null !== $this->getIcon()
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -50,15 +59,15 @@ class AiSuiteLinkButton extends AbstractButton
     {
         $attributes = [
             'href' => $this->getHref(),
-            'class' => 'btn ' . $this->getClasses(),
+            'class' => 'btn '.$this->getClasses(),
             'title' => $this->getTitle(),
         ];
         $labelText = '';
         if ($this->showLabelText) {
-            $labelText = ' ' . $this->title;
+            $labelText = ' '.$this->title;
         }
         foreach ($this->dataAttributes as $attributeName => $attributeValue) {
-            $attributes['data-' . $attributeName] = $attributeValue;
+            $attributes['data-'.$attributeName] = $attributeValue;
         }
         if ($this->isDisabled()) {
             $attributes['disabled'] = 'disabled';
@@ -66,13 +75,8 @@ class AiSuiteLinkButton extends AbstractButton
         }
         $attributesString = GeneralUtility::implodeAttributes($attributes, true);
 
-        return '<a ' . $attributesString . '>'
-            . $this->getIcon()->render() . htmlspecialchars($labelText)
-            . '</a>';
-    }
-
-    public function __toString(): string
-    {
-        return $this->render();
+        return '<a '.$attributesString.'>'
+            .$this->getIcon()->render().htmlspecialchars($labelText)
+            .'</a>';
     }
 }

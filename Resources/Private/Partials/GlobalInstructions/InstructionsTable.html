@@ -11,37 +11,29 @@
                     #
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.name"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.name"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.context"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.context"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.selection"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.selection"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.useForSubtree"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.useForSubtree"/>
                 </th>
                 <th scope="col">
                     <f:translate
-                        key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions"
-                        extensionName="ai_suite"/>
+                        key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.storagePage"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.storagePage"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions"
-                                 extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions"/>
                 </th>
             </tr>
             </thead>
@@ -50,8 +42,7 @@
                 <tr>
                     <td colspan="8">
                         <f:translate
-                            key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound"
-                            extensionName="ai_suite"/>
+                            key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.noRecordsFound"/>
                     </td>
                 </tr>
             </f:if>
@@ -63,7 +54,7 @@
                     <td>
                         <be:link.editRecord
                             table="tx_aisuite_domain_model_global_instructions"
-                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel', extensionName: 'ai_suite')}"
+                            title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
                             uid="{instruction.uid}"
                             returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
                         >
@@ -75,8 +66,7 @@
                     </td>
                     <td data-test-scope="{instruction.scope}">
                         <f:translate
-                            key="tx_aisuite.module.dashboard.card.manageGlobalInstructions.scope{instruction.scope -> f:format.case(mode: 'capital')}"
-                            extensionName="ai_suite"/>
+                            key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.scope{instruction.scope -> f:format.case(mode: 'capital')}"/>
                     </td>
                     <td data-test-selected-pages-directories="1">
                         <f:if condition="{instruction.context} == 'pages'">
@@ -93,20 +83,20 @@
                     <td data-test-subtree="{instruction.use_for_subtree}">
                         <f:if condition="{instruction.use_for_subtree}">
                             <f:then>
-                                <f:translate key="aiSuite.yes" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.yes"/>
                             </f:then>
                             <f:else>
-                                <f:translate key="aiSuite.no" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.no"/>
                             </f:else>
                         </f:if>
                     </td>
                     <td data-test-extendprevious="{instruction.extend_previous_instructions}">
                         <f:if condition="{instruction.extend_previous_instructions}">
                             <f:then>
-                                <f:translate key="aiSuite.yes" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.yes"/>
                             </f:then>
                             <f:else>
-                                <f:translate key="aiSuite.no" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.no"/>
                             </f:else>
                         </f:if>
                     </td>
@@ -116,7 +106,7 @@
                     <td>
                         <be:link.editRecord
                             table="tx_aisuite_domain_model_global_instructions"
-                            title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.editLabel', extensionName: 'ai_suite')}"
+                            title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
                             uid="{instruction.uid}"
                             returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
                             class="btn btn-default"
@@ -126,7 +116,7 @@
                         <f:if condition="{instruction.hidden}">
                             <f:then>
                                 <a href="{f:be.uri(route: 'ai_suite_global_instructions_activate', parameters: '{recordId: instruction.uid, id: pid}')}"
-                                   title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.activateLabel', extensionName: 'ai_suite')}"
+                                   title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.activateLabel')}"
                                    class="btn btn-default"
                                 >
                                     <core:icon identifier="actions-toggle-off" size="small"/>
@@ -134,7 +124,7 @@
                             </f:then>
                             <f:else>
                                 <a href="{f:be.uri(route: 'ai_suite_global_instructions_deactivate', parameters: '{recordId: instruction.uid, id: pid}')}"
-                                   title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deactivateLabel', extensionName: 'ai_suite')}"
+                                   title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel')}"
                                    class="btn btn-default"
                                 >
                                     <core:icon identifier="actions-toggle-on" size="small"/>
@@ -142,7 +132,7 @@
                             </f:else>
                         </f:if>
                         <a href="{f:be.uri(route: 'ai_suite_global_instructions_delete', parameters: '{recordId: instruction.uid, id: pid}')}"
-                           title="{f:translate(key: 'tx_aisuite.module.dashboard.card.manageGlobalInstructions.actions.deleteLabel', extensionName: 'ai_suite')}"
+                           title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel')}"
                            class="btn btn-default delete-global-instruction"
                            data-instruction-name="{instruction.name}"
                         >

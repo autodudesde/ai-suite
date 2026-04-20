@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\EventListener;
 
-use AutoDudes\AiSuite\Service\MassActionService;
 use AutoDudes\AiSuite\Service\MetadataService;
+use AutoDudes\AiSuite\Service\WorkflowProcessingService;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException;
 use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -11,20 +14,11 @@ use TYPO3\CMS\Core\Resource\Event\AfterFileAddedEvent;
 
 class AfterFileAddedEventListener
 {
-    private array $supportedMimeTypes;
-
     public function __construct(
         private readonly MetadataService $metadataService,
         private readonly ExtensionConfiguration $extensionConfiguration,
-        private readonly MassActionService $massActionService,
-    ) {
-        $this->supportedMimeTypes = [
-            "image/jpeg",
-            "image/png",
-            "image/gif",
-            "image/webp",
-        ];
-    }
+        private readonly WorkflowProcessingService $workflowProcessingService,
+    ) {}
 
     /**
      * @throws ExtensionConfigurationPathDoesNotExistException
@@ -34,7 +28,7 @@ class AfterFileAddedEventListener
     {
         $file = $event->getFile();
 
-        if(!in_array($file->getMimeType(), $this->supportedMimeTypes)) {
+        if (!in_array($file->getMimeType(), MetadataService::SUPPORTED_IMAGE_MIME_TYPES, true)) {
             return;
         }
 
@@ -43,14 +37,14 @@ class AfterFileAddedEventListener
         }
 
         $extConf = $this->extensionConfiguration->get('ai_suite');
-        if (!(bool)$extConf['metadataAutogenerateAlternative'] && !(bool)$extConf['metadataAutogenerateTitle']) {
+        if (!(bool) $extConf['metadataAutogenerateAlternative'] && !(bool) $extConf['metadataAutogenerateTitle']) {
             return;
         }
-        if ($extConf['metadataAutogenerateApproach'] === 'taskEngine') {
-            $this->massActionService->handleMetadaGenerationAfterFileAdded($file, $extConf);
+        if ('taskEngine' === $extConf['metadataAutogenerateApproach']) {
+            $this->workflowProcessingService->handleMetadaGenerationAfterFileAdded($file, $extConf);
         } else {
             $fileMetadata = $file->getMetaData();
-            $fileMetadataUid = (int)$fileMetadata->offsetGet('uid');
+            $fileMetadataUid = (int) $fileMetadata->offsetGet('uid');
             $this->metadataService->generateAndSaveMetadataDirectly($file, $fileMetadataUid, $extConf);
         }
     }

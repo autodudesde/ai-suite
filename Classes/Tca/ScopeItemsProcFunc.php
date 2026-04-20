@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,34 +10,35 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
-
-declare(strict_types=1);
+ */
 
 namespace AutoDudes\AiSuite\Tca;
 
 class ScopeItemsProcFunc
 {
+    /**
+     * @param array<string, mixed> $config
+     */
     public function getScopeItems(array &$config): void
     {
         $context = $config['row']['context'][0] ?? 'pages';
 
-        if ($context === 'files') {
+        if ('files' === $context) {
             $config['items'] = [
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.general', 'value' => 'general'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.imageWizard', 'value' => 'imageWizard'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.files.metadata', 'value' => 'metadata'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.general', 'value' => 'general'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.imageWizard', 'value' => 'imageWizard'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.metadata', 'value' => 'metadata'],
             ];
         } else {
             $config['items'] = [
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.general', 'value' => 'general'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.pageTree', 'value' => 'pageTree'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.imageWizard', 'value' => 'imageWizard'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.contentElement', 'value' => 'contentElement'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.newsRecord', 'value' => 'newsRecord'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.editContent', 'value' => 'editContent'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.metadata', 'value' => 'metadata'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope.pages.translation', 'value' => 'translation'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.general', 'value' => 'general'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.pageTree', 'value' => 'pageTree'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.imageWizard', 'value' => 'imageWizard'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.contentElement', 'value' => 'contentElement'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.newsRecord', 'value' => 'newsRecord'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.editContent', 'value' => 'editContent'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.metadata', 'value' => 'metadata'],
+                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.translation', 'value' => 'translation'],
             ];
         }
     }

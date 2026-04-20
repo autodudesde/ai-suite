@@ -28,20 +28,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MetadataService
 {
-    protected PagesRepository $pagesRepository;
-    protected PageRepository $pageRepository;
-    protected RequestFactory $requestFactory;
-    protected RequestsRepository $requestsRepository;
-    protected ResourceFactory $resourceFactory;
-    protected BackendUserService $backendUserService;
-    protected TranslationService $translationService;
-    protected SiteService $siteService;
-    protected BasicAuthService $basicAuthService;
-    protected SendRequestService $sendRequestService;
-    protected GlobalInstructionService $globalInstructionService;
-    protected UuidService $uuidService;
-    protected LoggerInterface $logger;
+    public const SUPPORTED_IMAGE_MIME_TYPES = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+    ];
 
+    /** @var list<string> */
     protected array $pageMetadataColumns = [
         'title',
         'nav_title',
@@ -56,34 +50,21 @@ class MetadataService
     ];
 
     public function __construct(
-        PagesRepository $pagesRepository,
-        PageRepository $pageRepository,
-        RequestFactory $requestFactory,
-        RequestsRepository $requestsRepository,
-        ResourceFactory $resourceFactory,
-        BackendUserService $backendUserService,
-        TranslationService $translationService,
-        SiteService $siteService,
-        BasicAuthService $basicAuthService,
-        SendRequestService $sendRequestService,
-        GlobalInstructionService $globalInstructionService,
-        UuidService $uuidService,
-        LoggerInterface $logger
-    ) {
-        $this->pagesRepository = $pagesRepository;
-        $this->pageRepository = $pageRepository;
-        $this->requestFactory = $requestFactory;
-        $this->requestsRepository = $requestsRepository;
-        $this->resourceFactory = $resourceFactory;
-        $this->backendUserService = $backendUserService;
-        $this->translationService = $translationService;
-        $this->siteService = $siteService;
-        $this->basicAuthService = $basicAuthService;
-        $this->sendRequestService = $sendRequestService;
-        $this->globalInstructionService = $globalInstructionService;
-        $this->uuidService = $uuidService;
-        $this->logger = $logger;
-    }
+        protected readonly PagesRepository $pagesRepository,
+        protected readonly PageRepository $pageRepository,
+        protected readonly RequestFactory $requestFactory,
+        protected readonly RequestsRepository $requestsRepository,
+        protected readonly ResourceFactory $resourceFactory,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly TranslationService $translationService,
+        protected readonly LocalizationService $localizationService,
+        protected readonly SiteService $siteService,
+        protected readonly BasicAuthService $basicAuthService,
+        protected readonly SendRequestService $sendRequestService,
+        protected readonly GlobalInstructionService $globalInstructionService,
+        protected readonly UuidService $uuidService,
+        protected readonly LoggerInterface $logger,
+    ) {}
 
     /**
      * @throws FetchedContentFailedException
@@ -93,17 +74,20 @@ class MetadataService
      */
     public function fetchContent(ServerRequestInterface $request): string
     {
-        if ($request->getParsedBody()['table'] === 'tx_news_domain_model_news') {
+        /** @var array<string, mixed> $parsedBody */
+        $parsedBody = $request->getParsedBody();
+        if ('tx_news_domain_model_news' === $parsedBody['table']) {
             return $this->fetchContentOfNewsArticle(
-                (int)$request->getParsedBody()['id'],
-                (int)$request->getParsedBody()['newsDetailPlugin']
+                (int) $parsedBody['id'],
+                (int) $parsedBody['newsDetailPlugin']
             );
-        } elseif ($request->getParsedBody()['table'] === 'sys_file_metadata' || $request->getParsedBody()['table'] === 'sys_file_reference') {
-            return $this->getFileContent((int)$request->getParsedBody()['sysFileId']);
-        } else {
-            $previewUrl = $this->getPreviewUrl((int)$request->getParsedBody()['pageId']);
-            return $this->fetchContentFromUrl($previewUrl);
         }
+        if ('sys_file_metadata' === $parsedBody['table'] || 'sys_file_reference' === $parsedBody['table']) {
+            return $this->getFileContent((int) $parsedBody['sysFileId']);
+        }
+        $previewUrl = $this->getPreviewUrl((int) $parsedBody['pageId']);
+
+        return $this->fetchContentFromUrl($previewUrl);
     }
 
     /**
@@ -112,6 +96,7 @@ class MetadataService
     public function getFileContent(int $sysFileId): string
     {
         $file = $this->resourceFactory->getFileObject($sysFileId);
+
         try {
             $data = $file->getContents();
             if (empty($data)) {
@@ -124,33 +109,19 @@ class MetadataService
             $file = $file->getStorage()->getFile($decodedIdentifier);
             $data = $file->getContents();
         }
-        return 'data:' . $file->getMimeType() . ';base64,' . base64_encode($data);
+
+        return 'data:'.$file->getMimeType().';base64,'.base64_encode($data);
     }
 
     public function getFilename(int $sysFileId): string
     {
         $file = $this->resourceFactory->getFileObject($sysFileId);
+
         try {
             return $file->getName();
         } catch (\Throwable $e) {
-            return "";
+            return '';
         }
-    }
-
-    /**
-     * @throws Exception
-     * @throws UnableToFetchNewsRecordException
-     * @throws UnableToLinkToPageException
-     */
-    protected function fetchContentOfNewsArticle(int $newsId, int $newsDetailPluginId): string
-    {
-        $additionalQueryParameters = [
-            'tx_news_pi1[action]' => 'detail',
-            'tx_news_pi1[controller]' => 'News',
-            'tx_news_pi1[news]' => $newsId
-        ];
-        $previewUrl = $this->getPreviewUrl($newsDetailPluginId, $additionalQueryParameters);
-        return $this->fetchContentFromUrl($previewUrl);
     }
 
     /**
@@ -162,6 +133,7 @@ class MetadataService
             return $this->getContentFromPreviewUrl($previewUrl);
         } catch (FetchedContentFailedException $e) {
             $previewUrl = rtrim($previewUrl, '/');
+
             return $this->getContentFromPreviewUrl($previewUrl);
         }
     }
@@ -174,7 +146,7 @@ class MetadataService
         $options = [];
         if (array_key_exists('be_typo_user', $_COOKIE)) {
             $options = [
-                'headers' => ['Cookie' => 'be_typo_user=' . $_COOKIE['be_typo_user']],
+                'headers' => ['Cookie' => 'be_typo_user='.$_COOKIE['be_typo_user']],
             ];
         }
 
@@ -183,64 +155,81 @@ class MetadataService
             if (!isset($options['headers'])) {
                 $options['headers'] = [];
             }
-            $options['headers']['Authorization'] = 'Basic ' . $basicAuth;
+            $options['headers']['Authorization'] = 'Basic '.$basicAuth;
         }
 
         $response = $this->requestFactory->request($previewUrl, 'GET', $options);
         $fetchedContent = $response->getBody()->getContents();
 
         if (empty($fetchedContent)) {
-            throw new FetchedContentFailedException($this->translationService->translate('AiSuite.fetchContentFailed'));
+            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
         }
+
         return $fetchedContent;
     }
 
     /**
+     * @param array<string, mixed> $additionalQueryParameters
+     *
      * @throws UnableToLinkToPageException
      * @throws UnableToFetchNewsRecordException
      */
     public function getPreviewUrl(int $pageId, array $additionalQueryParameters = []): string
     {
         $page = $this->pageRepository->getPage($pageId);
-        if ($page['is_siteroot'] === 1 && $page['l10n_parent'] > 0) {
+        if (1 === $page['is_siteroot'] && $page['l10n_parent'] > 0) {
             $pageId = $page['l10n_parent'];
         }
-        $additionalGetVars = '_language=' . $page['sys_language_uid'];
+        $additionalGetVars = '_language='.$page['sys_language_uid'];
         foreach ($additionalQueryParameters as $key => $value) {
-            $additionalGetVars .= '&' . $key . '=' . $value;
+            $additionalGetVars .= '&'.$key.'='.$value;
         }
 
         $previewUriBuilder = PreviewUriBuilder::create($pageId);
         $previewUri = $previewUriBuilder
             ->withLanguage($page['sys_language_uid'])
             ->withAdditionalQueryParameters($additionalGetVars)
-            ->buildUri();
+            ->buildUri()
+        ;
 
-        if ($previewUri === null) {
+        if (null === $previewUri) {
             if (array_key_exists('tx_news_pi1[news]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[action]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[controller]', $additionalQueryParameters)) {
-                throw new UnableToFetchNewsRecordException($this->translationService->translate('AiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
+                throw new UnableToFetchNewsRecordException($this->localizationService->translate('aiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
             }
-            throw new UnableToLinkToPageException($this->translationService->translate('AiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
+
+            throw new UnableToLinkToPageException($this->localizationService->translate('aiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
         }
+
         return $this->siteService->buildAbsoluteUri($previewUri);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getMetadataColumns(): array
     {
         $metadataColumns = [
-            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description'
+            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description',
         ];
+
         return $this->getAvailableColumns($metadataColumns, 'pages');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getFileMetadataColumns(): array
     {
         $metadataColumns = [
-            'title', 'alternative', 'description'
+            'title', 'alternative', 'description',
         ];
+
         return $this->getAvailableColumns($metadataColumns, 'sys_file_reference');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getPageMetadataForTranslation(int $pageId): array
     {
         $metadataFields = $this->collectPageMetadataFields($pageId);
@@ -252,6 +241,9 @@ class MetadataService
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function collectPageMetadataFields(int $pageId): array
     {
         $formData = $this->getFormData($pageId);
@@ -267,7 +259,7 @@ class MetadataService
         return $metadataFields;
     }
 
-    public function hasFilePermissions(int $fileUid): bool
+    public function hasFilePermissions(int $fileUid, string $table = 'sys_file_metadata'): bool
     {
         if ($this->backendUserService->getBackendUser()?->isAdmin() ?? false) {
             return true;
@@ -278,46 +270,23 @@ class MetadataService
 
             return $file->isIndexed()
                 && $file->checkActionPermission('editMeta')
-                && ($this->backendUserService->getBackendUser()?->check('tables_modify', 'sys_file_metadata') ?? false);
+                && ($this->backendUserService->getBackendUser()?->check('tables_modify', $table) ?? false);
         } catch (\Exception $e) {
             return false;
         }
     }
 
-    protected function getFormData(int $pageId): array
-    {
-        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class);
-        $formDataCompilerInput = [
-            'request' => $GLOBALS['TYPO3_REQUEST'],
-            'tableName' => 'pages',
-            'vanillaUid' => $pageId,
-            'command' => 'edit',
-            'returnUrl' => '',
-            'defaultValues' => [],
-        ];
-
-        return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
-    }
-
-    private function getAvailableColumns(array $columns, string $xlfPrefix): array
-    {
-        $availableColumns = [];
-        foreach ($columns as $columnName) {
-            if ($this->backendUserService->getBackendUser()?->check('non_exclude_fields', $xlfPrefix . ':' . $columnName) ?? false) {
-                $availableColumns[$columnName] = $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.' . $xlfPrefix . '.' . $columnName);
-            }
-        }
-        return $availableColumns;
-    }
-
+    /**
+     * @param array<string, mixed> $extConf
+     */
     public function generateAndSaveMetadataDirectly(FileInterface $file, int $fileMetadataUid, array $extConf): void
     {
         try {
             $fieldsToGenerate = [];
-            if ((bool)$extConf['metadataAutogenerateTitle']) {
+            if ((bool) $extConf['metadataAutogenerateTitle']) {
                 $fieldsToGenerate[] = 'title';
             }
-            if ((bool)$extConf['metadataAutogenerateAlternative']) {
+            if ((bool) $extConf['metadataAutogenerateAlternative']) {
                 $fieldsToGenerate[] = 'alternative';
             }
 
@@ -342,12 +311,12 @@ class MetadataService
 
             $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, 0, true);
             $firstLanguageKey = array_key_first($availableSourceLanguages);
-            $languageParts = explode('__', $firstLanguageKey);
+            $languageParts = explode('__', (string) $firstLanguageKey);
 
             $datamap = [
                 'sys_file_metadata' => [
-                    $fileMetadataUid => []
-                ]
+                    $fileMetadataUid => [],
+                ],
             ];
 
             foreach ($fieldsToGenerate as $fieldName) {
@@ -370,8 +339,9 @@ class MetadataService
                         ]
                     );
 
-                    if ($answer->getType() === 'Error') {
-                        $this->logger->error('Error generating metadata for field ' . $fieldName . ' of file ' . $file->getUid() . ': ' . $answer->getResponseData()['message']);
+                    if ('Error' === $answer->getType()) {
+                        $this->logger->error('Error generating metadata for field '.$fieldName.' of file '.$file->getUid().': '.$answer->getResponseData()['message']);
+
                         continue;
                     }
 
@@ -381,17 +351,17 @@ class MetadataService
                         if (!empty($generatedValue)) {
                             $datamap['sys_file_metadata'][$fileMetadataUid][$fieldName] = $generatedValue;
                             $this->flashMessage(
-                                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.generatedField.message', [$fieldName]),
-                                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.generatedField.title'),
+                                $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.generatedField.message', [$fieldName]),
+                                $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.generatedField.title'),
                                 ContextualFeedbackSeverity::OK
                             );
                         }
                     }
                 } catch (\Exception $e) {
-                    $this->logger->error('Error generating metadata for field ' . $fieldName . ' of file ' . $file->getUid() . ': ' . $e->getMessage());
+                    $this->logger->error('Error generating metadata for field '.$fieldName.' of file '.$file->getUid().': '.$e->getMessage());
                     $this->flashMessage(
-                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingField.message', [$fieldName]),
-                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorGeneratingField.title'),
+                        $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.errorGeneratingField.message', [$fieldName]),
+                        $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.errorSavingFile.title'),
                         ContextualFeedbackSeverity::ERROR
                     );
                 }
@@ -403,19 +373,19 @@ class MetadataService
                 $dataHandler->process_datamap();
 
                 if (count($dataHandler->errorLog) > 0) {
-                    $this->logger->error('Error saving metadata for file ' . $file->getUid() . ': ' . implode(', ', $dataHandler->errorLog));
+                    $this->logger->error('Error saving metadata for file '.$file->getUid().': '.implode(', ', $dataHandler->errorLog));
                     $this->flashMessage(
-                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorSavingFile.message', [$file->getName()]),
-                        $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.errorSavingFile.title'),
+                        $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.errorSavingFile.message', [$file->getName()]),
+                        $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.errorSavingFile.title'),
                         ContextualFeedbackSeverity::ERROR
                     );
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error('Error in generateAndSaveMetadataDirectly for file ' . $file->getUid() . ': ' . $e->getMessage());
+            $this->logger->error('Error in generateAndSaveMetadataDirectly for file '.$file->getUid().': '.$e->getMessage());
             $this->flashMessage(
-                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message', [$file->getName()]),
-                $this->translationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title'),
+                $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message', [$file->getName()]),
+                $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.flashMessage.metadata.errorSavingFile.title'),
                 ContextualFeedbackSeverity::ERROR
             );
         }
@@ -423,13 +393,67 @@ class MetadataService
 
     public function flashMessage(string $message, string $title, ContextualFeedbackSeverity $severity): void
     {
-        $message = GeneralUtility::makeInstance(FlashMessage::class,
+        $message = GeneralUtility::makeInstance(
+            FlashMessage::class,
             $message,
             $title,
             $severity,
-            true);
+            true
+        );
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
         $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $messageQueue->addMessage($message);
+    }
+
+    /**
+     * @throws Exception
+     * @throws UnableToFetchNewsRecordException
+     * @throws UnableToLinkToPageException
+     */
+    protected function fetchContentOfNewsArticle(int $newsId, int $newsDetailPluginId): string
+    {
+        $additionalQueryParameters = [
+            'tx_news_pi1[action]' => 'detail',
+            'tx_news_pi1[controller]' => 'News',
+            'tx_news_pi1[news]' => $newsId,
+        ];
+        $previewUrl = $this->getPreviewUrl($newsDetailPluginId, $additionalQueryParameters);
+
+        return $this->fetchContentFromUrl($previewUrl);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getFormData(int $pageId): array
+    {
+        $formDataCompiler = GeneralUtility::makeInstance(FormDataCompiler::class);
+        $formDataCompilerInput = [
+            'request' => $GLOBALS['TYPO3_REQUEST'],
+            'tableName' => 'pages',
+            'vanillaUid' => $pageId,
+            'command' => 'edit',
+            'returnUrl' => '',
+            'defaultValues' => [],
+        ];
+
+        return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
+    }
+
+    /**
+     * @param list<string> $columns
+     *
+     * @return array<string, mixed>
+     */
+    private function getAvailableColumns(array $columns, string $xlfPrefix): array
+    {
+        $availableColumns = [];
+        foreach ($columns as $columnName) {
+            if ($this->backendUserService->getBackendUser()?->check('non_exclude_fields', $xlfPrefix.':'.$columnName) ?? false) {
+                $availableColumns[$columnName] = $this->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.'.$xlfPrefix.'.'.$columnName);
+            }
+        }
+
+        return $availableColumns;
     }
 }

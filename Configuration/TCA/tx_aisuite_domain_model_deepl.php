@@ -1,6 +1,6 @@
 <?php
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,12 +8,11 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
-
+ */
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl',
+        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl',
         'label' => 'glossar_uuid',
         'label_alt' => 'source_lang,target_lang',
         'label_alt_force' => true,
@@ -31,7 +30,7 @@ return [
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
         'security' => [
             'ignorePageTypeRestriction' => true,
-        ]
+        ],
     ],
     'types' => [
         '1' => [
@@ -88,13 +87,13 @@ return [
                     [
                         'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
                         '',
-                    ]
+                    ],
                 ],
             ],
         ],
         'glossar_uuid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.glossar_uuid',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.glossar_uuid',
             'config' => [
                 'type' => 'input',
                 'size' => 40,
@@ -105,7 +104,7 @@ return [
         ],
         'root_page_uid' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.root_page_uid',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.root_page_uid',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -114,7 +113,7 @@ return [
         ],
         'source_lang' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.source_lang',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.source_lang',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -125,7 +124,7 @@ return [
         ],
         'target_lang' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.target_lang',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.target_lang',
             'config' => [
                 'type' => 'input',
                 'size' => 10,
@@ -136,7 +135,7 @@ return [
         ],
         'default_language_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.default_language_id',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.default_language_id',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -145,7 +144,7 @@ return [
         ],
         'target_language_id' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.target_language_id',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.target_language_id',
             'config' => [
                 'type' => 'number',
                 'size' => 10,
@@ -154,16 +153,16 @@ return [
         ],
         'external' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.external',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.external',
             'config' => [
                 'type' => 'check',
                 'default' => 0,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_deepl.external_enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.deepl.external_enable',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
     ],
 ];

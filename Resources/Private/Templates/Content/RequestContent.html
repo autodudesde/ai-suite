@@ -10,11 +10,11 @@
     <f:if condition="{error}">
         <f:then>
             <p>
-                <f:translate key="aiSuite.module.errorDuringResponse" extensionName="ai_suite"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.errorDuringResponse"/>
             </p>
             <a href="{regenerateActionUri}" class="btn btn-default mt-1">
                 <core:icon identifier="actions-refresh" size="small" />
-                <f:translate key="tx_aisuite.module.error.try_again" extensionName="ai_suite"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.error.try_again"/>
             </a>
         </f:then>
         <f:else>
@@ -23,7 +23,7 @@
                     <div class="panel-heading">
                         <label class="panel-title fw-bold">
                             <core:icon identifier="actions-document-edit" size="small" />
-                            <f:translate key="tx_aisuite.module.PageContent.validate.headline" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.PageContent.validate.headline"/>
                         </label>
                     </div>
                     <div class="panel-body">
@@ -36,18 +36,18 @@
                                 <div class="btn-group gap-2" role="group">
                                     <button type="submit" class="btn btn-primary">
                                         <core:icon identifier="actions-page-new" size="small"/>
-                                        <f:translate key="tx_aisuite.module.PageContent.validate.addContent" extensionName="ai_suite"/>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.PageContent.validate.addContent"/>
                                     </button>
                                     <a href="{regenerateActionUri}" class="btn btn-default">
                                         <core:icon identifier="actions-refresh" size="small" />
-                                        <f:translate key="tx_aisuite.module.PageContent.validate.regenerateContent" extensionName="ai_suite"/>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.PageContent.validate.regenerateContent"/>
                                     </a>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-                <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.default'}" />
+                <f:render partial="Spinner" arguments="{messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.spinner.default'}" />
             </section>
         </f:else>
     </f:if>

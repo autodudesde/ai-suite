@@ -1,7 +1,7 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
     <div class="form-group">
         <label for="{propertyName}" class="control-label fw-bold mb-2">
-            <f:translate key="tx_aisuite.module.general.prompt" extensionName="ai_suite"/>
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.prompt"/>
             <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
         </label><br />
         <textarea minlength="10" id="{propertyName}" name="{propertyName}" class="form-control {propertyName}">{value}</textarea>

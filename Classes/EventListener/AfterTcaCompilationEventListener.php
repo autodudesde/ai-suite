@@ -27,7 +27,7 @@ class AfterTcaCompilationEventListener
         'menu_thumbnail_list',
         'menu_thumbnail_dir',
         'social_links',
-        'audio'
+        'audio',
     ];
 
     public function __invoke(AfterTcaCompilationEvent $event): void
@@ -37,11 +37,11 @@ class AfterTcaCompilationEventListener
         $cTypes = [];
         foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $val) {
             if (array_key_exists('label', $val) && array_key_exists('value', $val) && array_key_exists('group', $val)) {
-                if (!in_array($val['group'], self::EXCLUDE_TAB_LIST) && !in_array($val['value'], self::EXCLUDE_CTYPE_LIST) && $val['value'] !== '--div--') {
+                if (!in_array($val['group'], self::EXCLUDE_TAB_LIST) && !in_array($val['value'], self::EXCLUDE_CTYPE_LIST) && '--div--' !== $val['value']) {
                     $cTypes[] = ['label' => $val['label'], 'value' => $val['value']];
                 }
             } elseif (array_key_exists('0', $val) && array_key_exists('1', $val) && array_key_exists('3', $val)) {
-                if (!in_array($val['3'], self::EXCLUDE_TAB_LIST) && !in_array($val['1'], self::EXCLUDE_CTYPE_LIST) && $val['1'] !== '--div--') {
+                if (!in_array($val['3'], self::EXCLUDE_TAB_LIST) && !in_array($val['1'], self::EXCLUDE_CTYPE_LIST) && '--div--' !== $val['1']) {
                     $cTypes[] = ['label' => $val['0'], 'value' => $val['1']];
                 }
             }

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2026-04-04T12:00:00Z" product-name="ai_suite">
+        <header/>
+        <body>
+            <trans-unit id="aiSuite.beGroups.field.aiSuiteApiKey">
+                <source>Group specific AI Suite API key</source>
+                <target>Gruppenspezifischer AI Suite API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
+                <source>Group specific Anthropic/Claude API key</source>
+                <target>Gruppenspezifischer Anthropic/Claude API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.deeplApiKey">
+                <source>Group specific DeepL API key</source>
+                <target>Gruppenspezifischer DeepL API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.deeplApiMode">
+                <source>Group uses the free version of DeepL API</source>
+                <target>Gruppe nutzt kostenlose Version der DeepL-API</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.googleTranslateApiKey">
+                <source>Group specific GoogleTranslate API key</source>
+                <target>Gruppenspezifischer GoogleTranslate API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder">
+                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
+                <target>Speichere Bild- und Mediendateien in diesem Ordner (z. B. /images/ai-images/unterordner). Wenn der Ordner nicht existiert, wird er erstellt.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey">
+                <source>Group specific Midjourney API key</source>
+                <target>Gruppenspezifischer Midjourney-API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.midjourneyId">
+                <source>Group specific Midjourney ID</source>
+                <target>Gruppenspezifische Midjourney-ID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.openAiApiKey">
+                <source>Group specific OpenAI API key</source>
+                <target>Gruppenspezifischer OpenAI API-Schlüssel</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.beGroups.tab.settings">
+                <source>AI Suite Settings</source>
+                <target>AI Suite-Einstellungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableBackgroundTaskHandling">
+                <source>Enable TaskEngine section within backend module</source>
+                <target>Abschnitt „TaskEngine“ im Backend-Modul aktivieren</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableBackgroundTaskHandlingDescription">
+                <source>If active the &quot;TaskEngine&quot; button will be shown within the backend module</source>
+                <target>Wenn aktiv, wird die Schaltfläche &quot;TaskEngine&quot; im Backend-Modul angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableContentElementGeneration">
+                <source>&quot;AI Suite Content&quot; tab in NewContentElementWizard</source>
+                <target>Tab „AI Suite Content“ im NewContentElementWizard</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableContentElementGenerationDescription">
+                <source>An additional &quot;AI Suite Content&quot; tab will be added to NewContentElementWizard</source>
+                <target>Ein zusätzlicher Tab „AI Suite Content“ wird zu NewContentElementWizard hinzugefügt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableGlobalInstructionsButton">
+                <source>Enable &quot;Global Instructions&quot; section within backend module</source>
+                <target>Aktiviere den Abschnitt „Globale Anweisungen“ im Backend-Modul</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableGlobalInstructionsButtonDescription">
+                <source>If active the &quot;Global Instructions&quot; button will be shown within the backend module</source>
+                <target>Wenn aktiv, wird der Button &quot;Globale Anweisungen&quot; im Backend-Modul angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableImageGeneration">
+                <source>Buttons &quot;Generate image with AI&quot;</source>
+                <target>Buttons „Bild mit KI generieren“</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableImageGenerationDescription">
+                <source>If active buttons with title &quot;Generate image with AI&quot; will be added to file fields within content elements and within filelist module</source>
+                <target>Wenn aktiv, werden Buttons mit dem Titel „Bild mit KI generieren“ zu Dateifeldern in Inhaltselementen und im Dateilistenmodul hinzugefügt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableMassActionGeneration">
+                <source>Enable WorkflowManager section within backend module</source>
+                <target>Abschnitt „WorkflowManager“ im Backend-Modul aktivieren</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableMassActionGenerationDescription">
+                <source>If active the &quot;WorkflowManager&quot; button will be shown within the backend module</source>
+                <target>Wenn aktiv, wird die Schaltfläche &quot;WorkflowManager&quot; im Backend-Modul angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableMetadataGeneration">
+                <source>Show Metadata generation buttons</source>
+                <target>Buttons zur Metadatengenerierung anzeigen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableMetadataGenerationDescription">
+                <source>If active the metadata generation buttons will be shown next to the corresponding fields</source>
+                <target>Wenn aktiv, werden die Buttons zur Metadatengenerierung neben den entsprechenden Feldern angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableNewsGeneration">
+                <source>Button &quot;News with AI&quot; (only evaluated if EXT:news is active)</source>
+                <target>Button „News mit KI“ (wird nur ausgewertet wenn EXT:news aktiv ist)</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableNewsGenerationDescription">
+                <source>If active a button with title &quot;News with AI&quot; will be added to the list module header bar (only evaluated if EXT:news is active)</source>
+                <target>Wenn aktiv, wird der Button mit dem Titel „News mit KI“ zur Kopfzeile des Listenmoduls hinzugefügt (wird nur geprüft, wenn EXT:news aktiv ist).</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enablePagesGeneration">
+                <source>Enable pages section within backend module</source>
+                <target>Aktiviere den Seitenabschnitt im Backend-Modul</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enablePagesGenerationDescription">
+                <source>If active the &quot;Pages&quot; button will be shown within the backend module</source>
+                <target>Wenn aktiv, wird der Button &quot;Seiten&quot; im Backend-Modul angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enablePromptTemplateButton">
+                <source>Enable &quot;Prompt Template&quot; section within backend module</source>
+                <target>Aktiviere den Abschnitt „Prompt Template“ im Backend-Modul</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enablePromptTemplateButtonDescription">
+                <source>If active the &quot;Prompt Template&quot; button will be shown within the backend module</source>
+                <target>Wenn aktiv, wird der Button „Prompt Template“ im Backend-Modul angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableRteAiEasyLanguagePlugin">
+                <source>AI &quot;Einfache Sprache&quot; Plugin in CKEditor / RTE fields</source>
+                <target>AI „Einfache Sprache“ Plugin in CKEditor / RTE-Feldern</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableRteAiEasyLanguagePluginDescription">
+                <source>If active the AI &quot;Einfache Sprache&quot; Plugin will be shown within CKEditor / RTE fields.</source>
+                <target>Wenn aktiv, wird das AI-Plugin „Einfache Sprache“ in den CKEditor-/RTE-Feldern angezeigt.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableRteAiPlugin">
+                <source>AI Plugin in CKEditor / RTE fields</source>
+                <target>AI-Plugin in CKEditor / RTE-Feldern</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableRteAiPluginDescription">
+                <source>If active the AI Plugin will be shown within CKEditor / RTE fields.</source>
+                <target>Wenn aktiv, wird das AI-Plugin in den Feldern von CKEditor/RTE angezeigt.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableToolbarStatsItem">
+                <source>Enable AI Suite toolbar item</source>
+                <target>AI Suite Toolbar-Element aktivieren</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableToolbarStatsItemDescription">
+                <source>If active the AI Suite toolbar item will be shown</source>
+                <target>Wenn aktiv, wird das AI Suite Toolbar-Element angezeigt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslation">
+                <source>AI translation options within page content translation wizard</source>
+                <target>KI-Übersetzungsoptionen im Übersetzungsassistenten</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationDeeplSync">
+                <source>&quot;Synchronize DeepL glossaries&quot; button within list module</source>
+                <target>Button „DeepL-Glossare synchronisieren“ im Listenmodul</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationDeeplSyncDescription">
+                <source>If active &quot;Synchronize DeepL glossaries&quot; button will be displayed within the list module (if at least one glossary entry is available on selected page)</source>
+                <target>Wenn aktiv, wird die Schaltfläche „DeepL-Glossare synchronisieren“ im Listenmodul angezeigt (wenn mindestens ein Glossareintrag auf der ausgewählten Seite verfügbar ist).</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationDescription">
+                <source>If active AI translation options will be added within the page content translation wizard</source>
+                <target>Wenn aktiv, werden KI-Übersetzungsoptionen im Übersetzungsassistenten hinzugefügt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationListWizard">
+                <source>AI translation options within the list module</source>
+                <target>KI-Übersetzungsoptionen innerhalb des Listenmoduls</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationListWizardDescription">
+                <source>If active AI translation options will be added within the list module</source>
+                <target>Bei aktiver KI werden im Listenmodul Übersetzungsoptionen hinzugefügt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationSysFileMetadata">
+                <source>Enable translation of file metadata</source>
+                <target>Aktivieren der Übersetzung von Datei-Metadaten</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationSysFileMetadataDescription">
+                <source>Allow users to translate file metadata using AI translation services</source>
+                <target>Ermöglicht Benutzern die Übersetzung von Datei-Metadaten mithilfe von KI-Übersetzungsdiensten</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationWholePage">
+                <source>Show buttons &quot;Translate whole page with AI&quot; within page and list module</source>
+                <target>Schaltflächen „Ganze Seite mit KI übersetzen“ im Seiten- und Listenmodul anzeigen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableTranslationWholePageDescription">
+                <source>If active buttons with title &quot;Translate whole page with AI&quot; will be added within page and list module</source>
+                <target>Wenn aktiv, werde die Schaltflächen mit dem Titel „Ganze Seite mit KI übersetzen“ im Seiten- und Listenmodul hinzugefügt</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.headerAiSuiteFeatures">
+                <source>AI Suite Features</source>
+                <target>AI Suite Features</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.headerAiSuiteModels">
+                <source>AI Suite Models</source>
+                <target>AI Suite-Models</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelAiSuiteTextUltimate">
+                <source>Meta Llama-3.3 (70B-Instruct)</source>
+                <target>Meta Llama-3.3 (70B-Instruct)</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelAnthropic">
+                <source>Anthropic/Claude</source>
+                <target>Anthropic/Claude</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelDeepl">
+                <source>DeepL</source>
+                <target>DeepL</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelDescription">
+                <source>Users are allowed to generate content with this AI model.</source>
+                <target>Benutzer dürfen mit diesem KI-Model Inhalte erstellen.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelFlux">
+                <source>Flux</source>
+                <target>Flux</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelGoogleTranslate">
+                <source>GoogleTranslate</source>
+                <target>GoogleTranslate</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelMidjourney">
+                <source>Midjourney</source>
+                <target>Midjourney</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelMittwaldMinistral">
+                <source>Ministral-3-14B-Instruct-2512</source>
+                <target>Ministral-3-14B-Instruct-2512</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelMittwaldMinistralVision">
+                <source>Ministral-3-14B-Instruct-2512 (Vision)</source>
+                <target>Ministral-3-14B-Instruct-2512 (Vision)</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelOpenai">
+                <source>OpenAI</source>
+                <target>OpenAI</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.modelVision">
+                <source>Vision</source>
+                <target>Vision</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.tca.deepl">
+                <source>DeepL Glossary</source>
+                <target>DeepL Glossar</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.default_language_id">
+                <source>Source Language ID</source>
+                <target>Ausgangssprach-ID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.external">
+                <source>External</source>
+                <target>Extern</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.external_enable">
+                <source>Is managed directly in DeepL</source>
+                <target>Wird direkt in DeepL verwaltet</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.glossar_uuid">
+                <source>DeepL Glossary UUID</source>
+                <target>DeepL Glossar UUID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.root_page_uid">
+                <source>Root Page UID</source>
+                <target>Wurzelseiten-UID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.source_lang">
+                <source>Source Language</source>
+                <target>Ausgangssprache</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.target_lang">
+                <source>Target Language</source>
+                <target>Zielsprache</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.deepl.target_language_id">
+                <source>Target Language ID</source>
+                <target>Zielsprach-ID</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.tca.globalInstructions">
+                <source>Global Instructions</source>
+                <target>Globale Anweisungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.context">
+                <source>Context</source>
+                <target>Kontext</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.context.files">
+                <source>Filelist/AI Suite Filelist Module</source>
+                <target>Dateilisten-/AI Suite-Dateilistenmodul</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.context.pages">
+                <source>Page/List/AI Suite Web Module</source>
+                <target>Seiten-/Listen-/AI-Suite-Webmodul</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.enable">
+                <source>Enable</source>
+                <target>Aktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.extend_previous_instructions">
+                <source>Extend previous instructions</source>
+                <target>Erweitern der vorherigen Anweisungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.name">
+                <source>Name</source>
+                <target>Name</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.override_predefined_prompt">
+                <source>Use Global Instruction (instead of predefined server prompt)</source>
+                <target>Globale Anweisung verwenden (anstelle des vordefinierten Server-Prompts)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope">
+                <source>Scope</source>
+                <target>Bereich</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.files.general">
+                <source>General (Files)</source>
+                <target>Allgemein (Dateien)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.files.imageWizard">
+                <source>ImageWizard (Files)</source>
+                <target>ImageWizard (Dateien)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.files.metadata">
+                <source>Metadata (Files)</source>
+                <target>Metadaten (Dateien)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
+                <source>ContentElementsw</source>
+                <target>Inhaltselemente</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.editContent">
+                <source>RTE Content Editing</source>
+                <target>RTE-Inhaltsbearbeitung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.general">
+                <source>General (Pages)</source>
+                <target>Allgemein (Seiten)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.imageWizard">
+                <source>ImageWizard (Pages)</source>
+                <target>ImageWizard (Seiten)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.metadata">
+                <source>Metadata (Pages)</source>
+                <target>Metadaten (Seiten)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.newsRecord">
+                <source>News Records</source>
+                <target>News-Datensätze</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.pageTree">
+                <source>PageTree</source>
+                <target>Seitenbaum</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.translation">
+                <source>Translations (DeepL and Google Translate are excluded)</source>
+                <target>Übersetzungen (DeepL und Google Translate sind ausgeschlossen)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.selected_directories">
+                <source>Selected Directories</source>
+                <target>Ausgewählte Verzeichnisse</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.selected_pages">
+                <source>Selected Pages</source>
+                <target>Ausgewählte Seiten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.use_for_subtree">
+                <source>Use for subtree (pages/directories)</source>
+                <target>Verwendung für Sub-Tree (Seiten/Verzeichnisse)</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.tca.glossar">
+                <source>Glossary entry</source>
+                <target>Glossareintrag</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.glossar.input">
+                <source>Word/paragraph</source>
+                <target>Wort/Absatz</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.instructions">
+                <source>Global Instructions</source>
+                <target>Globale Anweisungen</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

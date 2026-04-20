@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -10,32 +10,33 @@ declare(strict_types=1);
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer;
 
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-
 class ClientAnswer
 {
-    protected ?FlashMessage $flashMessage = null;
-    protected array $responseData;
-    protected string $type;
-
+    /**
+     * @param array<string, mixed> $responseData
+     */
     public function __construct(
-        array $responseData,
-        string $type
-    ) {
-        $this->responseData = $responseData;
-        $this->type = $type;
-    }
+        protected array $responseData,
+        protected readonly string $type,
+    ) {}
 
+    /**
+     * @param array<string, mixed> $responseData
+     */
     public function setResponseData(array $responseData): self
     {
         $this->responseData = $responseData;
+
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getResponseData(): array
     {
         return $this->responseData['body'];
@@ -44,10 +45,5 @@ class ClientAnswer
     public function getType(): string
     {
         return $this->responseData['type'];
-    }
-
-    public function getFlashMessage(): FlashMessage
-    {
-        return $this->flashMessage;
     }
 }

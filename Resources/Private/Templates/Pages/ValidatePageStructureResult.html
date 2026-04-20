@@ -14,14 +14,14 @@
                     <div class="panel-heading">
                         <label class="panel-title fw-bold">
                             <core:icon identifier="actions-document-edit" size="small" />
-                            <f:translate key="aiSuite.module.validateAiResult" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.validateAiResult"/>
                         </label>
                     </div>
                     <div class="panel-body">
                         <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree_create')}" name="input" enctype="multipart/form-data" class="page-structure-create">
                             <f:render partial="Libs/Sortable/Sortable" arguments="{sortableList: aiResult.children}" />
                             <div class="mt-2">
-                                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selected: selectedPid}" />
                             </div>
                             <div class="language-selection mb-3">
                                 <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
@@ -30,7 +30,7 @@
                             <div class="form-group">
                                 <span class="btn btn-primary submit-page-structure">
                                     <core:icon identifier="actions-file-add" size="small"/>
-                                    <f:translate key="tx_aisuite.module.validatePageStructure.submit" extensionName="ai_suite"/>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.validatePageStructure.submit"/>
                                 </span>
                             </div>
                         </form>
@@ -42,7 +42,7 @@
                 <div class="panel-heading">
                     <label class="panel-title fw-bold">
                         <core:icon identifier="actions-refresh" />
-                        <f:translate key="aiSuite.module.requestStructureAgain" extensionName="ai_suite"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.requestStructureAgain"/>
                     </label>
                 </div>
                 <div class="panel-body">
@@ -51,14 +51,14 @@
                         <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                         <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt, globalInstructions: globalInstructions}" />
-                        <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'tx_aisuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                        <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selected: selectedPid}" />
                         <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">
                                 <core:icon identifier="actions-file-add" size="small"/>
-                                <f:translate key="tx_aisuite.module.pageStructure.submit" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.submit"/>
                             </button>
                         </div>
                     </form>
@@ -66,6 +66,6 @@
             </div>
         </div>
     </div>
-    <f:render partial="Spinner" arguments="{messageKey: 'tx_aisuite.module.general.spinner.contentCreation'}" />
+    <f:render partial="Spinner" arguments="{messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.spinner.contentCreation'}" />
 
 </f:section>

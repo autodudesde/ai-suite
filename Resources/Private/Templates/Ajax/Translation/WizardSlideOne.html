@@ -2,7 +2,7 @@
     <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
     <div class="ai-suite-whole-page-translation-wizard">
         <div class="form-group mb-3">
-            <label for="source-language" class="form-label"><f:translate key="tx_aisuite.form.label.sourceLanguage" extensionName="ai_suite" /></label>
+            <label for="source-language" class="form-label"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.sourceLanguage" /></label>
             <select id="source-language" class="form-select">
                 <f:for each="{availableSourceLanguages}" as="language">
                     <option value="{language.uid}">{language.title}</option>
@@ -10,16 +10,16 @@
             </select>
         </div>
         <div class="form-group mb-3">
-            <label for="target-language" class="form-label"><f:translate key="tx_aisuite.form.label.targetLanguage" extensionName="ai_suite" /></label>
+            <label for="target-language" class="form-label"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.targetLanguage" /></label>
             <select id="target-language" class="form-select">
-                <option value=""><f:translate key="tx_aisuite.dropdown.selectTargetLanguage" extensionName="ai_suite" /></option>
+                <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.dropdown.selectTargetLanguage" /></option>
                 <f:for each="{availableTargetLanguages}" as="language">
                     <option value="{language.uid}">{language.title}</option>
                 </f:for>
             </select>
         </div>
         <div class="form-group mb-3">
-            <label for="translation-service" class="form-label"><f:translate key="tx_aisuite.form.label.translationService" extensionName="ai_suite" /></label>
+            <label for="translation-service" class="form-label"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.translationService" /></label>
             <select id="translation-service" class="form-select">
                 <f:for each="{translationLibraries}" as="library">
                     <option value="{library.model_identifier}">{library.name}</option>
@@ -27,10 +27,10 @@
             </select>
         </div>
         <div class="alert alert-info">
-            <strong><f:translate key="tx_aisuite.translation.wholePageIncludes" extensionName="ai_suite" /></strong>
+            <strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.wholePageIncludes" /></strong>
             <ul>
-                <li><f:translate key="tx_aisuite.translation.pageProperties" extensionName="ai_suite" /></li>
-                <li><f:translate key="tx_aisuite.translation.allContentElements" extensionName="ai_suite" /></li>
+                <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.pageProperties" /></li>
+                <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.allContentElements" /></li>
             </ul>
         </div>
     </div>

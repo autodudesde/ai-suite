@@ -1,0 +1,46 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+    {namespace core=TYPO3\CMS\Core\ViewHelpers}
+    <div class="ai-suite" id="workflowPagesPrepareExecute">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <label class="panel-title fw-bold">
+                    <core:icon identifier="actions-filter" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.foundPagesAndMetadata" />
+                </label>
+            </div>
+            <div class="panel-body">
+                <f:if condition="{pages -> f:count()} > 0">
+                    <f:then>
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
+                    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
+                </label>
+                <label class="mb-3 d-flex gap-2 fw-bold">
+                    <input type="checkbox" id="togglePageSelection" value="1" />
+                    <span>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.toggleAll" />
+                    </span>
+                </label>
+                <div id="sortable-pages" class="sortable-wrap">
+                    <f:render partial="Workflow/PageTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, column: column, columnName: columnName}" />
+                </div>
+                <div class="d-flex">
+                    <button class="btn btn-primary mt-4" type="submit" id="pagesExecuteFormSubmitBtn">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.executeBtn" />
+                    </button>
+                    <button class="btn btn-primary mt-4 mx-2" type="submit" id="pagesSaveMetadataSubmitBtn">
+                        <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.saveMetadataBtn" /></f:format.raw>
+                    </button>
+                </div>
+                        <p class="calculated-requests"></p>
+                    </f:then>
+                    <f:else>
+                        <p>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.noPagesFound" />
+                        </p>
+                    </f:else>
+                </f:if>
+            </div>
+        </div>
+    </div>
+</html>
