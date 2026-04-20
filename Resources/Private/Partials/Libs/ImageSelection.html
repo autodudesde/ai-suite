@@ -1,6 +1,6 @@
 <div class="image-suggestions w-50">
     <label class="control-label fw-bold mb-2">
-        <f:translate key="AiSuite.imageSuggestionsHeader" extensionName="ai_suite"/>
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSuggestionsHeader"/>
     </label>
     <f:if condition="{imageSuggestions -> f:count()} == 1">
         <f:variable name="autoSelectImage" value="true" />
@@ -26,7 +26,7 @@
                     data-selection-group="{table}-{position}-{fieldName}-image"
                     data-selection-id="{table}-{position}-{fieldName}-image-{it.cycle}"
                     src="{suggestion.url}"
-                    alt="{f:translate(key: 'tx_aisuite.image.generatedImageAlt', arguments: '{0: position, 1: it.cycle, 2: fieldName}', extensionName='ai_suite')}"
+                    alt="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.image.generatedImageAlt', arguments: '{0: position, 1: it.cycle, 2: fieldName}',)}"
                 />
                 <div class="check-icon">
                     <core:icon identifier="actions-check" size="medium" />

@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,7 +10,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
@@ -33,12 +35,17 @@ class TranslationRepository extends AbstractRepository
     }
 
     /**
+     * @param array<string, mixed> $elementUids
+     *
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function getTranslatedElements(array $elementUids, int $targetLanguageUid, string $table): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
         return $queryBuilder
             ->select('uid', 'l10n_parent')
             ->from($table)
@@ -47,16 +54,20 @@ class TranslationRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid))
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function getTranslatedElementsOnPage(int $pageUid, int $targetLanguageUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
         return $queryBuilder
             ->select('l18n_parent')
             ->from('tt_content')
@@ -65,16 +76,20 @@ class TranslationRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid, Connection::PARAM_INT))
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function getElementsOnPage(int $pageUid, int $languageUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
         return $queryBuilder
             ->select('uid', 'pid', 'CType')
             ->from('tt_content')
@@ -86,10 +101,13 @@ class TranslationRepository extends AbstractRepository
                 )
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws Exception
      */
     public function getRecordTranslation(int $sourceContentUid, int $targetLanguageUid, string $table, string $languageParentField): ?array
@@ -104,7 +122,8 @@ class TranslationRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid)),
             )
             ->executeQuery()
-            ->fetchAssociative();
+            ->fetchAssociative()
+        ;
 
         return $element ?: null;
     }

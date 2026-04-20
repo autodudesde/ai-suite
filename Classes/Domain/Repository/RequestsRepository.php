@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,13 +10,10 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
-use Doctrine\DBAL\DBALException;
-use Doctrine\DBAL\Driver\Exception as DriverException;
-use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 class RequestsRepository
@@ -28,6 +27,9 @@ class RequestsRepository
         $this->connectionPool = $connectionPool;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function findEntryByApiKey(string $apiKey): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -38,7 +40,9 @@ class RequestsRepository
                 $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
+
         return array_key_exists('0', $result) ? $result[0] : [];
     }
 
@@ -67,7 +71,8 @@ class RequestsRepository
             ->where(
                 $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
             )
-            ->executeStatement();
+            ->executeStatement()
+        ;
     }
 
     public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
@@ -80,9 +85,10 @@ class RequestsRepository
                 'paid_requests' => $paidRequests,
                 'abo_requests' => $aboRequests,
                 'model_type' => $modelType,
-                'api_key' => $apiKey
+                'api_key' => $apiKey,
             ])
-            ->executeStatement();
+            ->executeStatement()
+        ;
     }
 
     public function deleteRequests(string $apiKey = ''): void

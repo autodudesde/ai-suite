@@ -1,11 +1,11 @@
 <f:if condition="{promptTemplates -> f:count()} > 0">
     <div class="form-group">
         <label for="promptTemplates" class="control-label fw-bold mb-2">
-            <f:translate key="tx_aisuite.module.general.promptTemplates" extensionName="ai_suite"/>
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.promptTemplates"/>
         </label>
         <select id="promptTemplates" name="promptTemplates" class="form-control">
             <option value="">
-                <f:translate key="tx_aisuite.module.general.selectPromptTemplate" extensionName="ai_suite"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.selectPromptTemplate"/>
             </option>
             <f:for each="{promptTemplates}" as="template">
                 <option value="{template.prompt}">{template.name}</option>

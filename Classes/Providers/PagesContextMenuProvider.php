@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -10,7 +10,7 @@ declare(strict_types=1);
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Providers;
 
@@ -20,21 +20,10 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 
 class PagesContextMenuProvider extends AbstractProvider
 {
-    protected BackendUserService $backendUserService;
-    protected UriBuilder $uriBuilder;
-
-    public function __construct(
-        BackendUserService $backendUserService,
-        UriBuilder $uriBuilder
-    ) {
-        parent::__construct();
-        $this->backendUserService = $backendUserService;
-        $this->uriBuilder = $uriBuilder;
-    }
-
     /**
      * @var array
      */
+    /** @var array<string, array<string, mixed>> */
     protected $itemsConfiguration = [
         'aisuite' => [
             'type' => 'submenu',
@@ -42,21 +31,21 @@ class PagesContextMenuProvider extends AbstractProvider
             'iconIdentifier' => 'tx-aisuite-extension',
             'callbackAction' => 'openSubmenu',
             'childItems' => [
-                'pageMetaMassAction' => [
+                'pageMetaWorkflow' => [
                     'type' => 'item',
-                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.massActionPages.title',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.workflowPages.title',
                     'iconIdentifier' => 'actions-duplicate',
                     'callbackAction' => 'contextMenuLink',
                 ],
-                'fileReferencesMetaMassAction' => [
+                'fileReferencesMetaWorkflow' => [
                     'type' => 'item',
-                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.massActionFileReferences.title',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.workflowFileReferences.title',
                     'iconIdentifier' => 'actions-duplicate',
                     'callbackAction' => 'contextMenuLink',
                 ],
-                'filelistMetaMassAction' => [
+                'filelistMetaWorkflow' => [
                     'type' => 'item',
-                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.massActionFilelist.title',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.workflowFilelist.title',
                     'iconIdentifier' => 'actions-duplicate',
                     'callbackAction' => 'contextMenuLink',
                 ],
@@ -79,61 +68,27 @@ class PagesContextMenuProvider extends AbstractProvider
         ],
     ];
 
-    /**
-     * @return bool
-     */
-    public function canHandle(): bool
-    {
-        return $this->table === 'pages' || $this->table === 'sys_file';
+    public function __construct(
+        protected readonly BackendUserService $backendUserService,
+        protected readonly UriBuilder $uriBuilder,
+    ) {
+        parent::__construct();
     }
 
-    /**
-     * @return int
-     */
+    public function canHandle(): bool
+    {
+        return 'pages' === $this->table || 'sys_file' === $this->table;
+    }
+
     public function getPriority(): int
     {
         return 55;
     }
 
     /**
-     * @param string $itemName
-     * @return array
-     */
-    protected function getAdditionalAttributes(string $itemName): array
-    {
-        $moduleUrl = '';
-        switch ($itemName) {
-            case 'pageMetaMassAction':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_pages_prepare', ['id' => $this->identifier])->__toString();
-                break;
-            case 'fileReferencesMetaMassAction':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_filereferences_prepare', ['id' => $this->identifier])->__toString();
-                break;
-            case 'filelistMetaMassAction':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_filelist_files_prepare', ['id' => $this->identifier])->__toString();
-                break;
-            case 'translateWholePage':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('web_layout', ['id' => $this->identifier])->__toString();
-                break;
-            case 'translateFileMetadata':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_massaction_filelist_files_translate_prepare', ['id' => $this->identifier])->__toString();
-                break;
-        }
-        $attributes = [
-            'data-callback-module' => '@autodudes/ai-suite/context-menu/page-context-menu-actions',
-            'data-module-url' => $moduleUrl,
-        ];
-
-        if ($itemName === 'translateWholePage') {
-            $attributes['data-action'] = 'translateWholePage';
-        }
-
-        return $attributes;
-    }
-
-    /**
-     * @param array $items
-     * @return array
+     * @param array<string, mixed> $items
+     *
+     * @return array<string, mixed>
      */
     public function addItems(array $items): array
     {
@@ -142,14 +97,14 @@ class PagesContextMenuProvider extends AbstractProvider
         $localItems = $this->prepareItems($this->itemsConfiguration);
 
         if (isset($items['info'])) {
-            $position = array_search('info', array_keys($items), true);
+            $position = (int) array_search('info', array_keys($items), true);
 
             $beginning = array_slice($items, 0, $position + 1, true);
             $end = array_slice($items, $position, null, true);
 
             $items = $beginning + $localItems + $end;
         } elseif (isset($items['newFile'])) {
-            $position = array_search('newFile', array_keys($items), true);
+            $position = (int) array_search('newFile', array_keys($items), true);
 
             $beginning = array_slice($items, 0, $position + 1, true);
             $end = array_slice($items, $position, null, true);
@@ -158,72 +113,124 @@ class PagesContextMenuProvider extends AbstractProvider
         } else {
             $items = $items + $localItems;
         }
+
         return $items;
     }
 
     /**
-     * @param string $itemName
-     * @param string $type
-     * @return bool
+     * @return array<string, mixed>
      */
+    protected function getAdditionalAttributes(string $itemName): array
+    {
+        $moduleUrl = '';
+
+        switch ($itemName) {
+            case 'pageMetaWorkflow':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_pages_prepare', ['id' => $this->identifier])->__toString();
+
+                break;
+
+            case 'fileReferencesMetaWorkflow':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filereferences_prepare', ['id' => $this->identifier])->__toString();
+
+                break;
+
+            case 'filelistMetaWorkflow':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_prepare', ['id' => $this->identifier])->__toString();
+
+                break;
+
+            case 'translateWholePage':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('web_layout', ['id' => $this->identifier])->__toString();
+
+                break;
+
+            case 'translateFileMetadata':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_translate_prepare', ['id' => $this->identifier])->__toString();
+
+                break;
+        }
+        $attributes = [
+            'data-callback-module' => '@autodudes/ai-suite/context-menu/page-context-menu-actions',
+            'data-module-url' => $moduleUrl,
+        ];
+
+        if ('translateWholePage' === $itemName) {
+            $attributes['data-action'] = 'translateWholePage';
+        }
+
+        return $attributes;
+    }
+
     protected function canRender(string $itemName, string $type): bool
     {
         if (in_array($itemName, $this->disabledItems, true)) {
             return false;
         }
         $canRender = false;
+
         switch ($itemName) {
             case 'aisuite':
                 $canRender = $this->canShowAiSuite();
+
                 break;
-            case 'pageMetaMassAction':
-                $canRender = $this->canPageMassAction();
+
+            case 'pageMetaWorkflow':
+                $canRender = $this->canPageWorkflow();
+
                 break;
-            case 'fileReferencesMetaMassAction':
-                $canRender = $this->canFileReferencesMassAction();
+
+            case 'fileReferencesMetaWorkflow':
+                $canRender = $this->canFileReferencesWorkflow();
+
                 break;
-            case 'filelistMetaMassAction':
-                $canRender = $this->canFilelistMassAction();
+
+            case 'filelistMetaWorkflow':
+                $canRender = $this->canFilelistWorkflow();
+
                 break;
+
             case 'translateWholePage':
                 $canRender = $this->canTranslateWholePage();
+
                 break;
+
             case 'translateFileMetadata':
                 $canRender = $this->canTranslateFileMetadata();
+
                 break;
         }
+
         return $canRender;
     }
 
-
-    /**
-     * @return bool
-     */
     protected function canShowAiSuite(): bool
     {
-        return $this->canPageMassAction() || $this->canFileReferencesMassAction() || $this->canFilelistMassAction() || $this->canTranslateWholePage() || $this->canTranslateFileMetadata();
+        return $this->canPageWorkflow() || $this->canFileReferencesWorkflow() || $this->canFilelistWorkflow() || $this->canTranslateWholePage() || $this->canTranslateFileMetadata();
     }
 
-    protected function canPageMassAction(): bool
+    protected function canPageWorkflow(): bool
     {
-        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
+        return 'pages' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
     }
-    protected function canFileReferencesMassAction(): bool
+
+    protected function canFileReferencesWorkflow(): bool
     {
-        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
+        return 'pages' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
     }
-    protected function canFilelistMassAction(): bool
+
+    protected function canFilelistWorkflow(): bool
     {
-        return $this->table === 'sys_file' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
+        return 'sys_file' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
     }
 
     protected function canTranslateWholePage(): bool
     {
-        return $this->table === 'pages' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_whole_page');
+        return 'pages' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_whole_page');
     }
 
     protected function canTranslateFileMetadata(): bool
     {
-        return $this->table === 'sys_file' && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_sys_file_metadata');
+        return 'sys_file' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_sys_file_metadata');
     }
 }

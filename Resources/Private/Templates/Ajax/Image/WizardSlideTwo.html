@@ -3,7 +3,7 @@
     <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
     <div class="panel panel-default wizard-slide" id="wizardSlideTwo">
         <div class="panel-body">
-            <f:if condition="{imageAiModel} == 'DALL-E' || {imageAiModel} == 'Flux'">
+            <f:if condition="{imageAiModel} == 'GPTImage' || {imageAiModel} == 'Flux'">
                 <f:then>
                     <div class="d-flex gap-3">
                         <f:render partial="Libs/ImageSelection" arguments="{imageSuggestions: imageSuggestions, fieldName: fieldName, table: table, position: position}" />
@@ -13,11 +13,11 @@
                         <div class="btn-group gap-2 mt-2" role="group">
                             <button class="btn btn-default" id="aiSuiteBackToWizardSlideOneBtn">
                                 <core:icon identifier="actions-refresh" size="small" />
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.regenerateSuggestions" />
                             </button>
                             <button class="btn btn-primary" id="aiSuiteSaveGeneratedImageBtn">
                                 <core:icon identifier="actions-check" size="small" />
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.useImageSuggestion" />
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.useImageSuggestion" />
                             </button>
                         </div>
                     </div>
@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <button class="btn btn-default" id="aiSuiteBackToWizardSlideOneBtn">
                             <core:icon identifier="actions-refresh" size="small" />
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.regenerateSuggestions" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.regenerateSuggestions" />
                         </button>
                     </div>
                 </f:else>

@@ -1,0 +1,43 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-document-save" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.Agencies.translateXlf.header.validate"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <form method="POST" action="{f:be.uri(route: 'ai_suite_agencies_write_xlf')}" name="input" enctype="multipart/form-data" class="with-spinner">
+                        <input type="hidden" name="fileData" value="{fileData}" />
+                        <f:for each="{originalValues}" key="sourceKey" as="sourceValue">
+                            <div class="form-group mb-4">
+                                <label class="fw-bold">{sourceValue.source}</label>
+                                <small class="text-muted">(ID: {sourceKey})</small>
+                                <input type="text" name="translations[{sourceKey}]" value="{sourceValue.translated}" class="form-control source-translated"/>
+                            </div>
+                        </f:for>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <core:icon identifier="actions-document-save" size="small" />
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.Agencies.translateXlf.submit.validate"/>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <f:render partial="Spinner" arguments="{messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.spinner.contentCreation'}" />
+
+</f:section>

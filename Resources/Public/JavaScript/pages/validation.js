@@ -29,7 +29,7 @@ class Validation {
                 document.querySelector('input[name="selectedPageTreeContent"]').value = JSON.stringify(result);
                 let selectedPage = document.querySelector('form.page-structure-create input.searchableInputProperty[name="startStructureFromPid"]').value;
                 if(selectedPage === '') {
-                    Notification.warning(TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageTitle'], TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageMessage'], 8);
+                    Notification.warning(TYPO3.lang['aiSuite.module.modal.noPageSelectedTitle'], TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageMessage'], 8);
                 } else {
                     Generation.showSpinner();
                     document.querySelector('div[data-module-id="aiSuite"] form.page-structure-create').submit();

@@ -32,7 +32,7 @@ class Ajax {
                 } else {
                     const responseBody = JSON.parse(resolved);
                     if(responseBody.error) {
-                        Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], responseBody.error);
+                        Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], responseBody.error);
                         return null;
                     } else {
                         return responseBody;
@@ -40,7 +40,7 @@ class Ajax {
                 }
             })
             .catch((error) => {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], error.statusText);
+                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], error.statusText);
                 return null;
             });
     }

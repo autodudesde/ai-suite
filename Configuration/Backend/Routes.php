@@ -1,9 +1,20 @@
 <?php
 
+use AutoDudes\AiSuite\Controller\AgencyController;
+use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\BackgroundTaskController;
+use AutoDudes\AiSuite\Controller\ContentController;
+use AutoDudes\AiSuite\Controller\FilelistController;
+use AutoDudes\AiSuite\Controller\GlobalInstructionController;
+use AutoDudes\AiSuite\Controller\PagesController;
+use AutoDudes\AiSuite\Controller\PromptTemplateController;
+use AutoDudes\AiSuite\Controller\SettingsController;
+use AutoDudes\AiSuite\Controller\Workflow\WorkflowManagerController;
+
 return [
     'ai_suite_record_edit' => [
         'path' => 'ai/suite/record/edit',
-        'target' => \AutoDudes\AiSuite\Controller\ContentController::class . '::handleRequest',
+        'target' => ContentController::class.'::handleRequest',
         'redirect' => [
             'enable' => true,
             'parameters' => [
@@ -13,152 +24,146 @@ return [
     ],
     'ai_suite_dashboard' => [
         'path' => '/aisuite/dashboard',
-        'target' => \AutoDudes\AiSuite\Controller\AiSuiteController::class . '::handleRequest',
+        'target' => AiSuiteController::class.'::handleRequest',
     ],
-    /**
-     * Page routes
-     */
+    // Page routes
     'ai_suite_page' => [
         'path' => '/aisuite/page',
-        'target' => \AutoDudes\AiSuite\Controller\PagesController::class . '::handleRequest',
+        'target' => PagesController::class.'::handleRequest',
     ],
     'ai_suite_page_create_pagetree' => [
         'path' => '/aisuite/page/create/pagetree',
-        'target' => \AutoDudes\AiSuite\Controller\PagesController::class . '::handleRequest',
+        'target' => PagesController::class.'::handleRequest',
     ],
     'ai_suite_page_validate_pagetree' => [
         'path' => '/aisuite/page/validate/pagetree',
         'methods' => ['POST'],
-        'target' => \AutoDudes\AiSuite\Controller\PagesController::class . '::handleRequest'
+        'target' => PagesController::class.'::handleRequest',
     ],
     'ai_suite_page_validate_pagetree_create' => [
         'path' => '/aisuite/page/validate/pagetree/create',
         'methods' => ['POST'],
-        'target' => \AutoDudes\AiSuite\Controller\PagesController::class . '::handleRequest',
+        'target' => PagesController::class.'::handleRequest',
     ],
-    /**
-     * Agencies routes
-     */
+    // Agencies routes
     'ai_suite_agencies' => [
         'path' => '/aisuite/agencies',
-        'target' => \AutoDudes\AiSuite\Controller\AgenciesController::class . '::handleRequest',
+        'target' => AgencyController::class.'::handleRequest',
     ],
     'ai_suite_agencies_translate_xlf' => [
         'path' => '/aisuite/agencies/translate/xlf',
-        'target' => \AutoDudes\AiSuite\Controller\AgenciesController::class . '::handleRequest',
+        'target' => AgencyController::class.'::handleRequest',
     ],
     'ai_suite_agencies_validate_xlf' => [
         'path' => '/aisuite/agencies/validate/xlf',
-        'target' => \AutoDudes\AiSuite\Controller\AgenciesController::class . '::handleRequest',
+        'target' => AgencyController::class.'::handleRequest',
     ],
     'ai_suite_agencies_write_xlf' => [
         'path' => '/aisuite/agencies/write/xlf',
-        'target' => \AutoDudes\AiSuite\Controller\AgenciesController::class . '::handleRequest',
+        'target' => AgencyController::class.'::handleRequest',
     ],
-    /**
-     * Prompt routes
-     */
+    // Prompt routes
     'ai_suite_prompt' => [
         'path' => '/aisuite/prompt',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_update_serverprompttemplates' => [
         'path' => '/aisuite/prompt/update/server-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_manage_customprompttemplates' => [
         'path' => '/aisuite/prompt/manage/custom-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_update_customprompttemplates' => [
         'path' => '/aisuite/prompt/update/custom-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_activate_customprompttemplates' => [
         'path' => '/aisuite/prompt/activate/custom-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_deactivate_customprompttemplates' => [
         'path' => '/aisuite/prompt/deactivate/custom-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
     'ai_suite_prompt_delete_customprompttemplates' => [
         'path' => '/aisuite/prompt/delete/custom-prompt-templates',
-        'target' => \AutoDudes\AiSuite\Controller\PromptTemplateController::class . '::handleRequest',
+        'target' => PromptTemplateController::class.'::handleRequest',
     ],
-    /**
-     * Global Instructions routes
-     */
+    // Global Instructions routes
     'ai_suite_global_instructions' => [
         'path' => '/aisuite/global-instructions',
-        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+        'target' => GlobalInstructionController::class.'::handleRequest',
     ],
     'ai_suite_global_instructions_activate' => [
         'path' => '/aisuite/global-instructions/activate',
-        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+        'target' => GlobalInstructionController::class.'::handleRequest',
     ],
     'ai_suite_global_instructions_deactivate' => [
         'path' => '/aisuite/global-instructions/deactivate',
-        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+        'target' => GlobalInstructionController::class.'::handleRequest',
     ],
     'ai_suite_global_instructions_delete' => [
         'path' => '/aisuite/global-instructions/delete',
-        'target' => \AutoDudes\AiSuite\Controller\GlobalInstructionsController::class . '::handleRequest',
+        'target' => GlobalInstructionController::class.'::handleRequest',
     ],
-    /**
-     * Content routes
-     */
+    // Content routes
     'ai_suite_content_create' => [
         'path' => '/aisuite/content/create',
-        'target' => \AutoDudes\AiSuite\Controller\ContentController::class . '::handleRequest',
+        'target' => ContentController::class.'::handleRequest',
     ],
     'ai_suite_content_request' => [
         'path' => '/aisuite/content/request',
-        'target' => \AutoDudes\AiSuite\Controller\ContentController::class . '::handleRequest',
+        'target' => ContentController::class.'::handleRequest',
     ],
     'ai_suite_content_save' => [
         'path' => '/aisuite/content/save',
-        'target' => \AutoDudes\AiSuite\Controller\ContentController::class . '::handleRequest',
+        'target' => ContentController::class.'::handleRequest',
     ],
-    /**
-     * Massaction routes
-     */
-    'ai_suite_massaction' => [
-        'path' => '/aisuite/massaction',
-        'target' => \AutoDudes\AiSuite\Controller\MassActionController::class . '::handleRequest',
+    // Workflow routes
+    'ai_suite_workflow' => [
+        'path' => '/aisuite/workflow',
+        'target' => WorkflowManagerController::class.'::handleRequest',
     ],
-    'ai_suite_massaction_pages_prepare' => [
-        'path' => '/aisuite/massaction/pages-prepare',
-        'target' => \AutoDudes\AiSuite\Controller\MassActionController::class . '::handleRequest',
+    'ai_suite_workflow_pages_prepare' => [
+        'path' => '/aisuite/workflow/pages-prepare',
+        'target' => WorkflowManagerController::class.'::handleRequest',
     ],
-    'ai_suite_massaction_filereferences_prepare' => [
-        'path' => '/aisuite/massaction/file-references-prepare',
-        'target' => \AutoDudes\AiSuite\Controller\MassActionController::class . '::handleRequest',
+    'ai_suite_workflow_filereferences_prepare' => [
+        'path' => '/aisuite/workflow/file-references-prepare',
+        'target' => WorkflowManagerController::class.'::handleRequest',
     ],
-    'ai_suite_massaction_filelist_files_prepare' => [
-        'path' => '/aisuite/massaction/files-prepare',
-        'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+    'ai_suite_workflow_filelist_files_prepare' => [
+        'path' => '/aisuite/workflow/files-prepare',
+        'target' => FilelistController::class.'::handleRequest',
     ],
-    'ai_suite_massaction_pages_translation_prepare' => [
-        'path' => '/aisuite/massaction/pages-translation-prepare',
-        'target' => \AutoDudes\AiSuite\Controller\MassActionController::class . '::handleRequest',
+    'ai_suite_workflow_pages_translation_prepare' => [
+        'path' => '/aisuite/workflow/pages-translation-prepare',
+        'target' => WorkflowManagerController::class.'::handleRequest',
     ],
-    /**
-     * Background task routes
-     */
+    // Background task routes
     'ai_suite_backgroundtask' => [
         'path' => '/aisuite/backgroundtask',
-        'target' => \AutoDudes\AiSuite\Controller\BackgroundTaskController::class . '::handleRequest',
+        'target' => BackgroundTaskController::class.'::handleRequest',
     ],
-    'ai_suite_massaction_filelist_files_translate_prepare' => [
-        'path' => '/aisuite/massaction/files-translate-prepare',
-        'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+    'ai_suite_workflow_filelist_files_translate_prepare' => [
+        'path' => '/aisuite/workflow/files-translate-prepare',
+        'target' => FilelistController::class.'::handleRequest',
     ],
-    /**
-     * Filelist routes
-     */
+    // Settings routes
+    'ai_suite_settings' => [
+        'path' => '/aisuite/settings',
+        'target' => SettingsController::class.'::handleRequest',
+    ],
+    'ai_suite_settings_save' => [
+        'path' => '/aisuite/settings/save',
+        'methods' => ['POST'],
+        'target' => SettingsController::class.'::handleRequest',
+    ],
+    // Filelist routes
     'ai_suite_filelist' => [
         'path' => '/aisuite/filelist',
-        'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+        'target' => FilelistController::class.'::handleRequest',
     ],
 ];

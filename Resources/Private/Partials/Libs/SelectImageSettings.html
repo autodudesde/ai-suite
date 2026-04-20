@@ -2,13 +2,13 @@
     <div class="image-settings">
         <div class="form-section image-settings-midjourney mb-3 rounded-2" style="display: none;">
             <label class="control-label fw-bold mb-2">
-                <f:translate key="AiSuite.imageSettings.midjourney" extensionName="ai_suite"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSettings.midjourney"/>
             </label>
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group mb-3">
                         <label for="midjourneyVersion" class="control-label">
-                            <f:translate key="AiSuite.imageSettings.midjourney.version" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSettings.midjourney.version"/>
                         </label>
                         <select id="midjourneyVersion" name="midjourneyVersion" class="form-control" data-prefix="--v">
                             <option value="7.0" {f:if(condition: '{additionalImageSettings.v} == "7.0"', then: 'selected="selected"')}>7.0</option>
@@ -23,7 +23,7 @@
                 <div class="col-sm-6">
                     <div class="form-group mb-3">
                         <label for="midjourneyAspectRatio" class="control-label">
-                            <f:translate key="AiSuite.imageSettings.midjourney.aspectRatio" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSettings.midjourney.aspectRatio"/>
                         </label>
                         <select id="midjourneyAspectRatio" name="midjourneyAspectRatio" class="form-control" data-prefix="--ar">
                             <option value="1:1" {f:if(condition: '{additionalImageSettings.ar} == "1:1"', then: 'selected="selected"')}>1:1 (Default)</option>
@@ -42,7 +42,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="midjourneyNo" class="control-label">
-                            <f:translate key="AiSuite.imageSettings.midjourney.no" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSettings.midjourney.no"/>
                         </label>
                         <input type="text" class="form-control" id="midjourneyNo" name="midjourneyNo" value="{additionalImageSettings.no}" data-prefix="--no" />
                     </div>
@@ -50,7 +50,7 @@
                 <div class="col-sm-6">
                     <div class="form-group">
                         <label for="midjourneySref" class="control-label">
-                            <f:translate key="AiSuite.imageSettings.midjourney.sref" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageSettings.midjourney.sref"/>
                         </label>
                         <input type="text" class="form-control" id="midjourneySref" name="midjourneySref" value="{additionalImageSettings.sref}" data-prefix="--sref"/>
                     </div>

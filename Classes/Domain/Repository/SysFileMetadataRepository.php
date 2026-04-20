@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,7 +10,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
@@ -30,6 +32,10 @@ class SysFileMetadataRepository extends AbstractRepository
     }
 
     /**
+     * @param list<int|string> $uids
+     *
+     * @return array<int|string, mixed>
+     *
      * @throws Exception
      */
     public function findByLangUidAndFileIdList(
@@ -43,20 +49,20 @@ class SysFileMetadataRepository extends AbstractRepository
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
             $queryBuilder->expr()->in('file', $uids),
-            $queryBuilder->expr()->eq('sys_language_uid', $languageUid)
+            $queryBuilder->expr()->eq('sys_language_uid', $languageUid),
         ];
         if ($showOnlyEmpty) {
-            if ($column === 'title') {
+            if ('title' === $column) {
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('title', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('title')
                 );
-            } elseif ($column === 'alternative') {
+            } elseif ('alternative' === $column) {
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('alternative', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('alternative')
                 );
-            } elseif ($column === 'description') {
+            } elseif ('description' === $column) {
                 $constraints[] = $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq('description', $queryBuilder->createNamedParameter('')),
                     $queryBuilder->expr()->isNull('description')
@@ -79,7 +85,8 @@ class SysFileMetadataRepository extends AbstractRepository
         $queryBuilder
             ->select('*')
             ->from($this->table)
-            ->where(...$constraints);
+            ->where(...$constraints)
+        ;
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
         if ($showOnlyUsed) {
             foreach ($metadataList as $key => $metadata) {
@@ -88,9 +95,34 @@ class SysFileMetadataRepository extends AbstractRepository
                 }
             }
         }
+
         return array_column($metadataList, null, $indexColumn);
     }
 
+    /**
+     * Find all metadata records for a file across all languages.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findAllByFileUid(int $fileUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('file', $fileUid)
+            )
+        ;
+
+        return $queryBuilder->executeQuery()->fetchAllAssociative();
+    }
+
+    /**
+     * @param list<int|string> $uids
+     *
+     * @return array<int|string, mixed>
+     */
     public function findByUidList(array $uids, string $indexColumn = 'uid'): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -99,11 +131,18 @@ class SysFileMetadataRepository extends AbstractRepository
             ->from($this->table)
             ->where(
                 $queryBuilder->expr()->in('uid', $uids)
-            );
+            )
+        ;
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
+
         return array_column($metadataList, null, $indexColumn);
     }
 
+    /**
+     * @param list<int|string> $fileUids
+     *
+     * @return array<int|string, mixed>
+     */
     public function findDefaultLanguageMetadataUidsByFileUids(array $fileUids): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -113,11 +152,16 @@ class SysFileMetadataRepository extends AbstractRepository
             ->where(
                 $queryBuilder->expr()->in('file', $fileUids),
                 $queryBuilder->expr()->eq('sys_language_uid', 0)
-            );
+            )
+        ;
         $result = $queryBuilder->executeQuery()->fetchAllAssociative();
+
         return array_column($result, 'uid', 'file');
     }
 
+    /**
+     * @return list<int>
+     */
     public function findTranslatedMetadataUid(int $l10nParent, int $fileUid, int $languageId): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -128,13 +172,15 @@ class SysFileMetadataRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('l10n_parent', $l10nParent),
                 $queryBuilder->expr()->eq('file', $fileUid),
                 $queryBuilder->expr()->eq('sys_language_uid', $languageId)
-            );
+            )
+        ;
+
         return $queryBuilder->executeQuery()->fetchFirstColumn();
     }
 
     public function isFileUsed(int $fileUid): bool
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable("sys_refindex");
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_refindex');
         $queryBuilder
             ->count('recuid')
             ->from('sys_refindex')
@@ -142,10 +188,15 @@ class SysFileMetadataRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('ref_table', $queryBuilder->createNamedParameter('sys_file')),
                 $queryBuilder->expr()->neq('tablename', $queryBuilder->createNamedParameter('sys_file_metadata')),
                 $queryBuilder->expr()->eq('ref_uid', $queryBuilder->createNamedParameter($fileUid))
-            );
+            )
+        ;
+
         return $queryBuilder->executeQuery()->fetchOne() > 0;
     }
 
+    /**
+     * @return list<int>
+     */
     public function findUidByFile(int $fileUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -154,7 +205,9 @@ class SysFileMetadataRepository extends AbstractRepository
             ->from($this->table)
             ->where(
                 $queryBuilder->expr()->eq('file', $fileUid),
-            );
+            )
+        ;
+
         return $queryBuilder->executeQuery()->fetchFirstColumn();
     }
 }

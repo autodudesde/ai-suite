@@ -1,7 +1,10 @@
 <?php
-defined('TYPO3') or die();
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript(
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
+defined('TYPO3') or exit;
+
+ExtensionManagementUtility::addTypoScript(
     'ai_suite',
     'setup',
     '@import "EXT:ai_suite/Configuration/TypoScript/setup.typoscript"'
@@ -10,152 +13,157 @@ defined('TYPO3') or die();
 $lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = [
-    'header' => $lll . 'aiSuite.customPermOptions.headerAiSuiteFeatures',
+    'header' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.headerAiSuiteFeatures',
     'items' => [
         'enable_rte_aiplugin' => [
-            $lll . 'aiSuite.customPermOptions.enableRteAiPlugin',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableRteAiPlugin',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableRteAiPluginDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableRteAiPluginDescription',
         ],
         'enable_rte_aieasylanguageplugin' => [
-            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePlugin',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableRteAiEasyLanguagePlugin',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableRteAiEasyLanguagePluginDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableRteAiEasyLanguagePluginDescription',
         ],
         'enable_translation' => [
-            $lll . 'aiSuite.customPermOptions.enableTranslation',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslation',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableTranslationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationDescription',
         ],
         'enable_translation_list_wizard' => [
-            $lll . 'aiSuite.customPermOptions.enableTranslationListWizard',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationListWizard',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableTranslationListWizardDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationListWizardDescription',
         ],
         'enable_translation_whole_page' => [
-            $lll . 'aiSuite.customPermOptions.enableTranslationWholePage',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationWholePage',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableTranslationWholePageDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationWholePageDescription',
         ],
         'enable_translation_deepl_sync' => [
-            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSync',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationDeeplSync',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableTranslationDeeplSyncDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationDeeplSyncDescription',
         ],
         'enable_translation_sys_file_metadata' => [
-            $lll . 'aiSuite.customPermOptions.enableTranslationSysFileMetadata',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationSysFileMetadata',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableTranslationSysFileMetadataDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationSysFileMetadataDescription',
         ],
         'enable_image_generation' => [
-            $lll . 'aiSuite.customPermOptions.enableImageGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableImageGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableImageGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableImageGenerationDescription',
         ],
         'enable_content_element_generation' => [
-            $lll . 'aiSuite.customPermOptions.enableContentElementGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableContentElementGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableContentElementGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableContentElementGenerationDescription',
         ],
         'enable_news_generation' => [
-            $lll . 'aiSuite.customPermOptions.enableNewsGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableNewsGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableNewsGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableNewsGenerationDescription',
         ],
         'enable_pages_generation' => [
-            $lll . 'aiSuite.customPermOptions.enablePagesGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enablePagesGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enablePagesGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enablePagesGenerationDescription',
         ],
         'enable_metadata_generation' => [
-            $lll . 'aiSuite.customPermOptions.enableMetadataGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMetadataGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableMetadataGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMetadataGenerationDescription',
         ],
         'enable_massaction_generation' => [
-            $lll . 'aiSuite.customPermOptions.enableMassActionGeneration',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMassActionGeneration',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableMassActionGenerationDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMassActionGenerationDescription',
         ],
         'enable_background_task_handling' => [
-            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandling',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableBackgroundTaskHandling',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableBackgroundTaskHandlingDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableBackgroundTaskHandlingDescription',
         ],
         'enable_toolbar_stats_item' => [
-            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItem',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableToolbarStatsItem',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableToolbarStatsItemDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableToolbarStatsItemDescription',
         ],
         'enable_prompt_template_button' => [
-            $lll . 'aiSuite.customPermOptions.enablePromptTemplateButton',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enablePromptTemplateButton',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enablePromptTemplateButtonDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enablePromptTemplateButtonDescription',
         ],
         'enable_global_instructions_button' => [
-            $lll . 'aiSuite.customPermOptions.enableGlobalInstructionsButton',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableGlobalInstructionsButton',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.enableGlobalInstructionsButtonDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableGlobalInstructionsButtonDescription',
+        ],
+        'enable_global_settings' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableGlobalSettings',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableGlobalSettingsDescription',
         ],
     ],
 ];
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_models'] = [
-    'header' => $lll . 'aiSuite.customPermOptions.headerAiSuiteModels',
+    'header' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.headerAiSuiteModels',
     'items' => [
         'ChatGPT' => [
-            $lll . 'aiSuite.customPermOptions.modelOpenai',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelOpenai',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'Anthropic' => [
-            $lll . 'aiSuite.customPermOptions.modelAnthropic',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelAnthropic',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
-        'DALL-E' => [
-            $lll . 'aiSuite.customPermOptions.modelDalle',
+        'GPTImage' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelGptImage',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'Midjourney' => [
-            $lll . 'aiSuite.customPermOptions.modelMidjourney',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelMidjourney',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'Flux' => [
-            $lll . 'aiSuite.customPermOptions.modelFlux',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelFlux',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'Vision' => [
-            $lll . 'aiSuite.customPermOptions.modelVision',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelVision',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'GoogleTranslate' => [
-            $lll . 'aiSuite.customPermOptions.modelGoogleTranslate',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelGoogleTranslate',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'Deepl' => [
-            $lll . 'aiSuite.customPermOptions.modelDeepl',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDeepl',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'AiSuiteTextUltimate' => [
-            $lll . 'aiSuite.customPermOptions.modelAiSuiteTextUltimate',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelAiSuiteTextUltimate',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'MittwaldMinistral14B' => [
-            $lll . 'aiSuite.customPermOptions.modelMittwaldMinistral',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelMittwaldMinistral',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
         'MittwaldMinistral14BVision' => [
-            $lll . 'aiSuite.customPermOptions.modelMittwaldMinistralVision',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelMittwaldMinistralVision',
             'tx-aisuite-permissions',
-            $lll . 'aiSuite.customPermOptions.modelDescription',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.modelDescription',
         ],
     ],
 ];

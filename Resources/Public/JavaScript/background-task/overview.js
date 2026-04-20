@@ -104,14 +104,14 @@ class Overview {
                 let accordionBackgroundTasksElement = ev.target.closest('.background-tasks-wrapper');
                 let uuid = ev.target.dataset.uuid;
                 let column = ev.target.dataset.column;
-                Modal.confirm('Warning', TYPO3.lang['AiSuite.backgroundTasks.deleteModalTitle'], Severity.warning, [
+                Modal.confirm('Warning', TYPO3.lang['aiSuite.module.modal.continue'], Severity.warning, [
                     {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteModalText'],
+                        text: TYPO3.lang['aiSuite.module.backgroundTask.deleteModalText'],
                         active: true,
                         trigger: async function() {
                             let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid], column: column});
                             if (General.isUsable(res)) {
-                                Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess']);
+                                Notification.success(TYPO3.lang['aiSuite.notification.deleteSuccess']);
 
                                 const accordionItem = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"]');
                                 const columnSection = accordionItem.closest('.panel-body');
@@ -134,7 +134,7 @@ class Overview {
                             Modal.dismiss();
                         }
                     }, {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteAbort'],
+                        text: TYPO3.lang['aiSuite.module.modal.abort'],
                         trigger: function() {
                             Modal.dismiss();
                         }
@@ -162,14 +162,14 @@ class Overview {
                     return;
                 }
 
-                Modal.confirm('Warning', TYPO3.lang['AiSuite.backgroundTasks.deleteAllModalTitle'], Severity.warning, [
+                Modal.confirm('Warning', TYPO3.lang['aiSuite.module.backgroundTask.deleteAllModalTitle'], Severity.warning, [
                     {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteAllModalText'],
+                        text: TYPO3.lang['aiSuite.module.backgroundTask.deleteAll'],
                         active: true,
                         trigger: async function() {
                             let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: uuids, columns: columns});
                             if (General.isUsable(res)) {
-                                Notification.success(res.count + TYPO3.lang['AiSuite.notification.deleteAllSuccess']);
+                                Notification.success(res.count + TYPO3.lang['aiSuite.notification.deleteAllSuccess']);
                                 accordionBackgroundTasksElement.querySelectorAll('.panel').forEach(function(item) {
                                     item.remove();
                                 });
@@ -180,7 +180,7 @@ class Overview {
                             document.querySelector('a.btn.btn-md[title="TaskEngine"]').click();
                         }
                     }, {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteAbort'],
+                        text: TYPO3.lang['aiSuite.module.modal.abort'],
                         trigger: function() {
                             Modal.dismiss();
                         }
@@ -207,7 +207,7 @@ class Overview {
                 let title = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"] .task-title').innerText;
                 let res = await Ajax.sendAjaxRequest('aisuite_background_task_save', {uuid: uuid, column: column, inputValue: inputValue});
                 if (General.isUsable(res)) {
-                    Notification.success(TYPO3.lang['AiSuite.notification.saveSuccess'], inputValue + ' (' + title + ')');
+                    Notification.success(TYPO3.lang['aiSuite.notification.saveSuccess'], inputValue + ' (' + title + ')');
 
                     const accordionItem = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"]');
                     const columnSection = accordionItem.closest('.panel-body');
@@ -311,39 +311,39 @@ class Overview {
                 const uuid = accordionItem.dataset.uuid;
                 const column = accordionItem.dataset.column;
 
-                Modal.confirm(TYPO3.lang['AiSuite.errorDetails.title'] || 'Error Details', errorMessage, Severity.error, [
+                Modal.confirm(TYPO3.lang['aiSuite.errorDetails.title'] || 'Error Details', errorMessage, Severity.error, [
                     {
-                        text: TYPO3.lang['AiSuite.errorDetails.retry'] || 'Retry',
+                        text: TYPO3.lang['aiSuite.errorDetails.retry'] || 'Retry',
                         active: true,
                         btnClass: 'btn-warning',
                         trigger: async function() {
                             Modal.dismiss();
                             Notification.info(
-                                TYPO3.lang['AiSuite.errorDetails.retryingTask'] || 'Retrying task...',
-                                TYPO3.lang['AiSuite.errorDetails.pleaseWait'] || 'Please wait'
+                                TYPO3.lang['aiSuite.errorDetails.retryingTask'] || 'Retrying task...',
+                                TYPO3.lang['aiSuite.errorDetails.pleaseWait'] || 'Please wait'
                             );
 
                             let res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid});
                             if (General.isUsable(res)) {
-                                Notification.success(TYPO3.lang['AiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
+                                Notification.success(TYPO3.lang['aiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
                                 window.location.reload();
                             } else {
                                 Notification.error(
-                                    TYPO3.lang['AiSuite.errorDetails.retryFailed'] || 'Retry failed',
+                                    TYPO3.lang['aiSuite.errorDetails.retryFailed'] || 'Retry failed',
                                     res.error || 'An unknown error occurred'
                                 );
                             }
                         }
                     },
                     {
-                        text: TYPO3.lang['AiSuite.errorDetails.delete'] || 'Delete',
+                        text: TYPO3.lang['aiSuite.errorDetails.delete'] || 'Delete',
                         btnClass: 'btn-danger',
                         trigger: async function() {
                             Modal.dismiss();
 
                             let res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid], columns: [column]});
                             if (General.isUsable(res)) {
-                                Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess'] || 'Task deleted successfully');
+                                Notification.success(TYPO3.lang['aiSuite.notification.deleteSuccess'] || 'Task deleted successfully');
 
                                 const columnSection = accordionItem.closest('.panel-body');
                                 accordionItem.remove();
@@ -363,14 +363,14 @@ class Overview {
                                 self.updateDeleteAllButtonVisibility();
                             } else {
                                 Notification.error(
-                                    TYPO3.lang['AiSuite.errorDetails.deleteFailed'] || 'Delete failed',
+                                    TYPO3.lang['aiSuite.errorDetails.deleteFailed'] || 'Delete failed',
                                     res.error || 'An unknown error occurred'
                                 );
                             }
                         }
                     },
                     {
-                        text: TYPO3.lang['AiSuite.errorDetails.close'] || 'Close',
+                        text: TYPO3.lang['aiSuite.errorDetails.close'] || 'Close',
                         trigger: function() {
                             Modal.dismiss();
                         }

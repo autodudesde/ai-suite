@@ -1,6 +1,6 @@
 <?php
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,12 +8,11 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
-
+ */
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions',
+        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions',
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -29,7 +28,7 @@ return [
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
         'security' => [
             'ignorePageTypeRestriction' => true,
-        ]
+        ],
     ],
     'types' => [
         '1' => [
@@ -86,23 +85,23 @@ return [
                     [
                         'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
                         '',
-                    ]
+                    ],
                 ],
             ],
         ],
         'name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.name',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.name',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
                 'eval' => 'trim',
-                'required' => true
+                'required' => true,
             ],
         ],
         'instructions' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.instructions',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions',
             'config' => [
                 'type' => 'text',
                 'eval' => 'trim',
@@ -111,14 +110,14 @@ return [
         ],
         'context' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context',
             'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.pages', 'value' => 'pages'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.context.files', 'value' => 'files'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.pages', 'value' => 'pages'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.files', 'value' => 'files'],
                 ],
                 'default' => 'pages',
                 'size' => 1,
@@ -127,11 +126,11 @@ return [
         ],
         'scope' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.scope',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'AutoDudes\\AiSuite\\Tca\\ScopeItemsProcFunc->getScopeItems',
+                'itemsProcFunc' => 'AutoDudes\AiSuite\Tca\ScopeItemsProcFunc->getScopeItems',
                 'default' => 'general',
                 'size' => 1,
                 'eval' => 'trim',
@@ -139,7 +138,7 @@ return [
         ],
         'selected_pages' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.selected_pages',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.selected_pages',
             'displayCond' => 'FIELD:context:=:pages',
             'config' => [
                 'required' => true,
@@ -163,7 +162,7 @@ return [
         ],
         'selected_directories' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.selected_directories',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.selected_directories',
             'displayCond' => 'FIELD:context:=:files',
             'config' => [
                 'required' => true,
@@ -180,43 +179,43 @@ return [
         ],
         'use_for_subtree' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.use_for_subtree',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.use_for_subtree',
             'config' => [
                 'type' => 'check',
                 'default' => 1,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.enable',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
         'extend_previous_instructions' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.extend_previous_instructions',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.extend_previous_instructions',
             'config' => [
                 'type' => 'check',
                 'default' => 1,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.enable',
                     ],
-                ]
-            ]
+                ],
+            ],
         ],
         'override_predefined_prompt' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.override_predefined_prompt',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.override_predefined_prompt',
             'displayCond' => 'FIELD:scope:=:metadata',
             'config' => [
                 'type' => 'check',
                 'default' => 0,
                 'items' => [
                     [
-                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite_domain_model_global_instructions.enable'
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.enable',
                     ],
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ],
 ];

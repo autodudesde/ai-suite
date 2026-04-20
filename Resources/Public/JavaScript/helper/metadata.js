@@ -22,7 +22,7 @@ class Metadata {
         aiSuiteSaveMetadataBtn.on('click', function() {
             let selectedSuggestion = modal.find('.metadata-suggestions input.metadata-selection:checked');
             if(selectedSuggestion.length === 0) {
-                Notification.warning(TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelection'], TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
+                Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
             } else {
                 let data = MultiStepWizard.setup.settings['postData'];
                 self.insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion);

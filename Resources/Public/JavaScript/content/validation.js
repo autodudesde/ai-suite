@@ -83,10 +83,10 @@ class Validation {
                     let preselectionContent = '';
                     if(data.table === 'tt_content') {
                         preselectionContent = document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML;
-                        document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 705);
+                        document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessFlux'], 705);
                     } else {
                         preselectionContent = document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML;
-                        document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 705);
+                        document.querySelector('form[name="requestContent"] #fields-' + data.table +'-' + data.position + ' #generated-images-' + data.fieldName).innerHTML = Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessFlux'], 705);
                     }
                     let res = await Ajax.sendAjaxRequest('aisuite_regenerate_images', data);
                     ResponseHandling.handleResponseContentElement(res, data, TYPO3.lang['aiSuite.module.modal.midjourneySelectionError'], preselectionContent);

@@ -1,11 +1,11 @@
 
     <div class="generation-library image-generation-library library">
         <label class="control-label fw-bold mb-2">
-            <f:translate key="AiSuite.imageGenerationLibrary" extensionName="ai_suite"/>
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageGenerationLibrary"/>
         </label>
         <f:if condition="{showMaxImageHint}">
             <p>
-                <f:format.raw><f:translate key="aiSuite.twoImagesAtFirstRequest" extensionName="ai_suite"/></f:format.raw>
+                <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.twoImagesAtFirstRequest"/></f:format.raw>
             </p>
         </f:if>
         <f:if condition="{imageGenerationLibraries -> f:count()} > 0">
@@ -19,7 +19,7 @@
             <f:else>
                 <div class="col-12 my-3">
                     <div class="alert alert-warning" role="alert">
-                        <f:translate key="AiSuite.noLibrariesAvailable" extensionName="ai_suite"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.noLibrariesAvailable"/>
                     </div>
                 </div>
             </f:else>

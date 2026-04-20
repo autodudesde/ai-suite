@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,7 +10,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
@@ -37,29 +39,36 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
     }
 
     /**
+     * @param list<int> $allowedMounts
+     *
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findByAllowedMounts(array $allowedMounts, string $search): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->getRestrictions()
-            ->removeByType(HiddenRestriction::class);
+            ->removeByType(HiddenRestriction::class)
+        ;
         $queryBuilder
             ->select('*')
             ->from($this->table)
             ->where(
                 $queryBuilder->expr()->in('pid', $allowedMounts)
-            );
-        if ($search !== '') {
+            )
+        ;
+        if ('' !== $search) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->like('name', $queryBuilder->createNamedParameter('%' . $search . '%')),
-                    $queryBuilder->expr()->like('prompt', $queryBuilder->createNamedParameter('%' . $search . '%'))
+                    $queryBuilder->expr()->like('name', $queryBuilder->createNamedParameter('%'.$search.'%')),
+                    $queryBuilder->expr()->like('prompt', $queryBuilder->createNamedParameter('%'.$search.'%'))
                 )
             );
         }
         $queryBuilder->orderBy($this->sortBy, 'ASC');
         $result = $queryBuilder->executeQuery();
+
         return $result->fetchAllAssociative();
     }
 
@@ -99,7 +108,11 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
         $this->handleWithDataHandler([], $cmd);
     }
 
-    protected function handleWithDataHandler($data, $cmd): void
+    /**
+     * @param array<string, mixed> $cmd
+     * @param array<string, mixed> $data
+     */
+    protected function handleWithDataHandler(array $data, array $cmd): void
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start($data, $cmd);

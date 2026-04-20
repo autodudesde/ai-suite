@@ -1,0 +1,288 @@
+import General from "@autodudes/ai-suite/helper/general.js";
+import Generation from "@autodudes/ai-suite/helper/generation.js";
+import Ajax from '@autodudes/ai-suite/helper/ajax.js';
+import Notification from "@typo3/backend/notification.js";
+import InfoWindow from "@typo3/backend/info-window.js";
+import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+
+class PagesPrepare {
+    parentUuid;
+    constructor() {
+        this.pagesPrepareExecuteFormEventListener();
+        Generation.cancelGeneration();
+        this.pageSelectionEventDelegation();
+        GlobalInstructions.metadataTooltipEventDelegation();
+        this.parentUuid = '';
+        this.init();
+    }
+
+    init() {
+        let startFromPidInput = document.querySelector('input[name="workflowPagesPrepare[startFromPid]"]');
+        if (!General.isUsable(startFromPidInput) || !General.isUsable(startFromPidInput.value) || startFromPidInput.value === '' || startFromPidInput.value === '0') {
+            return;
+        }
+        let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
+        const formData = new FormData(pagesPrepareExecuteForm);
+        this.preparePages(formData).then(() => {});
+    }
+
+    pagesPrepareExecuteFormEventListener() {
+        const self = this;
+        let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
+        pagesPrepareExecuteForm.addEventListener('submit', async function(ev) {
+            ev.preventDefault();
+            let startFromPidInput = document.querySelector('input[name="workflowPagesPrepare[startFromPid]"]');
+            if (!General.isUsable(startFromPidInput) || !General.isUsable(startFromPidInput.value) || startFromPidInput.value === '') {
+                Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.workflow.missingStartFromPid']);
+                return;
+            }
+            Generation.showSpinner();
+            const formData = new FormData(pagesPrepareExecuteForm);
+            await self.preparePages(formData);
+            Generation.hideSpinner();
+        });
+    }
+    pageSelectionEventDelegation() {
+        const self = this;
+        document.querySelectorAll('#resultsToExecute').forEach(function(element) {
+            element.addEventListener('click', async function(ev) {
+                if(ev && ev.target) {
+                    if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.id === 'togglePageSelection') {
+                        let checkboxes = document.querySelectorAll('input[name="page-selection"]');
+                        checkboxes.forEach(function(checkbox) {
+                            checkbox.checked = ev.target.checked;
+                        });
+                        self.calculateRequestAmount();
+                    }
+                    if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.name === 'page-selection') {
+                        self.calculateRequestAmount();
+                    }
+                    if(ev.target.nodeName === 'INPUT' && ev.target.type === 'text' && ev.target.classList.contains('page-metadata-field')) {
+                        if(ev.target.closest('.list-group-item').querySelector('input[name="page-selection"]')) {
+                            ev.target.closest('.list-group-item').querySelector('input[name="page-selection"]').checked = true;
+                            self.calculateRequestAmount();
+                        }
+                    }
+                    if(ev.target.nodeName === 'DIV' && ev.target.classList.contains('page-meta-content-info')) {
+                        const table = ev.target.dataset.table;
+                        const uid = ev.target.dataset.uid;
+                        InfoWindow.showItem(table, uid);
+                    }
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'pagesSaveMetadataSubmitBtn') {
+                        ev.preventDefault();
+                        let checkboxes = document.querySelectorAll('input[name="page-selection"]');
+                        let selectedPages = {};
+                        checkboxes.forEach(function(checkbox) {
+                            if(checkbox.checked) {
+                                const metadataValue = checkbox.closest('.list-group-item').querySelector('.page-metadata-field').value;
+                                selectedPages[checkbox.value] = metadataValue;
+                            }
+                        });
+                        if(Object.keys(selectedPages).length === 0) {
+                            Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.workflow.missingPages']);
+                        } else {
+                            let formData = new FormData();
+                            formData.append('workflowPagesExecute[column]', document.querySelector('select[name="workflowPagesPrepare[column]"]').value);
+                            formData.append('workflowPagesExecute[sysLanguage]', document.querySelector('select[name="workflowPagesPrepare[sysLanguage]"]').value);
+                            formData.append('workflowPagesExecute[pages]', JSON.stringify(selectedPages));
+                            await self.sendPagesToUpdate(formData);
+                        }
+                    }
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'pagesExecuteFormSubmitBtn') {
+                        ev.preventDefault();
+                        let checkboxes = document.querySelectorAll('input[name="page-selection"]');
+                        let selectedPages = {};
+                        checkboxes.forEach(function(checkbox) {
+                            if(checkbox.checked) {
+                                selectedPages[checkbox.value] = checkbox.dataset.slug;
+                            }
+                        });
+                        if(Object.keys(selectedPages).length === 0) {
+                            Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.workflow.missingPages']);
+                        } else {
+                            Generation.showSpinner();
+                            const baseFormData = {
+                                parentUuid: self.parentUuid,
+                                column: document.querySelector('select[name="workflowPagesPrepare[column]"]').value,
+                                sysLanguage: document.querySelector('select[name="workflowPagesPrepare[sysLanguage]"]').value,
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                            };
+
+                            if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
+                                Notification.error(TYPO3.lang['aiSuite.error.invalidFormData']);
+                                Generation.hideSpinner();
+                                return;
+                            }
+
+                            await self.processBatches(selectedPages, baseFormData);
+                            Generation.hideSpinner();
+                            Notification.success(TYPO3.lang['aiSuite.notification.generation.workflow.success'], TYPO3.lang['aiSuite.notification.generation.workflow.successDescription']);
+                            selectedPages = null;
+                            let pagesPrepareExecuteForm = document.querySelector('form[name="pagesPrepareExecute"]');
+                            let formData = new FormData(pagesPrepareExecuteForm);
+                            self.preparePages(formData).then(() => {});
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+
+    async preparePages(formData) {
+        let res = await Ajax.sendAjaxRequest('aisuite_workflow_pages_prepare', formData);
+        if (General.isUsable(res)) {
+            if(General.isUsable(res.output) && !General.isUsable(res.output.content)) {
+                document.querySelector('#resultsToExecute').innerHTML = res.output;
+            } else {
+                this.parentUuid = res.output.parentUuid;
+                document.querySelector('#resultsToExecute').innerHTML = res.output.content;
+                const languageSelect = document.querySelector('select[name="workflowPagesPrepare[sysLanguage]"]');
+                if (languageSelect && General.isUsable(res.output.availableSysLanguages)) {
+                    languageSelect.innerHTML = '';
+                    Object.entries(res.output.availableSysLanguages).forEach(([identifier, label]) => {
+                        const option = document.createElement('option');
+                        option.value = identifier;
+                        option.textContent = label;
+                        languageSelect.appendChild(option);
+                    });
+                }
+                if(General.isUsable(res.output.notification) && res.output.notification !== '') {
+                    Notification.info(TYPO3.lang['aiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notification);
+                }
+            }
+        } else {
+            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
+        }
+    }
+    async sendPagesToExecute(formData, selectedPages, handledPages, maxRetries = 2, delay = 1000) {
+        try {
+            if (!formData.has('workflowPagesExecute[pages]')) {
+                throw new Error(TYPO3.lang['aiSuite.error.invalidFormData']);
+            }
+
+            let lastError;
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    let res = await Ajax.sendAjaxRequest('aisuite_workflow_pages_execute', formData);
+
+                    if (!General.isUsable(res)) {
+                        throw new Error(TYPO3.lang['aiSuite.error.invalidServerResponse']);
+                    }
+
+                    if (res.output?.failedPages?.length > 0) {
+                        Notification.error(
+                            TYPO3.lang['aiSuite.notification.generation.error'],
+                            TYPO3.lang['aiSuite.notification.generation.failedPages'] + res.output.failedPages.join(', ')
+                        );
+                    }
+
+                    let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                    if (statusElement !== null && selectedPages && handledPages) {
+                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
+                    }
+
+                    return res;
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`Request attempt ${attempt} failed:`, error);
+                    if (attempt < maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, delay * attempt));
+                    }
+                }
+            }
+            throw lastError;
+
+        } catch (error) {
+            console.error('sendPagesToExecute failed after all retries:', error.message);
+            Notification.error(
+                TYPO3.lang['aiSuite.notification.generation.error'],
+                TYPO3.lang['aiSuite.notification.generation.requestError']
+            );
+            throw error;
+        }
+    }
+    async sendPagesToUpdate(formData) {
+        let res = await Ajax.sendAjaxRequest('aisuite_workflow_pages_update', formData);
+        if (General.isUsable(res)) {
+            Generation.hideSpinner();
+            document.querySelector('#resultsToExecute').innerHTML = '';
+            Notification.success(TYPO3.lang['aiSuite.notification.generation.workflow.successUpdate']);
+        }
+    }
+
+    async processBatches(selectedPages, baseFormData) {
+        const batchSize = 5;
+        const delayBetweenBatches = 500;
+
+        const pageKeys = Object.keys(selectedPages);
+        let handledPages = {};
+
+        for (let i = 0; i < pageKeys.length; i += batchSize) {
+            const batchKeys = pageKeys.slice(i, i + batchSize);
+            const currentPages = {};
+
+            batchKeys.forEach(key => {
+                currentPages[key] = selectedPages[key];
+            });
+
+            try {
+                const formData = this.createFormData(baseFormData, currentPages);
+                await this.sendPagesToExecute(formData, selectedPages, handledPages);
+                handledPages = { ...handledPages, ...currentPages };
+
+                let statusElement = document.querySelector('.module-body .spinner-overlay .status');
+                if (statusElement !== null) {
+                    statusElement.innerHTML = `${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
+                }
+
+                if (i + batchSize < pageKeys.length) {
+                    await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+                }
+            } catch (error) {
+                Notification.warning(
+                    TYPO3.lang['aiSuite.notification.generation.error'],
+                    TYPO3.lang['aiSuite.module.workflow.batchFailed'].replace('{0}', Math.floor(i/batchSize) + 1)
+                );
+            }
+        }
+
+        return handledPages;
+    }
+
+    createFormData(baseFormData, currentPages) {
+        let formData = new FormData();
+        formData.append('workflowPagesExecute[parentUuid]', baseFormData.parentUuid);
+        formData.append('workflowPagesExecute[column]', baseFormData.column);
+        formData.append('workflowPagesExecute[sysLanguage]', baseFormData.sysLanguage);
+        formData.append('workflowPagesExecute[textAiModel]', baseFormData.textAiModel);
+        formData.append('workflowPagesExecute[pages]', JSON.stringify(currentPages));
+        return formData;
+    }
+
+    calculateRequestAmount() {
+        let calculatedRequests = 0;
+        document.querySelectorAll('.library').forEach(function (library) {
+            let amountField = library.querySelector('.request-amount span');
+            if(library.style.display !== 'none' && amountField !== null) {
+                let modelId = library.querySelector('input[type="radio"]:checked').id;
+                let amount = parseInt(library.querySelector('label[for="' + modelId +'"] .request-amount span').textContent);
+                calculatedRequests += amount;
+            }
+        });
+        let checkboxes = document.querySelectorAll('input[name="page-selection"]');
+        let selectedPages = 0;
+        checkboxes.forEach(function(checkbox) {
+            if(checkbox.checked) {
+                selectedPages++;
+            }
+        });
+        calculatedRequests *= selectedPages;
+        let marker = TYPO3.lang['aiSuite.module.multipleCredits'];
+        if(calculatedRequests === 1) {
+            marker = TYPO3.lang['aiSuite.module.oneCredit'];
+        }
+        document.querySelector('div[data-module-id="aiSuite"] .calculated-requests').textContent = '(' + calculatedRequests + ' ' + marker + ')';
+    }
+}
+export default new PagesPrepare();

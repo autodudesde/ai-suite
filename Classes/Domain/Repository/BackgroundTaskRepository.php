@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,12 +10,11 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
-use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -37,19 +38,25 @@ class BackgroundTaskRepository
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAll(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+
         return $queryBuilder
             ->select('*')
             ->from($this->table)
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAllPageBackgroundTasks(): array
@@ -57,7 +64,8 @@ class BackgroundTaskRepository
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->getRestrictions()
             ->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+        ;
 
         return $queryBuilder->select(
             'bt.*',
@@ -83,17 +91,21 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('p.deleted', 0)
             )
             ->orderBy('p.title', 'ASC')
-            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->addOrderBy('bt.'.$this->sortBy, 'ASC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAllFileReferenceBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+
         return $queryBuilder->select(
             'bt.*',
             'sf.name AS fileName',
@@ -125,17 +137,21 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('sfr.deleted', 0)
             )
             ->orderBy('sfr.title', 'ASC')
-            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->addOrderBy('bt.'.$this->sortBy, 'ASC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAllFileMetadataBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+
         return $queryBuilder->select(
             'bt.*',
             'sf.name AS fileName',
@@ -165,17 +181,21 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->gt('sfm.file', 0)
             )
             ->orderBy('sf.name', 'ASC')
-            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->addOrderBy('bt.'.$this->sortBy, 'ASC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws Exception
      */
     public function findByUuid(string $uuid): array|bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder
             ->select('bt.*')
             ->from($this->table, 'bt')
@@ -183,12 +203,17 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
             )
             ->executeQuery()
-            ->fetchAssociative();
+            ->fetchAssociative()
+        ;
     }
 
-    public function findFileUid(int $uidLocal, string $uuid, string $type, string $scope): array
+    /**
+     * @return array<string, mixed>|false
+     */
+    public function findFileUid(int $uidLocal, string $uuid, string $type, string $scope): array|false
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder
             ->select('bt.*', 'sfm.file AS fileUid')
             ->from($this->table, 'bt')
@@ -206,25 +231,31 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->gt('sfm.file', 0)
             )
             ->executeQuery()
-            ->fetchAssociative();
+            ->fetchAssociative()
+        ;
     }
 
     public function deleteByUuid(string $uuid): int
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder
             ->delete($this->table)
             ->where(
                 $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
             )
-            ->executeStatement();
+            ->executeStatement()
+        ;
     }
 
+    /**
+     * @param array<string, array<string, string>> $data
+     */
     public function updateStatus(array $data): void
     {
         foreach ($data as $uuid => $statusData) {
             $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-            $error = isset($statusData['error']) ? $statusData['error'] : '';
+            $error = $statusData['error'] ?? '';
             $queryBuilder
                 ->update($this->table)
                 ->where(
@@ -233,11 +264,16 @@ class BackgroundTaskRepository
                 ->set('status', $statusData['status'])
                 ->set('answer', $statusData['answer'])
                 ->set('error', $error)
-                ->executeStatement();
+                ->executeStatement()
+            ;
         }
     }
 
     /**
+     * @param list<int> $foundUids
+     *
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function fetchAlreadyPendingEntries(array $foundUids, string $tableName, string $column, string $mode = '', string $type = '', int $sysLanguageUid = 0): array
@@ -246,15 +282,15 @@ class BackgroundTaskRepository
         $constraints = [
             $queryBuilder->expr()->in('table_uid', $queryBuilder->createNamedParameter($foundUids, Connection::PARAM_INT_ARRAY)),
             $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName)),
-            $queryBuilder->expr()->eq('mode', $queryBuilder->createNamedParameter($mode))
+            $queryBuilder->expr()->eq('mode', $queryBuilder->createNamedParameter($mode)),
         ];
         if (!empty($type)) {
             $constraints[] = $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($type));
         }
-        if($sysLanguageUid > 0) {
+        if ($sysLanguageUid > 0) {
             $constraints[] = $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid));
         }
-        if ($column === 'all') {
+        if ('all' === $column) {
             $constraints[] = $queryBuilder->expr()->or(
                 $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('title')),
                 $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter('alternative')),
@@ -269,9 +305,13 @@ class BackgroundTaskRepository
                 ...$constraints
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
+    /**
+     * @param list<BackgroundTask> $bulkPayloadList
+     */
     public function insertBackgroundTasks(array $bulkPayloadList): void
     {
         if (empty($bulkPayloadList)) {
@@ -290,9 +330,13 @@ class BackgroundTaskRepository
                 $bulkPayload,
                 BackgroundTask::getDbColumnsForBulkInsert(),
                 BackgroundTask::getTypesForBulkInsert()
-            );
+            )
+        ;
     }
 
+    /**
+     * @param list<string> $uuids
+     */
     public function deleteByUuids(array $uuids): int
     {
         if (empty($uuids)) {
@@ -300,14 +344,80 @@ class BackgroundTaskRepository
         }
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder
             ->delete($this->table)
             ->where(
                 $queryBuilder->expr()->in('uuid', $queryBuilder->createNamedParameter($uuids, Connection::PARAM_STR_ARRAY))
             )
-            ->executeStatement();
+            ->executeStatement()
+        ;
     }
 
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function findByParentUuid(string $parentUuid): array
+    {
+        if ('' === $parentUuid) {
+            return [];
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('uuid', 'status', 'scope', 'type', 'column', 'table_name', 'table_uid', 'sys_language_uid', 'answer', 'error')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('parent_uuid', $queryBuilder->createNamedParameter($parentUuid))
+            )
+            ->orderBy('crdate', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    public function deleteByParentUuid(string $parentUuid): int
+    {
+        if ('' === $parentUuid) {
+            return 0;
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->delete($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('parent_uuid', $queryBuilder->createNamedParameter($parentUuid))
+            )
+            ->executeStatement()
+        ;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function findFinishedTasksByRecord(string $tableName, int $tableUid, string $column): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('uuid')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter($tableName)),
+                $queryBuilder->expr()->eq('table_uid', $queryBuilder->createNamedParameter($tableUid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter($column)),
+                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter('finished')),
+            )
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function countBackgroundTasksByStatusAndScope(): array
     {
         $results = [];
@@ -315,10 +425,11 @@ class BackgroundTaskRepository
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()
             ->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+        ;
 
         $pageResults = $queryBuilder
-            ->addSelectLiteral('COUNT(*) AS ' . $queryBuilder->quoteIdentifier('count'))
+            ->addSelectLiteral('COUNT(*) AS '.$queryBuilder->quoteIdentifier('count'))
             ->addSelect('bt.scope', 'bt.status', 'bt.column', 'bt.table_uid', 'bt.table_name')
             ->from($this->table, 'bt')
             ->leftJoin(
@@ -333,13 +444,14 @@ class BackgroundTaskRepository
             )
             ->groupBy('bt.scope', 'bt.status', 'bt.column')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
 
         $results = array_merge($results, $pageResults);
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $fileRefResults = $queryBuilder
-            ->addSelectLiteral('COUNT(*) AS ' . $queryBuilder->quoteIdentifier('count'))
+            ->addSelectLiteral('COUNT(*) AS '.$queryBuilder->quoteIdentifier('count'))
             ->addSelect('bt.scope', 'bt.status', 'bt.column', 'bt.table_uid', 'bt.table_name')
             ->from($this->table, 'bt')
             ->leftJoin(
@@ -354,13 +466,14 @@ class BackgroundTaskRepository
             )
             ->groupBy('bt.scope', 'bt.status', 'bt.column')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
 
         $results = array_merge($results, $fileRefResults);
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $fileMetaResults = $queryBuilder
-            ->addSelectLiteral('COUNT(*) AS ' . $queryBuilder->quoteIdentifier('count'))
+            ->addSelectLiteral('COUNT(*) AS '.$queryBuilder->quoteIdentifier('count'))
             ->addSelect('bt.scope', 'bt.status', 'bt.column', 'bt.table_uid', 'bt.table_name')
             ->from($this->table, 'bt')
             ->leftJoin(
@@ -375,18 +488,23 @@ class BackgroundTaskRepository
             )
             ->groupBy('bt.scope', 'bt.status', 'bt.column')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
 
-        $results = array_merge($results, $fileMetaResults);
-        return $results;
+        return array_merge($results, $fileMetaResults);
     }
 
     /**
+     * @param list<int> $foundUids
+     *
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function fetchAlreadyPendingEntriesForTranslation(array $foundUids, string $tableName, int $targetLanguageUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder->select('table_name', 'table_uid', 'status', 'sys_language_uid')
             ->from($this->table)
             ->where(
@@ -396,10 +514,13 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('page-translation'))
             )
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAllPageTranslationBackgroundTasks(): array
@@ -407,7 +528,8 @@ class BackgroundTaskRepository
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->getRestrictions()
             ->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+        ;
 
         return $queryBuilder->select('bt.*', 'p.title', 'p.slug')
             ->from($this->table, 'bt')
@@ -423,17 +545,21 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->eq('p.deleted', 0)
             )
             ->orderBy('p.title', 'ASC')
-            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->addOrderBy('bt.'.$this->sortBy, 'ASC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findTranslationTasksForPage(int $pageUid, string $status): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
         return $queryBuilder
             ->select('*')
             ->from($this->table)
@@ -446,15 +572,19 @@ class BackgroundTaskRepository
             )
             ->orderBy('crdate', 'DESC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return list<array<string, mixed>>
+     *
      * @throws Exception
      */
     public function findAllFileMetadataTranslationBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+
         return $queryBuilder->select(
             'bt.*',
             'sf.name AS fileName',
@@ -485,17 +615,21 @@ class BackgroundTaskRepository
                 $queryBuilder->expr()->gt('sfm.file', 0)
             )
             ->orderBy('sf.name', 'ASC')
-            ->addOrderBy('bt.' . $this->sortBy, 'ASC')
+            ->addOrderBy('bt.'.$this->sortBy, 'ASC')
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws Exception
      */
     public function findSourceColumnValueByFileUidAndDefaultLanguage(int $fileUid): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable('sys_file_metadata')->createQueryBuilder();
+
         return $queryBuilder->select('title', 'alternative', 'description')
             ->from('sys_file_metadata')
             ->where(

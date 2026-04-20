@@ -1,6 +1,6 @@
 <?php
 
-/***
+/*
  *
  * This file is part of the "ai_suite_server" Extension for TYPO3 CMS.
  *
@@ -8,8 +8,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
-
+ */
 
 return [
     'ctrl' => [
@@ -87,7 +86,7 @@ return [
                     [
                         'LLL:EXT:core/Resources/Private/Language/locallang_core.xlf:labels.enabled',
                         '',
-                    ]
+                    ],
                 ],
             ],
         ],
@@ -98,7 +97,7 @@ return [
                 'type' => 'input',
                 'size' => 50,
                 'eval' => 'trim',
-                'required' => true
+                'required' => true,
             ],
         ],
         'prompt' => [

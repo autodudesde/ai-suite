@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Exception;
 
 class AiSuiteException extends \Exception
@@ -11,11 +13,11 @@ class AiSuiteException extends \Exception
     protected string $returnUrl;
 
     public function __construct(
-        string $template = "",
-        string $messageKey = "",
-        string $titleKey = "",
-        string $message = "",
-        string $returnUrl = "",
+        string $template = '',
+        string $messageKey = '',
+        string $titleKey = '',
+        string $message = '',
+        string $returnUrl = '',
         int $code = 0,
         ?\Throwable $previous = null
     ) {

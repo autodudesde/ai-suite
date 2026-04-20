@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -10,7 +10,7 @@ declare(strict_types=1);
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Enumeration;
 
@@ -18,14 +18,14 @@ final class ModelTypeEnumeration
 {
     // general models
     public const TEXT = 'CHATGPT,Vision';
-    public const IMAGE = 'DALL-E,Midjourney,Flux';
+    public const IMAGE = 'GPTImage,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
 
     // model - api mapping
     public const CHATGPT = 'openAiApiKey';
     public const ANTHROPIC = 'anthropicApiKey';
     public const VISION = 'openAiApiKey';
-    public const DALLE = 'openAiApiKey';
+    public const GPTIMAGE = 'openAiApiKey';
     public const MIDJOURNEY = 'midjourneyApiKey,midjourneyId';
     public const FLUX = 'fluxApiKey,fluxBaseUrl';
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';

@@ -47,7 +47,7 @@ export default class AiPluginUI extends Plugin {
         editor.ui.componentFactory.add( 'AiPlugin', () => {
             const button = new ButtonView();
 
-            button.label = TYPO3.lang['AiSuite.aiPlugin.title'];
+            button.label = TYPO3.lang['aiSuite.mlangTabsTab'];
             button.icon = this.icon;
             button.tooltip = true;
             button.withText = true;
@@ -97,7 +97,7 @@ export default class AiPluginUI extends Plugin {
         this.listenTo( modalView.saveButtonView, 'execute', async () => {
             const prompt = modalView.promptInputView.element.value;
             if(prompt.trim() === '') {
-                alert(TYPO3.lang['tx_aisuite.module.general.noContentSelected']);
+                alert(TYPO3.lang['aiSuite.module.general.noContentSelected']);
                 return;
             }
             modalView.element.querySelector('.ck-dialog-inputs').style.display = 'none';

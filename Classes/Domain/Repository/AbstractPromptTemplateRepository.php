@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,10 +10,11 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 class AbstractPromptTemplateRepository
@@ -31,13 +34,15 @@ class AbstractPromptTemplateRepository
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @return list<array<string, mixed>>
+     *
+     * @throws Exception
      */
     public function findByScopeAndType(string $scope, string $type = '', int $languageId = 0): array
     {
         $connection = $this->connectionPool->getConnectionForTable($this->table);
         $queryBuilder = $connection->createQueryBuilder();
-        if ($type !== '') {
+        if ('' !== $type) {
             $queryBuilder->select('name', 'prompt')
                 ->from($this->table)
                 ->where(
@@ -45,24 +50,25 @@ class AbstractPromptTemplateRepository
                     $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
                     $queryBuilder->expr()->or(
                         $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter($type)),
-                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($type .',%')),
-                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type)),
-                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,' . $type . ',%'))
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter($type.',%')),
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,'.$type)),
+                        $queryBuilder->expr()->like('type', $queryBuilder->createNamedParameter('%,'.$type.',%'))
                     )
                 )
-            ->orWhere(
-                $queryBuilder->expr()->and(
-                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
-                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('general')),
+                ->orWhere(
+                    $queryBuilder->expr()->and(
+                        $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                        $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('general')),
+                    )
                 )
-            )
-            ->orWhere(
-                $queryBuilder->expr()->and(
-                    $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
-                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
-                    $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter(''))
+                ->orWhere(
+                    $queryBuilder->expr()->and(
+                        $queryBuilder->expr()->in('sys_language_uid', [$languageId, -1]),
+                        $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
+                        $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter(''))
+                    )
                 )
-            );
+            ;
         } else {
             $queryBuilder->select('name', 'prompt')
                 ->from($this->table)
@@ -72,16 +78,21 @@ class AbstractPromptTemplateRepository
                         $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope)),
                         $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('general'))
                     )
-                );
+                )
+            ;
         }
         $queryBuilder->orderBy($this->sortBy, 'DESC');
         $data = $queryBuilder->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
+
         return $data ?: [];
     }
 
     /**
-     * @throws \Doctrine\DBAL\Exception
+     * @return list<array<string, mixed>>
+     *
+     * @throws Exception
      */
     public function findAll(): array
     {
@@ -90,7 +101,9 @@ class AbstractPromptTemplateRepository
             ->select('*')
             ->from($this->table)
             ->executeQuery()
-            ->fetchAllAssociative();
+            ->fetchAllAssociative()
+        ;
+
         return $result ?: [];
     }
 }

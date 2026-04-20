@@ -1,13 +1,13 @@
 <div class="d-flex flex-column">
-    <strong>{library.name}</strong> {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '{f:translate(key: \'tx_aisuite.status.onlyPaid\', extensionName:\'ai_suite\')}')}
+    <strong>{library.name}</strong> {f:if(condition: '{library.only_paid} == TRUE && {paidRequestsAvailable} == FALSE', then: '{f:translate(key: \'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.status.onlyPaid\')}')}
     <f:if condition="{library.weight}">
         <span class="request-amount">
             <f:if condition="{library.weight} == 1">
                 <f:then>
-                    <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.oneCredit" extensionName="ai_suite"/>
+                    <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.oneCredit"/>
                 </f:then>
                 <f:else>
-                    <span>{library.weight}</span>&nbsp;<f:translate key="aiSuite.module.multipleCredits" extensionName="ai_suite"/>
+                    <span>{library.weight}</span>&nbsp;<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.multipleCredits"/>
                 </f:else>
             </f:if>
         </span>

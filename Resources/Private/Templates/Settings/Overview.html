@@ -1,0 +1,112 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <h1 class="mb-3 fw-semibold">
+        <core:icon identifier="tx-aisuite-extension" size="medium" />
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.header" />
+    </h1>
+
+    <form method="post" action="{f:be.uri(route: 'ai_suite_settings_save', parameters: '{id: id}')}">
+
+        <div id="aiSuiteSettingsAccordion">
+            <f:for each="{categories}" as="category" iteration="categoryIteration">
+                <div class="panel panel-default mb-3">
+                    <div class="panel-heading" id="aiSuiteSettingsHeading{categoryIteration.index}">
+                        <button type="button"
+                                class="panel-title fw-bold btn btn-link text-decoration-none p-0 d-flex align-items-center gap-2 w-100{f:if(condition: '{categoryIteration.isFirst}', else: ' collapsed')}"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#aiSuiteSettingsCollapse{categoryIteration.index}"
+                                aria-expanded="{f:if(condition: '{categoryIteration.isFirst}', then: 'true', else: 'false')}"
+                                aria-controls="aiSuiteSettingsCollapse{categoryIteration.index}">
+                            <core:icon identifier="actions-cog" size="small" />
+                            <span>{category}</span>
+                            <span class="ms-auto panel-toggle-icon">
+                                <core:icon identifier="actions-chevron-down" size="small" />
+                            </span>
+                        </button>
+                    </div>
+                    <div id="aiSuiteSettingsCollapse{categoryIteration.index}"
+                         class="collapse{f:if(condition: '{categoryIteration.isFirst}', then: ' show')}"
+                         aria-labelledby="aiSuiteSettingsHeading{categoryIteration.index}"
+                         data-bs-parent="#aiSuiteSettingsAccordion">
+                        <div class="panel-body">
+                            <f:for each="{settings}" as="setting">
+                                <f:if condition="{setting.category} == {category}">
+                                    <div class="form-group mb-3">
+                                        <f:if condition="{setting.type} == 'boolean'">
+                                            <f:then>
+                                                <div class="form-check d-flex align-items-center gap-2">
+                                                    <input type="checkbox"
+                                                           class="form-check-input"
+                                                           id="settings_{setting.formKey}"
+                                                           name="settings[{setting.formKey}]"
+                                                           value="1"
+                                                           {f:if(condition: setting.value, then: 'checked="checked"')} />
+                                                    <label class="form-check-label" for="settings_{setting.formKey}">
+                                                        <f:translate key="{setting.label}" default="{setting.label}" />
+                                                    </label>
+                                                </div>
+                                            </f:then>
+                                            <f:else if="{setting.type} == 'select'">
+                                                <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                                                    <f:translate key="{setting.label}" default="{setting.label}" />
+                                                </label>
+                                                <select class="form-select"
+                                                        id="settings_{setting.formKey}"
+                                                        name="settings[{setting.formKey}]">
+                                                    <f:for each="{setting.options}" key="optionValue" as="optionLabel">
+                                                        <option value="{optionValue}" {f:if(condition: '{setting.currentValue} == {optionValue}', then: 'selected="selected"')}>{optionLabel}</option>
+                                                    </f:for>
+                                                </select>
+                                            </f:else>
+                                            <f:else if="{setting.type} == 'int'">
+                                                <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                                                    <f:translate key="{setting.label}" default="{setting.label}" />
+                                                </label>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       id="settings_{setting.formKey}"
+                                                       name="settings[{setting.formKey}]"
+                                                       value="{setting.value}"
+                                                       min="0" />
+                                            </f:else>
+                                            <f:else>
+                                                <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                                                    <f:translate key="{setting.label}" default="{setting.label}" />
+                                                </label>
+                                                <input type="{f:if(condition: setting.masked, then: 'password', else: 'text')}"
+                                                       class="form-control"
+                                                       id="settings_{setting.formKey}"
+                                                       name="settings[{setting.formKey}]"
+                                                       value="{setting.value}"
+                                                       {f:if(condition: setting.masked, then: 'autocomplete="off"')} />
+                                                <f:if condition="{setting.masked}">
+                                                    <small class="form-text text-muted">
+                                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.maskedHint" />
+                                                    </small>
+                                                </f:if>
+                                            </f:else>
+                                        </f:if>
+                                    </div>
+                                </f:if>
+                            </f:for>
+                        </div>
+                    </div>
+                </div>
+            </f:for>
+        </div>
+
+        <div class="mt-3 mb-5">
+            <button type="submit" class="btn btn-primary">
+                <core:icon identifier="actions-save" size="small" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.save" />
+            </button>
+        </div>
+
+    </form>
+</f:section>
+</html>

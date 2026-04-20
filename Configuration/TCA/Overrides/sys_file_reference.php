@@ -5,9 +5,9 @@ $GLOBALS['TCA']['sys_file_reference']['columns']['alternative']['config'] = arra
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSysFileReferenceAlternative'
-            ]
-        ]
+                'renderType' => 'aiSysFileReferenceAlternative',
+            ],
+        ],
     ]
 );
 
@@ -16,8 +16,8 @@ $GLOBALS['TCA']['sys_file_reference']['columns']['title']['config'] = array_merg
     [
         'fieldControl' => [
             'tx_aisuite_custom_field' => [
-                'renderType' => 'aiSysFileReferenceTitle'
-            ]
-        ]
+                'renderType' => 'aiSysFileReferenceTitle',
+            ],
+        ],
     ]
 );

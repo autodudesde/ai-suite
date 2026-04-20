@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/***
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -10,7 +10,7 @@ declare(strict_types=1);
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest;
 
@@ -21,40 +21,40 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ServerRequest
 {
-    protected array $extConf;
-    protected string $endpoint;
-    protected array $additionalFormData = [];
-    protected string $prompt = '';
-    protected string $language = '';
-    protected array $models = [];
+    protected readonly string $endpoint;
 
+    /**
+     * @param array<string, mixed>  $additionalFormData
+     * @param array<string, mixed>  $extConf
+     * @param array<string, string> $models
+     */
     public function __construct(
-        array $extConf,
+        protected readonly array $extConf,
         string $endpoint,
-        array $additionalFormData = [],
-        string $prompt = '',
-        string $language = '',
-        array $models = []
+        protected readonly array $additionalFormData = [],
+        protected readonly string $prompt = '',
+        protected readonly string $language = '',
+        protected readonly array $models = [],
     ) {
-        $this->extConf = $extConf;
-        $this->endpoint = $this->extConf['aiSuiteServer'] . 'api/' . $endpoint;
-        $this->additionalFormData = $additionalFormData;
-        $this->prompt = $prompt;
-        $this->language = $language;
-        $this->models = $models;
+        $this->endpoint = $this->extConf['aiSuiteServer'].'api/'.$endpoint;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDataForRequest(): array
     {
         return [
             'headers' => [
-                'Authorization' => 'Bearer ' . ($this->extConf['aiSuiteApiKey'] ?? '')
+                'Authorization' => 'Bearer '.($this->extConf['aiSuiteApiKey'] ?? ''),
             ],
-            'form_params' => array_merge($this->getGeneralFormData(), $this->additionalFormData)
+            'form_params' => array_merge($this->getGeneralFormData(), $this->additionalFormData),
         ];
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws Exception
      */
     public function getGeneralFormData(): array
@@ -67,7 +67,7 @@ class ServerRequest
             'request_system_ip' => GeneralUtility::getIndpEnv('REMOTE_ADDR'),
             'request_system_forward_ip' => GeneralUtility::getIndpEnv('HTTP_X_FORWARDED_FOR'),
             'typo3_version' => GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion(),
-            'ext_version' => ExtensionManagementUtility::getExtensionVersion('ai_suite')
+            'ext_version' => ExtensionManagementUtility::getExtensionVersion('ai_suite'),
         ];
     }
 
