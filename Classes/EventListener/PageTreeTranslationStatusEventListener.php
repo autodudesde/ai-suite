@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent;
 use TYPO3\CMS\Backend\Dto\Tree\Status\StatusInformation;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
-use TYPO3\CMS\Backend\Controller\Event\AfterPageTreeItemsPreparedEvent;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use Psr\Log\LoggerInterface;
 
 #[AsEventListener(
     identifier: 'tx-ai-suite/page-tree-translation-status',
@@ -16,21 +18,14 @@ use Psr\Log\LoggerInterface;
 )]
 class PageTreeTranslationStatusEventListener
 {
-    protected BackendUserService $backendUserService;
-    protected BackgroundTaskService $backgroundTaskService;
-    protected LoggerInterface $logger;
-
+    /** @var array<string, mixed> */
     protected array $backgroundTasks = [];
 
     public function __construct(
-        BackendUserService $backendUserService,
-        BackgroundTaskService $backgroundTaskService,
-        LoggerInterface $logger
+        protected readonly BackendUserService $backendUserService,
+        protected readonly BackgroundTaskService $backgroundTaskService,
+        protected readonly LoggerInterface $logger,
     ) {
-        $this->backendUserService = $backendUserService;
-        $this->backgroundTaskService = $backgroundTaskService;
-        $this->logger = $logger;
-
         $this->backgroundTasks = $this->backgroundTaskService->fetchBackgroundTaskStatus();
     }
 
@@ -39,10 +34,11 @@ class PageTreeTranslationStatusEventListener
         $items = $event->getItems();
 
         foreach ($items as &$item) {
-            $pageUid = (int)($item['_page']['uid'] ?? 0);
+            $pageUid = (int) ($item['_page']['uid'] ?? 0);
 
-            if ($pageUid === 0) {
+            if (0 === $pageUid) {
                 $this->backgroundTasks = $this->backgroundTaskService->fetchBackgroundTaskStatus(true);
+
                 continue;
             }
             if (!array_key_exists('translation', $this->backgroundTasks)) {
@@ -57,48 +53,57 @@ class PageTreeTranslationStatusEventListener
         $event->setItems($items);
     }
 
+    /**
+     * @param array<string, mixed> $item
+     */
     protected function addTranslationStatusIndicators(array &$item, int $pageUid): void
     {
         try {
             if (array_key_exists($pageUid, $this->backgroundTasks['translation'])) {
                 $status = $this->backgroundTasks['translation'][$pageUid]['status'] ?? '';
-                if ($status === 'finished') {
+                if ('finished' === $status) {
                     $this->addStatusInformation(
                         $item,
                         'Finished translation task(s) available',
                         ContextualFeedbackSeverity::OK,
                         1
                     );
+
                     return;
                 }
-                if ($status === 'pending') {
+                if ('pending' === $status) {
                     $this->addStatusInformation(
                         $item,
                         'Pending translation task(s) available',
                         ContextualFeedbackSeverity::NOTICE,
                         2
                     );
+
                     return;
                 }
 
-                if ($status === 'task-error') {
+                if ('task-error' === $status) {
                     $this->addStatusInformation(
                         $item,
                         'Failed translation task(s) available',
                         ContextualFeedbackSeverity::ERROR,
                         3
                     );
+
                     return;
                 }
             }
         } catch (\Exception $e) {
             $this->logger->error('Error processing translation status indicators for page', [
                 'pageUid' => $pageUid,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
 
+    /**
+     * @param array<string, mixed> $item
+     */
     protected function addStatusInformation(
         array &$item,
         string $label,

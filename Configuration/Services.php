@@ -12,7 +12,7 @@ declare(strict_types=1);
  *
  */
 
-use AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList;
+use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
 use AutoDudes\AiSuite\Localization\AiSuiteLocalizationHandlerRegistry;
@@ -23,9 +23,7 @@ use AutoDudes\AiSuite\Service\TranslationService;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Filesystem\Filesystem;
-use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -57,10 +55,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container): void
         {
-            if (!$container->hasDefinition(DatabaseRecordList::class)) {
-                return;
-            }
-
             try {
                 $extConfig = GeneralUtility::makeInstance(ExtensionConfiguration::class)
                     ->get('ai_suite')
@@ -71,22 +65,24 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             }
 
             if (false === $disableTranslationFunctionality) {
-                $customDatabaseRecordListDefinition = $container->getDefinition(DatabaseRecordList::class);
-                $customDatabaseRecordListDefinition->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+                if ($container->hasDefinition(DatabaseRecordList::class)) {
+                    $container->getDefinition(DatabaseRecordList::class)
+                        ->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+                }
+                if ($container->hasDefinition(AiSuiteLocalizationHandlerRegistry::class)) {
+                    $container->getDefinition(AiSuiteLocalizationHandlerRegistry::class)
+                        ->setDecoratedService(TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry::class);
+                }
             } else {
-                $container->removeDefinition(DatabaseRecordList::class);
-
+                if ($container->hasDefinition(DatabaseRecordList::class)) {
+                    $container->removeDefinition(DatabaseRecordList::class);
+                }
                 if ($container->hasDefinition(AiSuiteLocalizationHandlerRegistry::class)) {
                     $container->removeDefinition(AiSuiteLocalizationHandlerRegistry::class);
                 }
             }
         }
     });
-
-    $services->set(AiSuiteLocalizationHandlerRegistry::class)
-        ->decorate(LocalizationHandlerRegistry::class)
-        ->arg('$inner', new Reference(AiSuiteLocalizationHandlerRegistry::class . '.inner'))
-    ;
 
     $services->set(TranslationHook::class)
         ->public()
@@ -99,7 +95,9 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public()
     ;
     $services->set(SendRequestService::class)
-        ->public();
+        ->public()
+    ;
     $services->set(PagesRepository::class)
-        ->public();
+        ->public()
+    ;
 };

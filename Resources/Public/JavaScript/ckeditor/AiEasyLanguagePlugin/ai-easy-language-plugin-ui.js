@@ -43,14 +43,14 @@ export default class AiEasyLanguagePluginUi extends Plugin {
         editor.ui.componentFactory.add( 'AiEasyLanguagePlugin', () => {
             const button = new ButtonView();
 
-            button.label = TYPO3.lang['AiSuite.easyLanguagePlugin.title'];
+            button.label = TYPO3.lang['aiSuite.easyLanguagePlugin.title'];
             button.icon = this.icon;
             button.tooltip = true;
             button.withText = true;
 
             button.on( 'execute', async () => {
                 if(this.library.length === 0) {
-                    Notification.warning(TYPO3.lang['AiSuite.easyLanguagePlugin.noLibraryFound'], '', 8);
+                    Notification.warning(TYPO3.lang['aiSuite.easyLanguagePlugin.noLibraryFound'], '', 8);
                     return;
                 }
                 this.selectedContent = '';
@@ -60,9 +60,9 @@ export default class AiEasyLanguagePluginUi extends Plugin {
 
                 if(this.selectedContent.trim() === '') {
                     const self = this;
-                    Modal.confirm('Information', TYPO3.lang['AiSuite.easyLanguagePlugin.noContentSelectedModalText'], Severity.info, [
+                    Modal.confirm('Information', TYPO3.lang['aiSuite.easyLanguagePlugin.noContentSelectedModalText'], Severity.info, [
                         {
-                            text: TYPO3.lang['AiSuite.easyLanguagePlugin.useWholeContent'],
+                            text: TYPO3.lang['aiSuite.easyLanguagePlugin.useWholeContent'],
                             active: true,
                             trigger: async function() {
                                 self.modifyWholeContent = true;
@@ -70,7 +70,7 @@ export default class AiEasyLanguagePluginUi extends Plugin {
                                 await self._sendRequest(editor);
                             }
                         }, {
-                            text: TYPO3.lang['AiSuite.easyLanguagePlugin.abort'],
+                            text: TYPO3.lang['aiSuite.easyLanguagePlugin.abort'],
                             trigger: function() {
                                 Modal.dismiss();
                             }
@@ -104,7 +104,7 @@ export default class AiEasyLanguagePluginUi extends Plugin {
             uuid: this.uuid,
             type: 'easy-language',
         };
-        Notification.info(TYPO3.lang['AiSuite.easyLanguagePlugin.inProgress'], TYPO3.lang['AiSuite.easyLanguagePlugin.pleaseWait'], 8);
+        Notification.info(TYPO3.lang['aiSuite.easyLanguagePlugin.inProgress'], TYPO3.lang['aiSuite.easyLanguagePlugin.pleaseWait'], 8);
         let res = await Ajax.sendRteAjaxRequest( postData );
         if(General.isUsable(res)) {
             editor.model.change( () => {
@@ -116,10 +116,10 @@ export default class AiEasyLanguagePluginUi extends Plugin {
                     this.editor.model.insertContent(modelFragment);
                 }
             } );
-            Notification.success(TYPO3.lang['AiSuite.easyLanguagePlugin.success']);
+            Notification.success(TYPO3.lang['aiSuite.easyLanguagePlugin.success']);
         } else {
             console.error('Error');
-            Notification.error(TYPO3.lang['AiSuite.easyLanguagePlugin.failed']);
+            Notification.error(TYPO3.lang['aiSuite.easyLanguagePlugin.failed']);
         }
     }
 

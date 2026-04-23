@@ -1,6 +1,6 @@
 import Notification from "@typo3/backend/notification.js";
 import Severity from "@typo3/backend/severity.js";
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
@@ -48,12 +48,12 @@ class MidjourneySlides {
 
     slideTwo(data, filelistScope, addSelectionEventListenersFn) {
         let self = this;
-        MultiStepWizard.addSlide('ai-suite-midjourney-image-generation-step-2', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.midjourneySlideTwo'], async function(slide, settings) {
+        MultiStepWizard.addSlide('ai-suite-midjourney-image-generation-step-2', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.imageSelection'], async function(slide, settings) {
             MultiStepWizard.blurCancelStep();
             MultiStepWizard.lockNextStep();
             MultiStepWizard.unlockPrevStep();
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
-            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessFlux'], 677));
             data = settings['data'];
             Promise.all([self.generateImage(data), StatusHandling.fetchStatus(data, modal, self)])
                 .then(([res, status]) => {
@@ -83,11 +83,11 @@ class MidjourneySlides {
 
     slideTwoContentElement(data) {
         let self = this;
-        MultiStepWizard.addSlide('ai-suite-midjourney-image-generation-step-2', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.midjourneySlideTwo'], async function(slide, settings) {
+        MultiStepWizard.addSlide('ai-suite-midjourney-image-generation-step-2', TYPO3.lang['aiSuite.module.modal.imageSelection'], '', Severity.notice, TYPO3.lang['aiSuite.module.modal.imageSelection'], async function(slide, settings) {
             MultiStepWizard.blurCancelStep();
             MultiStepWizard.lockNextStep();
             MultiStepWizard.unlockPrevStep();
-            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessMidjourney'], 677));
+            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageGenerationInProcessFlux'], 677));
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             modal.find('.spinner-wrapper').css('overflow', 'hidden');
             data = settings['data'];

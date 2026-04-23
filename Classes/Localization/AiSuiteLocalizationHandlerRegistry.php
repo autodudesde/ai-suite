@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Localization;
 
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
-use AutoDudes\AiSuite\Enumeration\GenerationLibrariesEnumeration;
+use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Localization\Handler\DynamicAiLocalizationHandler;
 use AutoDudes\AiSuite\Localization\Handler\NoModelsAvailableHandler;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\SiteService;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerInterface;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
@@ -28,25 +29,9 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
         private readonly SiteService $siteService,
         private readonly PagesRepository $pagesRepository,
         private readonly LoggerInterface $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
-        parent::__construct([]);
-    }
-
-    public function getHandler(string $identifier): LocalizationHandlerInterface
-    {
-        $dynamicHandlers = $this->getDynamicHandlers();
-        if (isset($dynamicHandlers[$identifier])) {
-            return $dynamicHandlers[$identifier];
-        }
-
-        return $this->inner->getHandler($identifier);
-    }
-
-    public function hasHandler(string $identifier): bool
-    {
-        $dynamicHandlers = $this->getDynamicHandlers();
-
-        return isset($dynamicHandlers[$identifier]) || $this->inner->hasHandler($identifier);
+        parent::__construct([], $this->eventDispatcher);
     }
 
     public function getAvailableHandlers(LocalizationInstructions $instructions): array
@@ -69,6 +54,33 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
         return array_merge($coreHandlers, $availableDynamic);
     }
 
+    public function hasHandler(string $identifier): bool
+    {
+        if (isset($this->getDynamicHandlers()[$identifier])) {
+            return true;
+        }
+
+        if ('ai-suite-no-models' === $identifier) {
+            return true;
+        }
+
+        return $this->inner->hasHandler($identifier);
+    }
+
+    public function getHandler(string $identifier): LocalizationHandlerInterface
+    {
+        $dynamicHandlers = $this->getDynamicHandlers();
+        if (isset($dynamicHandlers[$identifier])) {
+            return $dynamicHandlers[$identifier];
+        }
+
+        if ('ai-suite-no-models' === $identifier) {
+            return new NoModelsAvailableHandler();
+        }
+
+        return $this->inner->getHandler($identifier);
+    }
+
     /**
      * @return array<string, LocalizationHandlerInterface>
      */
@@ -82,7 +94,7 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
 
         try {
             $librariesAnswer = $this->sendRequestService->sendLibrariesRequest(
-                GenerationLibrariesEnumeration::TRANSLATE,
+                GenerationLibraryEnumeration::TRANSLATE,
                 'translate',
                 ['text']
             );

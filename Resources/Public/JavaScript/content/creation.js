@@ -116,8 +116,8 @@ class Creation {
                     } catch (error) {
                         if (error.message === 'Invalid URL for --sref parameter') {
                             Notification.warning(
-                                TYPO3.lang['AiSuite.notification.invalidUrlTitle'],
-                                TYPO3.lang['AiSuite.notification.invalidUrlMessage'],
+                                TYPO3.lang['aiSuite.notification.invalidUrlTitle'],
+                                TYPO3.lang['aiSuite.notification.invalidUrlMessage'],
                                 8
                             );
                         }

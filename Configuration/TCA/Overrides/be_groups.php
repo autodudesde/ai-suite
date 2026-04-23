@@ -4,67 +4,67 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') or exit;
 
-$lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
+$lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:';
 
 $beGroupColumns = [
     'aiSuiteApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.aiSuiteApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.aiSuiteApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'openAiApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.openAiApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.openAiApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'anthropicApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.anthropicApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.anthropicApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'googleTranslateApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.googleTranslateApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.googleTranslateApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'deeplApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.deeplApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.deeplApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'deeplApiMode' => [
-        'label' => $lll.'aiSuite.beGroups.field.deeplApiMode',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.deeplApiMode',
         'config' => [
             'type' => 'check',
             'renderType' => 'checkboxToggle',
         ],
     ],
     'midjourneyApiKey' => [
-        'label' => $lll.'aiSuite.beGroups.field.midjourneyApiKey',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.midjourneyApiKey',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'midjourneyId' => [
-        'label' => $lll.'aiSuite.beGroups.field.midjourneyId',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.midjourneyId',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',
         ],
     ],
     'mediaStorageFolder' => [
-        'label' => $lll.'aiSuite.beGroups.field.mediaStorageFolder',
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.mediaStorageFolder',
         'config' => [
             'type' => 'input',
             'eval' => 'trim',

@@ -1,48 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 
-class GlobalInstructionService
+class GlobalInstructionService implements SingletonInterface
 {
-    protected GlobalInstructionsRepository $globalInstructionsRepository;
-    protected BackendUserService $backendUserService;
-    protected LoggerInterface $logger;
-
     public function __construct(
-        GlobalInstructionsRepository $globalInstructionsRepository,
-        BackendUserService $backendUserService,
-        LoggerInterface $logger
-    ) {
-        $this->globalInstructionsRepository = $globalInstructionsRepository;
-        $this->backendUserService = $backendUserService;
-        $this->logger = $logger;
-    }
+        protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly LoggerInterface $logger,
+    ) {}
+
     public function buildGlobalInstruction(string $context, string $scope, ?int $pageId = null, ?string $directoryPath = null): string
     {
-        if ($pageId === null && $directoryPath === null) {
+        if (null === $pageId && null === $directoryPath) {
             return '';
         }
-        if ($context === 'pages' && $pageId && $pageId <= 0) {
+        if ('pages' === $context && $pageId && $pageId <= 0) {
             return '';
         }
 
-        if ($context === 'pages' && $pageId !== null) {
+        if ('pages' === $context && null !== $pageId) {
             return $this->buildPageTreeInstructions($scope, $pageId, $context);
         }
 
-        if ($context === 'files' && $directoryPath !== null) {
+        if ('files' === $context && null !== $directoryPath) {
             return $this->buildFileTreeInstructions($scope, $directoryPath, $context);
         }
 
         return '';
     }
 
-    private function buildPageTreeInstructions(string $scope, int $pageId, $context): string
+    /**
+     * @param list<int|string> $selectedTree
+     */
+    public function checkOverridePredefinedPrompt(string $context, string $scope, array $selectedTree): bool
+    {
+        $globalInstruction = $this->globalInstructionsRepository->findExistingGlobalInstruction($context, $scope, $selectedTree);
+        if (!empty($globalInstruction)) {
+            return (bool) ($globalInstruction['override_predefined_prompt'] ?? false);
+        }
+
+        return false;
+    }
+
+    private function buildPageTreeInstructions(string $scope, int $pageId, string $context): string
     {
         try {
             $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageId, '');
@@ -50,6 +59,7 @@ class GlobalInstructionService
             $pageUids = array_reverse(array_column($rootline, 'uid'));
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
+
             return '';
         }
 
@@ -69,7 +79,7 @@ class GlobalInstructionService
         return trim($additionalInstructions);
     }
 
-    private function buildFileTreeInstructions(string $scope, string $directoryPath, $context): string
+    private function buildFileTreeInstructions(string $scope, string $directoryPath, string $context): string
     {
         $globalInstructions = $this->globalInstructionsRepository->findByScope($scope, $context);
         $applicableInstructions = [];
@@ -86,10 +96,11 @@ class GlobalInstructionService
                 $minDepth = $this->calculateMinDirectoryDepth($globalInstruction);
                 $applicableInstructions[] = [
                     'instruction' => $globalInstruction,
-                    'depth' => $minDepth
+                    'depth' => $minDepth,
                 ];
             } catch (\Exception $e) {
                 $this->logger->error($e->getMessage());
+
                 continue;
             }
         }
@@ -106,6 +117,10 @@ class GlobalInstructionService
         return trim($additionalInstructions);
     }
 
+    /**
+     * @param array<string, mixed> $globalInstruction
+     * @param list<int>            $pageUids
+     */
     private function doesPageInstructionApply(array $globalInstruction, int $targetPageUid, array $pageUids): bool
     {
         $selectedPages = GeneralUtility::trimExplode(',', $globalInstruction['selected_pages'] ?? '', true);
@@ -116,7 +131,7 @@ class GlobalInstructionService
         }
 
         foreach ($selectedPages as $selectedPageUid) {
-            $selectedPageUid = (int)$selectedPageUid;
+            $selectedPageUid = (int) $selectedPageUid;
 
             if ($selectedPageUid === $targetPageUid) {
                 return true;
@@ -126,7 +141,7 @@ class GlobalInstructionService
                 $selectedPageIndex = array_search($selectedPageUid, $pageUids);
                 $targetPageIndex = array_search($targetPageUid, $pageUids);
 
-                if ($selectedPageIndex !== false && $targetPageIndex !== false && $selectedPageIndex <= $targetPageIndex) {
+                if (false !== $selectedPageIndex && false !== $targetPageIndex && $selectedPageIndex <= $targetPageIndex) {
                     return true;
                 }
             }
@@ -135,15 +150,18 @@ class GlobalInstructionService
         return false;
     }
 
+    /**
+     * @param array<string, mixed> $globalInstruction
+     */
     private function doesFileInstructionApply(array $globalInstruction, string $directoryPath): bool
     {
         $selectedDirectories = GeneralUtility::trimExplode(',', $globalInstruction['selected_directories'] ?? '', true);
         $useForSubtree = (bool) ($globalInstruction['use_for_subtree'] ?? false);
 
-        $normalizedPath = rtrim($directoryPath, '/') . '/';
+        $normalizedPath = rtrim($directoryPath, '/').'/';
 
         foreach ($selectedDirectories as $selectedDir) {
-            $selectedPath = rtrim($selectedDir, '/') . '/';
+            $selectedPath = rtrim($selectedDir, '/').'/';
 
             if ($normalizedPath === $selectedPath) {
                 return true;
@@ -157,22 +175,28 @@ class GlobalInstructionService
         return false;
     }
 
+    /**
+     * @param array<string, mixed> $globalInstruction
+     */
     private function processInstructionsText(array $globalInstruction, string $additionalInstructions): string
     {
         $instructions = trim($globalInstruction['instructions'] ?? '');
-        if ($instructions !== '') {
+        if ('' !== $instructions) {
             $extendPrevious = (bool) ($globalInstruction['extend_previous_instructions'] ?? false);
 
             if ($extendPrevious) {
-                $additionalInstructions .= $instructions . "\n";
+                $additionalInstructions .= $instructions."\n";
             } else {
-                $additionalInstructions = $instructions . "\n";
+                $additionalInstructions = $instructions."\n";
             }
         }
 
         return $additionalInstructions;
     }
 
+    /**
+     * @param array<string, mixed> $globalInstruction
+     */
     private function calculateMinDirectoryDepth(array $globalInstruction): int
     {
         $selectedDirectories = GeneralUtility::trimExplode(',', $globalInstruction['selected_directories'] ?? '', true);
@@ -190,19 +214,10 @@ class GlobalInstructionService
             }
 
             $normalizedPath = trim($pathForDepth, '/');
-            $depth = $normalizedPath === '' ? 0 : substr_count($normalizedPath, '/') + 1;
+            $depth = '' === $normalizedPath ? 0 : substr_count($normalizedPath, '/') + 1;
             $minDepth = min($minDepth, $depth);
         }
 
-        return $minDepth === 99 ? 0 : $minDepth;
-    }
-
-    public function checkOverridePredefinedPrompt(string $context, string $scope, array $selectedTree): bool
-    {
-        $globalInstruction = $this->globalInstructionsRepository->findExistingGlobalInstruction($context, $scope, $selectedTree);
-        if (!empty($globalInstruction)) {
-            return $globalInstruction['override_predefined_prompt'] ?? false;
-        }
-        return false;
+        return 99 === $minDepth ? 0 : $minDepth;
     }
 }

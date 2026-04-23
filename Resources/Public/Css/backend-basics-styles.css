@@ -780,13 +780,19 @@ div[data-module-id="aiSuite"] .panel-actions {
 }
 
 div[data-module-id="aiSuite"] .panel .caret,
-div[data-module-id="aiSuite"] .panel .open-accordion-item {
+div[data-module-id="aiSuite"] .panel .open-accordion-item svg {
     transition: transform 0.3s ease;
 }
 
-div[data-module-id="aiSuite"] .panel-button[aria-expanded="false"] .caret,
-div[data-module-id="aiSuite"] .panel-button[aria-expanded="false"] .open-accordion-item svg {
+div[data-module-id="aiSuite"] .panel .caret[aria-expanded="true"],
+div[data-module-id="aiSuite"] .open-accordion-item[aria-expanded="true"] svg {
     transform: rotate(180deg);
+}
+
+div[data-module-id="aiSuite"] .panel .caret,
+div[data-module-id="aiSuite"] .delete-accordion-item,
+div[data-module-id="aiSuite"] .open-accordion-item {
+    cursor: pointer;
 }
 
 div[data-module-id="aiSuite"] .translation-tasks .hover-highlight:hover {

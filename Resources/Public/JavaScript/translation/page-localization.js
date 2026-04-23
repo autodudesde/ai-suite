@@ -3,7 +3,7 @@
  */
 import DocumentService from "@typo3/core/document-service.js";
 import Modal from '@typo3/backend/modal.js';
-import MultiStepWizard from '@typo3/backend/multi-step-wizard.js';
+import MultiStepWizard from '@autodudes/ai-suite/helper/multi-step-wizard-patch.js';
 import Severity from '@typo3/backend/severity.js';
 import AjaxRequest from '@typo3/core/ajax/ajax-request.js';
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
@@ -34,7 +34,7 @@ class PageLocalization {
                 if (!isNaN(pageId)) {
                     self.showWholePageTranslationWizard(pageId);
                 } else {
-                    Modal.show(TYPO3.lang['tx_aisuite.js.error.general'], TYPO3.lang['tx_aisuite.js.error.invalidPageId'], Severity.error);
+                    Modal.show(TYPO3.lang['aiSuite.js.error.general'], TYPO3.lang['aiSuite.js.error.invalidPageId'], Severity.error);
                 }
             });
         }
@@ -63,10 +63,10 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-1',
-            TYPO3.lang['tx_aisuite.js.wizard.selectLanguages'] ?? 'Select Languages',
+            TYPO3.lang['aiSuite.js.wizard.selectLanguages'] ?? 'Select Languages',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.languageSelection'] ?? 'Language Selection',
+            TYPO3.lang['aiSuite.js.wizard.languageSelection'] ?? 'Language Selection',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();
@@ -82,7 +82,7 @@ class PageLocalization {
                     self.addLanguageSelectionEventListeners();
 
                 } else {
-                    slide.html('<div class="alert alert-danger">' + TYPO3.lang['tx_aisuite.js.error.loadWizardContent'] + '</div>');
+                    slide.html('<div class="alert alert-danger">' + TYPO3.lang['aiSuite.js.error.loadWizardContent'] + '</div>');
                 }
             }
         );
@@ -92,10 +92,10 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-2',
-            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'] ?? 'Translation Summary',
+            TYPO3.lang['aiSuite.js.wizard.translationSummary'] ?? 'Translation Summary',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.translationSummary'] ?? 'Translation Summary',
+            TYPO3.lang['aiSuite.js.wizard.translationSummary'] ?? 'Translation Summary',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();
@@ -106,7 +106,7 @@ class PageLocalization {
                         <div id="translation-summary-container">
                             <div class="alert alert-info">
                                 <div id="translation-summary-content">
-                                    ` + Generation.showSpinnerModal(TYPO3.lang['tx_aisuite.js.loading.translationSummary'], 350) + `
+                                    ` + Generation.showSpinnerModal(TYPO3.lang['aiSuite.js.loading.translationSummary'], 350) + `
                                 </div>
                             </div>
                         </div>
@@ -123,16 +123,16 @@ class PageLocalization {
         const self = this;
         MultiStepWizard.addSlide(
             'ai-suite-whole-page-translation-step-3',
-            TYPO3.lang['tx_aisuite.js.wizard.translationProgress'] ?? 'Translation Progress',
+            TYPO3.lang['aiSuite.js.wizard.translationProgress'] ?? 'Translation Progress',
             '',
             Severity.info,
-            TYPO3.lang['tx_aisuite.js.wizard.translationInProgress'] ?? 'Translation in Progress',
+            TYPO3.lang['aiSuite.js.wizard.translationInProgress'] ?? 'Translation in Progress',
             async function(slide) {
                 MultiStepWizard.blurCancelStep();
                 MultiStepWizard.lockNextStep();
                 MultiStepWizard.lockPrevStep();
 
-                slide.html(Generation.showSpinnerModal(TYPO3.lang['tx_aisuite.js.progress.translatingWholePage'] + ' ' + TYPO3.lang['tx_aisuite.js.progress.mayTakeMoments']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.js.progress.translatingWholePage'] + ' ' + TYPO3.lang['aiSuite.js.progress.mayTakeMoments']));
 
                 if (self.selectedSourceLanguageId && self.selectedTargetLanguageId && self.selectedTranslationServiceId) {
                     await self.startWholePageTranslation();
@@ -161,7 +161,7 @@ class PageLocalization {
                         MultiStepWizard.unlockNextStep();
                     } else {
                         MultiStepWizard.lockNextStep();
-                        Modal.show(TYPO3.lang['tx_aisuite.js.modal.warning'], TYPO3.lang['tx_aisuite.js.validation.sourceTargetSame'], Severity.warning);
+                        Modal.show(TYPO3.lang['aiSuite.js.modal.warning'], TYPO3.lang['aiSuite.js.validation.sourceTargetSame'], Severity.warning);
                     }
                 } else {
                     MultiStepWizard.lockNextStep();
@@ -181,28 +181,28 @@ class PageLocalization {
         const summaryContent = modal.find('#translation-summary-content');
 
         if (summaryContent.length) {
-            summaryContent.html(Generation.showSpinnerModal(TYPO3.lang['tx_aisuite.js.loading.translationSummary']));
+            summaryContent.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.js.loading.translationSummary']));
         }
         try {
             const response = await this.getContent();
             const result = await response.resolve();
 
-            let summaryHtml = '<h3>' + TYPO3.lang['tx_aisuite.js.summary.wholePageTranslation'] + '</h3>';
+            let summaryHtml = '<h3>' + TYPO3.lang['aiSuite.js.summary.wholePageTranslation'] + '</h3>';
             let totalElements = 0;
 
             summaryHtml += '<p>';
 
             if (this.currentPageMetadataFieldCount > 0) {
-                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.pageProperties'] + ' <strong>' + this.currentPageMetadataFieldCount + ' ' + TYPO3.lang['tx_aisuite.js.summary.fields'] + '</strong></h4>';
+                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['aiSuite.js.summary.pageProperties'] + ' <strong>' + this.currentPageMetadataFieldCount + ' ' + TYPO3.lang['aiSuite.js.summary.fields'] + '</strong></h4>';
             } else {
-                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.pageProperties'] + '</h4>';
+                summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['aiSuite.js.summary.pageProperties'] + '</h4>';
             }
 
             if (result && result.layout) {
                 totalElements = result.layout.elementCount ?? 0;
 
                 if (totalElements > 0) {
-                    summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['tx_aisuite.js.summary.contentElements'] + ' <strong>' + totalElements + ' ' + TYPO3.lang['tx_aisuite.js.summary.elements'] + '</strong></h4>';
+                    summaryHtml += '<h4 class="mt-2">' + TYPO3.lang['aiSuite.js.summary.contentElements'] + ' <strong>' + totalElements + ' ' + TYPO3.lang['aiSuite.js.summary.elements'] + '</strong></h4>';
                 }
             }
 
@@ -215,7 +215,7 @@ class PageLocalization {
         } catch (error) {
             console.error('AiSuite: Failed to load translation summary', error);
             if (summaryContent.length) {
-                summaryContent.html('<span class="text-warning">' + TYPO3.lang['tx_aisuite.js.warning.couldNotLoadSummary'] + '</span>');
+                summaryContent.html('<span class="text-warning">' + TYPO3.lang['aiSuite.js.warning.couldNotLoadSummary'] + '</span>');
             }
         }
     }
@@ -247,7 +247,7 @@ class PageLocalization {
 
             await this.localizeRecords(uidList);
         } catch (error) {
-            Modal.show(TYPO3.lang['tx_aisuite.js.error.general'], TYPO3.lang['tx_aisuite.js.error.failedToStartTranslation'], Severity.error);
+            Modal.show(TYPO3.lang['aiSuite.js.error.general'], TYPO3.lang['aiSuite.js.error.failedToStartTranslation'], Severity.error);
         }
     }
 
@@ -274,20 +274,20 @@ class PageLocalization {
                 event.preventDefault();
                 const uuid = deleteButton.getAttribute('data-uuid');
 
-                Modal.confirm('Warning', TYPO3.lang['AiSuite.backgroundTasks.deleteModalTitle'], Severity.warning, [
+                Modal.confirm('Warning', TYPO3.lang['aiSuite.module.modal.continue'], Severity.warning, [
                     {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteModalText'],
+                        text: TYPO3.lang['aiSuite.module.backgroundTask.deleteModalText'],
                         active: true,
                         trigger: async () => {
                             const res = await Ajax.sendAjaxRequest('aisuite_background_task_delete', {uuids: [uuid], column: 'translation'});
                             if (General.isUsable(res)) {
-                                Notification.success(TYPO3.lang['AiSuite.notification.deleteSuccess']);
+                                Notification.success(TYPO3.lang['aiSuite.notification.deleteSuccess']);
                                 window.location.reload();
                             }
                             Modal.dismiss();
                         }
                     }, {
-                        text: TYPO3.lang['AiSuite.backgroundTasks.deleteAbort'],
+                        text: TYPO3.lang['aiSuite.module.modal.abort'],
                         trigger: () => {
                             Modal.dismiss();
                         }
@@ -305,35 +305,35 @@ class PageLocalization {
                 const uuid = retryButton.getAttribute('data-uuid');
 
                 Modal.confirm(
-                    TYPO3.lang['AiSuite.errorDetails.title'] || 'Retry Translation',
-                    TYPO3.lang['AiSuite.errorDetails.retryQuestion'] || 'Do you want to retry the translation task?',
+                    TYPO3.lang['aiSuite.errorDetails.title'] || 'Retry Translation',
+                    TYPO3.lang['aiSuite.errorDetails.retryQuestion'] || 'Do you want to retry the translation task?',
                     Severity.warning,
                     [
                         {
-                            text: TYPO3.lang['AiSuite.errorDetails.retry'] || 'Retry',
+                            text: TYPO3.lang['aiSuite.errorDetails.retry'] || 'Retry',
                             active: true,
                             btnClass: 'btn-warning',
                             trigger: async () => {
                                 Modal.dismiss();
                                 Notification.info(
-                                    TYPO3.lang['AiSuite.errorDetails.retryingTask'] || 'Retrying task...',
-                                    TYPO3.lang['AiSuite.errorDetails.pleaseWait'] || 'Please wait'
+                                    TYPO3.lang['aiSuite.errorDetails.retryingTask'] || 'Retrying task...',
+                                    TYPO3.lang['aiSuite.errorDetails.pleaseWait'] || 'Please wait'
                                 );
 
                                 const res = await Ajax.sendAjaxRequest('aisuite_background_task_retry', {uuid: uuid, scope: 'translate'});
                                 if (General.isUsable(res)) {
-                                    Notification.success(TYPO3.lang['AiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
+                                    Notification.success(TYPO3.lang['aiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
                                     window.location.reload();
                                 } else {
                                     Notification.error(
-                                        TYPO3.lang['AiSuite.errorDetails.retryFailed'] || 'Retry failed',
+                                        TYPO3.lang['aiSuite.errorDetails.retryFailed'] || 'Retry failed',
                                         res.error || 'An unknown error occurred'
                                     );
                                 }
                             }
                         },
                         {
-                            text: TYPO3.lang['AiSuite.errorDetails.close'] || 'Cancel',
+                            text: TYPO3.lang['aiSuite.errorDetails.close'] || 'Cancel',
                             trigger: () => {
                                 Modal.dismiss();
                             }

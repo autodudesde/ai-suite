@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Domain\Model\Dto;
 
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\Connection;
 
 class BackgroundTask
@@ -21,11 +24,14 @@ class BackgroundTask
         protected string $slug = '',
         protected int $crdate = 0 // time() is not allowed here
     ) {
-        if ($this->crdate === 0) {
+        if (0 === $this->crdate) {
             $this->crdate = time();
         }
     }
 
+    /**
+     * @return list<string>
+     */
     public static function getDbColumnsForBulkInsert(): array
     {
         return [
@@ -45,6 +51,9 @@ class BackgroundTask
         ];
     }
 
+    /**
+     * @return list<ParameterType>
+     */
     public static function getTypesForBulkInsert(): array
     {
         return [
@@ -64,6 +73,9 @@ class BackgroundTask
         ];
     }
 
+    /**
+     * @return list<int|string>
+     */
     public function getBulkInsertPayload(): array
     {
         return [
@@ -79,7 +91,7 @@ class BackgroundTask
             $this->idColumn ?? '',
             $this->tableUid,
             $this->sysLanguageUid,
-            $this->mode
+            $this->mode,
         ];
     }
 }

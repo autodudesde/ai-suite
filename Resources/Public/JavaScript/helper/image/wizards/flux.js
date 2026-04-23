@@ -1,5 +1,5 @@
 import Severity from "@typo3/backend/severity.js";
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import SaveHandling from "@autodudes/ai-suite/helper/image/save-handling.js";

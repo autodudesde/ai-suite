@@ -12,7 +12,7 @@
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel',
+        'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel',
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -91,7 +91,7 @@ return [
         ],
         'name' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.name',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.name',
             'config' => [
                 'type' => 'input',
                 'size' => 50,
@@ -101,7 +101,7 @@ return [
         ],
         'prompt' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.promptTemplate',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.promptTemplate',
             'config' => [
                 'type' => 'text',
                 'eval' => 'trim',
@@ -110,18 +110,18 @@ return [
         ],
         'scope' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scope',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope',
             'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeGeneral', 'value' => 'general'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopePageTree', 'value' => 'pageTree'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeImageWizard', 'value' => 'imageWizard'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeContentElement', 'value' => 'contentElement'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord', 'value' => 'newsRecord'],
-                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.scopeEditContent', 'value' => 'editContent'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeGeneral', 'value' => 'general'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopePageTree', 'value' => 'pageTree'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeImageWizard', 'value' => 'imageWizard'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeContentElement', 'value' => 'contentElement'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord', 'value' => 'newsRecord'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeEditContent', 'value' => 'editContent'],
                 ],
                 'size' => 1,
                 'eval' => 'trim',
@@ -129,7 +129,7 @@ return [
         ],
         'type' => [
             'exclude' => true,
-            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope',
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope',
             'displayCond' => 'FIELD:scope:=:contentElement',
             'config' => [
                 'type' => 'select',

@@ -1,6 +1,8 @@
 <?php
 
-/***
+declare(strict_types=1);
+
+/*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
  *
@@ -8,7 +10,7 @@
  * LICENSE.txt file that was distributed with this source code.
  *
  *
- ***/
+ */
 
 namespace AutoDudes\AiSuite\Events;
 
@@ -20,8 +22,7 @@ final class AfterAiSuiteModuleInitalizeEvent
     public function __construct(
         private readonly ServerRequestInterface $request,
         private readonly PageRenderer $pageRenderer
-    ) {
-    }
+    ) {}
 
     public function getRequest(): ServerRequestInterface
     {

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
-use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
@@ -13,16 +15,10 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 )]
 class ModifyNewContentElementWizardItemsEventListener
 {
-    private BackendUserService $backendUserService;
-    private TranslationService $translationService;
-
     public function __construct(
-        BackendUserService $backendUserService,
-        TranslationService $translationService
-    ) {
-        $this->backendUserService = $backendUserService;
-        $this->translationService = $translationService;
-    }
+        private readonly BackendUserService $backendUserService,
+        private readonly LocalizationService $localizationService,
+    ) {}
 
     public function __invoke(ModifyNewContentElementWizardItemsEvent $event): void
     {
@@ -34,14 +30,15 @@ class ModifyNewContentElementWizardItemsEventListener
         foreach ($event->getWizardItems() as $key => $wizardItem) {
             if (array_key_exists('header', $wizardItem)) {
                 $currentTabKey = $key;
+
                 continue;
             }
             if (!array_key_exists('CType', $wizardItem['defaultValues']) || empty($wizardItem['defaultValues']['CType'])) {
                 continue;
             }
             $cType = $wizardItem['defaultValues']['CType'];
-            if (in_array($currentTabKey, AfterTcaCompilationEventListener::EXCLUDE_TAB_LIST) ||
-                in_array($cType, AfterTcaCompilationEventListener::EXCLUDE_CTYPE_LIST)) {
+            if (in_array($currentTabKey, AfterTcaCompilationEventListener::EXCLUDE_TAB_LIST)
+                || in_array($cType, AfterTcaCompilationEventListener::EXCLUDE_CTYPE_LIST)) {
                 continue;
             }
             if (in_array($cType, $addedAiSuiteWizardItems)) {
@@ -50,11 +47,11 @@ class ModifyNewContentElementWizardItemsEventListener
             if (null === ($wizardItem['title'] ?? null)) {
                 continue;
             }
-            if (count($addedAiSuiteWizardItems) === 0) {
+            if (0 === count($addedAiSuiteWizardItems)) {
                 $event->setWizardItem(
                     'aisuite',
                     [
-                        'header' => $this->translationService->translate('mlang_tabs_tab') . ' Content',
+                        'header' => $this->localizationService->translate('aiSuite.mlangTabsTab').' Content',
                     ]
                 );
             }
@@ -62,8 +59,8 @@ class ModifyNewContentElementWizardItemsEventListener
                 'aisuite_'.$key,
                 [
                     'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
-                    'title' => ($wizardItem['title']  ?? '') . ' (' . $this->translationService->translate('mlang_tabs_tab') . ')',
-                    'description' => ($wizardItem['description'] ?? '') . ' (with AI generated content)',
+                    'title' => ($wizardItem['title'] ?? '').' ('.$this->localizationService->translate('aiSuite.mlangTabsTab').')',
+                    'description' => ($wizardItem['description'] ?? '').' (with AI generated content)',
                     'defaultValues' => $wizardItem['defaultValues'] ?? [],
                 ]
             );

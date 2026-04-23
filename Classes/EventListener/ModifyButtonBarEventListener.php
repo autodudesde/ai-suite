@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\IconService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
@@ -14,8 +18,6 @@ use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -27,43 +29,22 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 )]
 class ModifyButtonBarEventListener
 {
-    protected PageRenderer $pageRenderer;
-    protected IconFactory $iconFactory;
-    protected UriBuilder $uriBuilder;
-    protected BackendUserService $backendUserService;
-    protected SiteService $siteService;
-    protected UuidService $uuidService;
-    protected TranslationService $translationService;
-    protected GlossarRepository $glossarRepository;
-
-    protected ExtensionConfiguration $extensionConfiguration;
-    protected FlashMessageService $flashMessageService;
-
+    /** @var array<string, mixed> */
     protected array $extConf = [];
 
     public function __construct(
-        PageRenderer $pageRenderer,
-        IconFactory $iconFactory,
-        UriBuilder $uriBuilder,
-        BackendUserService $backendUserService,
-        SiteService $siteService,
-        UuidService $uuidService,
-        TranslationService $translationService,
-        GlossarRepository $glossarRepository,
-        ExtensionConfiguration $extensionConfiguration,
-        FlashMessageService $flashMessageService
+        protected readonly PageRenderer $pageRenderer,
+        protected readonly IconService $iconService,
+        protected readonly UriBuilder $uriBuilder,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly SiteService $siteService,
+        protected readonly UuidService $uuidService,
+        protected readonly LocalizationService $localizationService,
+        protected readonly TranslationService $translationService,
+        protected readonly GlossarRepository $glossarRepository,
+        protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly FlashMessageService $flashMessageService,
     ) {
-        $this->pageRenderer = $pageRenderer;
-        $this->iconFactory = $iconFactory;
-        $this->uriBuilder = $uriBuilder;
-        $this->backendUserService = $backendUserService;
-        $this->siteService = $siteService;
-        $this->uuidService = $uuidService;
-        $this->translationService = $translationService;
-        $this->glossarRepository = $glossarRepository;
-        $this->extensionConfiguration = $extensionConfiguration;
-        $this->flashMessageService = $flashMessageService;
-
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
 
@@ -78,10 +59,11 @@ class ModifyButtonBarEventListener
         if ($request->getUri()->getPath() === $entryPoint.'/module/file/list'
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
-            $buttonText = htmlspecialchars($this->translationService->translate('aiSuite.generateImageWithAiButton'));
+            $buttonText = htmlspecialchars($this->localizationService->translate('aiSuite.generateImageWithAiButton'));
             $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image-filelist.js');
-            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', IconSize::SMALL);
+            $buttonIcon = $this->iconService->getIcon('apps-clipboard-images');
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setClasses('btn btn-default t3js-ai-suite-image-generation-filelist-add-btn')
@@ -98,12 +80,13 @@ class ModifyButtonBarEventListener
 
         if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_deepl_sync')
-            && $this->glossarRepository->findGlossarEntriesByPid($request->getQueryParams()['id'] ?? 0) > 0
+            && $this->glossarRepository->findGlossarEntriesByPid((int) ($request->getQueryParams()['id'] ?? 0)) > 0
         ) {
-            $buttonText = htmlspecialchars($this->translationService->translate('AiSuite.synchronizeDeeplGlossary'));
+            $buttonText = htmlspecialchars($this->localizationService->translate('aiSuite.synchronizeDeeplGlossary'));
             $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+            $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/glossar/sync.js');
-            $buttonIcon = $this->iconFactory->getIcon('tx-aisuite-model-Deepl', IconSize::SMALL);
+            $buttonIcon = $this->iconService->getIcon('tx-aisuite-model-Deepl');
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][6][] = $event->getButtonBar()
                 ->makeLinkButton()
                 ->setClasses('btn btn-default t3js-ai-suite-sync-glossary-btn')
@@ -121,8 +104,8 @@ class ModifyButtonBarEventListener
             && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams())
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_news_generation')
         ) {
-            $buttonText = htmlspecialchars($this->translationService->translate('aiSuite.generateNewsWithAiButton'));
-            $buttonIcon = $this->iconFactory->getIcon('content-news', IconSize::SMALL);
+            $buttonText = htmlspecialchars($this->localizationService->translate('aiSuite.generateNewsWithAiButton'));
+            $buttonIcon = $this->iconService->getIcon('content-news');
             $uri = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                 'edit' => [
                     'tx_news_domain_model_news' => [
@@ -148,6 +131,7 @@ class ModifyButtonBarEventListener
         if (array_key_exists('disableTranslationFunctionality', $this->extConf) && false === (bool) $this->extConf['disableTranslationFunctionality']) {
             if ($request->getUri()->getPath() === $entryPoint.'/module/web/layout') {
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+                $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/page-localization.js');
             }
@@ -159,6 +143,7 @@ class ModifyButtonBarEventListener
             ) {
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
+                $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
             }
         }

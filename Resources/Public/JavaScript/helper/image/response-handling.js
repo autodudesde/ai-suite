@@ -1,5 +1,5 @@
 import Notification from "@typo3/backend/notification.js";
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
@@ -8,19 +8,19 @@ class ResponseHandling {
     handleResponse(res, errorMessage) {
         if(res !== null) {
             if(res.error) {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
+                Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], res.error);
             } else {
                 MultiStepWizard.set('generatedData', res.output);
             }
         } else {
-            Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);
+            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], errorMessage);
         }
     }
 
     handleResponseContentElement(res, data, errorMessage, preselectionContent = '') {
         if(res !== null) {
             if(res.error) {
-                Notification.error(TYPO3.lang['AiSuite.notification.generation.requestError'], res.error);
+                Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], res.error);
                 if(data.table === 'tt_content') {
                     document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
                 } else {
@@ -43,7 +43,7 @@ class ResponseHandling {
                 }
             }
         } else {
-            Notification.error(TYPO3.lang['AiSuite.notification.generation.error'], errorMessage);
+            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], errorMessage);
             if(data.table === 'tt_content') {
                 document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             } else {

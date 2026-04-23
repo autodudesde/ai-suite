@@ -1,5 +1,5 @@
 import Notification from '@typo3/backend/notification.js';
-import MultiStepWizard from '@typo3/backend/multi-step-wizard.js';
+import MultiStepWizard from '@autodudes/ai-suite/helper/multi-step-wizard-patch.js';
 import SaveHandling from '@autodudes/ai-suite/helper/image/save-handling.js';
 
 class Metadata {
@@ -22,7 +22,7 @@ class Metadata {
         aiSuiteSaveMetadataBtn.on('click', function() {
             let selectedSuggestion = modal.find('.metadata-suggestions input.metadata-selection:checked');
             if(selectedSuggestion.length === 0) {
-                Notification.warning(TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelection'], TYPO3.lang['AiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
+                Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
             } else {
                 let data = MultiStepWizard.setup.settings['postData'];
                 self.insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion);

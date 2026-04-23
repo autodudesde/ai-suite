@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -17,6 +19,7 @@ final class InArrayViewHelper extends AbstractViewHelper
         if (array_key_exists($this->arguments['needle'], $this->arguments['haystack'])) {
             return $this->arguments['haystack'][$this->arguments['needle']];
         }
+
         return '';
     }
 }

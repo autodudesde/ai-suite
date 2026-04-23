@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Service;
 
 use TYPO3\CMS\Core\SingletonInterface;

@@ -12,15 +12,15 @@ class Overview {
                 ev.preventDefault();
                 const deleteUrl = ev.target.closest('a').href;
                 const instructionName = ev.target.closest('a').dataset.instructionName;
-                const modalText = (TYPO3.lang['AiSuite.globalInstructions.deleteModalText'] || 'Are you sure you want to delete the global instruction "{0}"?').replace('{0}', instructionName);
+                const modalText = (TYPO3.lang['aiSuite.globalInstructions.deleteModalText'] || 'Are you sure you want to delete the global instruction "{0}"?').replace('{0}', instructionName);
 
                 Modal.confirm(
-                    TYPO3.lang['AiSuite.globalInstructions.deleteModalTitle'] || 'Warning',
+                    TYPO3.lang['aiSuite.js.modal.warning'] || 'Warning',
                     modalText,
                     Severity.warning,
                     [
                         {
-                            text: TYPO3.lang['AiSuite.globalInstructions.deleteConfirm'] || 'Delete',
+                            text: TYPO3.lang['aiSuite.promptTemplate.deleteConfirm'] || 'Delete',
                             active: true,
                             btnClass: 'btn-danger',
                             trigger: function() {
@@ -29,7 +29,7 @@ class Overview {
                             }
                         },
                         {
-                            text: TYPO3.lang['AiSuite.globalInstructions.deleteCancel'] || 'Cancel',
+                            text: TYPO3.lang['aiSuite.promptTemplate.deleteCancel'] || 'Cancel',
                             trigger: function() {
                                 Modal.dismiss();
                             }

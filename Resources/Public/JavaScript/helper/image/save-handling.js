@@ -1,4 +1,4 @@
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import Notification from "@typo3/backend/notification.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
@@ -49,10 +49,7 @@ class SaveHandling {
                 if(res !== null) {
                     let dataKey = Object.keys(res.inlineData.map)[0];
                     self.addImageToFileControlsPanel(modal, data.fileContextConfig, res, dataKey);
-                    document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield').forEach(function(placeholderField) {
-                        placeholderField.style.display = 'none';
-                    });
-                    if(imageTitle !== undefined) {
+                    if(imageTitle !== '') {
                         self.setSysFileReferenceField('title', res.compilerInput.uid, dataKey, imageTitle);
                         self.setSysFileReferenceField('alternative', res.compilerInput.uid, dataKey, imageTitle);
                     }
@@ -132,8 +129,8 @@ class SaveHandling {
             selectedImageTitleInputFreeText = modal.find('.modal-body').find('input.image-title-free-text-input').val();
         }
         let imageTitle = '';
-        if(selectedImageTitleRadioBtn !== null) {
-            imageTitle = selectedImageTitleRadioBtn.data('image-title');
+        if(selectedImageTitleRadioBtn.length > 0) {
+            imageTitle = selectedImageTitleRadioBtn.data('image-title') ?? '';
         }
         if(selectedImageTitleInputFreeText !== undefined && selectedImageTitleInputFreeText !== '') {
             imageTitle = selectedImageTitleInputFreeText;
@@ -148,17 +145,10 @@ class SaveHandling {
         } else {
             inputField.value += ',' + res.compilerInput.uid;
         }
-        let addedImages = inputField.value.split(',');
-        let parsedSettings = JSON.parse(fileContextConfig);
-        if(addedImages.length >= parseInt(parsedSettings.maxitems)) {
-            document.querySelectorAll('form[name="editform"] .form-control-wrap.t3js-inline-controls button').forEach(function(button) {
-                button.style.display = 'none';
-            });
-        }
     }
 
     addLinkTooltipFunctionality(dataKey, res) {
-        document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-form-field-link input[type="text"]').forEach(function(inputLinkField) {
+        document.querySelectorAll('form[name="editform"] [data-form-field="'+dataKey+'"] .t3js-form-field-link input[type="text"]').forEach(function(inputLinkField) {
             inputLinkField.addEventListener('change', function(event) {
                 document.querySelector('input[name="'+inputLinkField.getAttribute('data-formengine-input-name')+'"]').value = event.target.value;
                 let inputLinkTooltip = this.closest('.t3js-form-field-link').querySelector('.t3js-form-field-link-explanation');
@@ -174,16 +164,26 @@ class SaveHandling {
         });
     }
     setSysFileReferenceField(fieldName, resUid, dataKey, imageTitle) {
-        let fieldHidden = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[name="data[sys_file_reference][' + resUid +']['+fieldName+']"]');
-        let field = document.querySelector('form[name="editform"] div[data-form-field="'+dataKey+'"] input[data-formengine-input-name="data[sys_file_reference][' + resUid +']['+fieldName+']"]');
-        if(fieldHidden !== null && field !== null) {
-            fieldHidden.value = imageTitle;
-            field.value = imageTitle;
-            document.getElementById('control[active][sys_file_reference][' + resUid +']['+fieldName+']').click()
+        let container = document.querySelector('form[name="editform"] [data-form-field="'+dataKey+'"]');
+        if(container === null) {
+            return;
         }
+        let fieldHidden = container.querySelector('input[name="data[sys_file_reference][' + resUid +']['+fieldName+']"]');
+        let field = container.querySelector('input[data-formengine-input-name="data[sys_file_reference][' + resUid +']['+fieldName+']"]');
+        if(fieldHidden === null || field === null) {
+            return;
+        }
+        let nullControl = document.getElementById('control[active][sys_file_reference][' + resUid +']['+fieldName+']');
+        if(nullControl !== null && !nullControl.checked) {
+            nullControl.checked = true;
+            nullControl.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+        fieldHidden.value = imageTitle;
+        field.value = imageTitle;
+        field.dispatchEvent(new Event('change', {bubbles: true}));
     }
     addInputFieldKeyupListener(dataKey) {
-        document.querySelectorAll('form[name="editform"] div[data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield input[type="text"]').forEach(function(inputField) {
+        document.querySelectorAll('form[name="editform"] [data-form-field="'+dataKey+'"] .t3js-formengine-placeholder-formfield input[type="text"]').forEach(function(inputField) {
             inputField.addEventListener('keyup', function(event) {
                 document.querySelector('input[name="'+inputField.getAttribute('data-formengine-input-name')+'"]').value = event.target.value;
             });

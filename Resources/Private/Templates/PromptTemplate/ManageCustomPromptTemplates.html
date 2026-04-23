@@ -8,14 +8,14 @@
     <f:asset.css identifier="manage-custom-prompt-templates-search-form" href="EXT:ai_suite/Resources/Public/Css/PromptManager/prompt-manager-styles.css" />
 
     <h1 class="mb-2">
-        <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.header" extensionName="ai_suite"/>
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.header"/>
     </h1>
     <br />
     <div class="recordlist">
         <div class="recordlist-heading multi-record-selection-panel">
             <div class="recordlist-heading-row">
                 <div class="recordlist-heading-title">
-                    <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel" extensionName="ai_suite"/> (<f:count subject="{customPromptTemplates}" />)
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel"/> (<f:count subject="{customPromptTemplates}" />)
                 </div>
                 <be:link.newRecord
                     table="tx_aisuite_domain_model_custom_prompt_template"
@@ -24,16 +24,16 @@
                     pid="{pid}"
                 >
                     <core:icon identifier="actions-page-new" size="small"/>
-                    <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate" extensionName="ai_suite"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.createNewPromptTemplate"/>
                 </be:link.newRecord>
                 <form action="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}" name="input" enctype="multipart/form-data" method="POST" class="manage-custom-prompt-templates-search-form">
-                    <input type="text" id="search" name="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder', extensionName: 'ai_suite')}"/>
-                    <input type="submit" value="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit', extensionName: 'ai_suite')}" class="btn btn-primary"/>
+                    <input type="text" id="search" name="search" value="{search}" class="form-control" placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.misc.searchableDropdown.search')}"/>
+                    <input type="submit" value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchSubmit')}" class="btn btn-primary"/>
                     <a href="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}"
                        class="btn btn-default"
-                       title="{f:translate(key: 'AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset', extensionName: 'ai_suite')}"
+                       title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchReset')}"
                     >
-                        <f:translate key="AiSuite.module.promptTemplateManager.managePromptTemplates.searchReset" extensionName="ai_suite"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.promptTemplateManager.managePromptTemplates.searchReset"/>
                     </a>
                 </form>
             </div>
@@ -47,19 +47,19 @@
                             #
                         </th>
                         <th scope="col">
-                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.name" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.name"/>
                         </th>
                         <th scope="col">
-                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.scope" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope"/>
                         </th>
                         <th scope="col">
-                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.cTypeScope" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope"/>
                         </th>
                         <th scope="col">
-                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.language" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.language"/>
                         </th>
                         <th scope="col">
-                            <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.actions" extensionName="ai_suite"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions"/>
                         </th>
                     </tr>
                     </thead>
@@ -67,19 +67,19 @@
                     <f:if condition="{customPromptTemplates -> f:count()} == 0">
                         <tr>
                             <td colspan="6">
-                                <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.noRecordsFound" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.noRecordsFound"/>
                             </td>
                         </tr>
                     </f:if>
                     <f:for each="{customPromptTemplates}" as="template">
                         <tr>
                             <td width="20px">
-                                <core:icon identifier="tx-aisuite-extension" size="small" />
+                                <core:icon identifier="tx-aisuite-extension-v14" size="small" />
                             </td>
                             <td>
                                 <be:link.editRecord
                                     table="tx_aisuite_domain_model_custom_prompt_template"
-                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel', extensionName: 'ai_suite')}"
+                                    title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
                                     uid="{template.uid}"
                                     returnUrl="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}"
                                 >
@@ -87,7 +87,7 @@
                                 </be:link.editRecord>
                             </td>
                             <td>
-                                <f:translate key="tx_aisuite.module.dashboard.card.managePromptTemplates.scope{template.scope -> f:format.case(mode: 'capital')}" extensionName="ai_suite"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope{template.scope -> f:format.case(mode: 'capital')}"/>
                             </td>
                             <td>
                                 {template.type}
@@ -105,7 +105,7 @@
                             <td>
                                 <be:link.editRecord
                                     table="tx_aisuite_domain_model_custom_prompt_template"
-                                    title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.editLabel', extensionName: 'ai_suite')}"
+                                    title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.editLabel')}"
                                     uid="{template.uid}"
                                     returnUrl="{f:be.uri(route: 'ai_suite_prompt_manage_customprompttemplates', parameters: '{id: pid}')}"
                                     class="btn btn-default"
@@ -115,7 +115,7 @@
                                 <f:if condition="{template.hidden}">
                                     <f:then>
                                         <a href="{f:be.uri(route: 'ai_suite_prompt_activate_customprompttemplates', parameters: '{recordId: template.uid, id: pid}')}"
-                                           title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.activateLabel', extensionName: 'ai_suite')}"
+                                           title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.activateLabel')}"
                                            class="btn btn-default"
                                         >
                                             <core:icon identifier="actions-toggle-off" size="small"/>
@@ -123,7 +123,7 @@
                                     </f:then>
                                     <f:else>
                                         <a href="{f:be.uri(route: 'ai_suite_prompt_deactivate_customprompttemplates', parameters: '{recordId: template.uid, id: pid}')}"
-                                           title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel', extensionName: 'ai_suite')}"
+                                           title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.deactivateLabel')}"
                                            class="btn btn-default"
                                         >
                                             <core:icon identifier="actions-toggle-on" size="small"/>
@@ -131,7 +131,7 @@
                                     </f:else>
                                 </f:if>
                                 <a href="{f:be.uri(route: 'ai_suite_prompt_delete_customprompttemplates', parameters: '{recordId: template.uid, id: pid}')}"
-                                   title="{f:translate(key: 'tx_aisuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel', extensionName: 'ai_suite')}"
+                                   title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.actions.deleteLabel')}"
                                    class="btn btn-default delete-prompt-template"
                                    data-template-name="{template.name}"
                                 >

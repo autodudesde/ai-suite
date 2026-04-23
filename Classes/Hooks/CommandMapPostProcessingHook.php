@@ -13,9 +13,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\CommandMapPostProcessingHook
 {
     protected ContainerService $containerService;
+
     public function __construct(ContainerFactory $containerFactory, ?ContainerService $containerService = null)
     {
-        if ($containerService === null) {
+        if (null === $containerService) {
             parent::__construct($containerFactory);
             $this->containerService = GeneralUtility::makeInstance(ContainerService::class);
         } else {
@@ -28,7 +29,7 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
         try {
             $container = $this->containerFactory->buildContainer($uid);
             $last = $dataHandler->copyMappingArray['tt_content'][$uid] ?? null;
-            if ($command === 'copyToLanguage') {
+            if ('copyToLanguage' === $command) {
                 $containerId = $last;
                 $pos = $this->containerService->getAfterContainerElementTarget($container);
                 // move next record after last child
@@ -37,7 +38,7 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
                         'target' => $pos,
                         'action' => 'paste',
                         'update' => [],
-                    ]
+                    ],
                 ]]];
                 $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
                 $localDataHandler->enableLogging = $dataHandler->enableLogging;
@@ -63,7 +64,7 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
                 }
 
                 $newId = $localDataHandler->copyMappingArray['tt_content'][$record['uid']] ?? null;
-                if ($newId === null) {
+                if (null === $newId) {
                     continue;
                 }
                 $cmd = ['tt_content' => [$newId => [
@@ -72,8 +73,8 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
                         'action' => 'paste',
                         'update' => [
                             'tx_container_parent' => $containerId,
-                        ]
-                    ]
+                        ],
+                    ],
                 ]]];
                 $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
                 $localDataHandler->enableLogging = $dataHandler->enableLogging;
@@ -87,7 +88,7 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
     }
 
     /**
-     * in b13/container, version 3.1.10: function structure changed
+     * in b13/container, version 3.1.10: function structure changed.
      */
     protected function localizeChildren(int $uid, int $language, string $command, DataHandler $dataHandler): void
     {

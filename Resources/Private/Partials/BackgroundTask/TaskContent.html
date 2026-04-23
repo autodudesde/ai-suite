@@ -6,16 +6,16 @@
 
 <f:if condition="{type} == 'Page'">
     <f:then>
-        <div class="page-meta-content-info badge badge-info position-absolute d-flex align-items-center"
-             style="right: 15px;"
-             data-table="pages"
-             data-uid="{task.table_uid}">
-            <core:icon identifier="actions-document-info" size="small" /> Info
+        <div class="d-flex align-items-center justify-content-between">
+            <h3 class="my-2">
+                <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.pages.{column}" />"</strong> ({column}):
+            </h3>
+            <div class="page-meta-content-info badge badge-info d-flex align-items-center"
+                 data-table="pages"
+                 data-uid="{task.table_uid}">
+                <core:icon identifier="actions-document-info" size="small" /> Info
+            </div>
         </div>
-
-        <h3 class="my-2">
-            <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" />"</strong> ({column}):
-        </h3>
 
         <div class="form-group">
             <input
@@ -43,7 +43,7 @@
                 </div>
 
                 <h3 class="my-2">
-                    <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />"</strong> ({column}):
+                    <strong>"<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.sys_file_reference.{column}" />"</strong> ({column}):
                 </h3>
 
                 <div class="form-group">
@@ -78,7 +78,7 @@
     <div class="row">
         <div class="col-12">
             <h3 class="fw-bold mb-2">
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.modal.metaDataGenerationSlideTwo" />
             </h3>
         </div>
     </div>
@@ -94,7 +94,7 @@
         <div class="col-6">
             <button class="btn btn-primary w-100 save-accordion-item" data-uuid="{task.uuid}" data-column="{column}">
                 <core:icon identifier="actions-check" size="small" />
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.metadataWizardSaveButton" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.metadataWizardSaveButton" />
             </button>
         </div>
     </div>

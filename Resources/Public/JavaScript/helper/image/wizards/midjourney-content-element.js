@@ -1,4 +1,4 @@
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import MidjourneySlides from "@autodudes/ai-suite/helper/image/wizards/slides/midjourney-slides.js";
 
 class MidjourneyContentElement {

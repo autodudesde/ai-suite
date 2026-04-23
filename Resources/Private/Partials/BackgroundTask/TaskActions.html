@@ -4,32 +4,35 @@
     data-namespace-typo3-fluid="true"
 >
 
-<div class="d-flex align-items-center pe-auto">
+<div class="d-flex align-items-center">
 
-    <span class="badge badge-default mx-2 pe-none">
+    <span class="badge badge-default mx-2">
         <f:if condition="{type} == 'Page'">
             <f:then>
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.pages.{column}" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.pages.{column}" />
             </f:then>
             <f:else>
-                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:massActionSection.sys_file_reference.{column}" />
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.sys_file_reference.{column}" />
             </f:else>
         </f:if>
     </span>
 
-    <span class="delete-accordion-item me-2 pe-auto" data-uuid="{task.uuid}" data-column="{column}">
+    <span class="delete-accordion-item me-2" data-uuid="{task.uuid}" data-column="{column}">
         <core:icon identifier="actions-delete" size="small" />
     </span>
 
     <f:if condition="{task.status} == 'task-error'">
-        <div class="error-info me-2 pe-auto">
+        <div class="error-info me-2">
             <core:icon identifier="actions-exclamation-triangle" size="small" />
             <span class="error-message d-none">{task.error}</span>
         </div>
     </f:if>
 
     <f:if condition="{task.status} == 'finished'">
-        <span class="open-accordion-item pe-auto">
+        <span class="open-accordion-item"
+              data-bs-toggle="collapse"
+              data-bs-target="#task{task.uuid}"
+              aria-controls="task{task.uuid}">
             <core:icon identifier="actions-chevron-down" size="medium" />
         </span>
     </f:if>

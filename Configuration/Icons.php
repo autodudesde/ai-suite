@@ -9,6 +9,10 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
     ],
+    'tx-aisuite-extension-v14' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension-v14.svg',
+    ],
     'tx-aisuite-permissions' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
@@ -45,9 +49,9 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/MittwaldMinistral14B.svg',
     ],
-    'tx-aisuite-model-DALL-E' => [
+    'tx-aisuite-model-GPTImage' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/DALL-E.svg',
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Models/GPTImage.svg',
     ],
     'tx-aisuite-model-Midjourney' => [
         'provider' => SvgIconProvider::class,

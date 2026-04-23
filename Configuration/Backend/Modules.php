@@ -1,5 +1,8 @@
 <?php
 
+use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\FilelistController;
+
 return [
     'web_aisuite' => [
         'parent' => 'web',
@@ -7,11 +10,11 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'path' => '/module/page/aisuite',
-        'iconIdentifier' => 'tx-aisuite-extension',
+        'iconIdentifier' => 'tx-aisuite-extension-v14',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
         'routes' => [
             '_default' => [
-                'target' => \AutoDudes\AiSuite\Controller\AiSuiteController::class . '::handleRequest',
+                'target' => AiSuiteController::class.'::handleRequest',
             ],
         ],
     ],
@@ -21,11 +24,11 @@ return [
         'access' => 'user',
         'workspaces' => 'live',
         'path' => '/module/file/aisuite',
-        'iconIdentifier' => 'tx-aisuite-extension',
+        'iconIdentifier' => 'tx-aisuite-extension-v14',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
         'routes' => [
             '_default' => [
-                'target' => \AutoDudes\AiSuite\Controller\FilelistController::class . '::handleRequest',
+                'target' => FilelistController::class.'::handleRequest',
             ],
         ],
         'moduleData' => [
@@ -35,5 +38,5 @@ return [
             'reverse' => false,
             'viewMode' => null,
         ],
-    ]
+    ],
 ];

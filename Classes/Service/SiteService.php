@@ -14,11 +14,13 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -26,24 +28,34 @@ class SiteService implements SingletonInterface
 {
     protected SiteFinder $siteFinder;
     protected TranslationConfigurationProvider $translationConfigurationProvider;
+    protected BackendUserService $backendUserService;
 
     public function __construct(
         ?SiteFinder $siteFinder = null,
-        ?TranslationConfigurationProvider $translationConfigurationProvider = null
+        ?TranslationConfigurationProvider $translationConfigurationProvider = null,
+        ?BackendUserService $backendUserService = null
     ) {
         $this->siteFinder = $siteFinder ?? GeneralUtility::makeInstance(SiteFinder::class);
         $this->translationConfigurationProvider = $translationConfigurationProvider ?? GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
+        $this->backendUserService = $backendUserService ?? GeneralUtility::makeInstance(BackendUserService::class);
     }
 
-    public function getAvailableLanguages(bool $includeLanguageIds = false, $pageId = 0, $onlyDefault = false): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function getAvailableLanguages(bool $includeLanguageIds = false, int $pageId = 0, bool $onlyDefault = false): array
     {
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser) {
+            return [];
+        }
         $availableLanguages = [];
         $sites = $this->siteFinder->getAllSites();
         if ($pageId > 0) {
             $sites = [$this->siteFinder->getSiteByPageId($pageId)];
         }
         foreach ($sites as $site) {
-            $siteLanguages = $site->getAvailableLanguages($GLOBALS['BE_USER'], true);
+            $siteLanguages = $site->getAvailableLanguages($backendUser, true);
             foreach ($siteLanguages as $language) {
                 $languageId = $language->getLanguageId();
                 if (-1 === $languageId) {
@@ -70,13 +82,20 @@ class SiteService implements SingletonInterface
         return $availableLanguages;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getLanguageFlagsByLanguageId(int $languageId): array
     {
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser) {
+            return [];
+        }
         $languageFlags = [];
         $sites = $this->siteFinder->getAllSites();
 
         foreach ($sites as $site) {
-            $siteLanguages = $site->getAvailableLanguages($GLOBALS['BE_USER'], true);
+            $siteLanguages = $site->getAvailableLanguages($backendUser, true);
             foreach ($siteLanguages as $language) {
                 if ($language->getLanguageId() === $languageId) {
                     $languageFlags[] = $language->getFlagIdentifier();
@@ -99,18 +118,20 @@ class SiteService implements SingletonInterface
     }
 
     /**
-     * Get ISO code by language ID using TYPO3's built-in functionality.
-     *
      * @throws SiteNotFoundException
      */
     public function getIsoCodeByLanguageId(int $languageId, int $pageUid): string
     {
         try {
+            $backendUser = $this->backendUserService->getBackendUser();
+            if (null === $backendUser) {
+                throw new SiteNotFoundException('No backend user available');
+            }
             $allSystemLanguages = $this->translationConfigurationProvider->getSystemLanguages($pageUid);
             $site = $this->siteFinder->getSiteByPageId($pageUid);
             $updatedSystemLanguages = $this->addSiteLanguagesToConsolidatedList(
                 $allSystemLanguages,
-                $site->getAvailableLanguages($GLOBALS['BE_USER'], true)
+                $site->getAvailableLanguages($backendUser, true)
             );
             if (-1 === $languageId) {
                 $languageId = $site->getDefaultLanguage()->getLanguageId();
@@ -123,9 +144,9 @@ class SiteService implements SingletonInterface
                 }
             }
 
-            throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         } catch (\Exception $e) {
-            throw new SiteNotFoundException($GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:tx_aisuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         }
     }
 
@@ -140,6 +161,9 @@ class SiteService implements SingletonInterface
         }
     }
 
+    /**
+     * @param array<string, mixed> $availableLanguages
+     */
     public function updateSelectedSysLanguage(array &$availableLanguages, string &$sysLanguageToUse, string &$notification, string $currentSysLanguage, string $fieldName = 'sysLanguage'): void
     {
         $currentLanguageData = explode('__', $currentSysLanguage);
@@ -154,14 +178,14 @@ class SiteService implements SingletonInterface
 
                 if ($languageData[0] === $currentLanguageData[0]) {
                     $sysLanguageToUse = $key;
-                    $notification = $GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification.'.$fieldName.'.selectAvailableLanguageOfPageTree');
+                    $notification = GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.notification.'.$fieldName.'.selectAvailableLanguageOfPageTree');
 
                     break;
                 }
 
                 if (0 === (int) $languageData[1]) {
                     $sysLanguageToUse = $key;
-                    $notification = $GLOBALS['LANG']->sl('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.notification'.$fieldName.'selectDefaultLanguageOfPageTree');
+                    $notification = GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.notification.'.$fieldName.'.selectDefaultLanguageOfPageTree');
                 }
             }
         }
@@ -173,12 +197,12 @@ class SiteService implements SingletonInterface
         }
     }
 
-    public function buildAbsoluteUri(UriInterface $uri): string
+    public function buildAbsoluteUri(UriInterface $uri, ?ServerRequestInterface $request = null): string
     {
         $port = $uri->getPort() ? ':'.$uri->getPort() : '';
         $absoluteUri = $uri->getScheme().'://'.$uri->getHost().$port.$uri->getPath();
         if ('' === $uri->getScheme() || '' === $uri->getHost()) {
-            $request = $GLOBALS['TYPO3_REQUEST'];
+            $request ??= $GLOBALS['TYPO3_REQUEST'];
             $uri = $uri->withScheme($request->getUri()->getScheme());
             $uri = $uri->withHost($request->getUri()->getHost());
             $uri = $uri->withPort($request->getUri()->getPort());
@@ -203,6 +227,12 @@ class SiteService implements SingletonInterface
         return $isoCode;
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $allSystemLanguages
+     * @param array<int, SiteLanguage>         $languagesOfSpecificSite
+     *
+     * @return array<int, array<string, mixed>>
+     */
     protected function addSiteLanguagesToConsolidatedList(array $allSystemLanguages, array $languagesOfSpecificSite): array
     {
         foreach ($languagesOfSpecificSite as $language) {

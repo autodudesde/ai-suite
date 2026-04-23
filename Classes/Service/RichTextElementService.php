@@ -20,7 +20,6 @@ namespace AutoDudes\AiSuite\Service;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -32,50 +31,42 @@ use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforeGetExternalPluginsEvent;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
 
 /**
- * Render rich text editor in FormEngine
- * @internal This is a specific Backend FormEngine implementation and is not considered part of the Public TYPO3 API.
+ * Render rich text editor in FormEngine.
+ *
+ * @internal this is a specific Backend FormEngine implementation and is not considered part of the Public TYPO3 API
  */
 class RichTextElementService implements SingletonInterface
 {
-    protected PageRenderer $pageRenderer;
-
-    protected EventDispatcherInterface $eventDispatcher;
-
-    protected Locales $locales;
-
-    protected UriBuilder $uriBuilder;
-
-    protected BackendUserService $backendUserService;
-
+    /** @var array<string, mixed> */
     protected array $rteConfiguration = [];
 
     public function __construct(
-        PageRenderer $pageRenderer,
-        EventDispatcherInterface $eventDispatcher,
-        Locales $locales,
-        UriBuilder $uriBuilder,
-        BackendUserService $backendUserService
-    ) {
-        $this->pageRenderer = $pageRenderer;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->locales = $locales;
-        $this->uriBuilder = $uriBuilder;
-        $this->backendUserService = $backendUserService;
-    }
+        protected readonly PageRenderer $pageRenderer,
+        protected readonly EventDispatcherInterface $eventDispatcher,
+        protected readonly Locales $locales,
+        protected readonly UriBuilder $uriBuilder,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly LocalizationService $localizationService,
+    ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     public function fetchRteConfig(array $data): array
     {
         $parameterArray = $data['parameterArray'];
         $config = $parameterArray['fieldConf']['config'];
 
-        $itemFormElementName = 'data[' . $data['tableName'] . ']['. $data['databaseRow']['uid'] . '][' . $data['fieldName'] . ']';
+        $itemFormElementName = 'data['.$data['tableName'].']['.$data['databaseRow']['uid'].']['.$data['fieldName'].']';
         $fieldId = $this->sanitizeFieldId($itemFormElementName);
 
         $this->rteConfiguration = $config['richtextConfiguration']['editor'] ?? [];
         $ckeditorConfiguration = $this->resolveCkEditorConfiguration($data);
 
         $ckeditorAttributes = GeneralUtility::implodeAttributes([
-            'id' => $fieldId . 'ckeditor5',
+            'id' => $fieldId.'ckeditor5',
             'options' => GeneralUtility::jsonEncodeForHtmlAttribute($ckeditorConfiguration, false),
         ], true);
 
@@ -92,23 +83,25 @@ class RichTextElementService implements SingletonInterface
 
         $uiLanguage = $ckeditorConfiguration['language']['ui'];
         if ($this->translationExists($uiLanguage)) {
-            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $uiLanguage . '.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/'.$uiLanguage.'.js');
         }
 
         $contentLanguage = $ckeditorConfiguration['language']['content'];
         if ($this->translationExists($contentLanguage)) {
-            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/' . $contentLanguage . '.js');
+            $this->pageRenderer->loadJavaScriptModule('@typo3/ckeditor5/translations/'.$contentLanguage.'.js');
         }
         $this->pageRenderer->addCssFile('EXT:rte_ckeditor/Resources/Public/Css/editor.css');
 
         return [
             'ckeditorAttributes' => $ckeditorAttributes,
-            'textareaAttributes' => $textareaAttributes
+            'textareaAttributes' => $textareaAttributes,
         ];
     }
 
     /**
-     * Determine the contents language iso code
+     * Determine the contents language iso code.
+     *
+     * @param array<string, mixed> $data
      */
     protected function getLanguageIsoCodeOfContent(array $data): string
     {
@@ -116,7 +109,7 @@ class RichTextElementService implements SingletonInterface
         if (is_array($currentLanguageUid)) {
             $currentLanguageUid = $currentLanguageUid[0];
         }
-        $contentLanguageUid = (int)max($currentLanguageUid, 0);
+        $contentLanguageUid = (int) max($currentLanguageUid, 0);
         if ($contentLanguageUid) {
             // the language rows might not be fully initialized, so we fall back to en-US in this case
             $contentLanguage = $data['systemLanguageRows'][$currentLanguageUid]['iso'] ?? 'en-US';
@@ -124,15 +117,21 @@ class RichTextElementService implements SingletonInterface
             $contentLanguage = $this->rteConfiguration['config']['defaultContentLanguage'] ?? 'en-US';
         }
         $languageCodeParts = explode('_', $contentLanguage);
-        $contentLanguage = strtolower($languageCodeParts[0]) . (!empty($languageCodeParts[1]) ? '_' . strtoupper($languageCodeParts[1]) : '');
+        $contentLanguage = strtolower($languageCodeParts[0]).(!empty($languageCodeParts[1]) ? '_'.strtoupper($languageCodeParts[1]) : '');
         // Find the configured language in the list of localization locales
         // If not found, default to 'en'
-        if ($contentLanguage === 'default' || !$this->locales->isValidLanguageKey($contentLanguage)) {
+        if ('default' === $contentLanguage || !$this->locales->isValidLanguageKey($contentLanguage)) {
             $contentLanguage = 'en';
         }
+
         return $contentLanguage;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
+     */
     protected function resolveCkEditorConfiguration(array $data): array
     {
         $configuration = $this->prepareConfigurationForEditor($data);
@@ -148,28 +147,34 @@ class RichTextElementService implements SingletonInterface
             }
         }
         if (isset($data['parameterArray']['fieldConf']['config']['placeholder'])) {
-            $configuration['placeholder'] = (string)$data['parameterArray']['fieldConf']['config']['placeholder'];
+            $configuration['placeholder'] = (string) $data['parameterArray']['fieldConf']['config']['placeholder'];
         }
+
         return $configuration;
     }
 
     /**
-     * Get configuration of external/additional plugins
+     * Get configuration of external/additional plugins.
+     *
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
      */
     protected function getExtraPlugins(array $data): array
     {
         $externalPlugins = $this->rteConfiguration['externalPlugins'] ?? [];
-        $externalPlugins = $this->eventDispatcher
-            ->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $data))
-            ->getConfiguration();
+
+        /** @var BeforeGetExternalPluginsEvent $beforeEvent */
+        $beforeEvent = $this->eventDispatcher->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $data));
+        $externalPlugins = $beforeEvent->getConfiguration();
 
         $urlParameters = [
             'P' => [
-                'table'      => $data['tableName'],
-                'uid'        => $data['databaseRow']['uid'],
-                'fieldName'  => $data['fieldName'],
+                'table' => $data['tableName'],
+                'uid' => $data['databaseRow']['uid'],
+                'fieldName' => $data['fieldName'],
                 'recordType' => $data['recordTypeValue'],
-                'pid'        => $data['effectivePid'],
+                'pid' => $data['effectivePid'],
                 'richtextConfigurationName' => $data['parameterArray']['fieldConf']['config']['richtextConfigurationName'],
             ],
         ];
@@ -179,25 +184,28 @@ class RichTextElementService implements SingletonInterface
             $pluginConfiguration[$pluginName] = [
                 'configName' => $configuration['configName'] ?? $pluginName,
             ];
-            unset($configuration['configName']);
+            unset($configuration['configName'], $configuration['resource']);
             // CKEditor4 style config, unused in CKEditor5 and not forwarded to the resutling plugin config
-            unset($configuration['resource']);
 
             if ($configuration['route'] ?? null) {
-                $configuration['routeUrl'] = (string)$this->uriBuilder->buildUriFromRoute($configuration['route'], $urlParameters);
+                $configuration['routeUrl'] = (string) $this->uriBuilder->buildUriFromRoute($configuration['route'], $urlParameters);
             }
 
             $pluginConfiguration[$pluginName]['config'] = $configuration;
         }
 
-        $pluginConfiguration = $this->eventDispatcher
-            ->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data))
-            ->getConfiguration();
-        return $pluginConfiguration;
+        /** @var AfterGetExternalPluginsEvent $afterEvent */
+        $afterEvent = $this->eventDispatcher->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data));
+
+        return $afterEvent->getConfiguration();
     }
 
     /**
-     * Add configuration to replace LLL: references with the translated value
+     * Add configuration to replace LLL: references with the translated value.
+     *
+     * @param array<string, mixed> $configuration
+     *
+     * @return array<string, mixed>
      */
     protected function replaceLanguageFileReferences(array $configuration): array
     {
@@ -205,14 +213,19 @@ class RichTextElementService implements SingletonInterface
             if (is_array($value)) {
                 $configuration[$key] = $this->replaceLanguageFileReferences($value);
             } elseif (is_string($value)) {
-                $configuration[$key] = $this->getLanguageService()->sL($value);
+                $configuration[$key] = $this->localizationService->getLanguageService()->sL($value);
             }
         }
+
         return $configuration;
     }
 
     /**
-     * Add configuration to replace absolute EXT: paths with relative ones
+     * Add configuration to replace absolute EXT: paths with relative ones.
+     *
+     * @param array<string, mixed> $configuration
+     *
+     * @return array<string, mixed>
      */
     protected function replaceAbsolutePathsToRelativeResourcesPath(array $configuration): array
     {
@@ -223,11 +236,12 @@ class RichTextElementService implements SingletonInterface
                 $configuration[$key] = $this->resolveUrlPath($value);
             }
         }
+
         return $configuration;
     }
 
     /**
-     * Resolves an EXT: syntax file to an absolute web URL
+     * Resolves an EXT: syntax file to an absolute web URL.
      */
     protected function resolveUrlPath(string $value): string
     {
@@ -238,7 +252,9 @@ class RichTextElementService implements SingletonInterface
      * Compiles the configuration set from the outside
      * to have it easily injected into the CKEditor.
      *
-     * @return array the configuration
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed> the configuration
      */
     protected function prepareConfigurationForEditor(array $data): array
     {
@@ -256,16 +272,17 @@ class RichTextElementService implements SingletonInterface
             $configuration = array_replace_recursive($configuration, $this->rteConfiguration['config']);
         }
 
-        $configuration = $this->eventDispatcher
-            ->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $data))
-            ->getConfiguration();
+        /** @var BeforePrepareConfigurationForEditorEvent $beforeConfigEvent */
+        $beforeConfigEvent = $this->eventDispatcher->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $data));
+        $configuration = $beforeConfigEvent->getConfiguration();
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
-        if (empty($configuration['language']) ||
-            (is_array($configuration['language']) && empty($configuration['language']['ui']))
+        if (empty($configuration['language'])
+            || (is_array($configuration['language']) && empty($configuration['language']['ui']))
         ) {
-            $userLang = (string)($this->backendUserService->getBackendUser()?->user['lang'] ?: 'en');
-            $configuration['language']['ui'] = $userLang === 'default' ? 'en' : $userLang;
+            $userLang = (string) ($this->backendUserService->getBackendUser()?->user['lang'] ?? 'en');
+            $userLang = '' === $userLang ? 'en' : $userLang;
+            $configuration['language']['ui'] = 'default' === $userLang ? 'en' : $userLang;
         } elseif (!is_array($configuration['language'])) {
             $configuration['language'] = [
                 'ui' => $configuration['language'],
@@ -296,25 +313,30 @@ class RichTextElementService implements SingletonInterface
             $configuration['removePlugins'] = explode(',', $configuration['removePlugins']);
         }
 
-        $configuration = $this->eventDispatcher
-            ->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data))
-            ->getConfiguration();
+        /** @var AfterPrepareConfigurationForEditorEvent $afterConfigEvent */
+        $afterConfigEvent = $this->eventDispatcher->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data));
+        $configuration = $afterConfigEvent->getConfiguration();
 
         return $configuration;
     }
 
     protected function sanitizeFieldId(string $itemFormElementName): string
     {
-        $fieldId = (string)preg_replace('/[^a-zA-Z0-9_:-]/', '_', $itemFormElementName);
-        return htmlspecialchars((string)preg_replace('/^[^a-zA-Z]/', 'x', $fieldId));
+        $fieldId = (string) preg_replace('/[^a-zA-Z0-9_:-]/', '_', $itemFormElementName);
+
+        return htmlspecialchars((string) preg_replace('/^[^a-zA-Z]/', 'x', $fieldId));
     }
 
     protected function translationExists(string $language): bool
     {
-        $fileName = GeneralUtility::getFileAbsFileName('EXT:rte_ckeditor/Resources/Public/Contrib/translations/' . $language . '.js');
+        $fileName = GeneralUtility::getFileAbsFileName('EXT:rte_ckeditor/Resources/Public/Contrib/translations/'.$language.'.js');
+
         return file_exists($fileName);
     }
 
+    /**
+     * @param array<string, mixed> $config
+     */
     protected function getValidationDataAsJsonString(array $config): string
     {
         $validationRules = [];
@@ -339,8 +361,8 @@ class RichTextElementService implements SingletonInterface
             $validationRules[] = $newValidationRule;
         }
         if (!empty($config['maxitems']) || !empty($config['minitems'])) {
-            $minItems = isset($config['minitems']) ? (int)$config['minitems'] : 0;
-            $maxItems = isset($config['maxitems']) ? (int)$config['maxitems'] : 99999;
+            $minItems = isset($config['minitems']) ? (int) $config['minitems'] : 0;
+            $maxItems = isset($config['maxitems']) ? (int) $config['maxitems'] : 99999;
             $type = $config['type'] ?: 'range';
             $validationRules[] = [
                 'type' => $type,
@@ -354,11 +376,7 @@ class RichTextElementService implements SingletonInterface
         if (!empty($config['min'])) {
             $validationRules[] = ['type' => 'min'];
         }
-        return json_encode($validationRules);
-    }
 
-    protected function getLanguageService(): LanguageService
-    {
-        return $GLOBALS['LANG'];
+        return (string) json_encode($validationRules);
     }
 }

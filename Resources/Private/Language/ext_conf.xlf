@@ -10,7 +10,7 @@
                 <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
             </trans-unit>
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
-                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
+                <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
             </trans-unit>
             <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
                 <source>Translate FlexForm fields</source>

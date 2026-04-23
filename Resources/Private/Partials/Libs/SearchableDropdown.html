@@ -5,13 +5,13 @@
         <div class="form-group">
             <div class="searchable dropdown">
                 <input type="hidden" name="{propertyName}" class="searchableInputProperty" value="{selected}" />
-                <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-initial-text="{f:translate(key: translateKeyButton, extensionName: 'ai_suite')}">
-                    <f:translate key="{translateKeyButton}" extensionName="ai_suite"/>
+                <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-initial-text="{f:translate(key: translateKeyButton)}">
+                    <f:translate key="{translateKeyButton}"/>
                 </button>
                 <ul class="dropdown-menu">
                     <li class="searchbox">
                         <core:icon identifier="actions-search" size="small" />
-                        <input type="text" placeholder="{f:translate(key: 'AiSuite.module.misc.searchableDropdown.search', extensionName: 'ai_suite')}" class="form-control searchableInput" />
+                        <input type="text" placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.misc.searchableDropdown.search')}" class="form-control searchableInput" />
                     </li>
                     <f:for each="{searchableList}" key="optionKey" as="optionLabel">
                         <li>
@@ -23,6 +23,6 @@
         </div>
     </f:then>
     <f:else>
-        <f:translate key="aiSuite.module.noSearchableList" extensionName="ai_suite"/>
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.noSearchableList"/>
     </f:else>
 </f:if>

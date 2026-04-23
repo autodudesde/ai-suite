@@ -5,17 +5,17 @@
 
 <div class="panel panel-default mb-2" data-uuid="{task.uuid}" data-column="{column}">
     <div class="panel-heading" role="tab">
-        <div class="panel-heading-row">
-            <button class="panel-button collapsed w-100 text-start pe-none" type="button"
+        <div class="panel-heading-row d-flex align-items-center">
+            <button class="panel-button collapsed flex-grow-1 text-start" type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#task{task.uuid}"
                     aria-expanded="false"
                     aria-controls="task{task.uuid}">
-                <div class="panel-title d-flex align-items-center justify-content-between w-100 pe-none">
+                <div class="panel-title d-flex align-items-center w-100">
                     <f:render partial="BackgroundTask/TaskHeader" arguments="{task: task, column: column, type: type}" />
-                    <f:render partial="BackgroundTask/TaskActions" arguments="{task: task, column: column, type: type}" />
                 </div>
             </button>
+            <f:render partial="BackgroundTask/TaskActions" arguments="{task: task, column: column, type: type}" />
         </div>
     </div>
     <f:if condition="{task.status} == 'finished'">

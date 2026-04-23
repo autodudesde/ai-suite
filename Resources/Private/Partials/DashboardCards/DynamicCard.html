@@ -7,24 +7,24 @@
             <f:if condition="{icon}">
                 <core:icon identifier="{icon}" />
             </f:if>
-            {title}<f:translate key="tx_aisuite.module.dashboard.card.{cardname}.title" extensionName="ai_suite"/>
+            {title}<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.{cardname}.title"/>
         </label>
     </div>
     <div class="panel-body">
-        <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.subtitle', extensionName: 'ai_suite')}"/>
+        <f:variable name="subtitle" value="{subtitle}{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.{cardname}.subtitle')}"/>
         <f:if condition="{subtitle}">
             <div class="mb-2">
                 <label class="text-muted">{subtitle}</label>
             </div>
         </f:if>
-        
-        <f:variable name="description" value="{description}{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.description', extensionName: 'ai_suite')}"/>
+
+        <f:variable name="description" value="{description}{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.{cardname}.description')}"/>
         <f:if condition="{description}">
             <div class="mb-3">
                 <p>{description}</p>
             </div>
         </f:if>
-        
+
         <div class="panel-actions">
             <f:if condition="{status} == 'active'">
                 <f:then>
@@ -32,13 +32,13 @@
                     <f:if condition="{params}">
                         <f:variable name="routeLink">{f:be.uri(route: route, parameters: params)}</f:variable>
                     </f:if>
-                    <a href="{routeLink}" class="btn btn-primary" title="{f:translate(key: 'tx_aisuite.module.dashboard.card.{cardname}.linklabel', extensionName: 'ai_suite')}">
-                        <f:translate key="tx_aisuite.module.dashboard.card.{cardname}.linklabel" extensionName="ai_suite"/>
+                    <a href="{routeLink}" class="btn btn-primary" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.{cardname}.linklabel')}">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.{cardname}.linklabel"/>
                     </a>
                 </f:then>
                 <f:else if="{status} == 'comming-soon'">
                     <span class="badge badge-info">
-                        <f:translate key="tx_aisuite.module.dashboard.card.comming-soon" extensionName="ai_suite"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.comming-soon"/>
                     </span>
                 </f:else>
             </f:if>

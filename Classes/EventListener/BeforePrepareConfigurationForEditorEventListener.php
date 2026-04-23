@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
-use Throwable;
 
 #[AsEventListener(
     identifier: 'tx-ai-suite/before-prepare-configuration-for-editor-event-listener',
@@ -18,19 +17,11 @@ use Throwable;
 )]
 class BeforePrepareConfigurationForEditorEventListener
 {
-    protected PageRenderer $pageRenderer;
-    protected BackendUserService $backendUserService;
-    protected SiteService $siteService;
-
     public function __construct(
-        PageRenderer $pageRenderer,
-        BackendUserService $backendUserService,
-        SiteService $siteService
-    ) {
-        $this->pageRenderer = $pageRenderer;
-        $this->backendUserService = $backendUserService;
-        $this->siteService = $siteService;
-    }
+        protected readonly PageRenderer $pageRenderer,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly SiteService $siteService,
+    ) {}
 
     /**
      * @throws SiteNotFoundException
@@ -38,8 +29,8 @@ class BeforePrepareConfigurationForEditorEventListener
     public function __invoke(BeforePrepareConfigurationForEditorEvent $event): void
     {
         try {
-            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int)$event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
-        } catch (Throwable $e) {
+            $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int) $event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
+        } catch (\Throwable $e) {
             return;
         }
         $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
@@ -49,8 +40,8 @@ class BeforePrepareConfigurationForEditorEventListener
             $configuration['importModules'][] = [
                 'module' => '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin.js',
                 'exports' => [
-                    'AiPlugin'
-                ]
+                    'AiPlugin',
+                ],
             ];
             $configuration['toolbar']['items'][] = 'AiPlugin';
         }
@@ -58,8 +49,8 @@ class BeforePrepareConfigurationForEditorEventListener
             $configuration['importModules'][] = [
                 'module' => '@autodudes/ai-suite/ckeditor/AiEasyLanguagePlugin/ai-easy-language-plugin.js',
                 'exports' => [
-                    'AiEasyLanguagePlugin'
-                ]
+                    'AiEasyLanguagePlugin',
+                ],
             ];
             $configuration['toolbar']['items'][] = 'AiEasyLanguagePlugin';
         }

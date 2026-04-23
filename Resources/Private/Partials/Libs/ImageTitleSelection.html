@@ -1,6 +1,6 @@
 <div class="suggestions image-title-suggestions w-100">
     <label class="control-label fw-bold mb-2">
-        <f:translate key="AiSuite.imageTitleSuggestionsHeader" extensionName="ai_suite"/>
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageTitleSuggestionsHeader"/>
     </label>
     <f:for each="{imageTitleSuggestions}" as="suggestion" iteration="it">
         <label class="form-check d-flex align-items-center" for="{table}-{position}-{fieldName}-image_title-{it.cycle}">
@@ -11,6 +11,7 @@
                 data-image-title="{suggestion}"
                 class="form-check-input image-title-selection"
                 id="{table}-{position}-{fieldName}-image_title-{it.cycle}"
+                {f:if(condition: it.isFirst, then: 'checked="checked"', else: '')}
             >
             <span class="form-check-label ce-image-title-selection">
                 {suggestion}
@@ -22,7 +23,7 @@
             type="text"
             name="fileData[contentElementData][{table}][{position}][{fieldName}][imageTitleFreeText]"
             value=""
-            placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:AiSuite.imageTitleFreeTextPlaceholder')}"
+            placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.imageTitleFreeTextPlaceholder')}"
             class="form-control"
             id="{table}-{position}-{fieldName}-image_title-free_text"
         >

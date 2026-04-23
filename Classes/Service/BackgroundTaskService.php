@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
@@ -8,55 +10,32 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconSize;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class BackgroundTaskService
+class BackgroundTaskService implements SingletonInterface
 {
-    protected BackendUserService $backendUserService;
-    protected BackgroundTaskRepository $backgroundTaskRepository;
-    protected PagesRepository $pagesRepository;
-    protected SiteFinder $siteFinder;
-    protected PageRepository $pageRepository;
-    protected MetadataService $metadataService;
-    protected LoggerInterface $logger;
-    protected SendRequestService $sendRequestService;
-    protected TranslationService $translationService;
-    protected IconFactory $iconFactory;
-    protected SiteService $siteService;
-
-    protected ExtensionConfiguration $extensionConfiguration;
-
     public function __construct(
-        BackendUserService $backendUserService,
-        BackgroundTaskRepository $backgroundTaskRepository,
-        PagesRepository $pagesRepository,
-        SiteFinder $siteFinder,
-        PageRepository $pageRepository,
-        MetadataService $metadataService,
-        LoggerInterface $logger,
-        SendRequestService $sendRequestService,
-        TranslationService $translationService,
-        IconFactory $iconFactory,
-        SiteService $siteService,
-        ExtensionConfiguration $extensionConfiguration
-    ) {
-        $this->backendUserService = $backendUserService;
-        $this->backgroundTaskRepository = $backgroundTaskRepository;
-        $this->pagesRepository = $pagesRepository;
-        $this->siteFinder = $siteFinder;
-        $this->pageRepository = $pageRepository;
-        $this->metadataService = $metadataService;
-        $this->logger = $logger;
-        $this->sendRequestService = $sendRequestService;
-        $this->translationService = $translationService;
-        $this->iconFactory = $iconFactory;
-        $this->siteService = $siteService;
-        $this->extensionConfiguration = $extensionConfiguration;
-    }
+        protected readonly BackendUserService $backendUserService,
+        protected readonly BackgroundTaskRepository $backgroundTaskRepository,
+        protected readonly PagesRepository $pagesRepository,
+        protected readonly SiteFinder $siteFinder,
+        protected readonly PageRepository $pageRepository,
+        protected readonly MetadataService $metadataService,
+        protected readonly LoggerInterface $logger,
+        protected readonly SendRequestService $sendRequestService,
+        protected readonly TranslationService $translationService,
+        protected readonly LocalizationService $localizationService,
+        protected readonly IconService $iconService,
+        protected readonly SiteService $siteService,
+        protected readonly ExtensionConfiguration $extensionConfiguration,
+    ) {}
 
+    /**
+     * @param array<mixed> $backgroundTasks
+     * @param array<mixed> $uuidStatus
+     */
     public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
     {
         $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
@@ -87,6 +66,9 @@ class BackgroundTaskService
                 }
             } catch (\Exception $e) {
                 $foundBackgroundTask['flag'] = '';
+            }
+            if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
+                continue;
             }
             if ($counter[$foundBackgroundTask['column']] < 50) {
                 $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
@@ -123,6 +105,9 @@ class BackgroundTaskService
                 } catch (\Throwable $e) {
                     $foundBackgroundTask['flag'] = '';
                 }
+                if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
+                    continue;
+                }
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
@@ -154,6 +139,9 @@ class BackgroundTaskService
                 $sourceLanguageFlags = $this->siteService->getLanguageFlagsByLanguageId($foundBackgroundTask['sys_language_uid']);
                 $foundBackgroundTask['sourceLanguageFlags'] = $sourceLanguageFlags;
 
+                if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
+                    continue;
+                }
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
@@ -182,6 +170,9 @@ class BackgroundTaskService
                 $foundBackgroundTask['sourceLanguageFlags'] = $defaultLanguageFlags;
                 $foundBackgroundTask['targetLanguageFlags'] = $targetLanguageFlags;
 
+                if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
+                    continue;
+                }
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
@@ -194,6 +185,10 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<string, mixed> $backgroundTasks
+     * @param array<string, mixed> $fetchedStatusData
+     */
     public function mergeBackgroundTasksAndUpdateStatus(array &$backgroundTasks, array $fetchedStatusData): void
     {
         if (count($fetchedStatusData) > 0) {
@@ -232,11 +227,18 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<string, mixed> $backgroundTasks
+     *
+     * @return array<string, mixed>
+     */
     public function getBackgroundTasksStatistics(array $backgroundTasks): ?array
     {
         try {
             $statuses = ['finished', 'pending', 'taskError'];
             $scopes = ['page', 'fileReference', 'fileMetadata', 'fileMetadataTranslation'];
+
+            /** @var array<string, array<string, mixed>> $statistics */
             $statistics = [
                 'total' => [
                     'finished' => 0,
@@ -301,6 +303,9 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function collectUuidsForStatusUpdate(): array
     {
         $uuidStatus = [];
@@ -313,6 +318,9 @@ class BackgroundTaskService
         return $uuidStatus;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function fetchStructuredBackgroundTaskStatus(): array
     {
         $uuidStatus = [];
@@ -325,6 +333,9 @@ class BackgroundTaskService
         return $uuidStatus;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function fetchBackgroundTaskStatus(bool $update = false): array
     {
         if ($update) {
@@ -366,10 +377,10 @@ class BackgroundTaskService
         try {
             $actionButtonsAbove = '<div class="form-row"><div class="form-group d-flex gap-2">';
 
-            $iconLocalize = $this->iconFactory->getIcon('actions-localize', IconSize::SMALL)->render();
+            $iconLocalize = $this->iconService->getIcon('actions-localize', 'small')->render();
             $translateWholePageButton = '<a href="#" id="aiSuiteTranslateWholePage" class="btn btn-default" data-page-id="'.$pageId.'">'
                 .$iconLocalize
-                .' '.$this->translationService->translate('tx_aisuite.action.translateWholePage')
+                .' '.$this->localizationService->translate('aiSuite.translateWholePage')
                 .'</a>';
 
             $actionButtonsAbove .= $translateWholePageButton;
@@ -382,16 +393,16 @@ class BackgroundTaskService
                 $uuid = $parts[1] ?? '';
                 if (!empty($uuid)) {
                     if ('error' === $status) {
-                        $iconSynchronize = $this->iconFactory->getIcon('actions-document-synchronize', IconSize::SMALL)->render();
+                        $iconSynchronize = $this->iconService->getIcon('actions-document-synchronize', 'small')->render();
                         $actionButtonsAbove .= '<a href="#" id="aiSuiteTranslationTaskRetry" class="btn btn-default" data-uuid="'.$uuid.'">'
                             .$iconSynchronize
-                            .' '.$this->translationService->translate('tx_aisuite.action.retryTranslationTask')
+                            .' '.$this->localizationService->translate('aiSuite.action.retryTranslationTask')
                             .'</a>';
                     }
-                    $iconSynchronize = $this->iconFactory->getIcon('actions-delete', IconSize::SMALL)->render();
+                    $iconSynchronize = $this->iconService->getIcon('actions-delete', 'small')->render();
                     $actionButtonsAbove .= '<a href="#" id="aiSuiteTranslationTaskRemove" class="btn btn-default" data-uuid="'.$uuid.'">'
                         .$iconSynchronize
-                        .' '.$this->translationService->translate('tx_aisuite.action.removeTranslationTask')
+                        .' '.$this->localizationService->translate('aiSuite.action.removeTranslationTask')
                         .'</a>';
                 }
             }
@@ -408,6 +419,9 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<mixed> $uuidStatus
+     */
     private function collectPageBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
     {
         $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
@@ -429,6 +443,9 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<mixed> $uuidStatus
+     */
     private function collectFileReferenceBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
     {
         $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
@@ -450,6 +467,9 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<mixed> $uuidStatus
+     */
     private function collectPageTranslationBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
     {
         $foundBackgroundTasksPageTranslation = $this->backgroundTaskRepository->findAllPageTranslationBackgroundTasks();
@@ -471,6 +491,9 @@ class BackgroundTaskService
         }
     }
 
+    /**
+     * @param array<mixed> $uuidStatus
+     */
     private function collectFileMetadataTranslationBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
     {
         $foundBackgroundTasksFileMetadataTranslation = $this->backgroundTaskRepository->findAllFileMetadataTranslationBackgroundTasks();

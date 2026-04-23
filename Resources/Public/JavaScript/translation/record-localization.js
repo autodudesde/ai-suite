@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import Severity from "@typo3/backend/severity.js";
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import Modal from "@typo3/backend/modal.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import Translation from "@autodudes/ai-suite/helper/translation.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import General from "@autodudes/ai-suite/helper/general.js";
@@ -13,10 +14,13 @@ class AiSuiteRecordLocalization {
 
     initialize() {
         const self = this;
-        MultiStepWizard.dismiss();
+        if (Modal.currentModal) {
+            Modal.dismiss();
+        }
         document.querySelectorAll('.ai-suite-record-localization').forEach(function(recordLocalizationButton) {
             recordLocalizationButton.addEventListener('click', async function (event) {
                 event.preventDefault();
+
                 let href = event.target.dataset.href;
                 let uuid = event.target.dataset.uuid;
                 let pageId = event.target.dataset.pageId;
@@ -28,31 +32,31 @@ class AiSuiteRecordLocalization {
                     '', Severity.notice,
                     TYPO3.lang['aiSuite.module.modal.recordLocalization'],
                     async function (slide) {
-                    MultiStepWizard.blurCancelStep();
-                    MultiStepWizard.lockNextStep();
-                    MultiStepWizard.lockPrevStep();
-                    slide.html(slideContent);
-                    let modal = slide.closest('.modal');
-                    modal.find('.t3js-localization-option').on('change', function (optionEvt) {
-                        event.preventDefault();
-                        if (!General.isUsable($(optionEvt.currentTarget).val())) {
-                            return;
-                        }
-                        let selectedModel = $(optionEvt.currentTarget).val();
-                        selectedModel = selectedModel.replace('localize', '');
-                        selectedModel = selectedModel.replace('copyFromLanguage', '');
-                        href = href.replace('AI_SUITE_MODEL', selectedModel);
-                        window.location.href = href;
-                        slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.translationInProcess']));
-                        let modal = MultiStepWizard.setup.$carousel.closest('.modal');
-                        modal.find('.spinner-wrapper').css('overflow', 'hidden');
-                        const postData = {
-                            'pageId': pageId,
-                            'uuid': uuid
-                        }
-                        StatusHandling.fetchStatus(postData, modal, self)
+                        MultiStepWizard.blurCancelStep();
+                        MultiStepWizard.lockNextStep();
+                        MultiStepWizard.lockPrevStep();
+                        slide.html(slideContent);
+                        let modal = slide.closest('.modal');
+                        modal.find('.t3js-localization-option').on('change', function (optionEvt) {
+                            event.preventDefault();
+                            if (!General.isUsable($(optionEvt.currentTarget).val())) {
+                                return;
+                            }
+                            let selectedModel = $(optionEvt.currentTarget).val();
+                            selectedModel = selectedModel.replace('localize', '');
+                            selectedModel = selectedModel.replace('copyFromLanguage', '');
+                            href = href.replace('AI_SUITE_MODEL', selectedModel);
+                            window.location.href = href;
+                            slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.translationInProcess']));
+                            let modal = MultiStepWizard.setup.$carousel.closest('.modal');
+                            modal.find('.spinner-wrapper').css('overflow', 'hidden');
+                            const postData = {
+                                'pageId': pageId,
+                                'uuid': uuid
+                            }
+                            StatusHandling.fetchStatus(postData, modal, self)
+                        });
                     });
-                });
                 MultiStepWizard.show();
             });
         });

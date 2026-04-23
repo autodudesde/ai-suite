@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\IconService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Imaging\IconSize;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
 #[AsEventListener(
@@ -16,19 +17,12 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 )]
 class FileControlsEventListener
 {
-    protected PageRenderer $pageRenderer;
-    protected IconFactory $iconFactory;
-    protected BackendUserService $backendUserService;
-
     public function __construct(
-        PageRenderer $pageRenderer,
-        IconFactory $iconFactory,
-        BackendUserService $backendUserService
-    ) {
-        $this->pageRenderer = $pageRenderer;
-        $this->iconFactory = $iconFactory;
-        $this->backendUserService = $backendUserService;
-    }
+        protected readonly PageRenderer $pageRenderer,
+        protected readonly IconService $iconService,
+        protected readonly BackendUserService $backendUserService,
+        protected readonly LocalizationService $localizationService,
+    ) {}
 
     public function __invoke(CustomFileControlsEvent $event): void
     {
@@ -40,15 +34,14 @@ class FileControlsEventListener
                 || in_array('jpg', explode(',', $fieldConfig['allowed'] ?? $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'])))
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_image_generation')
         ) {
-            $languageService = $this->getLanguageService();
             $resultArray = $event->getResultArray();
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/ajax/image/generate-image.js');
 
-            $buttonIcon = $this->iconFactory->getIcon('apps-clipboard-images', IconSize::SMALL)->render();
+            $buttonIcon = $this->iconService->getIcon('apps-clipboard-images', 'small')->render();
 
-            $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
-            $placeholder = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
-            $buttonSubmit = htmlspecialchars($languageService->sL('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generateImageWithAiButton'));
+            $buttonText = htmlspecialchars($this->localizationService->translate('aiSuite.generateImageWithAiButton'));
+            $placeholder = htmlspecialchars($this->localizationService->translate('aiSuite.generateImageWithAiButton'));
+            $buttonSubmit = htmlspecialchars($this->localizationService->translate('aiSuite.generateImageWithAiButton'));
 
             $objectPrefix = $event->getFormFieldIdentifier().'-'.$fieldConfig['foreign_table'];
 
@@ -86,10 +79,5 @@ class FileControlsEventListener
 
             $event->addControl($button, $event->getFieldName().'_ai_control');
         }
-    }
-
-    protected function getLanguageService(): LanguageService
-    {
-        return $GLOBALS['LANG'];
     }
 }

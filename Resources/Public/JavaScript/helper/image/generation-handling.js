@@ -46,6 +46,10 @@ class GenerationHandling {
         let aiSuiteGenerateImageButton = modal.querySelector('.panel-body button#aiSuiteGenerateImageBtn');
 
         aiSuiteGenerateImageButton.addEventListener('click', async function (ev) {
+            if (aiSuiteGenerateImageButton.dataset.aiWizardOpening === '1') {
+                return;
+            }
+            aiSuiteGenerateImageButton.dataset.aiWizardOpening = '1';
             let enteredPrompt = modal.querySelector('.panel-body textarea#imageGenerationPrompt').value ?? '';
             let imageAiModel = modal.querySelector('.panel-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
 
@@ -58,11 +62,22 @@ class GenerationHandling {
                     data.uuid = ev.target.getAttribute('data-uuid');
                     data.imagePrompt = enteredPrompt;
                     data.imageAiModel = imageAiModel;
-                    Modal.dismiss();
+                    if (scope === 'FileList') {
+                        data.langIsoCode = modal.querySelector('.panel-body #languageSelection select')?.value ?? '';
+                    }
+                    const previousModal = Modal.currentModal;
+                    if (previousModal) {
+                        await new Promise(resolve => {
+                            previousModal.addEventListener('typo3-modal-hidden', resolve, { once: true });
+                            Modal.dismiss();
+                        });
+                    } else {
+                        Modal.dismiss();
+                    }
                     if (scope === 'ContentElement') {
-                        if (data.imageAiModel === 'DALL-E') {
-                            const DalleContentElement = (await import('./wizards/dalle-content-element.js')).default
-                            DalleContentElement.addImageGenerationWizard(data);
+                        if (data.imageAiModel === 'GPTImage') {
+                            const GptImageContentElement = (await import('./wizards/gpt-image-content-element.js')).default
+                            GptImageContentElement.addImageGenerationWizard(data);
                         } else if (data.imageAiModel === 'Flux') {
                             const FluxContentElement = (await import('./wizards/flux-content-element.js')).default
                             FluxContentElement.addImageGenerationWizard(data);
@@ -71,10 +86,9 @@ class GenerationHandling {
                             MidjourneyContentElement.addImageGenerationWizard(data);
                         }
                     } else if(scope === 'FileList') {
-                        data.langIsoCode = modal.querySelector('.panel-body #languageSelection select').value ?? '';
-                        if (data.imageAiModel === 'DALL-E') {
-                            const DalleFileList = (await import('./wizards/dalle.js')).default
-                            DalleFileList.addImageGenerationWizard(data, true);
+                        if (data.imageAiModel === 'GPTImage') {
+                            const GptImageFileList = (await import('./wizards/gpt-image.js')).default
+                            GptImageFileList.addImageGenerationWizard(data, true);
                         } else if (data.imageAiModel === 'Flux') {
                             const FluxFileList = (await import('./wizards/flux.js')).default
                             FluxFileList.addImageGenerationWizard(data, true);
@@ -83,9 +97,9 @@ class GenerationHandling {
                             MidjourneyFileList.addImageGenerationWizard(data, true);
                         }
                     } else {
-                        if (data.imageAiModel === 'DALL-E') {
-                            const Dalle = (await import('./wizards/dalle.js')).default
-                            Dalle.addImageGenerationWizard(data);
+                        if (data.imageAiModel === 'GPTImage') {
+                            const GptImage = (await import('./wizards/gpt-image.js')).default
+                            GptImage.addImageGenerationWizard(data);
                         } else if (data.imageAiModel === 'Flux') {
                             const Flux = (await import('./wizards/flux.js')).default
                             Flux.addImageGenerationWizard(data);
@@ -99,11 +113,13 @@ class GenerationHandling {
                 console.log(error);
                 if (error.message === 'Invalid URL for --sref parameter') {
                     Notification.warning(
-                        TYPO3.lang['AiSuite.notification.invalidUrlTitle'],
-                        TYPO3.lang['AiSuite.notification.invalidUrlMessage'],
+                        TYPO3.lang['aiSuite.notification.invalidUrlTitle'],
+                        TYPO3.lang['aiSuite.notification.invalidUrlMessage'],
                         8
                     );
                 }
+            } finally {
+                setTimeout(() => { aiSuiteGenerateImageButton.dataset.aiWizardOpening = '0'; }, 0);
             }
         });
     }

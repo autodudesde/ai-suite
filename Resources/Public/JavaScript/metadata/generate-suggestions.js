@@ -1,6 +1,6 @@
 import Notification from "@typo3/backend/notification.js";
 import Severity from "@typo3/backend/severity.js";
-import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
+import MultiStepWizard from "@autodudes/ai-suite/helper/multi-step-wizard-patch.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import Metadata from "@autodudes/ai-suite/helper/metadata.js";
 import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling.js";
@@ -74,7 +74,7 @@ class GenerateSuggestions {
                 let newsDetailPlugin = modal.find('.panel-body select#newsDetailPlugin');
                 let sysLanguageSelection = modal.find('.panel-body #languageSelection select');
                 if(modal.find('.panel-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
-                    Notification.warning(TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelection'], TYPO3.lang['AiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
+                    Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
                 }
                 postData.uuid = ev.target.getAttribute('data-uuid');

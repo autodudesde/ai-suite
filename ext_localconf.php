@@ -1,6 +1,6 @@
 <?php
 
-use AutoDudes\AiSuite\Controller\ContentElement\NewContentElementController;
+use AutoDudes\AiSuite\Controller\Decorator\ContentElement\NewContentElementController;
 use AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoAbstract;
 use AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoOpenGraphDescription;
@@ -16,9 +16,8 @@ use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle;
 use AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook;
-use AutoDudes\AiSuite\Hooks\GlobalInstructionsHook;
+use AutoDudes\AiSuite\Hooks\GlobalInstructionHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
-use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -124,20 +123,14 @@ if (ExtensionManagementUtility::isLoaded('news')) {
 }
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite']
-    = GlobalInstructionsHook::class;
+    = GlobalInstructionHook::class;
 
 try {
     $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite');
     if (!array_key_exists('disableTranslationFunctionality', $extensionConfiguration)
-        || (array_key_exists('disableTranslationFunctionality', $extensionConfiguration) && false === (bool) $extensionConfiguration['disableTranslationFunctionality'])) {
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][DatabaseRecordList::class] = [
-            'className' => AutoDudes\AiSuite\Controller\RecordList\DatabaseRecordList::class,
-        ];
+        || false === (bool) $extensionConfiguration['disableTranslationFunctionality']) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
             = TranslationHook::class;
-        ExtensionManagementUtility::addPageTSConfig(
-            'templates.typo3/cms-backend.1720458914000 = autodudes/ai-suite:Resources/Private/'
-        );
     }
 } catch (Throwable $e) {
 }
