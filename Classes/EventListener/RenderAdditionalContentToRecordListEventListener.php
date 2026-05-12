@@ -19,8 +19,7 @@ class RenderAdditionalContentToRecordListEventListener
     public function __construct(
         protected PageRenderer $pageRenderer,
         protected BackgroundTaskService $backgroundTaskService,
-    ) {
-    }
+    ) {}
 
     public function __invoke(RenderAdditionalContentToRecordListEvent $event): void
     {

@@ -546,7 +546,7 @@ class TranslationService
     {
         $fieldConfig = $GLOBALS['TCA']['pages']['columns']['slug']['config'];
         $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);
-        $pageRecord = BackendUtility::getRecord('pages', $pageUid);
+        $pageRecord = BackendUtility::getRecordWSOL('pages', $pageUid);
 
         if ($pageRecord) {
             $slug = $slugHelper->generate($pageRecord, $pageRecord['pid']);
@@ -576,6 +576,53 @@ class TranslationService
         } elseif (false !== $relationFieldType) {
             $this->copyRecord_processRelation($copyMappingArray, $table, $uid, $value, $row, $conf, $language);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $task
+     */
+    public function processTranslationTask(array $task): void
+    {
+        try {
+            $taskAnswer = json_decode($task['answer'], true);
+            $translationData = $taskAnswer['body']['translationResults'] ?? [];
+            if (empty($translationData)) {
+                $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
+
+                throw new \Exception('Invalid translation result format');
+            }
+            $this->applyTranslationResult($task, $translationData);
+            $this->logger->info('Successfully processed translation task', ['uuid' => $task['uuid']]);
+            $affectedRows = $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
+            if (0 === $affectedRows) {
+                throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.notFound', [$task['uuid']]));
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error processing translation task: '.$e->getMessage(), [
+                'uuid' => $task['uuid'],
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function findOrCreateLocalization(string $table, int $sourceUid, int $targetLanguageUid, ?string $parentField = null): ?int
+    {
+        $parentField ??= 'pages' === $table
+            ? 'l10n_parent'
+            : ($this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table) ?? 'l18n_parent');
+
+        $existing = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $parentField);
+        if (null !== $existing) {
+            return (int) $existing['uid'];
+        }
+
+        $dh = GeneralUtility::makeInstance(DataHandler::class);
+        $dh->start([], [$table => [$sourceUid => ['localize' => $targetLanguageUid]]]);
+        $dh->process_cmdmap();
+
+        $translatedUid = $dh->copyMappingArray_merged[$table][$sourceUid] ?? null;
+
+        return null !== $translatedUid ? (int) $translatedUid : null;
     }
 
     /**
@@ -780,33 +827,6 @@ class TranslationService
         return array_values(array_filter($sourceElements, function ($element) use ($translatedParentUids) {
             return !in_array((int) $element['uid'], $translatedParentUids);
         }));
-    }
-
-    /**
-     * @param array<string, mixed> $task
-     */
-    protected function processTranslationTask(array $task): void
-    {
-        try {
-            $taskAnswer = json_decode($task['answer'], true);
-            $translationData = $taskAnswer['body']['translationResults'] ?? [];
-            if (empty($translationData)) {
-                $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
-
-                throw new \Exception('Invalid translation result format');
-            }
-            $this->applyTranslationResult($task, $translationData);
-            $this->logger->info('Successfully processed translation task', ['uuid' => $task['uuid']]);
-            $affectedRows = $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
-            if (0 === $affectedRows) {
-                throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.notFound', [$task['uuid']]));
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Error processing translation task: '.$e->getMessage(), [
-                'uuid' => $task['uuid'],
-                'error' => $e->getMessage(),
-            ]);
-        }
     }
 
     /**
@@ -1030,7 +1050,7 @@ class TranslationService
         }
 
         // Getting workspace overlay if possible - this will localize versions in workspace if any
-        $row = BackendUtility::getRecord($table, $uid);
+        $row = BackendUtility::getRecordWSOL($table, $uid);
         BackendUtility::workspaceOL($table, $row, $this->backendUserService->getBackendUser()?->workspace ?? 0);
         if (!is_array($row)) {
             return;
@@ -1039,7 +1059,7 @@ class TranslationService
         if ('pages' === $table) {
             $pageRecord = $row;
         } elseif ((int) $row['pid'] > 0) {
-            $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
+            $pageRecord = BackendUtility::getRecordWSOL('pages', $row['pid']);
             if (!is_array($pageRecord)) {
                 return;
             }
@@ -1060,7 +1080,7 @@ class TranslationService
         // localization source set themselves, before translating them to another language.
         if (0 !== (int) $row[$translationOriginPointerFieldName]
             && $row[$languageFieldName] > 0) {
-            $localizationParentRecord = BackendUtility::getRecord(
+            $localizationParentRecord = BackendUtility::getRecordWSOL(
                 $table,
                 $row[$translationOriginPointerFieldName]
             );
@@ -1113,7 +1133,7 @@ class TranslationService
             return;
         }
 
-        $row = BackendUtility::getRecord($table, $uid);
+        $row = BackendUtility::getRecordWSOL($table, $uid);
         if (!is_array($row)) {
             return;
         }
@@ -1125,7 +1145,7 @@ class TranslationService
         if ('pages' === $table) {
             $pageRecord = $row;
         } elseif ((int) $row['pid'] > 0) {
-            $pageRecord = BackendUtility::getRecord('pages', $row['pid']);
+            $pageRecord = BackendUtility::getRecordWSOL('pages', $row['pid']);
             if (!is_array($pageRecord)) {
                 return;
             }
@@ -1292,21 +1312,5 @@ class TranslationService
         }
 
         return ('group' === $conf['type']) || (('select' === $conf['type'] || 'category' === $conf['type']) && !empty($conf['foreign_table']));
-    }
-
-    private function findOrCreateLocalization(string $table, int $sourceUid, int $targetLanguageUid, string $parentField): ?int
-    {
-        $existing = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $parentField);
-        if (null !== $existing) {
-            return (int) $existing['uid'];
-        }
-
-        $dh = GeneralUtility::makeInstance(DataHandler::class);
-        $dh->start([], [$table => [$sourceUid => ['localize' => $targetLanguageUid]]]);
-        $dh->process_cmdmap();
-
-        $translatedUid = $dh->copyMappingArray_merged[$table][$sourceUid] ?? null;
-
-        return null !== $translatedUid ? (int) $translatedUid : null;
     }
 }

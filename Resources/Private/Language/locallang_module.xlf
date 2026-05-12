@@ -485,6 +485,15 @@
             <trans-unit id="aiSuite.module.workflow.columns.pages.twitter_title">
                 <source>X / Twitter Title</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.alternative">
+                <source>Image alternative text</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.description">
+                <source>Description</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.title">
+                <source>Image title</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.sys_file_reference.alternative">
                 <source>Image alternative text</source>
             </trans-unit>
@@ -508,6 +517,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.executeTranslationBtn">
                 <source>Execute Translation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.cliCommandExecuteBtn">
+                <source>Execute via Scheduler</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.cliCommandExecuteTranslationBtn">
+                <source>Translate via Scheduler</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.foundFilesAndMetadata">
                 <source>Found files with associated metadata</source>
@@ -808,6 +823,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.headerSections">
                 <source>Available sections</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.cliOverview.header">
+                <source>AI Suite CLI Overview</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>

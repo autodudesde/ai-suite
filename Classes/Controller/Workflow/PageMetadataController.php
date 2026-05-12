@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
@@ -57,6 +58,7 @@ class PageMetadataController extends AbstractBackendController
         protected readonly PagesRepository $pagesRepository,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly ViewFactoryService $viewFactoryService,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -113,6 +115,7 @@ class PageMetadataController extends AbstractBackendController
                 }, []);
             }
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+            $params['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('page');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $request,
@@ -145,6 +148,7 @@ class PageMetadataController extends AbstractBackendController
 
         $pages = json_decode($workflowData['pages'], true);
         $languageParts = explode('__', $workflowData['sysLanguage']);
+        $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'page');
 
         $contentFetcher = function (int $pageUid, int $languageId): string {
             $page = $this->pageRepository->getPage($pageUid);
@@ -169,14 +173,14 @@ class PageMetadataController extends AbstractBackendController
             $pages,
             $languageParts,
             $contentFetcher,
-            $this->requestService,
+            handledByCli: $handledByCli,
         );
 
         $payload = $result['payload'];
         $bulkPayload = $result['bulkPayload'];
         $failedPages = $result['failedPages'];
 
-        $errorResponse = $this->sendWorkflowRequest(
+        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
             $bulkPayload,
             $workflowData['parentUuid'],
@@ -185,12 +189,11 @@ class PageMetadataController extends AbstractBackendController
             $languageParts[0],
             'text',
             $workflowData['textAiModel'],
-            $response,
             $this->requestService,
             $this->backgroundTaskRepository,
         );
-        if (null !== $errorResponse) {
-            return $errorResponse;
+        if (null !== $errorMessage) {
+            return $this->logError($errorMessage, $response, 503);
         }
 
         return $this->jsonSuccess($response, [

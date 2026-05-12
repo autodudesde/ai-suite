@@ -119,8 +119,8 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
                     $this->pagesRepository,
                     $identifier,
                     $library['name'] ?? $identifier,
-                    $library['info'] ? strip_tags($library['info'] ) : '',
-                    'tx-aisuite-model-' . $identifier
+                    $library['info'] ? strip_tags($library['info']) : '',
+                    'tx-aisuite-model-'.$identifier
                 );
             }
         } catch (\Throwable $e) {

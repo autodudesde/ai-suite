@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -572,6 +573,71 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
+     * SEO-relevant fields for a list of page UIDs (workspace-aware, hidden excluded).
+     *
+     * @param list<int> $pageIds
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findSeoFields(array $pageIds, int $workspaceId): array
+    {
+        if ([] === $pageIds) {
+            return [];
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
+            ->add(GeneralUtility::makeInstance(HiddenRestriction::class))
+        ;
+
+        return $queryBuilder
+            ->select('uid', 'title', 'seo_title', 'description', 'og_title', 'og_description')
+            ->from($this->table)
+            ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($pageIds, Connection::PARAM_INT_ARRAY)))
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * Workspace-aware variant of {@see self::getSubtreePageIds()}.
+     *
+     * @return list<int>
+     */
+    public function getSubtreePageIdsWorkspaceAware(int $rootPageId, int $maxDepth, int $workspaceId): array
+    {
+        $allIds = [$rootPageId];
+        $currentLevel = [$rootPageId];
+
+        for ($depth = 0; $depth < $maxDepth; ++$depth) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+            $queryBuilder->getRestrictions()->removeAll()
+                ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+                ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
+            ;
+
+            $childIds = $queryBuilder->select('uid')
+                ->from($this->table)
+                ->where($queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($currentLevel, Connection::PARAM_INT_ARRAY)))
+                ->executeQuery()
+                ->fetchFirstColumn()
+            ;
+
+            if (empty($childIds)) {
+                break;
+            }
+
+            $childIds = array_map('intval', $childIds);
+            $allIds = array_merge($allIds, $childIds);
+            $currentLevel = $childIds;
+        }
+
+        return $allIds;
+    }
+
+    /**
      * Collect all page UIDs within a subtree (including the root itself).
      *
      * @return list<int>
@@ -609,17 +675,25 @@ class PagesRepository extends AbstractRepository
     /**
      * Full-text search across page fields.
      *
+     * @param null|list<int> $restrictToPageIds null = no permission filter (admin/internal callers);
+     *                                          [] = forced empty result; non-empty list = WHERE uid IN (…)
+     *
      * @return list<array<string, mixed>>
      */
-    public function searchByText(string $query, int $maxResults = 100): array
+    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null): array
     {
+        if (null !== $restrictToPageIds && [] === $restrictToPageIds) {
+            return [];
+        }
+
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
         ;
+        $this->addWorkspaceRestriction($queryBuilder);
         $searchTerm = '%'.$queryBuilder->escapeLikeWildcards($query).'%';
 
-        return $queryBuilder->select('uid', 'title', 'slug', 'seo_title', 'description')
+        $queryBuilder->select('uid', 'title', 'slug', 'seo_title', 'description')
             ->from($this->table)
             ->where($queryBuilder->expr()->or(
                 $queryBuilder->expr()->like('title', $queryBuilder->createNamedParameter($searchTerm)),
@@ -627,8 +701,15 @@ class PagesRepository extends AbstractRepository
                 $queryBuilder->expr()->like('description', $queryBuilder->createNamedParameter($searchTerm)),
             ))
             ->setMaxResults($maxResults)
-            ->executeQuery()->fetchAllAssociative()
         ;
+
+        if (null !== $restrictToPageIds) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($restrictToPageIds, Connection::PARAM_INT_ARRAY)),
+            );
+        }
+
+        return $queryBuilder->executeQuery()->fetchAllAssociative();
     }
 
     /**
@@ -644,6 +725,7 @@ class PagesRepository extends AbstractRepository
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
         ;
+        $this->addWorkspaceRestriction($queryBuilder);
 
         $contentSubquery = 'SELECT MAX(c.tstamp) FROM tt_content c WHERE c.pid = p.uid AND c.deleted = 0';
 

@@ -1,0 +1,253 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+    <h1 class="mb-3 fw-semibold">
+        <core:icon identifier="tx-aisuite-extension-v14" size="medium"/>
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.cliOverview.header"/>
+    </h1>
+
+    <div id="aisuite-cli-overview">
+        <f:if condition="{schedulerAvailable} == 0">
+            <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert">
+                <core:icon identifier="actions-exclamation-triangle" size="small"/>
+                <div>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.schedulerNotLoaded"/>
+                </div>
+            </div>
+        </f:if>
+
+        <div class="panel panel-default mb-3">
+            <div class="panel-heading">
+                <label class="panel-title fw-bold">
+                    <core:icon identifier="content-widget-chart-bar" size="small"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.statistics.title"/>
+                </label>
+            </div>
+            <div class="panel-body">
+                <div class="row text-center">
+                    <div class="col-md-6 col-sm-6 mb-3">
+                        <div class="p-3 border rounded bg-light">
+                            <div class="mb-2">
+                                <span class="fs-1 fw-bold text-danger">{failedStatistics.total}</span>
+                                <span class="fs-6 fw-bold text-muted d-block">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.statistics.total"/>
+                                </span>
+                            </div>
+                            <f:if condition="{failedStatistics.byScope}">
+                                <span class="toggle-icon"
+                                      data-bs-toggle="collapse"
+                                      data-bs-target="#detailedStatsCollapseFailed"
+                                      aria-expanded="false"
+                                      aria-controls="detailedStatsCollapseFailed"
+                                      style="cursor: pointer;">
+                                    <core:icon identifier="actions-chevron-down" size="small"/>
+                                </span>
+                                <div class="collapse" id="detailedStatsCollapseFailed">
+                                    <div class="fs-3 my-2">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.statistics.byScope"/>
+                                    </div>
+                                    <div class="w-100">
+                                        <f:for each="{failedStatistics.byScope}" as="count" key="scope">
+                                            <div>
+                                                <span class="dropdown-item d-flex justify-content-between align-items-center pe-none mb-1">
+                                                    <span class="fs-6">
+                                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.scope.{scope}" default="{scope}"/>
+                                                    </span>
+                                                    <span class="badge border-danger">{count}</span>
+                                                </span>
+                                            </div>
+                                        </f:for>
+                                    </div>
+                                </div>
+                            </f:if>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 mb-3">
+                        <div class="p-3 border rounded bg-light">
+                            <div class="mb-2">
+                                <span class="fs-1 fw-bold text-info d-block">{pendingStatistics.total}</span>
+                                <span class="fs-6 fw-bold text-muted">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.statistics.pending"/>
+                                </span>
+                            </div>
+                            <f:if condition="{pendingStatistics.byScope}">
+                                <span class="toggle-icon"
+                                      data-bs-toggle="collapse"
+                                      data-bs-target="#detailedStatsCollapsePending"
+                                      aria-expanded="false"
+                                      aria-controls="detailedStatsCollapsePending"
+                                      style="cursor: pointer;">
+                                    <core:icon identifier="actions-chevron-down" size="small"/>
+                                </span>
+                                <div class="collapse" id="detailedStatsCollapsePending">
+                                    <div class="fs-3 my-2">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.pendingTasks.statistics.byScope"/>
+                                    </div>
+                                    <div class="w-100">
+                                        <f:for each="{pendingStatistics.byScope}" as="count" key="scope">
+                                            <div>
+                                                <span class="dropdown-item d-flex justify-content-between align-items-center pe-none mb-1">
+                                                    <span class="fs-6">
+                                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.scope.{scope}" default="{scope}"/>
+                                                    </span>
+                                                    <span class="badge border-info">{count}</span>
+                                                </span>
+                                            </div>
+                                        </f:for>
+                                    </div>
+                                </div>
+                            </f:if>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mb-3 fw-semibold">
+            <core:icon identifier="actions-system-tree-search-open" size="medium"/>
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.title"/>
+        </h2>
+
+        <div class="panel panel-default mb-3">
+            <div class="panel-heading">
+                <label class="panel-title fw-bold">
+                    <core:icon identifier="actions-filter" size="small"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.filter.label"/>
+                </label>
+            </div>
+            <div class="panel-body">
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.filter.label"/>
+                        </label>
+                        <select id="cliOverviewTypeFilter" class="form-select">
+                            <f:for each="{availableTypes}" as="label" key="typeKey">
+                                <option value="{typeKey}"
+                                <f:if condition="{typeKey} == {currentTypeFilter}">selected="selected"</f:if>
+                                >
+                                {label}
+                                </option>
+                            </f:for>
+                        </select>
+                    </div>
+                    <div class="col-md-8 d-flex gap-2 mt-3 mt-md-0">
+                        <button class="btn btn-danger"
+                                id="rerunAllBtn"
+                        <f:if condition="{failedStatistics.total} == 0">disabled="disabled"</f:if>
+                        >
+                            <core:icon identifier="actions-refresh" size="small"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.rerunAll"/>
+                        </button>
+                        <button class="btn btn-info" id="updateStatusBtn">
+                            <core:icon identifier="actions-refresh" size="small"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.updateStatus"/>
+                        </button>
+                    </div>
+                </div>
+                <div id="rerunResultMessage" class="mt-3" style="display:none;"></div>
+
+                <f:if condition="{groupedTasks}">
+                    <f:else>
+                        <div class="text-center py-4 text-muted mt-3">
+                            <core:icon identifier="actions-check-circle" size="large"/>
+                            <p class="mt-3 mb-0 fw-bold">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.noTasks"/>
+                            </p>
+                        </div>
+                    </f:else>
+                </f:if>
+            </div>
+        </div>
+
+        <f:if condition="{groupedTasks}">
+            <f:for each="{groupedTasks}" as="tasks" key="scope">
+                <div class="panel panel-default mb-3 cli-overview-task-group" data-scope="{scope}">
+                    <div class="panel-heading d-flex justify-content-between align-items-center">
+                        <label class="panel-title fw-bold mb-0">
+                            <span class="toggle-icon"
+                                  data-bs-toggle="collapse"
+                                  data-bs-target="#{scope}"
+                                  aria-expanded="true"
+                                  aria-controls="{scope}"
+                                  style="cursor: pointer;">
+                                <core:icon identifier="actions-chevron-down" size="small"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.scope.{scope}" default="{scope}"/>
+                            </span>
+                            <span class="badge border-danger ms-2">{tasks -> f:count()}</span>
+                        </label>
+                        <button class="btn btn-sm btn-warning rerun-scope-btn" data-type="{scopeToTypeMap.{scope}}">
+                            <core:icon identifier="actions-refresh" size="small"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.rerunScope"/>
+                        </button>
+                    </div>
+                    <div class="panel-body p-0 collapse show" id="{scope}">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped table-hover mb-0"
+                                   style="table-layout: fixed; width: 100%;">
+                                <colgroup>
+                                    <col style="width: 5%;"/>
+                                    <col style="width: 18%;"/>
+                                    <col style="width: 14%;"/>
+                                    <col style="width: 12%;"/>
+                                    <col style="width: 38%;"/>
+                                    <col style="width: 13%;"/>
+                                </colgroup>
+                                <thead class="table-dark">
+                                <tr>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.number"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.type"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.model"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.column"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.error"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.column.date"/></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <f:for each="{tasks}" as="task" iteration="iter">
+                                    <tr>
+                                        <td title="{task.uuid}">{iter.cycle}</td>
+                                        <td class="text-truncate" title="{task.scope}">
+                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.scope.{task.scope}" default="{task.scope}"/>
+                                        </td>
+                                        <td class="text-truncate" title="{task.model}">
+                                            <f:if condition="{task.model}">
+                                                <f:then>{task.model}</f:then>
+                                                <f:else><span class="text-muted">—</span></f:else>
+                                            </f:if>
+                                        </td>
+                                        <td class="text-truncate" title="{task.column}">
+                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.columns.{task.table_name}.{task.column}" default="{task.column}"/>
+                                        </td>
+                                        <td style="overflow-wrap: break-word; word-break: break-word; white-space: normal;">
+                                            <f:if condition="{task.error}">
+                                                <f:then>
+                                                    <span class="text-danger" title="{task.error}" data-bs-toggle="tooltip">{task.error}</span>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="text-muted">—</span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <f:if condition="{task.crdate}">
+                                                <f:format.date format="Y-m-d H:i">{task.crdate}</f:format.date>
+                                            </f:if>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </f:for>
+        </f:if>
+    </div>
+</f:section>
+
+</html>

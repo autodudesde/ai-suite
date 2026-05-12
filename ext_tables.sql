@@ -51,6 +51,8 @@ CREATE TABLE tx_aisuite_domain_model_backgroundtask (
     id_column text,
     table_uid int(11) DEFAULT 0,
     mode varchar(20) DEFAULT '',
+    model varchar(50) DEFAULT '',
+    handled_by_cli tinyint(3) DEFAULT '0' NOT NULL,
 
     PRIMARY KEY (uuid, type)
 );

@@ -22,7 +22,9 @@ class BackgroundTask
         protected string $mode,
         protected string $status = 'pending',
         protected string $slug = '',
-        protected int $crdate = 0 // time() is not allowed here
+        protected int $crdate = 0, // time() is not allowed here
+        protected bool $handledByCli = false,
+        protected string $model = '',
     ) {
         if (0 === $this->crdate) {
             $this->crdate = time();
@@ -48,6 +50,8 @@ class BackgroundTask
             'table_uid',
             'sys_language_uid',
             'mode',
+            'handled_by_cli',
+            'model',
         ];
     }
 
@@ -70,6 +74,8 @@ class BackgroundTask
             Connection::PARAM_INT, // table_uid
             Connection::PARAM_INT, // sys_language_uid
             Connection::PARAM_STR, // mode
+            Connection::PARAM_INT, // handled_by_cli
+            Connection::PARAM_STR, // model
         ];
     }
 
@@ -92,6 +98,8 @@ class BackgroundTask
             $this->tableUid,
             $this->sysLanguageUid,
             $this->mode,
+            $this->handledByCli ? 1 : 0,
+            $this->model,
         ];
     }
 }

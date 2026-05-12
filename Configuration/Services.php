@@ -12,6 +12,8 @@ declare(strict_types=1);
  *
  */
 
+use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
+use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
@@ -98,6 +100,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public()
     ;
     $services->set(PagesRepository::class)
+        ->public()
+    ;
+    $services->set(CliOverviewController::class)
+        ->public()
+    ;
+    $services->set(CliOverviewAjaxController::class)
         ->public()
     ;
 };

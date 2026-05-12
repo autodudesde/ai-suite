@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\SingletonInterface;
  * Reduces constructor parameter counts in controllers and event listeners
  * by grouping services that are almost always used together.
  */
-readonly class AiSuiteContext implements SingletonInterface
+class AiSuiteContext implements SingletonInterface
 {
     public function __construct(
         public BackendUserService $backendUserService,

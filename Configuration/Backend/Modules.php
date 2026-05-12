@@ -1,6 +1,7 @@
 <?php
 
 use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\FilelistController;
 
 return [
@@ -8,7 +9,7 @@ return [
         'parent' => 'web',
         'position' => ['after' => 'web_info'],
         'access' => 'user',
-        'workspaces' => 'live',
+        'workspaces' => '*',
         'path' => '/module/page/aisuite',
         'iconIdentifier' => 'tx-aisuite-extension-v14',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
@@ -22,7 +23,7 @@ return [
         'parent' => 'file',
         'position' => ['after' => 'media_management'],
         'access' => 'user',
-        'workspaces' => 'live',
+        'workspaces' => '*',
         'path' => '/module/file/aisuite',
         'iconIdentifier' => 'tx-aisuite-extension-v14',
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
@@ -37,6 +38,24 @@ return [
             'sort' => 'file',
             'reverse' => false,
             'viewMode' => null,
+        ],
+    ],
+    'tools_aisuite_clioverview' => [
+        'parent' => 'tools',
+        'position' => ['after' => 'scheduler'],
+        'access' => 'admin',
+        'workspaces' => 'live',
+        'path' => '/module/tools/aisuite-clioverview',
+        'iconIdentifier' => 'tx-aisuite-extension-v14',
+        'labels' => [
+            'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:mlang_tabs_tab_cli',
+            'shortDescription' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:mlang_labels_tablabel',
+            'description' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf:mlang_labels_tabdescr',
+        ],
+        'routes' => [
+            '_default' => [
+                'target' => CliOverviewController::class.'::handleRequest',
+            ],
         ],
     ],
 ];

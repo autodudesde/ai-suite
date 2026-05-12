@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
+use AutoDudes\AiSuite\Service\BackendRouteService;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\IconService;
 use AutoDudes\AiSuite\Service\LocalizationService;
@@ -44,6 +45,7 @@ class ModifyButtonBarEventListener
         protected readonly GlossarRepository $glossarRepository,
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly FlashMessageService $flashMessageService,
+        protected readonly BackendRouteService $backendRouteService,
     ) {
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
@@ -78,7 +80,7 @@ class ModifyButtonBarEventListener
             $event->setButtons($buttons);
         }
 
-        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+        if ($request->getUri()->getPath() === $entryPoint.$this->backendRouteService->getRecordListPath()
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation_deepl_sync')
             && $this->glossarRepository->findGlossarEntriesByPid((int) ($request->getQueryParams()['id'] ?? 0)) > 0
         ) {
@@ -100,22 +102,27 @@ class ModifyButtonBarEventListener
             $event->setButtons($buttons);
         }
 
-        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+        if ($request->getUri()->getPath() === $entryPoint.$this->backendRouteService->getRecordListPath()
             && ExtensionManagementUtility::isLoaded('news') && array_key_exists('id', $request->getQueryParams())
             && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_news_generation')
         ) {
             $buttonText = htmlspecialchars($this->localizationService->translate('aiSuite.generateNewsWithAiButton'));
             $buttonIcon = $this->iconService->getIcon('content-news');
+            $pageId = (int) ($request->getQueryParams()['id'] ?? 0);
+            $returnUrl = (string) $this->uriBuilder->buildUriFromRoute(
+                $this->backendRouteService->getRecordListModuleIdentifier(),
+                ['id' => $pageId]
+            );
             $uri = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_record_edit', [
                 'edit' => [
                     'tx_news_domain_model_news' => [
-                        $request->getQueryParams()['id'] => 'new',
+                        $pageId => 'new',
                     ],
                 ],
-                'returnUrl' => $entryPoint.'/module/content/records?id='.$request->getQueryParams()['id'],
+                'returnUrl' => $returnUrl,
                 'recordType' => '0',
                 'recordTable' => 'tx_news_domain_model_news',
-                'pid' => $request->getQueryParams()['id'],
+                'pid' => $pageId,
             ]);
             $buttons[ButtonBar::BUTTON_POSITION_LEFT][5][] = $event->getButtonBar()
                 ->makeLinkButton()
@@ -133,10 +140,11 @@ class ModifyButtonBarEventListener
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
+                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/page-localization.js');
             }
             $returnUrl = $request->getQueryParams()['returnUrl'] ?? '';
-            if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+            if ($request->getUri()->getPath() === $entryPoint.$this->backendRouteService->getRecordListPath()
                 || $request->getUri()->getPath() === $entryPoint.'/record/edit'
                 && !str_starts_with($returnUrl, '/typo3/record/info')
                 && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_translation')
@@ -147,7 +155,7 @@ class ModifyButtonBarEventListener
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/record-localization.js');
             }
         }
-        if ($request->getUri()->getPath() === $entryPoint.'/module/content/records'
+        if ($request->getUri()->getPath() === $entryPoint.$this->backendRouteService->getRecordListPath()
             || $request->getUri()->getPath() === $entryPoint.'/module/web/layout') {
             $pageUid = $request->getQueryParams()['id'] ?? 0;
             $result = $this->translationService->processFinishedTranslationTasksForPage((int) $pageUid);

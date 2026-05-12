@@ -48,6 +48,7 @@ class AiNewsMetaDescription extends AbstractNode
                 'data-lang-iso-code' => $langIsoCode,
                 'data-language-id' => $this->data['databaseRow']['sys_language_uid'],
                 'data-table' => $this->data['tableName'],
+                'data-context' => 'pages',
                 'data-field-name' => 'description',
                 'data-field-label' => 'NewsDescription',
             ],

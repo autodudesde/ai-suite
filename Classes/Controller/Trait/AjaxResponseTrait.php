@@ -14,14 +14,15 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller\Trait;
 
-use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
-use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
-use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * @property CliCommandAvailabilityService $cliCommandAvailabilityService Optional dependency, only required when consuming controllers call resolveHandledByCli().
+ */
 trait AjaxResponseTrait
 {
     protected function logError(string $errorMessage, Response $response, int $statusCode = 400): Response
@@ -80,53 +81,6 @@ trait AjaxResponseTrait
     }
 
     /**
-     * Sends a workflow request to the AI server and inserts background tasks on success.
-     *
-     * @param list<array<string, mixed>> $payload
-     * @param list<BackgroundTask>       $bulkPayload
-     * @param array<string, mixed>       $extraParams Extra data params (e.g. glossary, deepl_glossary_id)
-     */
-    protected function sendWorkflowRequest(
-        array $payload,
-        array $bulkPayload,
-        string $parentUuid,
-        string $scope,
-        string $type,
-        string $languageCode,
-        string $modelKey,
-        string $model,
-        Response $response,
-        SendRequestService $requestService,
-        BackgroundTaskRepository $backgroundTaskRepository,
-        array $extraParams = [],
-    ): ?Response {
-        if (0 === count($payload)) {
-            return null;
-        }
-
-        $answer = $requestService->sendDataRequest(
-            'createMassAction',
-            array_merge([
-                'uuid' => $parentUuid,
-                'payload' => $payload,
-                'scope' => $scope,
-                'type' => $type,
-            ], $extraParams),
-            '',
-            $languageCode,
-            [$modelKey => $model]
-        );
-
-        if ('Error' === $answer->getType()) {
-            return $this->logError($answer->getResponseData()['message'], $response, 503);
-        }
-
-        $backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
-
-        return null;
-    }
-
-    /**
      * @param array<string, array<int|string, array<string, mixed>>> $datamap
      * @param array<string, array<int|string, array<string, mixed>>> $cmdmap
      */
@@ -143,5 +97,24 @@ trait AjaxResponseTrait
         if (count($dataHandler->errorLog) > 0) {
             throw new \RuntimeException(implode(', ', $dataHandler->errorLog));
         }
+    }
+
+    /**
+     * Defense-in-depth check for the optional CLI-trigger flag posted by the workflow UI.
+     * Silently downgrades to sync execution when the user lacks permission, the scheduler
+     * is missing or the required commands are not registered — ensures form-level tampering
+     * cannot bypass the gate the template enforces.
+     *
+     * Requires the consuming controller to inject CliCommandAvailabilityService as
+     * `$this->cliCommandAvailabilityService`.
+     */
+    protected function resolveHandledByCli(bool $requested, string $workflowType): bool
+    {
+        if (!$requested) {
+            return false;
+        }
+
+        // @phpstan-ignore property.notFound
+        return $this->cliCommandAvailabilityService->isCliExecutionAvailable($workflowType);
     }
 }

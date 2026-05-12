@@ -46,3 +46,8 @@ metadataAutogenerateAlternative =
 metadataAutogenerateModel = Vision
 # cat=Metadata; type=options[Add generated suggestions to TaskEngine=taskEngine,Save (first suggestion) directly=saveDirectly]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateApproach
 metadataAutogenerateApproach = taskEngine
+# cat=GDPR; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:forceGdpa
+forceGdpa = 0
+
+# cat=Background Tasks; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:maxTasks
+maxTasks = 50

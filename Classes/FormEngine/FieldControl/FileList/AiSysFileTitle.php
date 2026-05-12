@@ -6,9 +6,11 @@ namespace AutoDudes\AiSuite\FormEngine\FieldControl\FileList;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
+use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\WorkflowViewService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AiSysFileTitle extends AbstractNode
@@ -23,6 +25,10 @@ class AiSysFileTitle extends AbstractNode
         }
 
         $fileUid = (int) $this->data['databaseRow']['file'][0];
+        $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($fileUid);
+        if (!in_array($file->getMimeType(), MetadataService::SUPPORTED_IMAGE_MIME_TYPES, true)) {
+            return [];
+        }
         $workflowViewService = GeneralUtility::makeInstance(WorkflowViewService::class);
         $folderCombinedIdentifier = $workflowViewService->getFolderCombinedIdentifier($fileUid);
 

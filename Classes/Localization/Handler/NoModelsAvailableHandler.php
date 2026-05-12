@@ -20,12 +20,12 @@ class NoModelsAvailableHandler implements LocalizationHandlerInterface
 
     public function getLabel(): string
     {
-        return $this->getLanguageService()->sL(self::LLL_PREFIX . 'label');
+        return $this->getLanguageService()->sL(self::LLL_PREFIX.'label');
     }
 
     public function getDescription(): string
     {
-        return $this->getLanguageService()->sL(self::LLL_PREFIX . 'description');
+        return $this->getLanguageService()->sL(self::LLL_PREFIX.'description');
     }
 
     public function getIconIdentifier(): string
@@ -41,7 +41,7 @@ class NoModelsAvailableHandler implements LocalizationHandlerInterface
     public function processLocalization(LocalizationInstructions $instructions): LocalizationResult
     {
         return LocalizationResult::error([
-            $this->getLanguageService()->sL(self::LLL_PREFIX . 'error'),
+            $this->getLanguageService()->sL(self::LLL_PREFIX.'error'),
         ]);
     }
 
