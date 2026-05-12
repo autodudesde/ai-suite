@@ -14,12 +14,14 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class LibraryService implements SingletonInterface
 {
     public function __construct(
         protected readonly BackendUserService $backendUserService,
+        protected readonly SendRequestService $sendRequestService,
     ) {}
 
     /**
@@ -69,6 +71,52 @@ class LibraryService implements SingletonInterface
     public function filterNonVisionLibraries(array $libraries): array
     {
         return array_filter($libraries, static fn (array $library): bool => 'Vision' !== $library['name'] && 'MittwaldMinistral14BVision' !== $library['model_identifier']);
+    }
+
+    /**
+     * Resolves available text-generation models for a given workflow type.
+     * Used by both the workflow manager UI (for the model dropdown) and the CLI
+     * `ai-suite:execute-workflow` command (for the interactive model prompt).
+     *
+     * @return array<string, string> Map of model_identifier => display name
+     *
+     * @throws \RuntimeException When the libraries request fails
+     */
+    public function findModelsForWorkflowType(string $workflowType): array
+    {
+        $resolved = match (true) {
+            in_array($workflowType, ['page', 'fileMetadata', 'fileReferences'], true) => [
+                GenerationLibraryEnumeration::METADATA,
+                'createMetadata',
+            ],
+            in_array($workflowType, ['pageTranslate', 'fileMetadataTranslation'], true) => [
+                GenerationLibraryEnumeration::TRANSLATE,
+                'translate',
+            ],
+            default => null,
+        };
+
+        if (null === $resolved) {
+            return [];
+        }
+        [$libraryType, $action] = $resolved;
+
+        $librariesAnswer = $this->sendRequestService->sendLibrariesRequest($libraryType, $action, ['text']);
+        if ('Error' === $librariesAnswer->getType()) {
+            $message = $librariesAnswer->getResponseData()['message'] ?? 'Unknown error fetching available models.';
+
+            throw new \RuntimeException($message);
+        }
+
+        $libraries = $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [];
+
+        if ('fileReferences' === $workflowType || 'fileMetadata' === $workflowType) {
+            $libraries = $this->filterVisionLibraries($libraries);
+        } elseif ('page' === $workflowType) {
+            $libraries = $this->filterNonVisionLibraries($libraries);
+        }
+
+        return array_column($libraries, 'name', 'model_identifier');
     }
 
     /**

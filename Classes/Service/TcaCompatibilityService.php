@@ -163,15 +163,55 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
+     * True if the table declares a soft-delete column in its TCA ctrl.
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function hasSoftDelete(string $table): bool
+    {
+        return '' !== $this->getDeleteField($table);
+    }
+
+    /**
+     * True if the table is rootLevel=1 (root-only) or rootLevel=-1 (root + pages).
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function isRootLevel(string $table): bool
+    {
+        $rootLevel = null !== $this->tcaSchemaFactory
+            ? ($this->tcaSchemaFactory->get($table)->getRawConfiguration()['rootLevel'] ?? 0)
+            : ($GLOBALS['TCA'][$table]['ctrl']['rootLevel'] ?? 0);
+
+        return 1 === (int) $rootLevel || -1 === (int) $rootLevel;
+    }
+
+    /**
      * @throws UndefinedSchemaException
      */
     public function getSortField(string $table): string
     {
-        if (null !== $this->tcaSchemaFactory) {
-            return $this->tcaSchemaFactory->get($table)->getRawConfiguration()['sortby'] ?? 'uid';
+        $config = null !== $this->tcaSchemaFactory
+            ? $this->tcaSchemaFactory->get($table)->getRawConfiguration()
+            : ($GLOBALS['TCA'][$table]['ctrl'] ?? []);
+
+        $sortby = (string) ($config['sortby'] ?? '');
+        if ('' !== $sortby) {
+            return $sortby;
         }
 
-        return $GLOBALS['TCA'][$table]['ctrl']['sortby'] ?? 'uid';
+        // sortby may be set to '' (e.g. tx_news_domain_model_news when manual sorting is off);
+        // fall back to default_sortby's first column, then to 'uid'.
+        $defaultSortby = (string) ($config['default_sortby'] ?? '');
+        if ('' !== $defaultSortby) {
+            $first = trim(explode(',', $defaultSortby)[0]);
+            $first = preg_split('/\s+/', $first)[0] ?? '';
+            if ('' !== $first) {
+                return $first;
+            }
+        }
+
+        return 'uid';
     }
 
     /**
@@ -199,7 +239,7 @@ class TcaCompatibilityService implements SingletonInterface
 
             return $schema->getCapability(TcaSchemaCapability::Language)
                 ->getLanguageField()->getName()
-            ;
+                ;
         }
 
         return $GLOBALS['TCA'][$table]['ctrl']['languageField'] ?? null;
@@ -218,7 +258,7 @@ class TcaCompatibilityService implements SingletonInterface
 
             return $schema->getCapability(TcaSchemaCapability::Language)
                 ->getTranslationOriginPointerField()->getName()
-            ;
+                ;
         }
 
         return $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'] ?? null;
@@ -380,5 +420,170 @@ class TcaCompatibilityService implements SingletonInterface
         $config = $GLOBALS['TCA'][$table]['columns'][$field]['config'] ?? [];
 
         return 'text' === ($config['type'] ?? '') && !empty($config['enableRichtext']);
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
+    public function hasSubSchema(string $table, string $type): bool
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            return $this->tcaSchemaFactory->has($table)
+                && $this->tcaSchemaFactory->get($table)->hasSubSchema($type);
+        }
+
+        return isset($GLOBALS['TCA'][$table]['types'][$type]);
+    }
+
+    /**
+     * Field names visible for a record type. When $typeKey is null, returns all base fields.
+     *
+     * @return list<string>
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getFieldNamesForType(string $table, ?string $typeKey): array
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            $schema = $this->tcaSchemaFactory->get($table);
+            if (null !== $typeKey && $schema->hasSubSchema($typeKey)) {
+                $schema = $schema->getSubSchema($typeKey);
+            }
+            $names = [];
+            foreach ($schema->getFields() as $field) {
+                $names[] = $field->getName();
+            }
+
+            return $names;
+        }
+
+        if (null !== $typeKey && isset($GLOBALS['TCA'][$table]['types'][$typeKey]['showitem'])) {
+            $showitem = (string) $GLOBALS['TCA'][$table]['types'][$typeKey]['showitem'];
+            $names = $this->resolveShowitemFieldNames($table, $showitem);
+
+            return array_values(array_unique($names));
+        }
+
+        /** @var list<string> $names */
+        $names = array_keys($GLOBALS['TCA'][$table]['columns'] ?? []);
+
+        return $names;
+    }
+
+    /**
+     * Expand a TCA `showitem` string to its real column names, recursively
+     * resolving `--palette--;<label>;<paletteName>` entries against
+     * `$GLOBALS['TCA'][$table]['palettes']`.
+     *
+     * @return list<string>
+     */
+    private function resolveShowitemFieldNames(string $table, string $showitem, int $depth = 0): array
+    {
+        if ($depth > 5) {
+            return [];
+        }
+        $names = [];
+        foreach (explode(',', $showitem) as $entry) {
+            $entry = trim($entry);
+            if ('' === $entry) {
+                continue;
+            }
+            if (str_starts_with($entry, '--palette--')) {
+                $paletteName = trim(explode(';', $entry, 3)[2] ?? '');
+                $paletteShowitem = $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'] ?? null;
+                if (is_string($paletteShowitem) && '' !== $paletteShowitem) {
+                    foreach ($this->resolveShowitemFieldNames($table, $paletteShowitem, $depth + 1) as $name) {
+                        $names[] = $name;
+                    }
+                }
+
+                continue;
+            }
+            if (str_starts_with($entry, '--')) {
+                continue;
+            }
+            $name = trim(explode(';', $entry, 2)[0]);
+            if ('' === $name) {
+                continue;
+            }
+            if (isset($GLOBALS['TCA'][$table]['columns'][$name])) {
+                $names[] = $name;
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * Field config merged with the type's columnsOverrides (if any).
+     *
+     * @return array<string, mixed>
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getEffectiveFieldConfiguration(string $table, ?string $typeKey, string $fieldName): array
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            $schema = $this->tcaSchemaFactory->get($table);
+            if (null !== $typeKey && $schema->hasSubSchema($typeKey)) {
+                $schema = $schema->getSubSchema($typeKey);
+            }
+            if ($schema->hasField($fieldName)) {
+                return $schema->getField($fieldName)->getConfiguration();
+            }
+
+            return [];
+        }
+
+        $config = $GLOBALS['TCA'][$table]['columns'][$fieldName]['config'] ?? [];
+        if (null !== $typeKey) {
+            $override = $GLOBALS['TCA'][$table]['types'][$typeKey]['columnsOverrides'][$fieldName]['config'] ?? null;
+            if (is_array($override)) {
+                $config = array_replace($config, $override);
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function isFieldRequired(array $config): bool
+    {
+        if (!empty($config['required'])) {
+            return true;
+        }
+
+        $eval = $config['eval'] ?? '';
+        if (is_string($eval) && '' !== $eval) {
+            return in_array('required', array_map('trim', explode(',', $eval)), true);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function isRichTextFieldConfig(array $config): bool
+    {
+        return 'text' === ($config['type'] ?? '') && !empty($config['enableRichtext']);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function isRelationalFieldConfig(array $config): bool
+    {
+        $type = (string) ($config['type'] ?? '');
+        if (in_array($type, ['inline', 'group', 'file', 'category'], true)) {
+            return true;
+        }
+        if ('select' === $type) {
+            return !empty($config['foreign_table']) || !empty($config['MM']);
+        }
+
+        return false;
     }
 }

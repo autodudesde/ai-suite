@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Domain\Repository;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -149,6 +150,33 @@ class GlobalInstructionsRepository
         ;
 
         return $result->fetchAssociative() ?: [];
+    }
+
+    /**
+     * Distinct (pid, scope) pairs of non-deleted instructions — used to enumerate
+     * which pages have any guidelines configured.
+     *
+     * @return list<array{pid: int, scope: string}>
+     */
+    public function findDistinctPidScopes(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+        ;
+
+        $rows = $queryBuilder
+            ->select('pid', 'scope')
+            ->from($this->table)
+            ->groupBy('pid', 'scope')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+
+        return array_map(
+            static fn (array $row): array => ['pid' => (int) $row['pid'], 'scope' => (string) $row['scope']],
+            $rows,
+        );
     }
 
     public function deactivateElement(int $id): void

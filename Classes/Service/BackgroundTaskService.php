@@ -6,9 +6,11 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
@@ -30,6 +32,7 @@ class BackgroundTaskService implements SingletonInterface
         protected readonly IconService $iconService,
         protected readonly SiteService $siteService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
     ) {}
 
     /**
@@ -87,7 +90,7 @@ class BackgroundTaskService implements SingletonInterface
             'description' => 0,
         ];
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
-            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+            if ($this->backendUserService->canEditFileReferenceMetadata($foundBackgroundTask['fileUid'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
 
                 try {
@@ -126,7 +129,7 @@ class BackgroundTaskService implements SingletonInterface
             'description' => 0,
         ];
         foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
-            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+            if ($this->backendUserService->canEditFileMetadata($foundBackgroundTask['fileUid'])) {
                 if ('NEW' === $foundBackgroundTask['mode']) {
                     $foundBackgroundTask['title'] = '';
                     $foundBackgroundTask['alternative'] = '';
@@ -160,7 +163,7 @@ class BackgroundTaskService implements SingletonInterface
             'description' => 0,
         ];
         foreach ($foundBackgroundTasksFileMetadataTranslation as $foundBackgroundTask) {
-            if ($this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+            if ($this->backendUserService->canEditFileMetadata($foundBackgroundTask['fileUid'])) {
                 $foundBackgroundTask['columnValue'] = $foundBackgroundTask[$foundBackgroundTask['column']];
                 $defaultSysFileMetadataRow = $this->backgroundTaskRepository->findSourceColumnValueByFileUidAndDefaultLanguage($foundBackgroundTask['fileUid']);
                 $foundBackgroundTask['sourceColumnValue'] = $defaultSysFileMetadataRow[$foundBackgroundTask['column']] ?? '';
@@ -312,6 +315,7 @@ class BackgroundTaskService implements SingletonInterface
 
         $this->collectPageBackgroundTasks($uuidStatus);
         $this->collectFileReferenceBackgroundTasks($uuidStatus);
+        $this->collectFileMetadataBackgroundTasks($uuidStatus);
         $this->collectPageTranslationBackgroundTasks($uuidStatus);
         $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus);
 
@@ -327,6 +331,7 @@ class BackgroundTaskService implements SingletonInterface
 
         $this->collectPageBackgroundTasks($uuidStatus, true);
         $this->collectFileReferenceBackgroundTasks($uuidStatus, true);
+        $this->collectFileMetadataBackgroundTasks($uuidStatus, true);
         $this->collectPageTranslationBackgroundTasks($uuidStatus, true);
         $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus, true);
 
@@ -420,6 +425,357 @@ class BackgroundTaskService implements SingletonInterface
     }
 
     /**
+     * @param array<string, mixed> $backgroundTask
+     * @param array<string, mixed> $data
+     */
+    public function handleFileMetadataTranslationSave(array $backgroundTask, array $data): void
+    {
+        if ('NEW' === $backgroundTask['mode']) {
+            $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'translation', 'metadata');
+            if (empty($sysFileMetadataRow)) {
+                throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
+            }
+            $fileUid = $sysFileMetadataRow['fileUid'];
+            $existingMetadataTranslation = $this->sysFileMetadataRepository->findTranslatedMetadataUid($backgroundTask['table_uid'], $fileUid, $backgroundTask['sys_language_uid']);
+
+            if (empty($existingMetadataTranslation)) {
+                $cmdmap = [
+                    $backgroundTask['table_name'] => [
+                        $backgroundTask['table_uid'] => [
+                            'localize' => $backgroundTask['sys_language_uid'],
+                        ],
+                    ],
+                ];
+                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                $dataHandler->start([], $cmdmap);
+                $dataHandler->process_cmdmap();
+                if (count($dataHandler->errorLog) > 0) {
+                    throw new \Exception(implode(', ', $dataHandler->errorLog));
+                }
+                $translatedMetadataUid = $dataHandler->copyMappingArray_merged[$backgroundTask['table_name']][$backgroundTask['table_uid']];
+            } else {
+                $translatedMetadataUid = $existingMetadataTranslation[0];
+            }
+
+            $datamap = [
+                $backgroundTask['table_name'] => [
+                    $translatedMetadataUid => [
+                        $backgroundTask['column'] => $data['inputValue'],
+                    ],
+                ],
+            ];
+        } else {
+            $datamap = [
+                $backgroundTask['table_name'] => [
+                    $backgroundTask['table_uid'] => [
+                        $backgroundTask['column'] => $data['inputValue'],
+                    ],
+                ],
+            ];
+        }
+
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $backgroundTask
+     * @param array<string, mixed> $data
+     */
+    public function handleNewMetadataRecordSave(array $backgroundTask, array $data): void
+    {
+        $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'metadata', 'fileMetadata');
+        if (empty($sysFileMetadataRow)) {
+            throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
+        }
+        $fileUid = $sysFileMetadataRow['fileUid'];
+        $existingMetadataTranslation = $this->sysFileMetadataRepository->findTranslatedMetadataUid($backgroundTask['table_uid'], $fileUid, $backgroundTask['sys_language_uid']);
+
+        if (empty($existingMetadataTranslation)) {
+            $cmdmap = [
+                $backgroundTask['table_name'] => [
+                    $backgroundTask['table_uid'] => [
+                        'localize' => $backgroundTask['sys_language_uid'],
+                    ],
+                ],
+            ];
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], $cmdmap);
+            $dataHandler->process_cmdmap();
+            if (count($dataHandler->errorLog) > 0) {
+                throw new \Exception(implode(', ', $dataHandler->errorLog));
+            }
+            $translatedMetadataUid = $dataHandler->copyMappingArray_merged[$backgroundTask['table_name']][$backgroundTask['table_uid']];
+        } else {
+            $translatedMetadataUid = $existingMetadataTranslation[0];
+        }
+
+        $datamap = [
+            $backgroundTask['table_name'] => [
+                $translatedMetadataUid => [
+                    $data['column'] => $data['inputValue'],
+                ],
+            ],
+        ];
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $backgroundTask
+     * @param array<string, mixed> $data
+     */
+    public function handleExistingMetadataRecordSave(array $backgroundTask, array $data): void
+    {
+        $datamap = [
+            $backgroundTask['table_name'] => [
+                $backgroundTask['table_uid'] => [
+                    $backgroundTask['column'] => $data['inputValue'],
+                ],
+            ],
+        ];
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($datamap, []);
+        $dataHandler->process_datamap();
+        if (count($dataHandler->errorLog) > 0) {
+            throw new \Exception(implode(', ', $dataHandler->errorLog));
+        }
+    }
+
+    /**
+     * Reads the configured max-tasks limit for CLI processing from ext_conf, with a default of 50.
+     */
+    public function getMaxTasksLimit(): int
+    {
+        try {
+            $extConf = $this->extensionConfiguration->get('ai_suite');
+
+            return (int) ($extConf['maxTasks'] ?? 50);
+        } catch (\Exception $e) {
+            $this->logger->warning('Could not read extension configuration for maxTasks, using default of 50', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return 50;
+        }
+    }
+
+    /**
+     * Retries all failed CLI background tasks (status: task-error) by instructing the AI server
+     * to re-run them. Local status is reset to 'pending' so the regular update cycle picks them up.
+     *
+     * @param array<string, mixed> $config Filter config: type, status (default 'failed'), column, sysLanguage, parentUuid, model
+     *
+     * @return array<string, mixed> ['success' => bool, 'processed' => int, 'message' => string]
+     */
+    public function retryFailedTasks(array $config = []): array
+    {
+        try {
+            $config['status'] ??= 'failed';
+            $maxTasks = $this->getMaxTasksLimit();
+            $tasks = $this->backgroundTaskRepository->findBackgroundTasksHandledByCli($maxTasks, $config);
+
+            if (empty($tasks)) {
+                return [
+                    'success' => true,
+                    'processed' => 0,
+                    'message' => 'No failed CLI tasks found.',
+                ];
+            }
+
+            $retried = 0;
+            $failed = 0;
+            $modelOverride = isset($config['model']) && '' !== $config['model'] ? (string) $config['model'] : null;
+
+            foreach ($tasks as $task) {
+                $uuid = $task['uuid'];
+                $scope = ('translation' === $task['type']) ? 'translation' : 'metadata';
+                $models = [];
+                if (null !== $modelOverride) {
+                    $modelKey = ('translation' === $task['type']) ? 'translate' : 'text';
+                    $models = [$modelKey => $modelOverride];
+                }
+
+                $answer = $this->sendRequestService->sendDataRequest(
+                    'handleBackgroundTask',
+                    [
+                        'uuid' => $uuid,
+                        'mode' => 'retry',
+                        'scope' => $scope,
+                    ],
+                    '',
+                    '',
+                    $models,
+                );
+
+                if ('Error' === $answer->getType()) {
+                    $errorMessage = $answer->getResponseData()['message'] ?? 'Unknown error occurred';
+                    $this->logger->error('Error retrying background task', [
+                        'uuid' => $uuid,
+                        'message' => $errorMessage,
+                    ]);
+                    ++$failed;
+
+                    continue;
+                }
+
+                $this->backgroundTaskRepository->updateStatus([
+                    $uuid => [
+                        'status' => 'pending',
+                        'answer' => '',
+                        'error' => '',
+                    ],
+                ]);
+
+                ++$retried;
+            }
+
+            return [
+                'success' => true,
+                'processed' => $retried,
+                'message' => sprintf(
+                    'Successfully retried %d task(s).%s',
+                    $retried,
+                    $failed > 0 ? sprintf(' %d task(s) could not be retried — check logs for details.', $failed) : ''
+                ),
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('Exception during retryFailedTasks', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'success' => false,
+                'processed' => 0,
+                'message' => 'An error occurred: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Polls the AI server for status of all CLI-handled background tasks, persists finished
+     * results to TYPO3 records and removes the local task entries.
+     *
+     * @return array<string, mixed> ['success' => bool, 'message' => string]
+     */
+    public function updateAllTaskStatuses(): array
+    {
+        try {
+            $backgroundTasks = [
+                'page' => [],
+                'pageTranslation' => [],
+                'pageTranslate' => [],
+                'fileReference' => [],
+                'fileMetadata' => [],
+                'fileMetadataTranslation' => [],
+            ];
+            $uuidStatus = [];
+
+            $this->prefillArrays($backgroundTasks, $uuidStatus);
+
+            $foundBackgroundTasksPageTranslation = $this->backgroundTaskRepository->findAllPageTranslationBackgroundTasks();
+            foreach ($foundBackgroundTasksPageTranslation as $foundBackgroundTask) {
+                $uuidStatus[$foundBackgroundTask['uuid']] = [
+                    'uuid' => $foundBackgroundTask['uuid'],
+                    'status' => $foundBackgroundTask['status'],
+                ];
+            }
+
+            if (count($uuidStatus) > 0) {
+                $answer = $this->sendRequestService->sendDataRequest(
+                    'massActionStatus',
+                    [
+                        'uuidStatus' => $uuidStatus,
+                    ]
+                );
+                if ('Error' === $answer->getType()) {
+                    $message = $answer->getResponseData()['message'] ?? 'Unknown error during massActionStatus request.';
+                    $this->logger->error('Error in massActionStatus request: '.$message);
+
+                    return [
+                        'success' => false,
+                        'message' => $message,
+                    ];
+                }
+                $statusData = $answer->getResponseData()['statusData'] ?? [];
+                $this->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $statusData);
+            }
+
+            $maxTasks = $this->getMaxTasksLimit();
+            $tasks = $this->backgroundTaskRepository->findBackgroundTasksHandledByCli(
+                $maxTasks,
+                ['status' => 'finished']
+            );
+            if (0 === count($tasks)) {
+                return [
+                    'success' => true,
+                    'message' => 'No tasks found to update!',
+                ];
+            }
+
+            $processed = 0;
+            $failed = 0;
+            foreach ($tasks as $task) {
+                if ('translation' === $task['type']) {
+                    try {
+                        $this->translationService->processTranslationTask($task);
+                        ++$processed;
+                    } catch (\Exception $e) {
+                        ++$failed;
+                        $this->logger->error('Error processing translation task', [
+                            'uuid' => $task['uuid'],
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                } else {
+                    try {
+                        $result = $this->processFinishedMetadataTask($task);
+                        if (true === $result['success']) {
+                            ++$processed;
+                        } else {
+                            ++$failed;
+                        }
+                    } catch (\Exception $e) {
+                        ++$failed;
+                        $this->logger->error('Error processing metadata task', [
+                            'uuid' => $task['uuid'],
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+            }
+
+            return [
+                'success' => true,
+                'message' => sprintf(
+                    'Successfully updated task status. %d tasks processed successfully, %d tasks failed.',
+                    $processed,
+                    $failed
+                ),
+            ];
+        } catch (\Exception $e) {
+            $this->logger->error('Exception during updateAllTaskStatuses', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'An error occurred: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    /**
      * @param array<mixed> $uuidStatus
      */
     private function collectPageBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
@@ -450,7 +806,7 @@ class BackgroundTaskService implements SingletonInterface
     {
         $foundBackgroundTasksFiles = $this->backgroundTaskRepository->findAllFileReferenceBackgroundTasks();
         foreach ($foundBackgroundTasksFiles as $foundBackgroundTask) {
-            if (!$this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+            if (!$this->backendUserService->canEditFileReferenceMetadata($foundBackgroundTask['fileUid'])) {
                 continue;
             }
 
@@ -498,7 +854,7 @@ class BackgroundTaskService implements SingletonInterface
     {
         $foundBackgroundTasksFileMetadataTranslation = $this->backgroundTaskRepository->findAllFileMetadataTranslationBackgroundTasks();
         foreach ($foundBackgroundTasksFileMetadataTranslation as $foundBackgroundTask) {
-            if (!$this->metadataService->hasFilePermissions($foundBackgroundTask['fileUid'])) {
+            if (!$this->backendUserService->canEditFileMetadata($foundBackgroundTask['fileUid'])) {
                 continue;
             }
 
@@ -512,6 +868,100 @@ class BackgroundTaskService implements SingletonInterface
             } else {
                 $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
             }
+        }
+    }
+
+    /**
+     * @param array<mixed> $uuidStatus
+     */
+    private function collectFileMetadataBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasksFileMetadata = $this->backgroundTaskRepository->findAllFileMetadataBackgroundTasks();
+        foreach ($foundBackgroundTasksFileMetadata as $foundBackgroundTask) {
+            if (!$this->backendUserService->canEditFileMetadata($foundBackgroundTask['fileUid'])) {
+                continue;
+            }
+
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status'],
+            ];
+
+            if ($structuredResult) {
+                $uuidStatus['fileMetadata'][$foundBackgroundTask['table_uid']] = $taskData;
+            } else {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+            }
+        }
+    }
+
+    /**
+     * Persists a finished CLI metadata task to its TYPO3 record and removes both the local
+     * background-task row and the server-side task copy.
+     *
+     * @param array<string, mixed> $task
+     *
+     * @return array<string, mixed> ['success' => bool, 'message' => string]
+     */
+    private function processFinishedMetadataTask(array $task): array
+    {
+        try {
+            $decoded = json_decode((string) ($task['answer'] ?? ''), true);
+            if (!is_array($decoded) || !isset($decoded['body']) || !is_array($decoded['body']) || [] === $decoded['body']) {
+                throw new \Exception('Background task '.($task['uuid'] ?? '').' has invalid or empty answer payload.');
+            }
+            $result = $decoded['body'];
+            $data = [
+                'uuid' => $task['uuid'],
+                'column' => $task['column'],
+                'inputValue' => $result[array_key_first($result)][0],
+            ];
+            $backgroundTask = $this->backgroundTaskRepository->findByUuid($data['uuid']);
+            if (empty($backgroundTask)) {
+                throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.notFound', [$data['uuid']]));
+            }
+            if (empty($backgroundTask['table_name'])) {
+                throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
+            }
+
+            if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
+                $this->handleFileMetadataTranslationSave($backgroundTask, $data);
+            } elseif ('NEW' === $backgroundTask['mode']) {
+                $this->handleNewMetadataRecordSave($backgroundTask, $data);
+            } else {
+                $this->handleExistingMetadataRecordSave($backgroundTask, $data);
+            }
+
+            $answer = $this->sendRequestService->sendDataRequest(
+                'handleBackgroundTask',
+                [
+                    'uuids' => [$data['uuid']],
+                    'mode' => 'delete',
+                ]
+            );
+            if ('Error' === $answer->getType()) {
+                $this->logger->error('Error while sending delete request to server: '.$answer->getResponseData()['message']);
+            }
+
+            $affectedRows = $this->backgroundTaskRepository->deleteByUuid($data['uuid']);
+            if (0 === $affectedRows) {
+                throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.notFound', [$data['uuid']]));
+            }
+
+            return [
+                'success' => true,
+                'message' => sprintf('Successfully inserted task with uuid %s and column %s', $data['uuid'], $data['column']),
+            ];
+        } catch (\Throwable $e) {
+            $this->logger->error('Exception during processFinishedMetadataTask', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => 'An error occurred: '.$e->getMessage(),
+            ];
         }
     }
 }

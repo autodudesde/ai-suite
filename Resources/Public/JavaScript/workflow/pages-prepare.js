@@ -88,8 +88,9 @@ class PagesPrepare {
                             await self.sendPagesToUpdate(formData);
                         }
                     }
-                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'pagesExecuteFormSubmitBtn') {
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && (ev.target.id === 'pagesExecuteFormSubmitBtn' || ev.target.id === 'automaticPagesExecuteFormSubmitBtn')) {
                         ev.preventDefault();
+                        const handledByCli = ev.target.id === 'automaticPagesExecuteFormSubmitBtn';
                         let checkboxes = document.querySelectorAll('input[name="page-selection"]');
                         let selectedPages = {};
                         checkboxes.forEach(function(checkbox) {
@@ -105,7 +106,8 @@ class PagesPrepare {
                                 parentUuid: self.parentUuid,
                                 column: document.querySelector('select[name="workflowPagesPrepare[column]"]').value,
                                 sysLanguage: document.querySelector('select[name="workflowPagesPrepare[sysLanguage]"]').value,
-                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
+                                handledByCli: handledByCli,
                             };
 
                             if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
@@ -257,6 +259,9 @@ class PagesPrepare {
         formData.append('workflowPagesExecute[sysLanguage]', baseFormData.sysLanguage);
         formData.append('workflowPagesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowPagesExecute[pages]', JSON.stringify(currentPages));
+        if (baseFormData.handledByCli) {
+            formData.append('workflowPagesExecute[handledByCli]', '1');
+        }
         return formData;
     }
 

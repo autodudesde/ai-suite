@@ -821,6 +821,87 @@
             <trans-unit id="aiSuite.translation.fileReferences">
                 <source>File references (alternative text, titles)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.label">
+                <source>AI Suite: No models available</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.description">
+                <source>No AI translation models are configured or permitted for your user group. Please check your AI Suite configuration and backend group permissions.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.error">
+                <source>No AI translation models are available. Please check your AI Suite configuration and backend group permissions.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.title">
+                <source>CLI Task Overview</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.schedulerNotLoaded">
+                <source>The TYPO3 Scheduler extension (EXT:scheduler) is not installed. CLI background tasks created by AI Suite will not be processed automatically. Install and enable EXT:scheduler and configure a recurring task that runs the "ai-suite:process-tasks" command.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.title">
+                <source>Statistics</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.total">
+                <source>Failed Tasks</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.pending">
+                <source>Pending Tasks</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.byScope">
+                <source>By Scope</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.pendingTasks.statistics.byScope">
+                <source>Pending by Scope</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.filter.label">
+                <source>Filter by Type</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.rerunAll">
+                <source>Rerun all failed tasks</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.rerunScope">
+                <source>Rerun scope</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.updateStatus">
+                <source>Update task status</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.noTasks">
+                <source>No failed tasks — everything looks fine.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.uuid">
+                <source>UUID</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.number">
+                <source>#</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.type">
+                <source>Type</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.model">
+                <source>Model</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.column">
+                <source>Column</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.date">
+                <source>Created</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.page">
+                <source>Page Metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.page-translation">
+                <source>Page Translation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.fileReference">
+                <source>File References</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.fileMetadata">
+                <source>File Metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.metadata">
+                <source>File Metadata Translation</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

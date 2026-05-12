@@ -1,6 +1,7 @@
 <?php
 
 use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
 use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\ContentController;
 use AutoDudes\AiSuite\Controller\GlobalInstructionController;
@@ -221,5 +222,13 @@ return [
     'aisuite_globalinstruction_preview' => [
         'path' => '/globalinstruction/preview',
         'target' => GlobalInstructionController::class.'::previewAction',
+    ],
+    'aisuite_cli_overview_rerun' => [
+        'path' => '/cli-overview/rerun',
+        'target' => CliOverviewAjaxController::class.'::rerunAction',
+    ],
+    'aisuite_cli_overview_update_status' => [
+        'path' => '/cli-overview/update-status',
+        'target' => CliOverviewAjaxController::class.'::updateStatusAction',
     ],
 ];

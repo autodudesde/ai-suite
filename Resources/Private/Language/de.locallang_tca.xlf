@@ -24,8 +24,8 @@
                 <target>Gruppenspezifischer GoogleTranslate API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder">
-                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
-                <target>Speichere Bild- und Mediendateien in diesem Ordner (z. B. /images/ai-images/unterordner). Wenn der Ordner nicht existiert, wird er erstellt.</target>
+                <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
+                <target>Speichere Bild- und Mediendateien in diesem Ordner (z. B. ai-images/unterordner oder einem kombinierten Identifier wie 1:/user_upload/ai-images). Wenn der Ordner nicht existiert, wird er erstellt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey">
                 <source>Group specific Midjourney API key</source>

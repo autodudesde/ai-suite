@@ -19,7 +19,7 @@
                 <source>Group specific GoogleTranslate API key</source>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder">
-                <source>Store image and media files at this folder (e.g. /images/ai-images/subfolder). If the folder doesn't exist, it will be created.</source>
+                <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey">
                 <source>Group specific Midjourney API key</source>
@@ -340,6 +340,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableGlobalSettingsDescription">
                 <source>If active the &quot;Global Settings&quot; button will be shown within the backend module to manage extension configuration</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableCliWorkflowExecution">
+                <source>Allow CLI/Scheduler-based workflow execution</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableCliWorkflowExecutionDescription">
+                <source>Shows the &quot;Execute via Scheduler&quot; button in the workflow manager. Background tasks created this way are processed asynchronously by the scheduler-driven ai-suite:process-tasks command. Requires EXT:scheduler.</source>
             </trans-unit>
         </body>
     </file>

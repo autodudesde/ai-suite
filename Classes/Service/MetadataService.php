@@ -100,13 +100,11 @@ class MetadataService
         try {
             $data = $file->getContents();
             if (empty($data)) {
-                $decodedIdentifier = urldecode($file->getIdentifier());
-                $file = $file->getStorage()->getFile($decodedIdentifier);
+                $file = $this->reloadFileFromStorage($file);
                 $data = $file->getContents();
             }
         } catch (\Throwable $e) {
-            $decodedIdentifier = urldecode($file->getIdentifier());
-            $file = $file->getStorage()->getFile($decodedIdentifier);
+            $file = $this->reloadFileFromStorage($file);
             $data = $file->getContents();
         }
 
@@ -115,10 +113,12 @@ class MetadataService
 
     public function getFilename(int $sysFileId): string
     {
-        $file = $this->resourceFactory->getFileObject($sysFileId);
+        if ($sysFileId <= 0) {
+            return '';
+        }
 
         try {
-            return $file->getName();
+            return $this->resourceFactory->getFileObject($sysFileId)->getName();
         } catch (\Throwable $e) {
             return '';
         }
@@ -257,23 +257,6 @@ class MetadataService
         }
 
         return $metadataFields;
-    }
-
-    public function hasFilePermissions(int $fileUid, string $table = 'sys_file_metadata'): bool
-    {
-        if ($this->backendUserService->getBackendUser()?->isAdmin() ?? false) {
-            return true;
-        }
-
-        try {
-            $file = $this->resourceFactory->getFileObject($fileUid);
-
-            return $file->isIndexed()
-                && $file->checkActionPermission('editMeta')
-                && ($this->backendUserService->getBackendUser()?->check('tables_modify', $table) ?? false);
-        } catch (\Exception $e) {
-            return false;
-        }
     }
 
     /**
@@ -438,6 +421,23 @@ class MetadataService
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
+    }
+
+    /**
+     * @throws FileDoesNotExistException
+     */
+    private function reloadFileFromStorage(FileInterface $file): FileInterface
+    {
+        $decodedIdentifier = urldecode($file->getIdentifier());
+        $reloadedFile = $file->getStorage()->getFile($decodedIdentifier);
+        if (null === $reloadedFile) {
+            throw new FileDoesNotExistException(
+                'Could not reload file "'.$decodedIdentifier.'" from storage '.$file->getStorage()->getUid(),
+                1731600000
+            );
+        }
+
+        return $reloadedFile;
     }
 
     /**

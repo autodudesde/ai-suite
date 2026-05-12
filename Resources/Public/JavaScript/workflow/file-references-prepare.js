@@ -87,8 +87,9 @@ class FileReferencePrepare {
                             await self.sendFileReferencesToUpdate(formData);
                         }
                     }
-                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'fileReferencesExecuteFormSubmitBtn') {
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && (ev.target.id === 'fileReferencesExecuteFormSubmitBtn' || ev.target.id === 'automaticFileReferencesExecuteFormSubmitBtn')) {
                         ev.preventDefault();
+                        const handledByCli = ev.target.id === 'automaticFileReferencesExecuteFormSubmitBtn';
                         let checkboxes = document.querySelectorAll('input[name="file-reference-selection"]');
                         let selectedFileReferences = {};
                         checkboxes.forEach(function(checkbox) {
@@ -106,6 +107,7 @@ class FileReferencePrepare {
                                 sysLanguage: document.querySelector('select[name="workflowFileReferencesPrepare[sysLanguage]"]').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
                                 startFromPid: document.querySelector('input[name="workflowFileReferencesPrepare[startFromPid]"]').value,
+                                handledByCli: handledByCli,
                             };
 
                             if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
@@ -219,6 +221,9 @@ class FileReferencePrepare {
         formData.append('workflowFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowFileReferencesExecute[startFromPid]', baseFormData.startFromPid);
         formData.append('workflowFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
+        if (baseFormData.handledByCli) {
+            formData.append('workflowFileReferencesExecute[handledByCli]', '1');
+        }
         return formData;
     }
 

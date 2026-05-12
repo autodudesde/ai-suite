@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Domain\Repository;
 
 use Doctrine\DBAL\Exception;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 class AbstractPromptTemplateRepository
@@ -105,5 +106,41 @@ class AbstractPromptTemplateRepository
         ;
 
         return $result ?: [];
+    }
+
+    /**
+     * Enabled (non-deleted, non-hidden) templates with the metadata fields needed for listings.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findAllEnabled(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('uid', 'name', 'scope', 'type')
+            ->from($this->table)
+            ->orderBy($this->sortBy, 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * @return null|array<string, mixed>
+     */
+    public function findByUid(int $uid): ?array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        $row = $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAssociative()
+        ;
+
+        return false === $row ? null : $row;
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\EventListener;
 
+use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
@@ -16,6 +17,7 @@ class AfterFileAddedEventListener
 {
     public function __construct(
         private readonly MetadataService $metadataService,
+        private readonly BackendUserService $backendUserService,
         private readonly ExtensionConfiguration $extensionConfiguration,
         private readonly WorkflowProcessingService $workflowProcessingService,
     ) {}
@@ -32,7 +34,7 @@ class AfterFileAddedEventListener
             return;
         }
 
-        if (!$this->metadataService->hasFilePermissions($file->getUid())) {
+        if (!$this->backendUserService->canEditFileMetadata($file->getUid())) {
             return;
         }
 

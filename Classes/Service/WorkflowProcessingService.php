@@ -16,29 +16,79 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
+use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
+use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 class WorkflowProcessingService implements SingletonInterface
 {
+    /**
+     * Workflow types supported by the WorkflowProcessingService orchestrators.
+     *
+     * @var array<string, string>
+     */
+    public const WORKFLOW_TYPES = [
+        'page' => 'Page Metadata Generation',
+        'pageTranslate' => 'Page Translation',
+        'fileReferences' => 'File References Metadata',
+        'fileMetadata' => 'File Metadata Generation',
+        'fileMetadataTranslation' => 'File Metadata Translation',
+    ];
+
     public function __construct(
         protected readonly MetadataService $metadataService,
+        protected readonly BackendUserService $backendUserService,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly UuidService $uuidService,
         protected readonly SiteService $siteService,
         protected readonly TranslationService $translationService,
         protected readonly LocalizationService $localizationService,
         protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
+        protected readonly SysFileReferenceRepository $sysFileReferenceRepository,
         protected readonly DirectiveService $directiveService,
         protected readonly GlobalInstructionService $globalInstructionService,
         protected readonly WorkflowViewService $workflowViewService,
         protected readonly SendRequestService $sendRequestService,
         protected readonly LoggerInterface $logger,
+        protected readonly PagesRepository $pagesRepository,
+        protected readonly PageRepository $pageRepository,
+        protected readonly DomainResolverService $domainResolverService,
+        protected readonly GlossarService $glossarService,
+        protected readonly StorageRepository $storageRepository,
     ) {}
+
+    /**
+     * @return array<int|string, string>
+     */
+    public function getAvailablePageTypes(): array
+    {
+        $ignorePageTypes = [3, 4, 6, 7, 199, 254, 255];
+        $pageTypes = $GLOBALS['TCA']['pages']['columns']['doktype']['config']['items'] ?? [];
+        $availablePageTypes = [
+            -1 => $this->localizationService->translate('module:aiSuite.module.preparePages.allPageTypes'),
+        ];
+        foreach ($pageTypes as $pageType) {
+            if (
+                is_array($pageType)
+                && isset($pageType['value'])
+                && '--div--' !== $pageType['value']
+                && !in_array($pageType['value'], $ignorePageTypes, true)
+            ) {
+                $availablePageTypes[$pageType['value']] = $this->localizationService->translate($pageType['label']);
+            }
+        }
+
+        return $availablePageTypes;
+    }
 
     /**
      * @param array<string, mixed> $workflowData   Must contain: parentUuid, column, textAiModel
@@ -53,7 +103,7 @@ class WorkflowProcessingService implements SingletonInterface
         array $pages,
         array $languageParts,
         callable $contentFetcher,
-        SendRequestService $requestService,
+        bool $handledByCli = false,
     ): array {
         $payload = [];
         $bulkPayload = [];
@@ -75,6 +125,8 @@ class WorkflowProcessingService implements SingletonInterface
                     $pageUid,
                     (int) $languageParts[1],
                     '',
+                    handledByCli: $handledByCli,
+                    model: (string) ($workflowData['textAiModel'] ?? ''),
                 );
 
                 $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageUid);
@@ -120,6 +172,8 @@ class WorkflowProcessingService implements SingletonInterface
         int $sourceLanguageUid,
         int $targetLanguageUid,
         ?ServerRequestInterface $request = null,
+        bool $handledByCli = false,
+        ?string $model = null,
     ): array {
         $payload = [];
         $bulkPayload = [];
@@ -154,6 +208,8 @@ class WorkflowProcessingService implements SingletonInterface
                     $pageUid,
                     $targetLanguageUid,
                     '',
+                    handledByCli: $handledByCli,
+                    model: $model ?? '',
                 );
 
                 $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageUid);
@@ -197,6 +253,8 @@ class WorkflowProcessingService implements SingletonInterface
         string $sourceLanguage,
         string $targetLanguage,
         int $targetLanguageUid,
+        bool $handledByCli = false,
+        ?string $model = null,
     ): array {
         $payload = [];
         $bulkPayload = [];
@@ -225,6 +283,8 @@ class WorkflowProcessingService implements SingletonInterface
                         $defaultSysFileMetaUid,
                         $targetLanguageUid,
                         $columns['mode'],
+                        handledByCli: $handledByCli,
+                        model: $model ?? '',
                     );
 
                     $folderCombinedIdentifier = $this->workflowViewService->getFolderCombinedIdentifier($fileUid);
@@ -275,7 +335,9 @@ class WorkflowProcessingService implements SingletonInterface
         array $workflowDataFiles,
         array $languageParts,
         string $scope,
-        SendRequestService $requestService
+        SendRequestService $requestService,
+        bool $handledByCli = false,
+        ?string $requestSystemDomain = null,
     ): array {
         $filesMetadataUidList = [];
         $files = [];
@@ -328,7 +390,8 @@ class WorkflowProcessingService implements SingletonInterface
                             $languageParts[0],
                             [
                                 'text' => $workflowData['textAiModel'],
-                            ]
+                            ],
+                            $requestSystemDomain,
                         );
 
                         if ('Error' === $answer->getType()) {
@@ -352,7 +415,9 @@ class WorkflowProcessingService implements SingletonInterface
                         'uid',
                         $defaultSysFileMetaUid,
                         $targetLanguageId,
-                        $columns['mode']
+                        $columns['mode'],
+                        handledByCli: $handledByCli,
+                        model: (string) ($workflowData['textAiModel'] ?? ''),
                     );
                     $folderCombinedIdentifier = $this->workflowViewService->getFolderCombinedIdentifier($fileUid);
                     $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
@@ -377,6 +442,159 @@ class WorkflowProcessingService implements SingletonInterface
             'payload' => $payload,
             'bulkPayload' => $bulkPayload,
             'failedFilesMetadata' => $failedFilesMetadata,
+        ];
+    }
+
+    /**
+     * Sends the final workflow request (createMassAction) to the AI server and persists the bulk
+     * background-task payload on success. Used as the closing step of every workflow execute action
+     * (and for the equivalent CLI orchestrators).
+     *
+     * @param list<array<string, mixed>> $payload     Per-task request payload
+     * @param list<BackgroundTask>       $bulkPayload Background-task DTOs to persist on success
+     * @param array<string, mixed>       $extraParams Extra data params (e.g. glossary, deepl_glossary_id)
+     *
+     * @return null|string Error message on failure, null on success (or when payload is empty)
+     */
+    public function sendWorkflowRequest(
+        array $payload,
+        array $bulkPayload,
+        string $parentUuid,
+        string $scope,
+        string $type,
+        string $languageCode,
+        string $modelKey,
+        string $model,
+        SendRequestService $requestService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        array $extraParams = [],
+        ?string $requestSystemDomain = null,
+    ): ?string {
+        if (0 === count($payload)) {
+            return null;
+        }
+
+        $answer = $requestService->sendDataRequest(
+            'createMassAction',
+            array_merge([
+                'uuid' => $parentUuid,
+                'payload' => $payload,
+                'scope' => $scope,
+                'type' => $type,
+            ], $extraParams),
+            '',
+            $languageCode,
+            [$modelKey => $model],
+            $requestSystemDomain,
+        );
+
+        if ('Error' === $answer->getType()) {
+            return $answer->getResponseData()['message'] ?? 'Unknown error while sending workflow request.';
+        }
+
+        $backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed>     $workflowData   Must contain: parentUuid, column, textAiModel, startFromPid
+     * @param array<int|string, mixed> $fileReferences Map of sysFileReferenceUid => sysFileUid (sysFileUid may be 0; resolved from sys_file_reference table)
+     * @param list<string>             $languageParts  [isoCode, languageId]
+     * @param SendRequestService       $requestService Request service for API calls
+     *
+     * @return array<string, mixed>
+     */
+    public function processFileReferencesMetadataGeneration(
+        array $workflowData,
+        array $fileReferences,
+        array $languageParts,
+        SendRequestService $requestService,
+        bool $handledByCli = false,
+        ?string $requestSystemDomain = null,
+    ): array {
+        $payload = [];
+        $bulkPayload = [];
+        $failedFileReferences = [];
+        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
+        $fileSizeSumInBytes = 0;
+
+        foreach ($fileReferences as $sysFileReferenceUid => $sysFileUid) {
+            try {
+                if (0 === (int) $sysFileUid) {
+                    $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int) $sysFileReferenceUid);
+                    if (0 === count($fileReferenceRow) || !array_key_exists('uid_local', $fileReferenceRow[0])) {
+                        throw new \Exception($this->localizationService->translate('aiSuite.error.fileReference.notFound', [$sysFileReferenceUid]));
+                    }
+                    $sysFileUid = (int) $fileReferenceRow[0]['uid_local'];
+                }
+                $fileContent = $this->metadataService->getFileContent((int) $sysFileUid);
+                $filename = $this->metadataService->getFilename((int) $sysFileUid);
+                $fileSize = strlen($fileContent);
+
+                if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
+                    $answer = $requestService->sendDataRequest(
+                        'createMassAction',
+                        [
+                            'uuid' => $workflowData['parentUuid'],
+                            'payload' => $payload,
+                            'scope' => 'fileReference',
+                            'type' => 'metadata',
+                        ],
+                        '',
+                        $languageParts[0],
+                        [
+                            'text' => $workflowData['textAiModel'],
+                        ],
+                        $requestSystemDomain,
+                    );
+
+                    if ('Error' === $answer->getType()) {
+                        throw new \Exception($answer->getResponseData()['message']);
+                    }
+                    $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
+                    $payload = [];
+                    $bulkPayload = [];
+                    $fileSizeSumInBytes = 0;
+                }
+
+                $uuid = $this->uuidService->generateUuid();
+                $bulkPayload[] = new BackgroundTask(
+                    'fileReference',
+                    'metadata',
+                    $workflowData['parentUuid'],
+                    $uuid,
+                    $workflowData['column'],
+                    'sys_file_reference',
+                    'uid',
+                    (int) $sysFileReferenceUid,
+                    (int) $languageParts[1],
+                    '',
+                    handledByCli: $handledByCli,
+                    model: (string) ($workflowData['textAiModel'] ?? ''),
+                );
+                $pageId = (int) $workflowData['startFromPid'];
+                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+                $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageId]);
+                $payload[] = [
+                    'field_label' => $workflowData['column'],
+                    'request_content' => $fileContent,
+                    'uuid' => $uuid,
+                    'global_instructions' => $globalInstructions,
+                    'override_predefined_prompt' => $globalInstructionsOverride,
+                    'filename' => $filename,
+                ];
+                $fileSizeSumInBytes += $fileSize;
+            } catch (\Exception $e) {
+                $this->logger->error('Error while fetching file content for file with sys file reference uid '.$sysFileReferenceUid.': '.$e->getMessage());
+                $failedFileReferences[] = $sysFileReferenceUid;
+            }
+        }
+
+        return [
+            'payload' => $payload,
+            'bulkPayload' => $bulkPayload,
+            'failedFileReferences' => $failedFileReferences,
         ];
     }
 
@@ -472,5 +690,724 @@ class WorkflowProcessingService implements SingletonInterface
                 ContextualFeedbackSeverity::ERROR
             );
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // High-level workflow orchestrators (used by CLI commands)
+    //
+    // Each orchestrator combines: language-filter reinforce → record selection →
+    // pending/translated skip → process* payload build → sendWorkflowRequest.
+    // -------------------------------------------------------------------------
+
+    /**
+     * @param array<string, mixed> $config Must contain: type='page', model, startFromPid, depth, pageType, column, sysLanguage, showOnlyEmpty
+     *
+     * @return array<string, mixed> ['success' => bool, 'message' => string, 'failedFiles'|'failedPages' => list<int>]
+     */
+    public function prepareAndExecutePagesMetadataWorkflow(array $config): array
+    {
+        $pageId = (int) $config['startFromPid'];
+        $this->reinforceLanguageFilter($config, $pageId);
+
+        $foundPageUids = $this->pageRepository->getPageIdsRecursive([$pageId], (int) $config['depth']);
+        $pagesData = $this->pagesRepository->fetchNecessaryPageData($config, $foundPageUids);
+        $pages = [];
+        foreach ($pagesData as $pageData) {
+            $pages[$pageData['uid']] = $pageData['slug'];
+        }
+
+        $languageParts = explode('__', (string) $config['sysLanguage']);
+
+        $pagesUids = array_keys($pages);
+        $alreadyPending = $this->backgroundTaskRepository->fetchAlreadyPendingEntries(
+            $pagesUids,
+            'pages',
+            $config['column'],
+            '',
+            'metadata',
+            (int) $languageParts[1],
+        );
+        foreach ($alreadyPending as $pendingData) {
+            unset($pages[$pendingData['table_uid']]);
+        }
+
+        if (empty($pages)) {
+            return [
+                'success' => true,
+                'failedPages' => [],
+                'message' => 'All entered tasks are pending or already done!',
+            ];
+        }
+
+        $parentUuid = $this->uuidService->generateUuid();
+        $workflowData = [
+            'parentUuid' => $parentUuid,
+            'column' => $config['column'],
+            'textAiModel' => $config['model'],
+        ];
+
+        $contentFetcher = $this->buildPageContentFetcher();
+        $result = $this->processPageMetadataGeneration(
+            $workflowData,
+            $pages,
+            $languageParts,
+            $contentFetcher,
+            handledByCli: true,
+        );
+
+        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
+        $errorMessage = $this->sendWorkflowRequest(
+            $result['payload'],
+            $result['bulkPayload'],
+            $parentUuid,
+            'page',
+            'metadata',
+            $languageParts[0],
+            'text',
+            $config['model'],
+            $this->sendRequestService,
+            $this->backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'failedPages' => $result['failedPages'],
+            ];
+        }
+
+        $taskCount = count($result['bulkPayload']);
+
+        return [
+            'success' => true,
+            'failedPages' => $result['failedPages'],
+            'message' => sprintf('Successfully added %d new task(s).', $taskCount),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $config Must contain: type='pageTranslate', model, startFromPid, depth, pageType, sourceLanguage, targetLanguage, translationScope
+     *
+     * @return array<string, mixed>
+     */
+    public function prepareAndExecutePageTranslationWorkflow(array $config): array
+    {
+        $pageId = (int) $config['startFromPid'];
+        $this->reinforceTranslationLanguageFilters($config, $pageId);
+
+        $sourceLanguageParts = explode('__', (string) $config['sourceLanguage']);
+        $targetLanguageParts = explode('__', (string) $config['targetLanguage']);
+
+        $foundPageUids = $this->pageRepository->getPageIdsRecursive([$pageId], (int) $config['depth']);
+        $pagesData = $this->pagesRepository->fetchPagesForTranslation(
+            $foundPageUids,
+            (int) $sourceLanguageParts[1],
+            (int) $targetLanguageParts[1],
+            $config,
+        );
+
+        $pages = [];
+        foreach ($pagesData as $pageData) {
+            if (!empty($pageData['isAlreadyTranslated'])) {
+                continue;
+            }
+            $pages[$pageData['uid']] = $pageData;
+        }
+
+        if (empty($pages)) {
+            return [
+                'success' => true,
+                'failedPages' => [],
+                'message' => 'No pages found for translation!',
+            ];
+        }
+
+        $alreadyPending = $this->backgroundTaskRepository->fetchAlreadyPendingEntriesForTranslation(
+            array_keys($pages),
+            'pages',
+            (int) $targetLanguageParts[1],
+        );
+        foreach ($alreadyPending as $pendingData) {
+            unset($pages[$pendingData['table_uid']]);
+        }
+
+        if (empty($pages)) {
+            return [
+                'success' => true,
+                'message' => 'All entered tasks are pending or already done!',
+            ];
+        }
+
+        $parentUuid = $this->uuidService->generateUuid();
+        $result = $this->processPageTranslation(
+            $pages,
+            $parentUuid,
+            (string) $config['translationScope'],
+            $sourceLanguageParts[0],
+            $targetLanguageParts[0],
+            (int) $sourceLanguageParts[1],
+            (int) $targetLanguageParts[1],
+            null,
+            handledByCli: true,
+            model: (string) ($config['model'] ?? ''),
+        );
+
+        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
+        $errorMessage = $this->sendWorkflowRequest(
+            $result['payload'],
+            $result['bulkPayload'],
+            $parentUuid,
+            'page-translation',
+            'translation',
+            '',
+            'translate',
+            $config['model'],
+            $this->sendRequestService,
+            $this->backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'failedPages' => $result['failedPages'],
+            ];
+        }
+
+        $taskCount = count($result['bulkPayload']);
+
+        return [
+            'success' => true,
+            'failedPages' => $result['failedPages'],
+            'message' => sprintf('Successfully added %d new task(s).', $taskCount),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $config Must contain: type='fileReferences', model, startFromPid, depth, column, sysLanguage, showOnlyEmpty
+     *
+     * @return array<string, mixed>
+     */
+    public function prepareAndExecuteFileReferencesMetadataWorkflow(array $config): array
+    {
+        $pageId = (int) $config['startFromPid'];
+        $this->reinforceLanguageFilter($config, $pageId);
+        $config['showOnlyEmpty'] ??= false;
+
+        $languageParts = explode('__', (string) $config['sysLanguage']);
+
+        $foundPageUids = $this->pageRepository->getPageIdsRecursive([$pageId], (int) $config['depth']);
+        $foundFileReferences = $this->pagesRepository->fetchSysFileReferences(
+            $foundPageUids,
+            (string) $config['column'],
+            (int) $languageParts[1],
+            (bool) $config['showOnlyEmpty'],
+        );
+
+        $fileReferences = [];
+        foreach ($foundFileReferences as $fileRefData) {
+            if (!$this->backendUserService->canEditFileReferenceMetadata($fileRefData['uid_local'])) {
+                continue;
+            }
+            if (!in_array($fileRefData['fileMimeType'] ?? '', MetadataService::SUPPORTED_IMAGE_MIME_TYPES, true)) {
+                continue;
+            }
+            $fileReferences[$fileRefData['uid']] = $fileRefData['uid_local'];
+        }
+
+        if (empty($fileReferences)) {
+            return [
+                'success' => true,
+                'failedFiles' => [],
+                'message' => 'No eligible file references found.',
+            ];
+        }
+
+        $parentUuid = $this->uuidService->generateUuid();
+        $workflowData = [
+            'parentUuid' => $parentUuid,
+            'column' => $config['column'],
+            'textAiModel' => $config['model'],
+            'startFromPid' => $config['startFromPid'],
+        ];
+        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
+
+        $result = $this->processFileReferencesMetadataGeneration(
+            $workflowData,
+            $fileReferences,
+            $languageParts,
+            $this->sendRequestService,
+            handledByCli: true,
+            requestSystemDomain: $requestSystemDomain,
+        );
+
+        $errorMessage = $this->sendWorkflowRequest(
+            $result['payload'],
+            $result['bulkPayload'],
+            $parentUuid,
+            'fileReference',
+            'metadata',
+            $languageParts[0],
+            'text',
+            $config['model'],
+            $this->sendRequestService,
+            $this->backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'failedFiles' => $result['failedFileReferences'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'failedFiles' => $result['failedFileReferences'],
+            'message' => sprintf('Successfully added %d new task(s).', count($result['bulkPayload'])),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $config Must contain: type='fileMetadata', model, directory, column, sysLanguage, showOnlyEmpty, showOnlyUsed
+     *
+     * @return array<string, mixed>
+     */
+    public function prepareAndExecuteFileMetadataWorkflow(array $config): array
+    {
+        $directory = (string) ($config['directory'] ?? '');
+        $languageParts = explode('__', (string) $config['sysLanguage']);
+        $languageId = (int) $languageParts[1];
+        $column = (string) $config['column'];
+        $showOnlyEmpty = (bool) ($config['showOnlyEmpty'] ?? false);
+        $showOnlyUsed = (bool) ($config['showOnlyUsed'] ?? false);
+
+        try {
+            $folder = $this->resolveWorkflowFolder($directory);
+            $files = $folder->getFiles();
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Specified directory could not be found: '.$e->getMessage(),
+            ];
+        }
+
+        if (empty($files)) {
+            return [
+                'success' => false,
+                'message' => 'No files found in the specified directory.',
+            ];
+        }
+
+        $fileUids = [];
+        foreach ($files as $file) {
+            if (!$this->backendUserService->canEditFileMetadata($file->getUid())) {
+                continue;
+            }
+            if (2 !== $file->getType()) {
+                continue;
+            }
+            $fileUids[] = $file->getUid();
+        }
+
+        $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
+            $fileUids,
+            $column,
+            'file',
+            $languageId,
+            $showOnlyEmpty,
+            $showOnlyUsed,
+        );
+
+        if ($languageId > 0) {
+            $translatedFileUids = array_keys($metadataList);
+            $nonTranslatedFileUids = array_filter(
+                array_values(array_diff($fileUids, $translatedFileUids)),
+                static fn ($uid) => 0 !== $uid,
+            );
+            if (!empty($nonTranslatedFileUids)) {
+                $defaultLanguageMetadataUids = $this->sysFileMetadataRepository->findDefaultLanguageMetadataUidsByFileUids(
+                    array_values($nonTranslatedFileUids)
+                );
+                foreach ($nonTranslatedFileUids as $fileUid) {
+                    $defaultMetadataUid = $defaultLanguageMetadataUids[$fileUid] ?? 0;
+                    if (0 === $defaultMetadataUid) {
+                        $this->logger->error('Missing default file metadata for file uid '.$fileUid);
+
+                        continue;
+                    }
+                    $metadataList[$fileUid] = [
+                        'uid' => $defaultMetadataUid,
+                        'file' => $fileUid,
+                        'title' => '',
+                        'alternative' => '',
+                        'description' => '',
+                        'mode' => 'NEW',
+                    ];
+                }
+            }
+        }
+
+        $workflowDataFiles = [];
+        foreach ($files as $file) {
+            if (!in_array($file->getMimeType(), MetadataService::SUPPORTED_IMAGE_MIME_TYPES, true)) {
+                continue;
+            }
+            $fileUid = $file->getUid();
+            if (!array_key_exists($fileUid, $metadataList)) {
+                continue;
+            }
+            $fileMeta = $metadataList[$fileUid];
+            $workflowDataFiles[$fileMeta['uid']] = [
+                'title' => $fileMeta['title'] ?? '',
+                'alternative' => $fileMeta['alternative'] ?? '',
+                'description' => $fileMeta['description'] ?? '',
+                'mode' => isset($fileMeta['mode']) && 'NEW' === $fileMeta['mode'] ? 'NEW' : '',
+            ];
+        }
+
+        if (empty($workflowDataFiles)) {
+            return [
+                'success' => false,
+                'message' => 'No eligible image files found for metadata generation.',
+            ];
+        }
+
+        $scope = 'fileMetadata';
+        $parentUuid = $this->uuidService->generateUuid();
+        $workflowData = [
+            'parentUuid' => $parentUuid,
+            'column' => $column,
+            'textAiModel' => $config['model'],
+        ];
+        $requestSystemDomain = $this->domainResolverService->getDomainBySiteIdentifier(end($languageParts));
+
+        $result = $this->processFilelistFilesForMetadataGeneration(
+            $workflowData,
+            $workflowDataFiles,
+            $languageParts,
+            $scope,
+            $this->sendRequestService,
+            handledByCli: true,
+            requestSystemDomain: $requestSystemDomain,
+        );
+
+        $errorMessage = $this->sendWorkflowRequest(
+            $result['payload'],
+            $result['bulkPayload'],
+            $parentUuid,
+            $scope,
+            'metadata',
+            $languageParts[0],
+            'text',
+            $config['model'],
+            $this->sendRequestService,
+            $this->backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'failedFiles' => $result['failedFilesMetadata'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'failedFiles' => $result['failedFilesMetadata'],
+            'message' => sprintf(
+                'Successfully added %d new task(s).',
+                count($workflowDataFiles) - count($result['failedFilesMetadata']),
+            ),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $config Must contain: type='fileMetadataTranslation', model, directory, column, sourceLanguage, targetLanguage, showOnlyUsed, glossary?
+     *
+     * @return array<string, mixed>
+     */
+    public function prepareAndExecuteFileMetadataTranslationWorkflow(array $config): array
+    {
+        $directory = (string) ($config['directory'] ?? '');
+        $sourceLanguageParts = explode('__', (string) $config['sourceLanguage']);
+        $targetLanguageParts = explode('__', (string) $config['targetLanguage']);
+        $targetLanguageId = (int) $targetLanguageParts[1];
+        $column = (string) $config['column'];
+        $showOnlyUsed = (bool) ($config['showOnlyUsed'] ?? false);
+
+        try {
+            $folder = $this->resolveWorkflowFolder($directory);
+            $files = $folder->getFiles();
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Specified directory could not be found: '.$e->getMessage(),
+            ];
+        }
+
+        $fileUids = [];
+        foreach ($files as $file) {
+            if (!$this->backendUserService->canEditFileMetadata($file->getUid())) {
+                continue;
+            }
+            if (2 !== $file->getType()) {
+                continue;
+            }
+            $fileUids[] = $file->getUid();
+        }
+
+        $defaultMetadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
+            $fileUids,
+            'all',
+            'file',
+            0,
+            false,
+            $showOnlyUsed,
+        );
+
+        $workflowDataFiles = [];
+        foreach ($defaultMetadataList as $fileUid => $defaultMeta) {
+            $row = [];
+            foreach (['title', 'alternative', 'description'] as $col) {
+                if ('all' === $column || $col === $column) {
+                    $row[$col] = $defaultMeta[$col] ?? '';
+                }
+            }
+            $row['mode'] = '';
+            $workflowDataFiles[$defaultMeta['uid']] = $row;
+        }
+
+        if (empty($workflowDataFiles)) {
+            return [
+                'success' => false,
+                'message' => 'No eligible files found for metadata translation.',
+            ];
+        }
+
+        $filesMetadataUidList = array_keys($workflowDataFiles);
+        $alreadyPending = $this->backgroundTaskRepository->fetchAlreadyPendingEntriesForTranslation(
+            $filesMetadataUidList,
+            'sys_file_metadata',
+            $targetLanguageId,
+        );
+        foreach ($alreadyPending as $pendingData) {
+            $uid = $pendingData['table_uid'];
+            $col = $pendingData['answer_field'] ?? '';
+            if (isset($workflowDataFiles[$uid][$col])) {
+                unset($workflowDataFiles[$uid][$col]);
+                if (0 === count(array_filter(array_keys($workflowDataFiles[$uid]), static fn ($k) => 'mode' !== $k))) {
+                    unset($workflowDataFiles[$uid]);
+                }
+            }
+        }
+
+        if (empty($workflowDataFiles)) {
+            return [
+                'success' => true,
+                'message' => 'All entered tasks are pending or already done!',
+            ];
+        }
+
+        $metadataListFromRepo = $this->sysFileMetadataRepository->findByUidList(array_keys($workflowDataFiles));
+        $parentUuid = $this->uuidService->generateUuid();
+
+        $result = $this->processFileMetadataTranslation(
+            $workflowDataFiles,
+            $metadataListFromRepo,
+            $parentUuid,
+            $sourceLanguageParts[0],
+            $targetLanguageParts[0],
+            $targetLanguageId,
+            handledByCli: true,
+            model: (string) ($config['model'] ?? ''),
+        );
+
+        if (0 === count($result['payload'])) {
+            return [
+                'success' => false,
+                'message' => 'No valid tasks could be created. Check logs for details.',
+                'failedFiles' => $result['failedFilesMetadata'],
+            ];
+        }
+
+        $extraParams = [];
+        if (!empty($config['glossary'])) {
+            $glossaryParts = explode('__', (string) $config['glossary']);
+            if (3 === count($glossaryParts)) {
+                $rootPageId = (int) $glossaryParts[0];
+                $sourceLanguageId = (int) $glossaryParts[1];
+                $glossaryTargetLanguageId = (int) $glossaryParts[2];
+                $translatableContent = (string) json_encode(
+                    $result['translatableContentForGlossary'],
+                    JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE
+                );
+                $glossarEntries = $this->glossarService->findGlossarEntries(
+                    $translatableContent,
+                    $glossaryTargetLanguageId,
+                    $sourceLanguageId,
+                );
+                $deeplGlossary = $this->glossarService->findDeeplGlossary(
+                    $rootPageId,
+                    $sourceLanguageId,
+                    $glossaryTargetLanguageId,
+                );
+                $extraParams = [
+                    'glossary' => json_encode($glossarEntries, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
+                    'deepl_glossary_id' => is_array($deeplGlossary) ? ($deeplGlossary['glossar_uuid'] ?? '') : '',
+                ];
+            }
+        }
+
+        $requestSystemDomain = $this->domainResolverService->getDomainBySiteIdentifier(end($sourceLanguageParts));
+        $errorMessage = $this->sendWorkflowRequest(
+            $result['payload'],
+            $result['bulkPayload'],
+            $parentUuid,
+            'metadata',
+            'translation',
+            '',
+            'translate',
+            $config['model'],
+            $this->sendRequestService,
+            $this->backgroundTaskRepository,
+            $extraParams,
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'message' => $errorMessage,
+                'failedFiles' => $result['failedFilesMetadata'],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'failedFiles' => $result['failedFilesMetadata'],
+            'message' => sprintf('Successfully added %d new task(s).', count($result['bulkPayload'])),
+        ];
+    }
+
+    /**
+     * Accepts either a path relative to the default storage root (e.g. "/user_upload/")
+     * or a combined identifier (e.g. "1:/user_upload/") referencing a specific storage.
+     */
+    private function resolveWorkflowFolder(string $directory): Folder
+    {
+        if ('' !== $directory && 1 === preg_match('/^\d+:/', $directory)) {
+            $storage = $this->storageRepository->findByCombinedIdentifier($directory);
+            if (null === $storage) {
+                throw new \RuntimeException(sprintf('Storage for combined identifier "%s" not found.', $directory));
+            }
+            [, $folderPath] = explode(':', $directory, 2);
+
+            return $storage->getFolder('/'.ltrim($folderPath, '/'));
+        }
+
+        $defaultStorage = $this->storageRepository->getDefaultStorage();
+        if (null === $defaultStorage) {
+            throw new \RuntimeException('No default storage available.');
+        }
+
+        return $defaultStorage->getFolder($directory);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function reinforceLanguageFilter(array &$config, int $pageId): void
+    {
+        $availableLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+        $currentSysLanguage = (string) $config['sysLanguage'];
+        $sysLanguageToUse = $currentSysLanguage;
+        $notification = '';
+
+        $this->siteService->updateSelectedSysLanguage(
+            $availableLanguages,
+            $sysLanguageToUse,
+            $notification,
+            $currentSysLanguage,
+        );
+
+        $config['sysLanguage'] = $sysLanguageToUse;
+        if ('' !== $notification) {
+            $this->logger->warning('Language filter adjusted: '.$notification);
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function reinforceTranslationLanguageFilters(array &$config, int $pageId): void
+    {
+        $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, $pageId, true);
+        $sourceLanguageToUse = (string) $config['sourceLanguage'];
+        $notificationSource = '';
+        $this->siteService->updateSelectedSysLanguage(
+            $availableSourceLanguages,
+            $sourceLanguageToUse,
+            $notificationSource,
+            (string) $config['sourceLanguage'],
+            'sourceLanguage',
+        );
+        $config['sourceLanguage'] = $sourceLanguageToUse;
+
+        $availableTargetLanguages = $this->siteService->getAvailableLanguages(true, $pageId);
+        $targetLanguageToUse = (string) $config['targetLanguage'];
+        $notificationTarget = '';
+        $this->siteService->updateSelectedSysLanguage(
+            $availableTargetLanguages,
+            $targetLanguageToUse,
+            $notificationTarget,
+            (string) $config['targetLanguage'],
+            'targetLanguage',
+        );
+        $config['targetLanguage'] = $targetLanguageToUse;
+
+        if ('' !== $notificationSource) {
+            $this->logger->warning('Source language filter adjusted: '.$notificationSource);
+        }
+        if ('' !== $notificationTarget) {
+            $this->logger->warning('Target language filter adjusted: '.$notificationTarget);
+        }
+    }
+
+    /**
+     * Builds a content-fetcher callable for page metadata workflows. Mirrors the inline closure
+     * used in PageMetadataController::pagesExecuteAction so that CLI orchestrator and controller
+     * use identical content acquisition.
+     */
+    private function buildPageContentFetcher(): callable
+    {
+        return function (int $pageUid, int $languageId): string {
+            $page = $this->pageRepository->getPage($pageUid);
+            $previewUriPageId = $pageUid;
+            if (1 === ($page['is_siteroot'] ?? 0) && ($page['l10n_parent'] ?? 0) > 0) {
+                $previewUriPageId = $page['l10n_parent'];
+            }
+            $previewUri = PreviewUriBuilder::create($previewUriPageId)
+                ->withLanguage($languageId)
+                ->buildUri()
+            ;
+            if (null === $previewUri) {
+                return '';
+            }
+            $url = $this->siteService->buildAbsoluteUri($previewUri);
+
+            return $this->metadataService->fetchContentFromUrl($url);
+        };
     }
 }

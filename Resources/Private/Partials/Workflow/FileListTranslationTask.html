@@ -187,6 +187,11 @@
                     <button class="btn btn-primary mt-4" type="submit" id="filesTranslationExecuteFormSubmitBtn">
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.executeTranslationBtn" />
                     </button>
+                    <f:if condition="{cliExecutionAvailable}">
+                        <button class="btn btn-primary mt-4 mx-2" type="submit" id="automaticFilesTranslationExecuteFormSubmitBtn">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.cliCommandExecuteTranslationBtn" />
+                        </button>
+                    </f:if>
                 </div>
                 <p class="calculated-requests"></p>
             </f:if>

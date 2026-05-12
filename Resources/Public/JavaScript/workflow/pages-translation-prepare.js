@@ -176,8 +176,9 @@ class PagesTranslationPrepare {
                         const uid = ev.target.dataset.uid;
                         InfoWindow.showItem(table, uid);
                     }
-                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'pagesTranslationExecuteFormSubmitBtn') {
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && (ev.target.id === 'pagesTranslationExecuteFormSubmitBtn' || ev.target.id === 'automaticPagesTranslationExecuteFormSubmitBtn')) {
                         ev.preventDefault();
+                        const handledByCli = ev.target.id === 'automaticPagesTranslationExecuteFormSubmitBtn';
                         let checkboxes = document.querySelectorAll('input[name="page-translation-selection"]');
                         let selectedPages = {};
                         checkboxes.forEach(function(checkbox) {
@@ -204,6 +205,9 @@ class PagesTranslationPrepare {
                             formData.append('workflowPagesTranslationExecute[translationScope]', document.querySelector('select[name="workflowPagesTranslationPrepare[translationScope]"]').value);
                             formData.append('workflowPagesTranslationExecute[textAiModel]', document.querySelector('.text-generation-library input[type="radio"]:checked').value);
                             formData.append('workflowPagesTranslationExecute[glossary]', selectedGlossary);
+                            if (handledByCli) {
+                                formData.append('workflowPagesTranslationExecute[handledByCli]', '1');
+                            }
 
                             for (let key in selectedPages) {
                                 if(counter === 3) { // Smaller batches for translation

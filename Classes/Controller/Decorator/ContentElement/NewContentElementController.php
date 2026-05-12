@@ -26,7 +26,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
         /** @var ModifyNewContentElementWizardItemsEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ModifyNewContentElementWizardItemsEvent(
-                $this->getWizards(),
+                $this->getWizards($request),
                 $this->pageInfo,
                 $this->colPos,
                 $this->sys_language,

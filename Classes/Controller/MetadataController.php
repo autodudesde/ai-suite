@@ -165,22 +165,33 @@ class MetadataController extends AbstractBackendController
     {
         $response = new Response();
         $params = (array) $request->getParsedBody();
-        $pageUid = $params['id'] ?? 0;
+        $pageUid = (int) ($params['id'] ?? 0);
+        $context = $params['context'] ?? '';
         $filename = '';
-        if ('pages' === $params['context']) {
-            $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', (int) $pageUid);
+        if (($params['table'] ?? '') === 'tx_news_domain_model_news') {
+            $context = 'pages';
+            $pageUid = (int) ($params['pageId'] ?? 0);
+        }
+        if ('pages' === $context) {
+            $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction($context, 'metadata', $pageUid);
             $globalInstructionsOverride = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]);
         } else {
-            $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction($params['context'], 'metadata', null, $params['targetFolder'] ?? null);
+            $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction($context, 'metadata', null, $params['targetFolder'] ?? null);
             $globalInstructionsOverride = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$params['targetFolder'] ?? '']);
 
             $sysFileId = $params['sysFileId'] ? (int) $params['sysFileId'] : 0;
-            $filename = $this->metadataService->getFileName($sysFileId);
+            if ($sysFileId > 0) {
+                $filename = $this->metadataService->getFilename($sysFileId);
 
-            if ($sysFileId > 0 && !$this->metadataService->hasFilePermissions($sysFileId, $params['table'] ?? 'sys_file_metadata')) {
-                $this->logError('Insufficient permissions to access file with UID '.$sysFileId, $response, 403);
+                $hasPermission = match ($params['table'] ?? 'sys_file_metadata') {
+                    'sys_file_reference' => $this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($sysFileId),
+                    default => $this->aiSuiteContext->backendUserService->canEditFileMetadata($sysFileId),
+                };
+                if (!$hasPermission) {
+                    $this->logError('Insufficient permissions to access file with UID '.$sysFileId, $response, 403);
 
-                return $response;
+                    return $response;
+                }
             }
         }
 

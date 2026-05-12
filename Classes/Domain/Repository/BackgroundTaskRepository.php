@@ -256,13 +256,14 @@ class BackgroundTaskRepository
         foreach ($data as $uuid => $statusData) {
             $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
             $error = $statusData['error'] ?? '';
+            $answer = $statusData['answer'] ?? '';
             $queryBuilder
                 ->update($this->table)
                 ->where(
                     $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid))
                 )
                 ->set('status', $statusData['status'])
-                ->set('answer', $statusData['answer'])
+                ->set('answer', $answer)
                 ->set('error', $error)
                 ->executeStatement()
             ;
@@ -638,5 +639,84 @@ class BackgroundTaskRepository
             )
             ->executeQuery()
             ->fetchAssociative() ?: [];
+    }
+
+    /**
+     * @param array<string, mixed> $config Filters: status (default 'pending', 'failed', 'all', or specific), type, column, sysLanguage, parentUuid
+     *
+     * @return list<array<string, mixed>>
+     *
+     * @throws Exception
+     */
+    public function findBackgroundTasksHandledByCli(int $limit = 50, array $config = []): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('handled_by_cli', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT))
+            )
+        ;
+
+        $status = $config['status'] ?? 'pending';
+        if ('failed' === $status) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter('task-error'))
+            );
+        } elseif ('all' !== $status) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('status', $queryBuilder->createNamedParameter($status))
+            );
+        }
+
+        if (isset($config['type'])) {
+            $scope = $this->mapTypeToScope($config['type']);
+            if (null !== $scope) {
+                $queryBuilder->andWhere(
+                    $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter($scope))
+                );
+            }
+        }
+
+        if (isset($config['column'])) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter($config['column']))
+            );
+        }
+
+        if (isset($config['sysLanguage'])) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($config['sysLanguage'], Connection::PARAM_INT))
+            );
+        }
+
+        if (isset($config['parentUuid'])) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->eq('parent_uuid', $queryBuilder->createNamedParameter($config['parentUuid']))
+            );
+        }
+
+        return $queryBuilder
+            ->orderBy('crdate', 'ASC')
+            ->setMaxResults($limit)
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * Maps a workflow type identifier to the scope value used in the database.
+     */
+    protected function mapTypeToScope(string $type): ?string
+    {
+        return match ($type) {
+            'page' => 'page',
+            'pageTranslate' => 'page-translation',
+            'fileReferences' => 'fileReference',
+            'fileMetadata' => 'fileMetadata',
+            'fileMetadataTranslation' => 'metadata',
+            default => null,
+        };
     }
 }

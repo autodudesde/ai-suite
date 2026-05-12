@@ -19,6 +19,10 @@ use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException;
+use TYPO3\CMS\Core\Resource\Exception\NotInMountPointException;
+use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
@@ -202,6 +206,82 @@ class BackendUserService implements SingletonInterface
         return $folder->checkActionPermission('read');
     }
 
+    /**
+     * Resolve a folder by combined identifier and verify the BE user may read it.
+     *
+     * @throws NotInMountPointException                   folder is outside the user's filemounts or storage is not browsable
+     * @throws InsufficientFolderReadPermissionsException folder exists but the user lacks read permission on it
+     */
+    public function getReadableFolder(string $combinedIdentifier): Folder
+    {
+        $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
+        $storage = $folder->getStorage();
+
+        if (!$storage->isBrowsable() || !$storage->isWithinFileMountBoundaries($folder)) {
+            throw new NotInMountPointException(
+                sprintf('Folder "%s" is outside the backend user\'s filemounts.', $combinedIdentifier),
+                1730000001,
+            );
+        }
+
+        if (!$folder->checkActionPermission('read')) {
+            throw new InsufficientFolderReadPermissionsException(
+                sprintf('No read permission on folder "%s".', $combinedIdentifier),
+                1730000002,
+            );
+        }
+
+        return $folder;
+    }
+
+    /**
+     * Resolve a folder by combined identifier and verify the BE user may write to it.
+     *
+     * @throws NotInMountPointException                    folder is outside the user's filemounts or storage is not browsable
+     * @throws InsufficientFolderWritePermissionsException folder exists but the user lacks write permission on it
+     */
+    public function getWriteableFolder(string $combinedIdentifier): Folder
+    {
+        $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
+        $storage = $folder->getStorage();
+
+        if (!$storage->isBrowsable() || !$storage->isWithinFileMountBoundaries($folder)) {
+            throw new NotInMountPointException(
+                sprintf('Folder "%s" is outside the backend user\'s filemounts.', $combinedIdentifier),
+                1730000003,
+            );
+        }
+
+        if (!$folder->checkActionPermission('write')) {
+            throw new InsufficientFolderWritePermissionsException(
+                sprintf('No write permission on folder "%s".', $combinedIdentifier),
+                1730000004,
+            );
+        }
+
+        return $folder;
+    }
+
+    /**
+     * Whether the current backend user may edit `sys_file_metadata` for the given file.
+     * Requires write access to the file's mount (`editMeta`) and `tables_modify` on `sys_file_metadata`.
+     */
+    public function canEditFileMetadata(int $fileUid): bool
+    {
+        return $this->canEditFile($fileUid, 'sys_file_metadata', 'editMeta');
+    }
+
+    /**
+     * Whether the current backend user may edit a `sys_file_reference` row pointing at the given file
+     * (e.g. the `alternative` field on an inline image reference). Requires only `read` access to the
+     * file plus `tables_modify` on `sys_file_reference`, since the reference record is independent
+     * of `sys_file_metadata` and is saved together with its parent record.
+     */
+    public function canEditFileReferenceMetadata(int $fileUid): bool
+    {
+        return $this->canEditFile($fileUid, 'sys_file_reference', 'read');
+    }
+
     public function isPathWithinStorageMountBoundaries(string $currentPath, string $parentPath): bool
     {
         $currentFolder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($currentPath);
@@ -230,5 +310,27 @@ class BackendUserService implements SingletonInterface
     public function getBackendUser(): ?BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'] ?? null;
+    }
+
+    private function canEditFile(int $fileUid, string $tablesModifyKey, string $fileAction): bool
+    {
+        $backendUser = $this->getBackendUser();
+        if (null === $backendUser) {
+            return false;
+        }
+
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+
+        try {
+            $file = $this->resourceFactory->getFileObject($fileUid);
+
+            return $file->isIndexed()
+                && $file->checkActionPermission($fileAction)
+                && $backendUser->check('tables_modify', $tablesModifyKey);
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }

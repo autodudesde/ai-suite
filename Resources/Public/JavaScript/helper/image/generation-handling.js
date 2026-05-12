@@ -46,6 +46,10 @@ class GenerationHandling {
         let aiSuiteGenerateImageButton = modal.querySelector('.panel-body button#aiSuiteGenerateImageBtn');
 
         aiSuiteGenerateImageButton.addEventListener('click', async function (ev) {
+            if (aiSuiteGenerateImageButton.dataset.aiWizardOpening === '1') {
+                return;
+            }
+            aiSuiteGenerateImageButton.dataset.aiWizardOpening = '1';
             let enteredPrompt = modal.querySelector('.panel-body textarea#imageGenerationPrompt').value ?? '';
             let imageAiModel = modal.querySelector('.panel-body input[name="libraries[imageGenerationLibrary]"]:checked').value ?? '';
 
@@ -61,7 +65,15 @@ class GenerationHandling {
                     if (scope === 'FileList') {
                         data.langIsoCode = modal.querySelector('.panel-body #languageSelection select')?.value ?? '';
                     }
-                    Modal.dismiss();
+                    const previousModal = Modal.currentModal;
+                    if (previousModal) {
+                        await new Promise(resolve => {
+                            previousModal.addEventListener('typo3-modal-hidden', resolve, { once: true });
+                            Modal.dismiss();
+                        });
+                    } else {
+                        Modal.dismiss();
+                    }
                     if (scope === 'ContentElement') {
                         if (data.imageAiModel === 'GPTImage') {
                             const GptImageContentElement = (await import('./wizards/gpt-image-content-element.js')).default
@@ -106,6 +118,8 @@ class GenerationHandling {
                         8
                     );
                 }
+            } finally {
+                setTimeout(() => { aiSuiteGenerateImageButton.dataset.aiWizardOpening = '0'; }, 0);
             }
         });
     }
