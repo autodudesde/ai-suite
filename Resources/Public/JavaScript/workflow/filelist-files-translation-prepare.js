@@ -35,8 +35,9 @@ class FilelistFilesTranslationPrepare {
         document.querySelectorAll('#resultsToExecute').forEach(function(element) {
             element.addEventListener('click', async function(ev) {
                 if(ev && ev.target) {
-                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'filesTranslationExecuteFormSubmitBtn') {
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && (ev.target.id === 'filesTranslationExecuteFormSubmitBtn' || ev.target.id === 'automaticFilesTranslationExecuteFormSubmitBtn')) {
                         ev.preventDefault();
+                        const handledByCli = ev.target.id === 'automaticFilesTranslationExecuteFormSubmitBtn';
                         let checkboxes = document.querySelectorAll('input[name^="file-selection"]');
                         let selectedFiles = {};
                         checkboxes.forEach(function(checkbox) {
@@ -65,7 +66,8 @@ class FilelistFilesTranslationPrepare {
                                 sourceLanguage: document.querySelector('select#sourceLanguage').value,
                                 targetLanguage: document.querySelector('select#targetLanguage').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
-                                glossary: selectedGlossary
+                                glossary: selectedGlossary,
+                                handledByCli: handledByCli,
                             };
 
                             if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sourceLanguage || !baseFormData.targetLanguage || !baseFormData.textAiModel) {
@@ -239,6 +241,9 @@ class FilelistFilesTranslationPrepare {
         formData.append('workflowFilesTranslationExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowFilesTranslationExecute[glossary]', baseFormData.glossary || '');
         formData.append('workflowFilesTranslationExecute[files]', JSON.stringify(currentFiles));
+        if (baseFormData.handledByCli) {
+            formData.append('workflowFilesTranslationExecute[handledByCli]', '1');
+        }
         return formData;
     }
 

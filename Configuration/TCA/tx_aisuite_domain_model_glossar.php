@@ -9,7 +9,6 @@ return [
         'delete' => 'deleted',
         'default_sortby' => 'input',
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
-        'searchFields' => 'input',
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],

@@ -12,6 +12,8 @@ declare(strict_types=1);
  *
  */
 
+use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
+use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\Decorator\Page\LocalizationController;
 use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
@@ -54,10 +56,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container): void
         {
-            if (!$container->hasDefinition(DatabaseRecordList::class)) {
-                return;
-            }
-
             try {
                 $extConfig = GeneralUtility::makeInstance(ExtensionConfiguration::class)
                     ->get('ai_suite')
@@ -68,14 +66,21 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             }
 
             if (false === $disableTranslationFunctionality) {
-                $customDatabaseRecordListDefinition = $container->getDefinition(DatabaseRecordList::class);
-                $customDatabaseRecordListDefinition->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
-
-                $customLocalizationControllerDefinition = $container->getDefinition(LocalizationController::class);
-                $customLocalizationControllerDefinition->setDecoratedService(TYPO3\CMS\Backend\Controller\Page\LocalizationController::class);
+                if ($container->hasDefinition(DatabaseRecordList::class)) {
+                    $container->getDefinition(DatabaseRecordList::class)
+                        ->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+                }
+                if ($container->hasDefinition(LocalizationController::class)) {
+                    $container->getDefinition(LocalizationController::class)
+                        ->setDecoratedService(TYPO3\CMS\Backend\Controller\Page\LocalizationController::class);
+                }
             } else {
-                $container->removeDefinition(DatabaseRecordList::class);
-                $container->removeDefinition(LocalizationController::class);
+                if ($container->hasDefinition(DatabaseRecordList::class)) {
+                    $container->removeDefinition(DatabaseRecordList::class);
+                }
+                if ($container->hasDefinition(LocalizationController::class)) {
+                    $container->removeDefinition(LocalizationController::class);
+                }
             }
         }
     });
@@ -94,6 +99,12 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public()
     ;
     $services->set(PagesRepository::class)
+        ->public()
+    ;
+    $services->set(CliOverviewController::class)
+        ->public()
+    ;
+    $services->set(CliOverviewAjaxController::class)
         ->public()
     ;
 };

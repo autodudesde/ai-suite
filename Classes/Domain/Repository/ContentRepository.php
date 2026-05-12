@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ContentRepository extends AbstractRepository
@@ -107,26 +108,41 @@ class ContentRepository extends AbstractRepository
     /**
      * Full-text search across content element fields.
      *
+     * @param null|list<int> $restrictToPageIds null = no permission filter; [] = forced empty result;
+     *                                          non-empty list = WHERE pid IN (…)
+     *
      * @return list<array<string, mixed>>
      */
-    public function searchByText(string $query, int $maxResults = 100): array
+    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null): array
     {
+        if (null !== $restrictToPageIds && [] === $restrictToPageIds) {
+            return [];
+        }
+
         $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
         $qb->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
             ->add(GeneralUtility::makeInstance(HiddenRestriction::class))
         ;
+        $this->addWorkspaceRestriction($qb);
         $searchTerm = '%'.$qb->escapeLikeWildcards($query).'%';
 
-        return $qb->select('uid', 'pid', 'header', 'bodytext', 'CType')
+        $qb->select('uid', 'pid', 'header', 'bodytext', 'CType')
             ->from($this->table)
             ->where($qb->expr()->or(
                 $qb->expr()->like('header', $qb->createNamedParameter($searchTerm)),
                 $qb->expr()->like('bodytext', $qb->createNamedParameter($searchTerm)),
             ))
             ->setMaxResults($maxResults)
-            ->executeQuery()->fetchAllAssociative()
         ;
+
+        if (null !== $restrictToPageIds) {
+            $qb->andWhere(
+                $qb->expr()->in('pid', $qb->createNamedParameter($restrictToPageIds, Connection::PARAM_INT_ARRAY)),
+            );
+        }
+
+        return $qb->executeQuery()->fetchAllAssociative();
     }
 
     /**
@@ -166,6 +182,129 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
+     * Find existing container records (b13/container) on a page, restricted to the given CTypes.
+     *
+     * @param list<string> $containerCTypes CTypes registered as containers (from B13\Container\Tca\Registry::getRegisteredCTypes())
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findContainersOnPage(int $pageId, int $languageUid, array $containerCTypes): array
+    {
+        if ([] === $containerCTypes || $pageId <= 0) {
+            return [];
+        }
+
+        $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $this->addWorkspaceRestriction($qb);
+
+        return $qb
+            ->select('uid', 'header', 'CType', 'colPos', 'tx_container_parent')
+            ->from($this->table)
+            ->where(
+                $qb->expr()->eq('pid', $qb->createNamedParameter($pageId, Connection::PARAM_INT)),
+                $qb->expr()->eq('sys_language_uid', $qb->createNamedParameter($languageUid, Connection::PARAM_INT)),
+                $qb->expr()->in('CType', $qb->createNamedParameter($containerCTypes, Connection::PARAM_STR_ARRAY)),
+            )
+            ->orderBy('colPos', 'ASC')
+            ->addOrderBy('sorting', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * Find children of a container (records with tx_container_parent = $containerUid).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findContainerChildren(int $containerUid, int $languageUid): array
+    {
+        if ($containerUid <= 0) {
+            return [];
+        }
+
+        $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $this->addWorkspaceRestriction($qb);
+
+        return $qb
+            ->select('uid', 'header', 'CType', 'colPos', 'sorting', 'tx_container_parent')
+            ->from($this->table)
+            ->where(
+                $qb->expr()->eq('tx_container_parent', $qb->createNamedParameter($containerUid, Connection::PARAM_INT)),
+                $qb->expr()->eq('sys_language_uid', $qb->createNamedParameter($languageUid, Connection::PARAM_INT)),
+            )
+            ->orderBy('colPos', 'ASC')
+            ->addOrderBy('sorting', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * Content elements with all columns for TCA-driven AI text extraction.
+     * Workspace-aware, hidden=0 explicit, ordered by colPos+sorting.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findContentForExtraction(int $pageId, int $languageUid, int $workspaceId): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
+        ;
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('pid', $queryBuilder->createNamedParameter($pageId, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageUid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('hidden', 0),
+            )
+            ->orderBy('colPos', 'ASC')
+            ->addOrderBy('sorting', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * IRRE child content rows for multiple container parents (b13/container).
+     *
+     * @param list<int> $parentUids
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function findContainerChildrenByParents(array $parentUids, int $languageUid, int $workspaceId): array
+    {
+        if ([] === $parentUids) {
+            return [];
+        }
+
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
+        ;
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->in('tx_container_parent', $queryBuilder->createNamedParameter($parentUids, Connection::PARAM_INT_ARRAY)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageUid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->eq('hidden', 0),
+            )
+            ->orderBy('sorting', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
      * Find stale records in any TCA table that have not been modified since the cutoff timestamp.
      *
      * @param null|list<int> $restrictToPageIds Restrict by pid (or uid for pages table)
@@ -183,6 +322,7 @@ class ContentRepository extends AbstractRepository
     ): array {
         $qb = $this->connectionPool->getQueryBuilderForTable($table);
         $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $this->addWorkspaceRestriction($qb);
 
         $qb->select('uid', $labelField, $tstampField)
             ->from($table)

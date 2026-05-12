@@ -17,6 +17,7 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\SettingsService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -37,19 +38,6 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 #[AsController]
 class SettingsController extends AbstractBackendController
 {
-    private const MASKED_FIELDS = [
-        'aiSuiteApiKey',
-        'openAiApiKey',
-        'anthropicApiKey',
-        'googleTranslateApiKey',
-        'deeplApiKey',
-        'midjourneyApiKey',
-        'fluxApiKey',
-        'basicAuth.pass',
-    ];
-
-    private const MASK_PLACEHOLDER = '************';
-
     public function __construct(
         ModuleTemplateFactory $moduleTemplateFactory,
         UriBuilder $uriBuilder,
@@ -61,6 +49,7 @@ class SettingsController extends AbstractBackendController
         AiSuiteContext $aiSuiteContext,
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly SettingsFactory $settingsFactory,
+        protected readonly SettingsService $settingsService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -95,13 +84,13 @@ class SettingsController extends AbstractBackendController
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws RouteNotFoundException
      */
-    private function indexAction(ServerRequestInterface $request): ResponseInterface
+    public function indexAction(ServerRequestInterface $request): ResponseInterface
     {
         $this->initialize($request);
 
         $definitions = $this->settingsFactory->parseExtConfTemplate();
         $extConf = $this->extensionConfiguration->get('ai_suite');
-        $settings = $this->buildSettingsForView($definitions, $extConf);
+        $settings = $this->settingsService->buildSettingsForView($definitions, $extConf);
         $categories = array_unique(array_column($definitions, 'category'));
 
         $this->view->assignMultiple([
@@ -119,7 +108,7 @@ class SettingsController extends AbstractBackendController
      * @throws ExtensionConfigurationExtensionNotConfiguredException
      * @throws RouteNotFoundException
      */
-    private function saveAction(ServerRequestInterface $request): ResponseInterface
+    public function saveAction(ServerRequestInterface $request): ResponseInterface
     {
         $body = (array) ($request->getParsedBody() ?? []);
         $submittedSettings = (array) ($body['settings'] ?? []);
@@ -131,19 +120,19 @@ class SettingsController extends AbstractBackendController
         foreach ($definitions as $key => $definition) {
             $formKey = str_replace('.', '_', $key);
 
-            if (in_array($key, self::MASKED_FIELDS, true)) {
+            if ($this->settingsService->isMaskedField($key)) {
                 $submittedValue = $submittedSettings[$formKey] ?? '';
-                if (self::MASK_PLACEHOLDER === $submittedValue || '' === $submittedValue) {
-                    $newConf[$key] = $this->getNestedValue($currentConf, $key);
+                if (SettingsService::MASK_PLACEHOLDER === $submittedValue) {
+                    $this->settingsService->setNestedValue($newConf, $key, $this->settingsService->getNestedValue($currentConf, $key));
 
                     continue;
                 }
             }
 
             if ('boolean' === $definition['type']) {
-                $newConf[$key] = isset($submittedSettings[$formKey]) ? '1' : '0';
+                $this->settingsService->setNestedValue($newConf, $key, isset($submittedSettings[$formKey]) ? '1' : '0');
             } else {
-                $newConf[$key] = $submittedSettings[$formKey] ?? ($definition['default'] ?? '');
+                $this->settingsService->setNestedValue($newConf, $key, $submittedSettings[$formKey] ?? ($definition['default'] ?? ''));
             }
         }
 
@@ -166,60 +155,5 @@ class SettingsController extends AbstractBackendController
         $this->flashMessageService->getMessageQueueByIdentifier('ai_suite.template.flashMessages')->enqueue($flashMessage);
 
         return $this->indexAction($request);
-    }
-
-    /**
-     * @param array<string, array<string, mixed>> $definitions
-     * @param array<string, mixed>                $extConf
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    private function buildSettingsForView(array $definitions, array $extConf): array
-    {
-        $settings = [];
-        foreach ($definitions as $key => $definition) {
-            $value = $this->getNestedValue($extConf, $key);
-            $isMasked = in_array($key, self::MASKED_FIELDS, true);
-
-            $setting = [
-                'key' => $key,
-                'formKey' => str_replace('.', '_', $key),
-                'type' => $definition['type'],
-                'category' => $definition['category'],
-                'label' => $definition['label'],
-                'value' => $isMasked && !empty($value) ? self::MASK_PLACEHOLDER : ($value ?? ($definition['default'] ?? '')),
-                'masked' => $isMasked,
-            ];
-
-            if (isset($definition['options'])) {
-                $setting['options'] = $definition['options'];
-                $setting['currentValue'] = $value ?? ($definition['default'] ?? '');
-            }
-
-            $settings[$key] = $setting;
-        }
-
-        return $settings;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function getNestedValue(array $data, string $key): mixed
-    {
-        if (str_contains($key, '.')) {
-            $parts = explode('.', $key);
-            $current = $data;
-            foreach ($parts as $part) {
-                if (!is_array($current) || !array_key_exists($part, $current)) {
-                    return '';
-                }
-                $current = $current[$part];
-            }
-
-            return $current;
-        }
-
-        return $data[$key] ?? '';
     }
 }

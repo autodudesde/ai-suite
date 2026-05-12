@@ -26,6 +26,7 @@ class WorkflowViewService implements SingletonInterface
 {
     public function __construct(
         protected readonly MetadataService $metadataService,
+        protected readonly BackendUserService $backendUserService,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly UuidService $uuidService,
@@ -66,7 +67,7 @@ class WorkflowViewService implements SingletonInterface
             if (count($files) > 0) {
                 $fileUids = [0];
                 foreach ($files as $file) {
-                    if ($this->metadataService->hasFilePermissions($file->getUid()) && 2 === $file->getType()) {
+                    if ($this->backendUserService->canEditFileMetadata($file->getUid()) && 2 === $file->getType()) {
                         $fileUids[] = $file->getUid();
                     }
                 }
@@ -215,7 +216,7 @@ class WorkflowViewService implements SingletonInterface
             if (count($files) > 0) {
                 $fileUids = [0];
                 foreach ($files as $file) {
-                    if ($this->metadataService->hasFilePermissions($file->getUid())
+                    if ($this->backendUserService->canEditFileMetadata($file->getUid())
                         && (2 === $file->getType() || 4 === $file->getType() || 5 === $file->getType())
                     ) {
                         $fileUids[] = $file->getUid();

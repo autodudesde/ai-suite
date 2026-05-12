@@ -59,8 +59,9 @@ class FilelistFilesPrepare {
                             await self.updateContent();
                         }
                     }
-                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && ev.target.id === 'filesExecuteFormSubmitBtn') {
+                    if(ev.target.nodeName === 'BUTTON' && ev.target.type === 'submit' && (ev.target.id === 'filesExecuteFormSubmitBtn' || ev.target.id === 'automaticFilesExecuteFormSubmitBtn')) {
                         ev.preventDefault();
+                        const handledByCli = ev.target.id === 'automaticFilesExecuteFormSubmitBtn';
                         let checkboxes = document.querySelectorAll('input[name^="file-selection"]');
                         let selectedFiles = {};
                         checkboxes.forEach(function(checkbox) {
@@ -84,7 +85,8 @@ class FilelistFilesPrepare {
                                 parentUuid: document.querySelector('input#parentUuid').value,
                                 column: document.querySelector('select#column').value,
                                 sysLanguage: document.querySelector('select#sysLanguage').value,
-                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value
+                                textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
+                                handledByCli: handledByCli,
                             };
 
                             if (!baseFormData.parentUuid || !baseFormData.column || !baseFormData.sysLanguage || !baseFormData.textAiModel) {
@@ -187,6 +189,9 @@ class FilelistFilesPrepare {
         formData.append('workflowFilesExecute[sysLanguage]', baseFormData.sysLanguage);
         formData.append('workflowFilesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowFilesExecute[files]', JSON.stringify(currentFiles));
+        if (baseFormData.handledByCli) {
+            formData.append('workflowFilesExecute[handledByCli]', '1');
+        }
         return formData;
     }
 

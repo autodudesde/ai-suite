@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
@@ -56,6 +57,7 @@ class PageTranslationController extends AbstractBackendController
         protected readonly PagesRepository $pagesRepository,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly ViewFactoryService $viewFactoryService,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -119,6 +121,7 @@ class PageTranslationController extends AbstractBackendController
             }
 
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+            $params['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('pageTranslate');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $request,
@@ -149,6 +152,7 @@ class PageTranslationController extends AbstractBackendController
         $pages = json_decode($workflowData['pages'], true);
         $sourceLanguageParts = explode('__', $workflowData['sourceLanguage']);
         $targetLanguageParts = explode('__', $workflowData['targetLanguage']);
+        $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'pageTranslate');
 
         $result = $this->workflowProcessingService->processPageTranslation(
             $pages,
@@ -158,13 +162,16 @@ class PageTranslationController extends AbstractBackendController
             $targetLanguageParts[0],
             (int) $sourceLanguageParts[1],
             (int) $targetLanguageParts[1],
+            null,
+            $handledByCli,
+            (string) ($workflowData['textAiModel'] ?? ''),
         );
 
         $payload = $result['payload'];
         $bulkPayload = $result['bulkPayload'];
         $failedPages = $result['failedPages'];
 
-        $errorResponse = $this->sendWorkflowRequest(
+        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
             $bulkPayload,
             $workflowData['parentUuid'],
@@ -173,13 +180,12 @@ class PageTranslationController extends AbstractBackendController
             '',
             'translate',
             $workflowData['textAiModel'],
-            $response,
             $this->requestService,
             $this->backgroundTaskRepository,
         );
 
-        if (null !== $errorResponse) {
-            return $errorResponse;
+        if (null !== $errorMessage) {
+            return $this->logError($errorMessage, $response, 503);
         }
 
         return $this->jsonSuccess($response, [

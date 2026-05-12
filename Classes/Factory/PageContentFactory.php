@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
+use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -167,47 +168,27 @@ class PageContentFactory
         $fileExtension = !empty(pathinfo($imageUrl, PATHINFO_EXTENSION)) ? pathinfo($imageUrl, PATHINFO_EXTENSION) : 'png';
         $title = empty($imageTitle) ? 'ai-generated-image-'.time() : $imageTitle;
 
-        $defaultFolder = null;
-        if ($this->backendUserService->getBackendUser()?->isAdmin()) {
-            $storage = $this->storageRepository->getDefaultStorage();
-            if (null === $storage) {
-                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noDefaultStorage', '', '', $regenerateReturnUrl);
-            }
-            $defaultFolder = $storage->getDefaultFolder();
-        } else {
-            $availableFileMounts = $this->backendUserService->getBackendUser()?->getFileMountRecords() ?? [];
-            if (0 === count($availableFileMounts)) {
-                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
-            }
-            foreach ($availableFileMounts as $fileMount) {
-                $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['identifier']);
-                if (null === $storage) {
-                    continue;
-                }
-                foreach ($storage->getFileMounts() as $storageFileMount) {
-                    if ($storageFileMount['identifier'] === $fileMount['identifier']) {
-                        $defaultFolder = $storageFileMount['folder'];
+        $mediaFolderSetting = !empty($this->extConf['mediaStorageFolder']) ? $this->extConf['mediaStorageFolder'] : 'ai-images';
 
-                        break 2;
-                    }
-                }
-            }
-            if (null === $defaultFolder) {
-                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
-            }
-        }
-        $mediaFolder = !empty($this->extConf['mediaStorageFolder']) ? trim($this->extConf['mediaStorageFolder'], '/') : 'ai-images';
-
-        // Avoid path nesting if the default folder already ends with the target folder name
-        if (rtrim($defaultFolder->getName(), '/') === $mediaFolder) {
-            $aiImagesFolder = $defaultFolder;
+        if (preg_match('/^\d+:/', $mediaFolderSetting)) {
+            $aiImagesFolder = $this->resolveFolderFromCombinedIdentifier(
+                $mediaFolderSetting,
+                $regenerateReturnUrl
+            );
         } else {
-            try {
+            $defaultFolder = $this->resolveDefaultFolder($regenerateReturnUrl);
+            $mediaFolder = trim($mediaFolderSetting, '/');
+
+            // Avoid path nesting if the default folder already ends with the target folder name
+            if (rtrim($defaultFolder->getName(), '/') === $mediaFolder) {
+                $aiImagesFolder = $defaultFolder;
+            } elseif ($defaultFolder->hasFolder($mediaFolder)) {
                 $aiImagesFolder = $defaultFolder->getSubfolder($mediaFolder);
-            } catch (\Exception $e) {
-                $this->logger->error($e->getMessage());
-                $defaultFolder->createFolder($mediaFolder);
-                $aiImagesFolder = $defaultFolder->getSubfolder($mediaFolder);
+            } else {
+                $aiImagesFolder = $defaultFolder->getStorage()->createFolder(
+                    $mediaFolder,
+                    $defaultFolder
+                );
             }
         }
 
@@ -249,6 +230,79 @@ class PageContentFactory
         $newFile = $storage->addFile($tempFile, $aiImagesFolder, $targetFile);
 
         return $newFile->getUid();
+    }
+
+    /**
+     * @throws AiSuiteException
+     */
+    protected function resolveDefaultFolder(string $regenerateReturnUrl): Folder
+    {
+        if ($this->backendUserService->getBackendUser()?->isAdmin()) {
+            $storage = $this->storageRepository->getDefaultStorage();
+            if (null === $storage) {
+                throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noDefaultStorage', '', '', $regenerateReturnUrl);
+            }
+
+            return $storage->getDefaultFolder();
+        }
+
+        $availableFileMounts = $this->backendUserService->getBackendUser()?->getFileMountRecords() ?? [];
+        if (0 === count($availableFileMounts)) {
+            throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFileMountsAvailable', '', '', $regenerateReturnUrl);
+        }
+        foreach ($availableFileMounts as $fileMount) {
+            $storage = $this->storageRepository->findByCombinedIdentifier($fileMount['identifier']);
+            if (null === $storage) {
+                continue;
+            }
+            foreach ($storage->getFileMounts() as $storageFileMount) {
+                if ($storageFileMount['identifier'] === $fileMount['identifier']) {
+                    return $storageFileMount['folder'];
+                }
+            }
+        }
+
+        throw new AiSuiteException('Content/SaveContent', 'aiSuite.addImage.noFolderAvailable', '', '', $regenerateReturnUrl);
+    }
+
+    /**
+     * @param non-empty-string $combinedIdentifier
+     *
+     * @throws AiSuiteException
+     */
+    protected function resolveFolderFromCombinedIdentifier(
+        string $combinedIdentifier,
+        string $regenerateReturnUrl
+    ): Folder {
+        $storage = $this->storageRepository->findByCombinedIdentifier($combinedIdentifier);
+        if (null === $storage) {
+            throw new AiSuiteException(
+                'Content/SaveContent',
+                'aiSuite.addImage.invalidStorage',
+                '',
+                sprintf('Storage for combined identifier "%s" not found', $combinedIdentifier),
+                $regenerateReturnUrl
+            );
+        }
+
+        [, $folderPath] = explode(':', $combinedIdentifier, 2);
+        $folderPath = '/'.ltrim($folderPath, '/');
+
+        if ($storage->hasFolder($folderPath)) {
+            return $storage->getFolder($folderPath);
+        }
+
+        // ResourceStorage::createFolder() only creates a single-segment folder,
+        // so walk the path and create each missing parent.
+        $segments = array_values(array_filter(explode('/', $folderPath), static fn (string $segment): bool => '' !== $segment));
+        $currentFolder = $storage->getRootLevelFolder(false);
+        foreach ($segments as $segment) {
+            $currentFolder = $currentFolder->hasFolder($segment)
+                ? $currentFolder->getSubfolder($segment)
+                : $storage->createFolder($segment, $currentFolder);
+        }
+
+        return $currentFolder;
     }
 
     protected function newStringPlaceholder(string $table, int $key = 0): string

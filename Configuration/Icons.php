@@ -9,6 +9,10 @@ return [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
     ],
+    'tx-aisuite-extension-v14' => [
+        'provider' => SvgIconProvider::class,
+        'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension-v14.svg',
+    ],
     'tx-aisuite-permissions' => [
         'provider' => SvgIconProvider::class,
         'source' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',

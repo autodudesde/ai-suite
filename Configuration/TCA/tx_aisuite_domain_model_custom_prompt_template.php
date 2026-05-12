@@ -24,7 +24,6 @@ return [
         'enablecolumns' => [
             'disabled' => 'hidden',
         ],
-        'searchFields' => 'name, prompt, scope, type,',
         'iconfile' => 'EXT:ai_suite/Resources/Public/Icons/Extension.svg',
         'security' => [
             'ignorePageTypeRestriction' => true,

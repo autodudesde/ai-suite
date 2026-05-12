@@ -35,6 +35,7 @@ class ServerRequest
         protected readonly string $prompt = '',
         protected readonly string $language = '',
         protected readonly array $models = [],
+        protected readonly ?string $requestSystemDomain = null,
     ) {
         $this->endpoint = $this->extConf['aiSuiteServer'].'api/'.$endpoint;
     }
@@ -63,7 +64,7 @@ class ServerRequest
             'prompt' => $this->prompt,
             'language' => $this->language,
             'models' => json_encode($this->models),
-            'request_system_domain' => GeneralUtility::getIndpEnv('HTTP_HOST'),
+            'request_system_domain' => $this->requestSystemDomain ?? GeneralUtility::getIndpEnv('HTTP_HOST'),
             'request_system_ip' => GeneralUtility::getIndpEnv('REMOTE_ADDR'),
             'request_system_forward_ip' => GeneralUtility::getIndpEnv('HTTP_X_FORWARDED_FOR'),
             'typo3_version' => GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion(),

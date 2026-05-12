@@ -89,6 +89,7 @@ class SendRequestService
                     'library_types' => $libraryTypes,
                     'target_endpoint' => $targetEndpoint,
                     'keys' => $this->modelService->fetchKeysByModelType($this->extConf, $keyModelTypes),
+                    'force_gdpa' => !empty($this->extConf['forceGdpa']) ? 1 : 0,
                 ]
             )
         );
@@ -108,13 +109,13 @@ class SendRequestService
      * @param array<string, mixed>  $additionalData
      * @param array<string, string> $models
      */
-    public function sendDataRequest(string $targetEndpoint, array $additionalData = [], string $prompt = '', string $langIsoCode = '', array $models = []): ClientAnswer
+    public function sendDataRequest(string $targetEndpoint, array $additionalData = [], string $prompt = '', string $langIsoCode = '', array $models = [], ?string $requestSystemDomain = null): ClientAnswer
     {
         if ([] !== $models) {
             $additionalData['keys'] = $this->modelService->fetchKeysByModel($this->extConf, $models);
         }
         $answer = $this->sendRequest(
-            new ServerRequest($this->extConf, $targetEndpoint, $additionalData, $prompt, $langIsoCode, $models)
+            new ServerRequest($this->extConf, $targetEndpoint, $additionalData, $prompt, $langIsoCode, $models, $requestSystemDomain)
         );
         if ('Error' === $answer->getType()) {
             return $answer;
@@ -139,6 +140,30 @@ class SendRequestService
         }
 
         return $answer;
+    }
+
+    public function isServerReachable(): bool
+    {
+        $baseUrl = (string) ($this->extConf['aiSuiteServer'] ?? '');
+        if ('' === $baseUrl) {
+            return false;
+        }
+
+        try {
+            $response = $this->requestFactory->request($baseUrl, 'HEAD', [
+                'timeout' => 2,
+                'connect_timeout' => 2,
+                'http_errors' => false,
+            ]);
+
+            return $response->getStatusCode() < 500;
+        } catch (\Throwable $e) {
+            $this->logger->info('AI Suite Server reachability probe failed', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 
     private function buildErrorAnswer(string $message): ClientAnswer

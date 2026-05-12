@@ -1054,6 +1054,114 @@
                 <source>File references (alternative text, titles)</source>
                 <target>Dateireferenzen (Alternativer Text, Titel)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.label">
+                <source>AI Suite: No models available</source>
+                <target>AI Suite: Keine Models verfügbar</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.description">
+                <source>No AI translation models are configured or permitted for your user group. Please check your AI Suite configuration and backend group permissions.</source>
+                <target>Es sind keine KI-Übersetzungsmodels konfiguriert oder für deine Benutzergruppe freigegeben. Bitte überprüfe die AI-Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.error">
+                <source>No AI translation models are available. Please check your AI Suite configuration and backend group permissions.</source>
+                <target>Es sind keine KI-Übersetzungsmodels verfügbar. Bitte überprüfe die AI-Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.title">
+                <source>CLI Task Overview</source>
+                <target>CLI-Task-Übersicht</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.schedulerNotLoaded">
+                <source>The TYPO3 Scheduler extension (EXT:scheduler) is not installed. CLI background tasks created by AI Suite will not be processed automatically. Install and enable EXT:scheduler and configure a recurring task that runs the "ai-suite:process-tasks" command.</source>
+                <target>Die TYPO3-Scheduler-Erweiterung (EXT:scheduler) ist nicht installiert. Von der AI Suite erzeugte CLI-Hintergrundaufgaben werden nicht automatisch verarbeitet. Installiere und aktiviere EXT:scheduler und richte einen wiederkehrenden Task ein, der den Befehl „ai-suite:process-tasks" ausführt.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.title">
+                <source>Statistics</source>
+                <target>Statistiken</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.total">
+                <source>Failed Tasks</source>
+                <target>Fehlgeschlagene Tasks</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.pending">
+                <source>Pending Tasks</source>
+                <target>Ausstehende Tasks</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.statistics.byScope">
+                <source>By Scope</source>
+                <target>Nach Bereich</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.pendingTasks.statistics.byScope">
+                <source>Pending by Scope</source>
+                <target>Ausstehend nach Bereich</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.filter.label">
+                <source>Filter by Type</source>
+                <target>Nach Typ filtern</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.rerunAll">
+                <source>Rerun all failed tasks</source>
+                <target>Alle fehlgeschlagenen Tasks erneut ausführen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.rerunScope">
+                <source>Rerun scope</source>
+                <target>Bereich erneut ausführen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.updateStatus">
+                <source>Update task status</source>
+                <target>Task-Status aktualisieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.noTasks">
+                <source>No failed tasks — everything looks fine.</source>
+                <target>Keine fehlgeschlagenen Tasks – alles in Ordnung.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.uuid">
+                <source>UUID</source>
+                <target>UUID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.number">
+                <source>#</source>
+                <target>#</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.type">
+                <source>Type</source>
+                <target>Typ</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.model">
+                <source>Model</source>
+                <target>Modell</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.column">
+                <source>Column</source>
+                <target>Feld</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.error">
+                <source>Error</source>
+                <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.column.date">
+                <source>Created</source>
+                <target>Erstellt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.page">
+                <source>Page Metadata</source>
+                <target>Seiten-Metadaten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.page-translation">
+                <source>Page Translation</source>
+                <target>Seitenübersetzung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.fileReference">
+                <source>File References</source>
+                <target>Dateireferenzen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.fileMetadata">
+                <source>File Metadata</source>
+                <target>Datei-Metadaten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.scope.metadata">
+                <source>File Metadata Translation</source>
+                <target>Datei-Metadaten-Übersetzung</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

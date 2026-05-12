@@ -100,41 +100,41 @@ class AiSuiteLocalization {
                     '', SeverityEnum.notice,
                     TYPO3.lang["localize.wizard.step.chooseLanguage"],
                     async ($slide, settings) => {
-                    if (settings.sourceLanguage !== undefined) {
-                        MultiStepWizard.unlockNextStep();
-                    }
-                    $slide.html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
+                        if (settings.sourceLanguage !== undefined) {
+                            MultiStepWizard.unlockNextStep();
+                        }
+                        $slide.html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
 
-                    MultiStepWizard.getComponent().on('change', '.t3js-language-option', (optionEvt) => {
-                        MultiStepWizard.set('sourceLanguage', $(optionEvt.currentTarget).val());
-                        MultiStepWizard.unlockNextStep();
-                    });
-                    const $languageButtons = $('<div />', { class: 'row' });
-
-                    for (const languageObject of availableLanguages) {
-                        const id = 'language' + languageObject.uid;
-                        const $input = $('<input />', {
-                            type: 'radio',
-                            name: 'language',
-                            id: id,
-                            value: languageObject.uid,
-                            class: 'btn-check t3js-language-option'
+                        MultiStepWizard.getComponent().on('change', '.t3js-language-option', (optionEvt) => {
+                            MultiStepWizard.set('sourceLanguage', $(optionEvt.currentTarget).val());
+                            MultiStepWizard.unlockNextStep();
                         });
-                        const $label = $('<label />', {
-                            class: 'btn btn-default btn-block',
-                            'for': id
-                        })
-                            .text(' ' + languageObject.title)
-                            .prepend(languageObject.flagIcon);
+                        const $languageButtons = $('<div />', { class: 'row' });
 
-                        $languageButtons.append(
-                            $('<div />', { class: 'col-sm-4' })
-                                .append($input)
-                                .append($label),
-                        );
-                    }
-                    $slide.empty().append($languageButtons);
-                });
+                        for (const languageObject of availableLanguages) {
+                            const id = 'language' + languageObject.uid;
+                            const $input = $('<input />', {
+                                type: 'radio',
+                                name: 'language',
+                                id: id,
+                                value: languageObject.uid,
+                                class: 'btn-check t3js-language-option'
+                            });
+                            const $label = $('<label />', {
+                                class: 'btn btn-default btn-block',
+                                'for': id
+                            })
+                                .text(' ' + languageObject.title)
+                                .prepend(languageObject.flagIcon);
+
+                            $languageButtons.append(
+                                $('<div />', { class: 'col-sm-4' })
+                                    .append($input)
+                                    .append($label),
+                            );
+                        }
+                        $slide.empty().append($languageButtons);
+                    });
             }
             MultiStepWizard.addSlide(
                 'localize-summary',
@@ -142,7 +142,7 @@ class AiSuiteLocalization {
                 '', SeverityEnum.notice,
                 TYPO3.lang["localize.wizard.step.selectRecords"],
                 async ($slide, settings) => {
-                $slide.empty().html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
+                    $slide.empty().html('<div class="text-center">' + (await Icons.getIcon('spinner-circle', Icons.sizes.large)) + '</div>');
 
                     const result = await (await this.getSummary(
                         parseInt($triggerButton.data('pageId'), 10),

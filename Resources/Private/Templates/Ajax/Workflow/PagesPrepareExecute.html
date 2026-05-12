@@ -28,6 +28,11 @@
                     <button class="btn btn-primary mt-4" type="submit" id="pagesExecuteFormSubmitBtn">
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.executeBtn" />
                     </button>
+                    <f:if condition="{cliExecutionAvailable}">
+                        <button class="btn btn-primary mt-4 mx-2" type="submit" id="automaticPagesExecuteFormSubmitBtn">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.cliCommandExecuteBtn" />
+                        </button>
+                    </f:if>
                     <button class="btn btn-primary mt-4 mx-2" type="submit" id="pagesSaveMetadataSubmitBtn">
                         <f:format.raw><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.saveMetadataBtn" /></f:format.raw>
                     </button>

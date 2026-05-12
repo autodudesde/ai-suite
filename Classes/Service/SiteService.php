@@ -106,6 +106,59 @@ class SiteService implements SingletonInterface
         return array_unique($languageFlags);
     }
 
+    /**
+     * Resolve ISO language codes (e.g. "en", "de") to language UIDs of the site
+     * containing the given page. Unknown ISO codes are silently skipped.
+     *
+     * @param list<string> $isocodes
+     *
+     * @return list<int>
+     */
+    public function getLanguageUidsByIsocodes(array $isocodes, int $pageId): array
+    {
+        if ([] === $isocodes) {
+            return [];
+        }
+
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+        } catch (SiteNotFoundException $e) {
+            return [];
+        }
+
+        $uids = [];
+        foreach ($site->getLanguages() as $language) {
+            if (in_array($language->getLocale()->getLanguageCode(), $isocodes, true)) {
+                $uids[] = $language->getLanguageId();
+            }
+        }
+
+        return $uids;
+    }
+
+    /**
+     * Language UIDs of the site containing the given page, excluding the default language (uid 0).
+     *
+     * @return list<int>
+     */
+    public function getNonDefaultLanguageUids(int $pageId): array
+    {
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pageId);
+        } catch (SiteNotFoundException $e) {
+            return [];
+        }
+
+        $uids = [];
+        foreach ($site->getLanguages() as $language) {
+            if ($language->getLanguageId() > 0) {
+                $uids[] = $language->getLanguageId();
+            }
+        }
+
+        return $uids;
+    }
+
     public function getSiteRootPageId(int $pageId): int
     {
         try {

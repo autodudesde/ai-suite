@@ -23,6 +23,7 @@ class IconService implements SingletonInterface
             return $this->iconFactory->getIcon($identifier, IconSize::from($size), $overlayIdentifier);
         }
 
+        // @phpstan-ignore-next-line argument.type — v12 fallback, IconFactory::getIcon() accepted string $size before v13.
         return $this->iconFactory->getIcon($identifier, $size, $overlayIdentifier);
     }
 }

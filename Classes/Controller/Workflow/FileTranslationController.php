@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
@@ -58,6 +59,7 @@ class FileTranslationController extends AbstractBackendController
         protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
         protected readonly GlossarService $glossarService,
         protected readonly ViewFactoryService $viewFactoryService,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -82,6 +84,7 @@ class FileTranslationController extends AbstractBackendController
             }
 
             $viewProperties = $this->workflowViewService->filelistFileTranslationDirectorySupport($librariesAnswer);
+            $viewProperties['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadataTranslation');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $serverRequest,
@@ -130,6 +133,7 @@ class FileTranslationController extends AbstractBackendController
 
         $sourceLanguageParts = explode('__', $workflowData['sourceLanguage']);
         $targetLanguageParts = explode('__', $workflowData['targetLanguage']);
+        $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'fileMetadataTranslation');
 
         $result = $this->workflowProcessingService->processFileMetadataTranslation(
             $files,
@@ -138,6 +142,8 @@ class FileTranslationController extends AbstractBackendController
             $sourceLanguageParts[0],
             $targetLanguageParts[0],
             (int) $targetLanguageParts[1],
+            handledByCli: $handledByCli,
+            model: (string) ($workflowData['textAiModel'] ?? ''),
         );
 
         $payload = $result['payload'];
@@ -165,7 +171,7 @@ class FileTranslationController extends AbstractBackendController
             'deepl_glossary_id' => $deeplGlossary['glossar_uuid'] ?? '',
         ];
 
-        $errorResponse = $this->sendWorkflowRequest(
+        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
             $bulkPayload,
             $workflowData['parentUuid'],
@@ -174,14 +180,13 @@ class FileTranslationController extends AbstractBackendController
             '',
             'translate',
             $workflowData['textAiModel'],
-            $response,
             $this->requestService,
             $this->backgroundTaskRepository,
             $extraParams,
         );
 
-        if (null !== $errorResponse) {
-            return $errorResponse;
+        if (null !== $errorMessage) {
+            return $this->logError($errorMessage, $response, 503);
         }
 
         return $this->jsonSuccess($response, [

@@ -20,13 +20,13 @@
     <f:for each="{backgroundTasks}" as="columnsTask" key="column" iteration="columnIt">
         <div class="panel panel-default mb-3" data-column="{column}">
             <div class="panel-heading" role="tab">
-                <div class="panel-heading-row">
-                    <button class="panel-button w-100 text-start pe-none" type="button"
+                <div class="panel-heading-row d-flex align-items-center">
+                    <button class="panel-button flex-grow-1 text-start" type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#columnCollapse{type}{columnIt.index}"
                             aria-expanded="true"
                             aria-controls="columnCollapse{type}{columnIt.index}">
-                        <div class="panel-title d-flex align-items-center justify-content-between">
+                        <div class="panel-title d-flex align-items-center w-100">
                             <h3 class="mb-0">
                                 <f:if condition="{type} == 'Page'">
                                     <f:then>
@@ -37,18 +37,21 @@
                                     </f:else>
                                 </f:if>
                             </h3>
-                            <div class="d-flex align-items-center">
-                                <f:if condition="{columnsTask -> f:count()} == 50">
-                                    <a href="#" class="btn btn-sm btn-default load-more-tasks me-2 pe-auto" data-type="{type}">
-                                        <core:icon identifier="actions-database-reload" size="small" />
-                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.backgroundTask.loadMore" />
-                                    </a>
-                                </f:if>
-                                <span class="badge badge-secondary me-2 column-task-count">{columnsTask -> f:count()}</span>
-                                <span class="caret pe-auto"></span>
-                            </div>
                         </div>
                     </button>
+                    <div class="d-flex align-items-center">
+                        <f:if condition="{columnsTask -> f:count()} == 50">
+                            <a href="#" class="btn btn-sm btn-default load-more-tasks me-2" data-type="{type}">
+                                <core:icon identifier="actions-database-reload" size="small" />
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.backgroundTask.loadMore" />
+                            </a>
+                        </f:if>
+                        <span class="badge badge-secondary me-2 column-task-count">{columnsTask -> f:count()}</span>
+                        <span class="caret"
+                              data-bs-toggle="collapse"
+                              data-bs-target="#columnCollapse{type}{columnIt.index}"
+                              aria-controls="columnCollapse{type}{columnIt.index}"></span>
+                    </div>
                 </div>
             </div>
             <div class="collapse show panel-collapse" id="columnCollapse{type}{columnIt.index}"

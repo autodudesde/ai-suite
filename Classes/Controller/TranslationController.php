@@ -17,6 +17,7 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
@@ -50,6 +51,7 @@ class TranslationController extends AbstractBackendController
         AiSuiteContext $aiSuiteContext,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly UuidService $uuidService,
+        protected readonly MetadataService $metadataService,
         protected readonly LoggerInterface $logger,
     ) {
         parent::__construct(
@@ -161,11 +163,14 @@ class TranslationController extends AbstractBackendController
                 ]
             );
 
+            $pageMetadata = $this->metadataService->getPageMetadataForTranslation($pageId);
+
             $response->getBody()->write(
                 (string) json_encode([
                     'success' => true,
                     'output' => $content,
                     'uuid' => $this->uuidService->generateUuid(),
+                    'pageMetadataFieldCount' => $pageMetadata['count'],
                 ])
             );
         } catch (\Exception $e) {

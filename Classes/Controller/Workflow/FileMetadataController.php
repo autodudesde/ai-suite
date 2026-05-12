@@ -16,12 +16,11 @@ namespace AutoDudes\AiSuite\Controller\Workflow;
 
 use AutoDudes\AiSuite\Controller\AbstractBackendController;
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
-use AutoDudes\AiSuite\Domain\Model\Dto\BackgroundTask;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
-use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\DirectiveService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -61,9 +60,9 @@ class FileMetadataController extends AbstractBackendController
         protected readonly PageRepository $pageRepository,
         protected readonly PagesRepository $pagesRepository,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
-        protected readonly SysFileReferenceRepository $sysFileReferenceRepository,
         protected readonly DirectiveService $directiveService,
         protected readonly ViewFactoryService $viewFactoryService,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -113,14 +112,14 @@ class FileMetadataController extends AbstractBackendController
 
             $foundFileReferences = $this->pagesRepository->fetchSysFileReferences(array_values($foundPageUids), $workflowData['column'], (int) $languageParts[1], $workflowData['showOnlyEmpty']);
             $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
-                if (!$this->aiSuiteContext->metadataService->hasFilePermissions($fileReference['uid_local'])) {
+                if (!$this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($fileReference['uid_local'])) {
                     return false;
                 }
 
                 return !in_array($fileReference['fileMimeType'], MetadataService::SUPPORTED_IMAGE_MIME_TYPES);
             });
             $params['fileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
-                if (!$this->aiSuiteContext->metadataService->hasFilePermissions($fileReference['uid_local'])) {
+                if (!$this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($fileReference['uid_local'])) {
                     return false;
                 }
 
@@ -137,6 +136,7 @@ class FileMetadataController extends AbstractBackendController
 
             $params['maxAllowedFileSize'] = $this->directiveService->getEffectiveMaxUploadSize();
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+            $params['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileReferences');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $request,
@@ -172,83 +172,21 @@ class FileMetadataController extends AbstractBackendController
 
         $fileReferences = json_decode($workflowData['fileReferences'], true);
         $languageParts = explode('__', $workflowData['sysLanguage']);
-        $payload = [];
-        $bulkPayload = [];
-        $failedFileReferences = [];
-        $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
-        $fileSizeSumInBytes = 0;
-        foreach ($fileReferences as $sysFileReferenceUid => $sysFileUid) {
-            try {
-                if (0 === (int) $sysFileUid) {
-                    $fileReferenceRow = $this->sysFileReferenceRepository->findByUid((int) $sysFileReferenceUid);
-                    if (0 === count($fileReferenceRow) || !array_key_exists('uid_local', $fileReferenceRow[0])) {
-                        throw new \Exception($this->aiSuiteContext->localizationService->translate('aiSuite.error.fileReference.notFound', [$sysFileReferenceUid]));
-                    }
-                    $sysFileUid = (int) $fileReferenceRow[0]['uid_local'];
-                }
-                $fileContent = $this->aiSuiteContext->metadataService->getFileContent((int) $sysFileUid);
-                $filename = $this->aiSuiteContext->metadataService->getFilename((int) $sysFileUid);
-                $fileSize = strlen($fileContent);
+        $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'fileReferences');
 
-                if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                    $answer = $this->requestService->sendDataRequest(
-                        'createMassAction',
-                        [
-                            'uuid' => $workflowData['parentUuid'],
-                            'payload' => $payload,
-                            'scope' => 'fileReference',
-                            'type' => 'metadata',
-                        ],
-                        '',
-                        $languageParts[0],
-                        [
-                            'text' => $workflowData['textAiModel'],
-                        ]
-                    );
+        $result = $this->workflowProcessingService->processFileReferencesMetadataGeneration(
+            $workflowData,
+            $fileReferences,
+            $languageParts,
+            $this->requestService,
+            handledByCli: $handledByCli,
+        );
 
-                    if ('Error' === $answer->getType()) {
-                        $this->logError($answer->getResponseData()['message'], $response, 503);
+        $payload = $result['payload'];
+        $bulkPayload = $result['bulkPayload'];
+        $failedFileReferences = $result['failedFileReferences'];
 
-                        return $response;
-                    }
-                    $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
-                    $payload = [];
-                    $bulkPayload = [];
-                    $fileSizeSumInBytes = 0;
-                }
-
-                $uuid = $this->aiSuiteContext->uuidService->generateUuid();
-                $bulkPayload[] = new BackgroundTask(
-                    'fileReference',
-                    'metadata',
-                    $workflowData['parentUuid'],
-                    $uuid,
-                    $workflowData['column'],
-                    'sys_file_reference',
-                    'uid',
-                    $sysFileReferenceUid,
-                    (int) $languageParts[1],
-                    ''
-                );
-                $pageId = (int) $workflowData['startFromPid'];
-                $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
-                $globalInstructionsOverride = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageId]);
-                $payload[] = [
-                    'field_label' => $workflowData['column'],
-                    'request_content' => $fileContent,
-                    'uuid' => $uuid,
-                    'global_instructions' => $globalInstructions,
-                    'override_predefined_prompt' => $globalInstructionsOverride,
-                    'filename' => $filename,
-                ];
-                $fileSizeSumInBytes += $fileSize;
-            } catch (\Exception $e) {
-                $this->logger->error('Error while fetching file content for file with sys file reference uid '.$sysFileReferenceUid.': '.$e->getMessage());
-                $failedFileReferences[] = $sysFileReferenceUid;
-            }
-        }
-
-        $errorResponse = $this->sendWorkflowRequest(
+        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
             $bulkPayload,
             $workflowData['parentUuid'],
@@ -257,12 +195,11 @@ class FileMetadataController extends AbstractBackendController
             $languageParts[0],
             'text',
             $workflowData['textAiModel'],
-            $response,
             $this->requestService,
             $this->backgroundTaskRepository,
         );
-        if ($errorResponse instanceof Response) {
-            return $errorResponse;
+        if (null !== $errorMessage) {
+            return $this->logError($errorMessage, $response, 503);
         }
 
         return $this->jsonSuccess($response, [
@@ -309,6 +246,7 @@ class FileMetadataController extends AbstractBackendController
             }
 
             $viewProperties = $this->workflowViewService->filelistFileDirectorySupport($librariesAnswer);
+            $viewProperties['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadata');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $serverRequest,
@@ -343,20 +281,22 @@ class FileMetadataController extends AbstractBackendController
 
         $workflowDataFiles = json_decode($workflowData['files'], true);
         $languageParts = explode('__', $workflowData['sysLanguage']);
+        $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'fileMetadata');
 
         $result = $this->workflowProcessingService->processFilelistFilesForMetadataGeneration(
             $workflowData,
             $workflowDataFiles,
             $languageParts,
             $scope,
-            $this->requestService
+            $this->requestService,
+            handledByCli: $handledByCli,
         );
 
         $payload = $result['payload'];
         $bulkPayload = $result['bulkPayload'];
         $failedFilesMetadata = $result['failedFilesMetadata'];
 
-        $errorResponse = $this->sendWorkflowRequest(
+        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
             $bulkPayload,
             $workflowData['parentUuid'],
@@ -365,12 +305,11 @@ class FileMetadataController extends AbstractBackendController
             $languageParts[0],
             'text',
             $workflowData['textAiModel'],
-            $response,
             $this->requestService,
             $this->backgroundTaskRepository,
         );
-        if ($errorResponse instanceof Response) {
-            return $errorResponse;
+        if (null !== $errorMessage) {
+            return $this->logError($errorMessage, $response, 503);
         }
 
         return $this->jsonSuccess($response, [

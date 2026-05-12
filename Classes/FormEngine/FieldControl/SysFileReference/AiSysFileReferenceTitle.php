@@ -6,9 +6,11 @@ namespace AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
+use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SiteService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AiSysFileReferenceTitle extends AbstractNode
@@ -27,6 +29,14 @@ class AiSysFileReferenceTitle extends AbstractNode
             if (!isset($this->data['parentPageRow']['uid'])) {
                 return [];
             }
+            $sysFileId = (int) ($this->data['databaseRow']['uid_local'][0]['uid'] ?? 0);
+            if ($sysFileId <= 0) {
+                return [];
+            }
+            $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($sysFileId);
+            if (!in_array($file->getMimeType(), MetadataService::SUPPORTED_IMAGE_MIME_TYPES, true)) {
+                return [];
+            }
             $pageUid = (int) $this->data['parentPageRow']['uid'];
             if (isset($this->data['parentPageRow']['l10n_parent'][0]) && (int) $this->data['parentPageRow']['l10n_parent'][0] > 0) {
                 $pageUid = (int) $this->data['parentPageRow']['l10n_parent'][0];
@@ -41,7 +51,7 @@ class AiSysFileReferenceTitle extends AbstractNode
             'title' => GeneralUtility::makeInstance(LocalizationService::class)->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.generation.titleSuggestions'),
             'linkAttributes' => [
                 'id' => 'title_generation',
-                'data-sys-file-id' => (int) $this->data['databaseRow']['uid_local'][0]['uid'],
+                'data-sys-file-id' => $sysFileId,
                 'class' => 'ai-suite-suggestions-generation-btn',
                 'data-id' => $this->data['databaseRow']['uid'],
                 'data-lang-iso-code' => $langIsoCode,
