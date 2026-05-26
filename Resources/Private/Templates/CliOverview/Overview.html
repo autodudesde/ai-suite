@@ -19,6 +19,14 @@
                 </div>
             </div>
         </f:if>
+        <f:if condition="{schedulerAvailable} && {processTasksCommandScheduled} == 0">
+            <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert">
+                <core:icon identifier="actions-exclamation-triangle" size="small"/>
+                <div>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.cliOverview.processTasksCommandNotScheduled"/>
+                </div>
+            </div>
+        </f:if>
 
         <div class="panel panel-default mb-3">
             <div class="panel-heading">

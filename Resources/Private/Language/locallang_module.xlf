@@ -519,10 +519,10 @@
                 <source>Execute Translation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.cliCommandExecuteBtn">
-                <source>Execute via Scheduler</source>
+                <source>Generate with AI and auto-fill in background</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.cliCommandExecuteTranslationBtn">
-                <source>Translate via Scheduler</source>
+                <source>Translate with AI and auto-fill in background</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.foundFilesAndMetadata">
                 <source>Found files with associated metadata</source>

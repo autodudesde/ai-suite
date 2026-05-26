@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Core\Console\CommandRegistry;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -21,8 +22,6 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 class CliCommandAvailabilityService implements SingletonInterface
 {
     /**
-     * Workflow types currently processable end-to-end via CLI / scheduler.
-     *
      * @var list<string>
      */
     private const SUPPORTED_WORKFLOW_TYPES = [
@@ -33,16 +32,14 @@ class CliCommandAvailabilityService implements SingletonInterface
         'fileMetadataTranslation',
     ];
 
-    /**
-     * Command names that must be registered for the CLI-trigger UI to make sense.
-     * The result-saving command is the bare minimum: without it, CLI-handled tasks
-     * would never be persisted back to TYPO3 records.
-     */
     private const REQUIRED_COMMAND_NAME = 'ai-suite:process-tasks';
+
+    private ?bool $processTasksCommandScheduledCache = null;
 
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly CommandRegistry $commandRegistry,
+        protected readonly SchedulerTaskRepository $schedulerTaskRepository,
     ) {}
 
     public function isCliExecutionAvailable(string $workflowType): bool
@@ -56,7 +53,23 @@ class CliCommandAvailabilityService implements SingletonInterface
         if (!in_array($workflowType, self::SUPPORTED_WORKFLOW_TYPES, true)) {
             return false;
         }
+        if (!$this->commandRegistry->has(self::REQUIRED_COMMAND_NAME)) {
+            return false;
+        }
 
-        return $this->commandRegistry->has(self::REQUIRED_COMMAND_NAME);
+        return $this->isProcessTasksCommandScheduled();
+    }
+
+    public function isProcessTasksCommandScheduled(): bool
+    {
+        if (null !== $this->processTasksCommandScheduledCache) {
+            return $this->processTasksCommandScheduledCache;
+        }
+
+        $this->processTasksCommandScheduledCache = $this->schedulerTaskRepository
+            ->countActiveSchedulableCommandTasks(self::REQUIRED_COMMAND_NAME) > 0
+        ;
+
+        return $this->processTasksCommandScheduledCache;
     }
 }

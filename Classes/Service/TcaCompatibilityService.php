@@ -17,11 +17,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TcaCompatibilityService implements SingletonInterface
 {
+    private const T3VER_STATE_DELETE_PLACEHOLDER = 2;
+
     private readonly ?TcaSchemaFactory $tcaSchemaFactory;
 
-    public function __construct(Typo3Version $typo3Version)
+    public function __construct(private readonly Typo3Version $typo3Version)
     {
-        $this->tcaSchemaFactory = ($typo3Version->getMajorVersion() >= 13 && class_exists(TcaSchemaFactory::class))
+        $this->tcaSchemaFactory = ($this->typo3Version->getMajorVersion() >= 13 && class_exists(TcaSchemaFactory::class))
             ? GeneralUtility::makeInstance(TcaSchemaFactory::class)
             : null;
     }
@@ -585,5 +587,15 @@ class TcaCompatibilityService implements SingletonInterface
         }
 
         return false;
+    }
+
+    public function isDeletePlaceholderState(int|string|null $t3verState): bool
+    {
+        return self::T3VER_STATE_DELETE_PLACEHOLDER === (int) ($t3verState ?? 0);
+    }
+
+    public function getRecordEditAccessDeletedArgument(): mixed
+    {
+        return $this->typo3Version->getMajorVersion() >= 14 ? null : false;
     }
 }

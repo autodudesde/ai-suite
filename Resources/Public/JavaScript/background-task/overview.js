@@ -211,6 +211,16 @@ class Overview {
 
                     const accordionItem = document.querySelector('.panel[data-uuid="'+uuid+'"][data-column="'+column+'"]');
                     const columnSection = accordionItem.closest('.panel-body');
+
+                    const finishedItems = Array.from(
+                        accordionBackgroundTasksElement.querySelectorAll('.panel[data-uuid] .open-accordion-item')
+                    ).map(btn => btn.closest('.panel[data-uuid]'));
+                    const savedIndex = finishedItems.indexOf(accordionItem);
+                    let nextFinishedItem = null;
+                    if (savedIndex !== -1 && finishedItems.length > 1) {
+                        nextFinishedItem = finishedItems[savedIndex + 1] || finishedItems[0];
+                    }
+
                     accordionItem.remove();
 
                     if (columnSection && columnSection.querySelectorAll('.panel').length === 0) {
@@ -223,11 +233,8 @@ class Overview {
                     if(accordionBackgroundTasksElement.querySelectorAll('.panel').length === 0) {
                         accordionBackgroundTasksElement.querySelector('#noBackgroundTasks').style.display = 'block';
                         accordionBackgroundTasksElement.querySelector('.action-buttons-wrapper').style.display = 'none';
-                    } else {
-                        const firstAccordionItem = accordionBackgroundTasksElement.querySelector('.panel');
-                        if(firstAccordionItem) {
-                            firstAccordionItem.querySelector('.open-accordion-item')?.click();
-                        }
+                    } else if (nextFinishedItem) {
+                        nextFinishedItem.querySelector('.open-accordion-item')?.click();
                     }
                     self.checkLoadMore(columnSection);
                     self.updateDeleteAllButtonVisibility();

@@ -22,10 +22,12 @@ use AutoDudes\AiSuite\Service\WorkflowViewService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Exception;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -58,6 +60,8 @@ final class FilelistController extends AbstractBackendController
 
     /**
      * @throws Exception
+     * @throws PropagateResponseException
+     * @throws RouteNotFoundException
      */
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
@@ -72,6 +76,11 @@ final class FilelistController extends AbstractBackendController
                 return $this->translateIndexAction();
 
             default:
+                $this->aiSuiteContext->sessionService->handleRedirectBySessionRoute([
+                    'ai_suite_workflow_filelist_files_prepare',
+                    'ai_suite_workflow_filelist_files_translate_prepare',
+                ]);
+
                 return $this->overviewAction();
         }
     }

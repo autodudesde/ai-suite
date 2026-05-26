@@ -71,15 +71,14 @@ class TranslationHook
      */
     protected function processWholePageTranslation(DataHandler $dataHandler, array $aiSuiteConfig): void
     {
+        $pageId = (int) $aiSuiteConfig['pageId'];
         $destLangId = (int) $aiSuiteConfig['destLangId'];
-        $scope = $aiSuiteConfig['scope'] ?? '';
-        $pageId = $this->getPageIdFromCmdmap($dataHandler, $scope);
 
-        if (null === $pageId) {
+        if ($pageId <= 0) {
             return;
         }
 
-        $allTranslateFields = $this->collectAllTranslatableContent($pageId, $destLangId, $scope, $dataHandler);
+        $allTranslateFields = $this->collectAllTranslatableContent($pageId, $destLangId, $dataHandler);
 
         if (empty($allTranslateFields)) {
             return;
@@ -181,53 +180,56 @@ class TranslationHook
         }
     }
 
-    protected function getPageIdFromCmdmap(DataHandler $dataHandler, string $scope): ?int
-    {
-        if ('page' === $scope && isset($dataHandler->cmdmap['pages'])) {
-            return (int) array_key_first($dataHandler->cmdmap['pages']);
-        }
-
-        if ('fileReference' === $scope && isset($dataHandler->cmdmap['sys_file_reference'])) {
-            $fileRefUid = array_key_first($dataHandler->cmdmap['sys_file_reference']);
-
-            return $this->pagesRepository->getPageIdFromFileReference((int) $fileRefUid);
-        }
-
-        return null;
-    }
-
     /**
+     * Collects page properties and all localized content element fields of a
+     * whole-page translation, so they can be sent to the AI in one request.
+     *
      * @return array<string, mixed>
      */
-    protected function collectAllTranslatableContent(int $pageId, int $destLangId, string $scope, DataHandler $dataHandler): array
+    protected function collectAllTranslatableContent(int $pageId, int $destLangId, DataHandler $dataHandler): array
     {
         $allTranslateFields = [];
 
-        switch ($scope) {
-            case 'page':
-                $pageMetadata = $this->metadataService->collectPageMetadataFields($pageId);
-                if (!empty($pageMetadata)) {
-                    $allTranslateFields['pages'][$dataHandler->copyMappingArray_merged['pages'][$pageId]] = $pageMetadata;
-                }
+        $pageMetadata = $this->metadataService->collectPageMetadataFields($pageId);
+        if (!empty($pageMetadata)) {
+            $targetPageUid = $this->resolveTargetPageUid($dataHandler, $pageId, $destLangId);
+            if ($targetPageUid > 0) {
+                $allTranslateFields['pages'][$targetPageUid] = $pageMetadata;
+            }
+        }
 
-                break;
-
-            default:
-                $request = $GLOBALS['TYPO3_REQUEST'];
-                foreach ($dataHandler->copyMappingArray_merged as $tableKey => $table) {
-                    foreach ($table as $ceSrcLangUid => $ceDestLangUid) {
-                        $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
-                        if (count($fields) > 0) {
-                            $fields = array_filter($fields, function ($field) {
-                                return !is_array($field) || isset($field['data']);
-                            });
-                            $allTranslateFields[$tableKey][$ceDestLangUid] = $fields;
-                        }
-                    }
+        $request = $GLOBALS['TYPO3_REQUEST'];
+        foreach ($dataHandler->copyMappingArray_merged as $tableKey => $table) {
+            if ('pages' === $tableKey) {
+                continue;
+            }
+            foreach ($table as $ceSrcLangUid => $ceDestLangUid) {
+                $fields = $this->translationService->fetchTranslationFields($request, [], $ceSrcLangUid, $tableKey);
+                $fields = array_filter($fields, function ($field) {
+                    return !is_array($field) || isset($field['data']);
+                });
+                if (count($fields) > 0) {
+                    $allTranslateFields[$tableKey][$ceDestLangUid] = $fields;
                 }
+            }
         }
 
         return $allTranslateFields;
+    }
+
+    /**
+     * Resolves the uid of the translated page record. When the page was localized
+     * in the current DataHandler run it is read from the copy mapping, otherwise
+     * an already existing translation is looked up.
+     */
+    protected function resolveTargetPageUid(DataHandler $dataHandler, int $sourcePageId, int $destLangId): int
+    {
+        $mappedUid = (int) ($dataHandler->copyMappingArray_merged['pages'][$sourcePageId] ?? 0);
+        if ($mappedUid > 0) {
+            return $mappedUid;
+        }
+
+        return (int) ($this->pagesRepository->getPageTranslationUid($sourcePageId, $destLangId) ?? 0);
     }
 
     /**
@@ -293,8 +295,8 @@ class TranslationHook
             if (count($errorLog) > 0) {
                 $this->addErrorFlashMessage();
             } else {
-                $pageUid = array_key_first($allTranslateFields['pages'] ?? null);
-                if (!empty($pageUid)) {
+                $pageUid = (int) array_key_first($allTranslateFields['pages'] ?? []);
+                if ($pageUid > 0) {
                     $this->translationService->updatePageSlug($pageUid);
                 }
             }

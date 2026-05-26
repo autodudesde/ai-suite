@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
+use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
@@ -40,6 +41,7 @@ class CliOverviewController
         protected readonly ModuleTemplateFactory $moduleTemplateFactory,
         protected readonly PageRenderer $pageRenderer,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
     ) {}
 
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
@@ -65,8 +67,10 @@ class CliOverviewController
         $pendingTasks = $this->backgroundTaskRepository->findBackgroundTasksHandledByCli(500, ['status' => 'pending']);
         $pendingStatistics = $this->buildStatistics($pendingTasks);
 
+        $schedulerAvailable = ExtensionManagementUtility::isLoaded('scheduler');
         $view->assignMultiple([
-            'schedulerAvailable' => ExtensionManagementUtility::isLoaded('scheduler'),
+            'schedulerAvailable' => $schedulerAvailable,
+            'processTasksCommandScheduled' => $schedulerAvailable && $this->cliCommandAvailabilityService->isProcessTasksCommandScheduled(),
             'groupedTasks' => $groupedTasks,
             'failedStatistics' => $failedStatistics,
             'pendingStatistics' => $pendingStatistics,

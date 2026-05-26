@@ -31,7 +31,6 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Versioning\VersionState;
 
 class TranslationService
 {
@@ -368,6 +367,8 @@ class TranslationService
                 unset($contentData['pages']);
 
                 if ('metadata' !== $translationScope && !empty($contentData)) {
+                    $this->ensureParentContentElementsLocalized($contentData, $targetLanguageUid);
+
                     foreach ($contentData as $table => $elements) {
                         $parentField = 'tt_content' === $table ? 'l18n_parent' : 'l10n_parent';
                         foreach ($elements as $sourceUid => $fields) {
@@ -912,6 +913,8 @@ class TranslationService
         }
         $sortedTranslationData = array_merge($sortedTranslationData, $translationData);
 
+        $this->ensureParentContentElementsLocalized($sortedTranslationData, $targetLanguageUid);
+
         foreach ($sortedTranslationData as $table => $elements) {
             foreach ($elements as $sourceUid => $element) {
                 try {
@@ -947,6 +950,83 @@ class TranslationService
         if (count($datamap) > 0) {
             $this->executeDataHandler($datamap, []);
         }
+    }
+
+    /**
+     * @param array<string, mixed> $translationData
+     */
+    protected function ensureParentContentElementsLocalized(array $translationData, int $targetLanguageUid): void
+    {
+        $parentUids = [];
+        foreach ($translationData as $table => $elements) {
+            if ('tt_content' === $table || 'pages' === $table || !is_array($elements)) {
+                continue;
+            }
+            foreach (array_keys($elements) as $sourceUid) {
+                $parentUid = $this->resolveContentElementUid($table, (int) $sourceUid);
+                if ($parentUid > 0) {
+                    $parentUids[$parentUid] = $parentUid;
+                }
+            }
+        }
+        foreach ($parentUids as $parentUid) {
+            try {
+                $this->findOrCreateLocalization('tt_content', $parentUid, $targetLanguageUid, 'l18n_parent');
+            } catch (\Throwable $e) {
+                $this->logger->warning('Failed to localize parent content element', [
+                    'parentUid' => $parentUid,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+    }
+
+    protected function resolveContentElementUid(string $table, int $uid): int
+    {
+        $guard = 0;
+        while ('tt_content' !== $table && $uid > 0 && $guard < 10) {
+            ++$guard;
+            $parent = $this->resolveInlineParent($table, $uid);
+            if (null === $parent) {
+                return 0;
+            }
+            [$table, $uid] = $parent;
+        }
+
+        return 'tt_content' === $table ? $uid : 0;
+    }
+
+    /**
+     * @return null|array{0: string, 1: int} [parentTable, parentUid]
+     */
+    protected function resolveInlineParent(string $childTable, int $childUid): ?array
+    {
+        $childRow = BackendUtility::getRecordWSOL($childTable, $childUid);
+        if (!is_array($childRow)) {
+            return null;
+        }
+        foreach (($GLOBALS['TCA'] ?? []) as $parentTable => $tableConfig) {
+            foreach (($tableConfig['columns'] ?? []) as $fieldConfig) {
+                $config = $fieldConfig['config'] ?? [];
+                if (
+                    !in_array($config['type'] ?? '', ['inline', 'file'], true)
+                    || ($config['foreign_table'] ?? '') !== $childTable
+                    || empty($config['foreign_field'])
+                ) {
+                    continue;
+                }
+                $foreignTableField = (string) ($config['foreign_table_field'] ?? '');
+                if ('' !== $foreignTableField && ($childRow[$foreignTableField] ?? '') !== $parentTable) {
+                    continue;
+                }
+                $parentUid = (int) ($childRow[$config['foreign_field']] ?? 0);
+                if ($parentUid > 0) {
+                    return [$parentTable, $parentUid];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -1157,7 +1237,7 @@ class TranslationService
 
         $fullLanguageCheckNeeded = 'pages' !== $table;
         $backendUser = $this->backendUserService->getBackendUser();
-        if (!$ignoreLocalization && ($language <= 0 || !$backendUser?->checkLanguageAccess($language)) && !$backendUser?->recordEditAccessInternals($table, $row, false, null, $fullLanguageCheckNeeded)) {
+        if (!$ignoreLocalization && ($language <= 0 || !$backendUser?->checkLanguageAccess($language)) && !$backendUser?->recordEditAccessInternals($table, $row, false, $this->tcaCompatibilityService->getRecordEditAccessDeletedArgument(), $fullLanguageCheckNeeded)) {
             return;
         }
 
@@ -1168,7 +1248,7 @@ class TranslationService
         }
         if (BackendUtility::isTableWorkspaceEnabled($table)
             && ($this->backendUserService->getBackendUser()?->workspace ?? 0) > 0
-            && VersionState::DELETE_PLACEHOLDER === VersionState::tryFrom($row['t3ver_state'] ?? 0)
+            && $this->tcaCompatibilityService->isDeletePlaceholderState($row['t3ver_state'] ?? 0)
         ) {
             return;
         }
