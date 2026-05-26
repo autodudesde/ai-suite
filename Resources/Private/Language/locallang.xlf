@@ -836,6 +836,9 @@
             <trans-unit id="aiSuite.cliOverview.schedulerNotLoaded">
                 <source>The TYPO3 Scheduler extension (EXT:scheduler) is not installed. CLI background tasks created by AI Suite will not be processed automatically. Install and enable EXT:scheduler and configure a recurring task that runs the "ai-suite:process-tasks" command.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.cliOverview.processTasksCommandNotScheduled">
+                <source>EXT:scheduler is installed but no active scheduler task is configured to run the "ai-suite:process-tasks" command. CLI-handled workflow tasks will be queued but never persisted back to TYPO3 records. Open the Scheduler module and add a recurring task that executes "ai-suite:process-tasks".</source>
+            </trans-unit>
             <trans-unit id="aiSuite.cliOverview.statistics.title">
                 <source>Statistics</source>
             </trans-unit>

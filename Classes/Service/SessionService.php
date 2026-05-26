@@ -34,6 +34,7 @@ class SessionService implements SingletonInterface
 
     private const CONTEXT_PRESERVE_ROUTES = [
         'web_aisuite',
+        'files_aisuite',
         'ai_suite_global_instructions',
         'ai_suite_prompt_manage_customprompttemplates',
     ];
@@ -145,16 +146,18 @@ class SessionService implements SingletonInterface
     }
 
     /**
+     * @param array<int, string> $allowedRoutes
+     *
      * @throws PropagateResponseException
      * @throws RouteNotFoundException
      */
-    public function handleRedirectBySessionRoute(): void
+    public function handleRedirectBySessionRoute(array $allowedRoutes = []): void
     {
         if ('default' !== $this->getCurrentContext()) {
             $lastRoute = $this->getLastRoute();
-            if (!empty($lastRoute)) {
+            if (!empty($lastRoute) && (empty($allowedRoutes) || in_array($lastRoute, $allowedRoutes, true))) {
                 $currentContext = $this->getCurrentContext();
-                if ('ai_suite_workflowmanager_files' === $currentContext || 'ai_suite_workflow_filelist_files_translate_prepare' === $currentContext) {
+                if ('ai_suite_workflow_filelist_files_prepare' === $currentContext || 'ai_suite_workflow_filelist_files_translate_prepare' === $currentContext) {
                     $id = $this->getFilelistFolderId();
                 } elseif ('ai_suite_global_instructions' === $currentContext || 'ai_suite_prompt_manage_customprompttemplates' === $currentContext) {
                     $id = $this->getWebPageId();
