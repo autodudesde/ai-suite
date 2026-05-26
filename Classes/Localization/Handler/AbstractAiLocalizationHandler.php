@@ -55,10 +55,14 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
         ];
 
         if ($wholePageMode) {
-            $this->processWholePageMetadataTranslation($pageId, $destLanguageId, $aiSuiteBase);
-        }
-
-        if (!empty($selectedRecordUids)) {
+            $this->processWholePageTranslation(
+                $pageId,
+                $destLanguageId,
+                array_map('intval', $selectedRecordUids),
+                $instructions->mode->getDataHandlerCommand(),
+                $aiSuiteBase
+            );
+        } elseif (!empty($selectedRecordUids)) {
             $this->processContentTranslation(
                 $pageId,
                 $destLanguageId,
@@ -73,23 +77,32 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
 
     abstract protected function getModelPermissionKey(): string;
 
-    protected function processWholePageMetadataTranslation(
+    /**
+     * Localizes page properties and content elements in a single DataHandler run,
+     * so the TranslationHook can collect both and send one combined AI request.
+     *
+     * @param int[]                $selectedRecordUids
+     * @param array<string, mixed> $aiSuiteBase
+     */
+    protected function processWholePageTranslation(
         int $pageId,
         int $destLanguageId,
+        array $selectedRecordUids,
+        string $dataHandlerCommand,
         array $aiSuiteBase
     ): void {
-        $existingPageUid = $this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId);
-
         $cmd = [];
-        if (!$existingPageUid) {
+
+        if (!$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId)) {
             $cmd['pages'][$pageId] = ['localize' => $destLanguageId];
-        } else {
-            $cmd['pages'][$existingPageUid] = [];
+        }
+
+        foreach ($selectedRecordUids as $uid) {
+            $cmd['tt_content'][$uid] = [$dataHandlerCommand => $destLanguageId];
         }
 
         $cmd['localization'][0]['aiSuite'] = array_merge($aiSuiteBase, [
             'wholePageMode' => true,
-            'scope' => 'page',
         ]);
 
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
@@ -97,6 +110,10 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
         $dataHandler->process_cmdmap();
     }
 
+    /**
+     * @param int[]                $selectedRecordUids
+     * @param array<string, mixed> $aiSuiteBase
+     */
     protected function processContentTranslation(
         int $pageId,
         int $destLanguageId,
