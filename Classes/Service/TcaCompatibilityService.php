@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Schema\Capability\TcaSchemaCapability;
@@ -17,6 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TcaCompatibilityService implements SingletonInterface
 {
+    private const T3VER_STATE_NEW_PLACEHOLDER = 1;
     private const T3VER_STATE_DELETE_PLACEHOLDER = 2;
 
     private readonly ?TcaSchemaFactory $tcaSchemaFactory;
@@ -165,8 +167,6 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * True if the table declares a soft-delete column in its TCA ctrl.
-     *
      * @throws UndefinedSchemaException
      */
     public function hasSoftDelete(string $table): bool
@@ -175,8 +175,6 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * True if the table is rootLevel=1 (root-only) or rootLevel=-1 (root + pages).
-     *
      * @throws UndefinedSchemaException
      */
     public function isRootLevel(string $table): bool
@@ -202,8 +200,6 @@ class TcaCompatibilityService implements SingletonInterface
             return $sortby;
         }
 
-        // sortby may be set to '' (e.g. tx_news_domain_model_news when manual sorting is off);
-        // fall back to default_sortby's first column, then to 'uid'.
         $defaultSortby = (string) ($config['default_sortby'] ?? '');
         if ('' !== $defaultSortby) {
             $first = trim(explode(',', $defaultSortby)[0]);
@@ -231,6 +227,18 @@ class TcaCompatibilityService implements SingletonInterface
     /**
      * @throws UndefinedSchemaException
      */
+    public function isWorkspaceAware(string $table): bool
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            return (bool) $this->tcaSchemaFactory->get($table)->isWorkspaceAware();
+        }
+
+        return !empty($GLOBALS['TCA'][$table]['ctrl']['versioningWS']);
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
     public function getLanguageFieldName(string $table): ?string
     {
         if (null !== $this->tcaSchemaFactory) {
@@ -241,7 +249,7 @@ class TcaCompatibilityService implements SingletonInterface
 
             return $schema->getCapability(TcaSchemaCapability::Language)
                 ->getLanguageField()->getName()
-                ;
+            ;
         }
 
         return $GLOBALS['TCA'][$table]['ctrl']['languageField'] ?? null;
@@ -260,7 +268,7 @@ class TcaCompatibilityService implements SingletonInterface
 
             return $schema->getCapability(TcaSchemaCapability::Language)
                 ->getTranslationOriginPointerField()->getName()
-                ;
+            ;
         }
 
         return $GLOBALS['TCA'][$table]['ctrl']['transOrigPointerField'] ?? null;
@@ -406,8 +414,12 @@ class TcaCompatibilityService implements SingletonInterface
      * @throws UndefinedSchemaException
      * @throws UndefinedFieldException
      */
-    public function isRichTextField(string $table, string $field): bool
+    public function isRichTextField(string $table, string $field, ?string $typeKey = null): bool
     {
+        if (null !== $typeKey) {
+            return $this->isRichTextFieldConfig($this->getEffectiveFieldConfiguration($table, $typeKey, $field));
+        }
+
         if (null !== $this->tcaSchemaFactory) {
             $schema = $this->tcaSchemaFactory->get($table);
             if (!$schema->hasField($field)) {
@@ -438,8 +450,22 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * Field names visible for a record type. When $typeKey is null, returns all base fields.
+     * @param array<string, mixed> $row
      *
+     * @throws UndefinedSchemaException
+     */
+    public function resolveSubSchemaType(string $table, array $row): ?string
+    {
+        $typeField = $this->getSubSchemaDivisorFieldName($table);
+        if (null === $typeField) {
+            return null;
+        }
+        $typeValue = (string) ($row[$typeField] ?? '');
+
+        return '' !== $typeValue && $this->hasSubSchema($table, $typeValue) ? $typeValue : null;
+    }
+
+    /**
      * @return list<string>
      *
      * @throws UndefinedSchemaException
@@ -473,52 +499,6 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * Expand a TCA `showitem` string to its real column names, recursively
-     * resolving `--palette--;<label>;<paletteName>` entries against
-     * `$GLOBALS['TCA'][$table]['palettes']`.
-     *
-     * @return list<string>
-     */
-    private function resolveShowitemFieldNames(string $table, string $showitem, int $depth = 0): array
-    {
-        if ($depth > 5) {
-            return [];
-        }
-        $names = [];
-        foreach (explode(',', $showitem) as $entry) {
-            $entry = trim($entry);
-            if ('' === $entry) {
-                continue;
-            }
-            if (str_starts_with($entry, '--palette--')) {
-                $paletteName = trim(explode(';', $entry, 3)[2] ?? '');
-                $paletteShowitem = $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'] ?? null;
-                if (is_string($paletteShowitem) && '' !== $paletteShowitem) {
-                    foreach ($this->resolveShowitemFieldNames($table, $paletteShowitem, $depth + 1) as $name) {
-                        $names[] = $name;
-                    }
-                }
-
-                continue;
-            }
-            if (str_starts_with($entry, '--')) {
-                continue;
-            }
-            $name = trim(explode(';', $entry, 2)[0]);
-            if ('' === $name) {
-                continue;
-            }
-            if (isset($GLOBALS['TCA'][$table]['columns'][$name])) {
-                $names[] = $name;
-            }
-        }
-
-        return $names;
-    }
-
-    /**
-     * Field config merged with the type's columnsOverrides (if any).
-     *
      * @return array<string, mixed>
      *
      * @throws UndefinedSchemaException
@@ -594,8 +574,88 @@ class TcaCompatibilityService implements SingletonInterface
         return self::T3VER_STATE_DELETE_PLACEHOLDER === (int) ($t3verState ?? 0);
     }
 
+    public function isNewPlaceholderState(int|string|null $t3verState): bool
+    {
+        return self::T3VER_STATE_NEW_PLACEHOLDER === (int) ($t3verState ?? 0);
+    }
+
     public function getRecordEditAccessDeletedArgument(): mixed
     {
         return $this->typo3Version->getMajorVersion() >= 14 ? null : false;
+    }
+
+    /**
+     * @param array<string, mixed> $fieldTca the column TCA ($GLOBALS['TCA'][$table]['columns'][$field])
+     * @param array<string, mixed> $row      record row; pass an empty array for the default structure
+     *
+     * @return array<string, mixed> the parsed data structure, e.g. ['sheets' => [...]]
+     *
+     * @throws \Throwable when the data structure cannot be resolved
+     */
+    public function resolveFlexFormDataStructure(array $fieldTca, string $table, string $field, array $row): array
+    {
+        $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
+        $tableTca = $GLOBALS['TCA'][$table] ?? [];
+
+        $normaliseDs = $this->typo3Version->getMajorVersion() < 14
+            && is_string($fieldTca['config']['ds'] ?? null)
+            && '' === (string) ($fieldTca['config']['ds_pointerField'] ?? '');
+        $originalGlobalDs = $GLOBALS['TCA'][$table]['columns'][$field]['config']['ds'] ?? null;
+        if ($normaliseDs) {
+            $dsAsArray = ['default' => $fieldTca['config']['ds']];
+            $fieldTca['config']['ds'] = $dsAsArray;
+            $tableTca['columns'][$field]['config']['ds'] = $dsAsArray;
+            $GLOBALS['TCA'][$table]['columns'][$field]['config']['ds'] = $dsAsArray;
+        }
+
+        try {
+            $identifier = $flexFormTools->getDataStructureIdentifier($fieldTca, $table, $field, $row, $tableTca);
+
+            return $flexFormTools->parseDataStructureByIdentifier($identifier, $tableTca);
+        } finally {
+            if ($normaliseDs) {
+                $GLOBALS['TCA'][$table]['columns'][$field]['config']['ds'] = $originalGlobalDs;
+            }
+        }
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function resolveShowitemFieldNames(string $table, string $showitem, int $depth = 0): array
+    {
+        if ($depth > 5) {
+            return [];
+        }
+        $names = [];
+        foreach (explode(',', $showitem) as $entry) {
+            $entry = trim($entry);
+            if ('' === $entry) {
+                continue;
+            }
+            if (str_starts_with($entry, '--palette--')) {
+                $paletteName = trim(explode(';', $entry, 3)[2] ?? '');
+                $paletteShowitem = $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'] ?? null;
+                if (is_string($paletteShowitem) && '' !== $paletteShowitem) {
+                    foreach ($this->resolveShowitemFieldNames($table, $paletteShowitem, $depth + 1) as $name) {
+                        $names[] = $name;
+                    }
+                }
+
+                continue;
+            }
+            if (str_starts_with($entry, '--')) {
+                continue;
+            }
+            $name = trim(explode(';', $entry, 2)[0]);
+            if ('' === $name) {
+                continue;
+            }
+            if (isset($GLOBALS['TCA'][$table]['columns'][$name])) {
+                $names[] = $name;
+            }
+        }
+
+        return $names;
     }
 }
