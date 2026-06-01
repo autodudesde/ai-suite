@@ -26,7 +26,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
         /** @var ModifyNewContentElementWizardItemsEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ModifyNewContentElementWizardItemsEvent(
-                $this->getWizards($request),
+                $this->getWizards(),
                 $this->pageInfo,
                 $this->colPos,
                 $this->sys_language,
@@ -57,7 +57,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                 ];
 
                 // Get default values for the wizard item
-                $defVals = (array)($wizardItem['tt_content_defValues'] ?? []);
+                $defVals = (array) ($wizardItem['tt_content_defValues'] ?? []);
                 if (!$positionSelection) {
                     // In case no position has to be selected, we can just add the target
                     if ($wizardItem['saveAndClose'] ?? false) {
@@ -130,7 +130,7 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
 
         // Unset empty categories
         foreach ($categories as $key => $category) {
-            if ($category['items'] === []) {
+            if ([] === $category['items']) {
                 unset($categories[$key]);
             }
         }
