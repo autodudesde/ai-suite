@@ -85,6 +85,16 @@ class AgencyController extends AbstractBackendController
     {
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/agency/creation.js');
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::TRANSLATE, 'translate', ['text']);
+        if ('Error' === $librariesAnswer->getType()) {
+            $this->view->assign('error', true);
+            $this->view->addFlashMessage(
+                strip_tags($this->requestService->getClientErrorMessage($librariesAnswer)),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->view->renderResponse('Agency/TranslateXlf');
+        }
         $this->view->assignMultiple([
             'allLanguagesList' => $this->aiSuiteContext->siteService->getAvailableLanguages(),
             'textGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),

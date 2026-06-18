@@ -297,8 +297,6 @@ class FilelistFilesTranslationPrepare {
             } else {
                 document.querySelector('#resultsToExecute').innerHTML = res.output.content;
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
         }
         await this.handleTextAiModelChange('ChatGPT');
         Generation.hideSpinner();

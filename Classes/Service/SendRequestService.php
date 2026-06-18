@@ -30,6 +30,20 @@ class SendRequestService
 {
     public const JSON_SAFE_FLAGS = JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE;
 
+    /**
+     * @var array<string, string>
+     */
+    private const ERROR_TYPE_MESSAGE_MAP = [
+        'missingApiKey' => 'aiSuite.error.apiKeyMissing.message',
+        'invalidApiKey' => 'aiSuite.error.server.unauthorized',
+        'apiKeyNotFound' => 'aiSuite.error.server.unauthorized',
+        'apiKeyExpired' => 'aiSuite.error.server.apiKeyExpired',
+        'notEnoughRequests' => 'aiSuite.error.server.notEnoughRequests',
+        'requestLimitReached' => 'aiSuite.error.server.requestLimitReached',
+        'missingAiModelApiKey' => 'aiSuite.error.server.missingAiModelApiKey',
+        'forbidden' => 'aiSuite.error.server.forbidden',
+    ];
+
     /** @var array<string, mixed> */
     protected array $extConf;
 
@@ -47,6 +61,12 @@ class SendRequestService
 
     public function sendRequest(ServerRequest $serverRequest): ClientAnswer
     {
+        if (empty($this->extConf['aiSuiteApiKey'])) {
+            $this->logger->info('AI Suite request skipped: no API key configured');
+
+            return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.apiKeyMissing.message'), 'missingApiKey');
+        }
+
         try {
             $data = $serverRequest->getDataForRequest();
             $endpoint = $serverRequest->getEndpoint();
@@ -60,9 +80,16 @@ class SendRequestService
                 throw new AiSuiteServerException('Could not fetch a valid response from request', 500);
             }
 
-            return new ClientAnswer($requestContent, $requestContent['type']);
+            $answer = new ClientAnswer($requestContent, $requestContent['type']);
+
+            if ('Error' === $answer->getType()) {
+                $requestContent['body']['message'] = $this->getClientErrorMessage($answer);
+                $answer->setResponseData($requestContent);
+            }
+
+            return $answer;
         } catch (ClientException|ServerException $exception) {
-            $this->logger->error($exception->getMessage());
+            $this->logger->error($exception->getMessage(), ['statusCode' => $exception->getResponse()->getStatusCode()]);
 
             return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.server.notAvailable'));
         } catch (AiSuiteServerException $exception) {
@@ -70,7 +97,7 @@ class SendRequestService
 
             return $this->buildErrorAnswer($exception->getMessage());
         } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage());
+            $this->logger->error($exception->getMessage(), ['exception' => $exception::class]);
 
             return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.server.unexpected'));
         }
@@ -95,11 +122,19 @@ class SendRequestService
         );
 
         if ('Error' === $librariesAnswer->getType()) {
-            if (!empty($this->extConf['aiSuiteApiKey'])) {
-                $this->logger->error($this->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title'));
+            $errorType = $librariesAnswer->getErrorType();
+
+            $message = $this->getClientErrorMessage($librariesAnswer);
+            if ('' === $message) {
+                $message = $this->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title');
             }
 
-            return $this->buildErrorAnswer('<div class="alert alert-danger" role="alert">'.$this->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title').'</div>');
+            $this->logger->error($this->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title'), [
+                'errorType' => $errorType,
+                'serverMessage' => $librariesAnswer->getMessage(),
+            ]);
+
+            return $this->buildErrorAnswer($message, $errorType);
         }
 
         return $librariesAnswer;
@@ -166,12 +201,24 @@ class SendRequestService
         }
     }
 
-    private function buildErrorAnswer(string $message): ClientAnswer
+    public function getClientErrorMessage(ClientAnswer $answer): string
+    {
+        $errorType = $answer->getErrorType();
+
+        if ('' !== $errorType && array_key_exists($errorType, self::ERROR_TYPE_MESSAGE_MAP)) {
+            return $this->localizationService->translate(self::ERROR_TYPE_MESSAGE_MAP[$errorType]);
+        }
+
+        return trim($answer->getMessage());
+    }
+
+    private function buildErrorAnswer(string $message, string $errorType = ''): ClientAnswer
     {
         return new ClientAnswer(
             [
                 'body' => [
                     'message' => $message,
+                    'errorType' => $errorType,
                 ],
                 'type' => 'Error',
             ],

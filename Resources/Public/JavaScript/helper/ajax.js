@@ -16,7 +16,10 @@ class Ajax {
                     return responseBody;
                 }
             })
-            .catch((error) => {
+            .catch(() => {
+                // Status polling is a progress mechanism running alongside the main generation
+                // request, which surfaces the real error itself — so a failed poll is non-fatal
+                // and stays silent to avoid a redundant/spurious toast.
                 return null;
             });
     }
@@ -58,7 +61,10 @@ class Ajax {
                 }
             })
             .catch((error) => {
-                console.error(error);
+                Notification.error(
+                    TYPO3.lang['aiSuite.notification.generation.error'],
+                    error?.statusText || error?.message || ''
+                );
                 return null;
             });
     }
@@ -71,12 +77,17 @@ class Ajax {
                 const resolved = await response.resolve();
                 const responseBody = JSON.parse(resolved);
                 if (responseBody.error) {
+                    Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], responseBody.error);
                     return null;
                 } else {
                     return responseBody;
                 }
             })
             .catch((error) => {
+                Notification.error(
+                    TYPO3.lang['aiSuite.notification.generation.error'],
+                    error?.statusText || error?.message || ''
+                );
                 return null;
             });
     }

@@ -70,6 +70,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enablePagesGenerationDescription',
         ],
+        'enable_agency' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAgency',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAgencyDescription',
+        ],
         'enable_metadata_generation' => [
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMetadataGeneration',
             'tx-aisuite-permissions',

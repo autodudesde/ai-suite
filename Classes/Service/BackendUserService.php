@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
@@ -39,6 +40,7 @@ class BackendUserService implements SingletonInterface
         protected readonly PagesRepository $pagesRepository,
         protected readonly ConnectionPool $connectionPool,
         protected readonly ResourceFactory $resourceFactory,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     public function checkPermissions(string $permissionsKey): bool
@@ -51,6 +53,12 @@ class BackendUserService implements SingletonInterface
         try {
             return $backendUser->check('custom_options', $permissionsKey);
         } catch (\Exception $e) {
+            $this->logger->warning('Permission check failed', [
+                'permissionsKey' => $permissionsKey,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return false;
         }
     }
@@ -330,6 +338,13 @@ class BackendUserService implements SingletonInterface
                 && $file->checkActionPermission($fileAction)
                 && $backendUser->check('tables_modify', $tablesModifyKey);
         } catch (\Exception $e) {
+            $this->logger->warning('File edit permission check failed', [
+                'fileUid' => $fileUid,
+                'fileAction' => $fileAction,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return false;
         }
     }

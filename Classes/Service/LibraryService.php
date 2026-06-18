@@ -103,7 +103,7 @@ class LibraryService implements SingletonInterface
 
         $librariesAnswer = $this->sendRequestService->sendLibrariesRequest($libraryType, $action, ['text']);
         if ('Error' === $librariesAnswer->getType()) {
-            $message = $librariesAnswer->getResponseData()['message'] ?? 'Unknown error fetching available models.';
+            $message = $librariesAnswer->getMessage() ?: 'Unknown error fetching available models.';
 
             throw new \RuntimeException($message);
         }
