@@ -152,8 +152,6 @@ class FileReferencePrepare {
                     Notification.info(TYPO3.lang['aiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notification);
                 }
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
         }
     }
 

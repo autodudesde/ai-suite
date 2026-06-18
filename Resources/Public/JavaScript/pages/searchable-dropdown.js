@@ -26,7 +26,8 @@ if (Array.isArray(searchableInputList)){
             let dropdownButton = dropdownElement.querySelector('button.dropdown-toggle');
             if (a !== null){
                 item.value = a.textContent || a.innerText;
-                dropdownButton.textContent = dropdownButton.dataset.initialText + ' ' + item.value;
+                dropdownButton.textContent = item.value;
+                dropdownButton.title = dropdownButton.textContent;
                 dropdownElement.querySelector('input.searchableInput').value = '';
             }
         }
@@ -44,7 +45,8 @@ if (Array.isArray(searchableOptionList)){
             // dropdownElement.querySelector('input.searchableInput').value = txtValue;
             dropdownElement.querySelector('input.searchableInput').value = '';
             let dropdownButton = dropdownElement.querySelector('button.dropdown-toggle');
-            dropdownButton.textContent = dropdownButton.dataset.initialText + ' ' + txtValue;
+            dropdownButton.textContent = txtValue;
+            dropdownButton.title = dropdownButton.textContent;
         });
     });
 }

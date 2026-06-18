@@ -106,12 +106,24 @@ class GenerateSuggestions {
                 .then((res) => {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.metaDataError']);
+                    // On error or empty result handleResponse already showed a
+                    // notification; dismiss the wizard instead of rendering an
+                    // empty/stale slide.
+                    if (res === null || res.error) {
+                        MultiStepWizard.dismiss();
+                        return;
+                    }
                     slide.html(settings['generatedData']);
                     modal = MultiStepWizard.setup.$carousel.closest('.modal');
                     Metadata.addSelectionEventListeners(modal, settings['postData'], slide);
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
+                    Notification.error(
+                        TYPO3.lang['aiSuite.module.modal.metaDataError'],
+                        error?.message || TYPO3.lang['aiSuite.js.error.metadataGeneration']
+                    );
+                    MultiStepWizard.dismiss();
                 });
         });
         MultiStepWizard.show();

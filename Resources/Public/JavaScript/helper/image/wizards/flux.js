@@ -1,3 +1,4 @@
+import Notification from "@typo3/backend/notification.js";
 import Severity from "@typo3/backend/severity.js";
 import MultiStepWizard from "@typo3/backend/multi-step-wizard.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
@@ -36,6 +37,10 @@ class Flux {
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
+                    Notification.error(
+                        TYPO3.lang['aiSuite.js.error.general'],
+                        error?.message || TYPO3.lang['aiSuite.js.error.imageGeneration']
+                    );
                 });
         });
         MultiStepWizard.show();

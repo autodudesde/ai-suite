@@ -99,6 +99,14 @@
                 <source>If active the &quot;Pages&quot; button will be shown within the backend module</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.permissions.enableAgency">
+                <source>Enable &quot;Agency&quot; section within backend module</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableAgencyDescription">
+                <source>If active the &quot;Agency&quot; button and dashboard card will be shown within the backend module</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.permissions.enablePromptTemplateButton">
                 <source>Enable &quot;Prompt Template&quot; section within backend module</source>
             </trans-unit>

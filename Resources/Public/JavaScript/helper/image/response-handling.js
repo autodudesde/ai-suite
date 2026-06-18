@@ -12,8 +12,6 @@ class ResponseHandling {
             } else {
                 MultiStepWizard.set('generatedData', res.output);
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], errorMessage);
         }
     }
 
@@ -43,7 +41,6 @@ class ResponseHandling {
                 }
             }
         } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], errorMessage);
             if(data.table === 'tt_content') {
                 document.querySelector('form[name="requestContent"] #fields-' + data.table + ' #generated-images-' + data.fieldName).innerHTML = preselectionContent;
             } else {

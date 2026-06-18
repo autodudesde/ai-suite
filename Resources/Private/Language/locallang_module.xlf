@@ -467,6 +467,9 @@
             <trans-unit id="aiSuite.module.workflow.columns.filter.depth.onlyThisPage">
                 <source>0 (only this page)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.pages.abstract">
+                <source>Abstract</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.description">
                 <source>Description for search engines</source>
             </trans-unit>
@@ -1276,6 +1279,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title">
                 <source>Could not fetch the current status of the OpenAI API.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.warningFetchingTaskStatus.title">
+                <source>Could not fetch the current status of the background tasks.</source>
             </trans-unit>
 
             <!-- Global Settings -->

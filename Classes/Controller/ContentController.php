@@ -122,11 +122,22 @@ class ContentController extends AbstractBackendController
         }
     }
 
+    /**
+     * @throws AiSuiteException
+     */
     public function createContentAction(ServerRequestInterface $request): ResponseInterface
     {
         $params = $request->getQueryParams();
         $table = array_key_first($params['edit']);
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
+        if ('Error' === $librariesAnswer->getType()) {
+            throw new AiSuiteException(
+                'Content/CreateContent',
+                '',
+                'aiSuite.error.default.title',
+                strip_tags($this->requestService->getClientErrorMessage($librariesAnswer)),
+            );
+        }
         $defVals = [];
         if (array_key_exists('defVals', $params)) {
             $defVals = $params['defVals'];
@@ -358,7 +369,7 @@ class ContentController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title').'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
                     ]
                 )
             );
@@ -393,7 +404,7 @@ class ContentController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title').'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
                     ]
                 )
             );

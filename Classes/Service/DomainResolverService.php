@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -24,6 +25,7 @@ class DomainResolverService implements SingletonInterface
     public function __construct(
         protected readonly SiteFinder $siteFinder,
         protected readonly ConnectionPool $connectionPool,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     public function getDomainByPageId(int $pageId): string
@@ -33,6 +35,12 @@ class DomainResolverService implements SingletonInterface
 
             return $site->getBase()->getHost();
         } catch (\Exception $e) {
+            $this->logger->warning('Could not resolve domain by page id', [
+                'pageId' => $pageId,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return '';
         }
     }
@@ -44,6 +52,12 @@ class DomainResolverService implements SingletonInterface
 
             return $site->getBase()->getHost();
         } catch (\Exception $e) {
+            $this->logger->warning('Could not resolve domain by site identifier', [
+                'siteIdentifier' => $siteIdentifier,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return '';
         }
     }
@@ -87,6 +101,13 @@ class DomainResolverService implements SingletonInterface
 
             return (int) ($row['pid'] ?? 0);
         } catch (\Exception $e) {
+            $this->logger->warning('Could not resolve page id from table', [
+                'tableName' => $tableName,
+                'uid' => $uid,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return 0;
         }
     }

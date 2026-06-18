@@ -32,7 +32,13 @@ class AiSeoAbstract extends AbstractNode
             }
             $langIsoCode = $siteService->getIsoCodeByLanguageId((int) $this->data['databaseRow']['sys_language_uid'], $pageUid);
         } catch (SiteNotFoundException $e) {
-            GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__)->error($e->getMessage());
+            GeneralUtility::makeInstance(LogManager::class)->getLogger(self::class)->warning(
+                'Could not resolve ISO code for abstract generation button',
+                [
+                    'pageUid' => $pageUid,
+                    'error' => $e->getMessage(),
+                ]
+            );
 
             return [];
         }

@@ -49,8 +49,86 @@ div[data-module-id="aiSuite"] {
         background-color: var(--ai-suite-primary-color);
     }
 
-    .module-docheader-bar-column-left .btn-group {
+    .module-docheader-buttons .module-docheader-column-grow,
+    .module-docheader-bar-buttons .module-docheader-bar-column-left {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .module-docheader-bar-buttons .module-docheader-bar-column-left {
+        flex: 1 1 auto;
+    }
+    .module-docheader-buttons .module-docheader-column-grow .btn-toolbar,
+    .module-docheader-bar-buttons .module-docheader-bar-column-left .btn-toolbar {
+        flex-wrap: nowrap;
+    }
+    .module-docheader-buttons .module-docheader-column-grow .btn-toolbar:not(.ai-suite-nav-ready),
+    .module-docheader-bar-buttons .module-docheader-bar-column-left .btn-toolbar:not(.ai-suite-nav-ready) {
+        overflow: hidden;
+    }
+    .module-docheader-buttons .module-docheader-column-grow .btn-group,
+    .module-docheader-bar-buttons .module-docheader-bar-column-left .btn-group {
+        flex-wrap: nowrap;
         gap: 0.5rem;
+    }
+    .module-docheader-buttons .module-docheader-column-grow .btn-group > .btn,
+    .module-docheader-bar-buttons .module-docheader-bar-column-left .btn-group > .btn,
+    .ai-suite-nav-more-toggle {
+        flex-shrink: 0;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .ai-suite-nav-more {
+        position: relative;
+        flex-shrink: 0;
+        margin-left: 0.5rem;
+    }
+    .ai-suite-nav-more-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        white-space: nowrap;
+    }
+    .ai-suite-nav-more-dots {
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .ai-suite-nav-more-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 0.25rem);
+        right: 0;
+        z-index: 1050;
+        min-width: 220px;
+        max-height: 70vh;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0.25rem 0;
+        list-style: none;
+        background: #fff;
+        border: 1px solid var(--ai-suite-border-secondary-color);
+        border-radius: 0.25rem;
+        box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+    }
+    .ai-suite-nav-more.open .ai-suite-nav-more-menu {
+        display: block;
+    }
+    .ai-suite-nav-more-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 0.85rem;
+        color: inherit;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+    .ai-suite-nav-more-item:hover,
+    .ai-suite-nav-more-item:focus {
+        background: rgba(0, 0, 0, 0.06);
+    }
+    .ai-suite-nav-more-item.active {
+        background: var(--ai-suite-primary-color);
+        color: var(--ai-suite-button-font-color);
     }
 
     .panel.panel-default {

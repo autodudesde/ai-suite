@@ -127,7 +127,11 @@ class BackgroundTaskController extends AbstractBackendController
                     ],
                 );
                 if ('Error' === $answer->getType()) {
-                    $this->view->addFlashMessage($answer->getResponseData()['message'], 'Warning', ContextualFeedbackSeverity::WARNING);
+                    $this->view->addFlashMessage(
+                        $answer->getResponseData()['message'],
+                        $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.warningFetchingTaskStatus.title'),
+                        ContextualFeedbackSeverity::WARNING
+                    );
                 }
                 $statusData = $answer->getResponseData()['statusData'] ?? null;
                 if (null !== $statusData) {

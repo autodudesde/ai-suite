@@ -155,6 +155,14 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
+     * @return list<string>
+     */
+    public function getHousekeepingFields(): array
+    {
+        return ContentService::IGNORED_TCA_FIELDS;
+    }
+
+    /**
      * @throws UndefinedSchemaException
      */
     public function getDeleteField(string $table): string

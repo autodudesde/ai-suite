@@ -322,11 +322,6 @@ class PageLocalization {
                                 if (General.isUsable(res)) {
                                     Notification.success(TYPO3.lang['aiSuite.errorDetails.retrySuccess'] || 'Task has been queued for retry');
                                     window.location.reload();
-                                } else {
-                                    Notification.error(
-                                        TYPO3.lang['aiSuite.errorDetails.retryFailed'] || 'Retry failed',
-                                        res.error || 'An unknown error occurred'
-                                    );
                                 }
                             }
                         },

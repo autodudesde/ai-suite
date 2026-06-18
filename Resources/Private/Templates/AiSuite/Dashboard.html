@@ -19,7 +19,7 @@
                         </label>
                     </div>
                     <div class="panel-body">
-                        <div class="request-state d-flex gap-2 my-1">
+                        <div class="request-state d-flex flex-wrap gap-2 my-1">
                         <span class="badge badge-warning">
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.freeCredits"/>: {freeRequests} <small class="ms-1">(<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.creditsRemaining" />)</small>
                         </span>
@@ -66,59 +66,82 @@
     </h2>
 
     <div class="d-flex flex-wrap gap-3 align-items-stretch">
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-cog',
-                cardname: 'globalSettingsSection',
-                route: 'ai_suite_settings',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.workflowSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-play',
+                    cardname: 'workflowSection',
+                    route: 'ai_suite_workflow',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-play',
-                cardname: 'workflowSection',
-                route: 'ai_suite_workflow',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.backgroundTaskSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-clock',
+                    cardname: 'backgroundTaskSection',
+                    route: 'ai_suite_backgroundtask',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-clock',
-                cardname: 'backgroundTaskSection',
-                route: 'ai_suite_backgroundtask',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.manageGlobalInstructions}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-cog-alt',
+                    cardname: 'manageGlobalInstructions',
+                    route: 'ai_suite_global_instructions',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-cog-alt',
-                cardname: 'manageGlobalInstructions',
-                route: 'ai_suite_global_instructions',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.managePromptTemplates}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-message-dots',
+                    cardname: 'managePromptTemplates',
+                    route: 'ai_suite_prompt',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-message-dots',
-                cardname: 'managePromptTemplates',
-                route: 'ai_suite_prompt',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.createPagetree}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-page-new',
+                    cardname: 'createPagetree',
+                    route: 'ai_suite_page',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
-            <f:render partial="DashboardCards/DynamicCard" arguments="{
-                icon: 'actions-rocket',
-                cardname: 'agencySection',
-                route: 'ai_suite_agencies',
-                status: 'active'
-            }" />
-        </div>
+        <f:if condition="{cardPermissions.agencySection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-rocket',
+                    cardname: 'agencySection',
+                    route: 'ai_suite_agencies',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
+
+        <f:if condition="{cardPermissions.globalSettingsSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-cog',
+                    cardname: 'globalSettingsSection',
+                    route: 'ai_suite_settings',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
 
         <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
             <div class="panel panel-default flex-fill">

@@ -6,6 +6,7 @@ namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\SiteService;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
@@ -16,6 +17,7 @@ class BeforePrepareConfigurationForEditorEventListener
         protected readonly PageRenderer $pageRenderer,
         protected readonly BackendUserService $backendUserService,
         protected readonly SiteService $siteService,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -26,6 +28,11 @@ class BeforePrepareConfigurationForEditorEventListener
         try {
             $langIsoCode = $this->siteService->getIsoCodeByLanguageId((int) $event->getData()['databaseRow']['sys_language_uid'], $event->getData()['effectivePid']);
         } catch (\Throwable $e) {
+            $this->logger->notice('Skipping AI Suite RTE configuration: could not resolve language ISO code', [
+                'effectivePid' => $event->getData()['effectivePid'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
             return;
         }
         $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);

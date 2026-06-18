@@ -53,8 +53,6 @@ class FilelistFilesPrepare {
                             let res = await self.sendFilesToUpdate(formData);
                             if (res) {
                                 Notification.success(TYPO3.lang['aiSuite.notification.generation.workflow.successUpdate']);
-                            } else {
-                                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
                             }
                             await self.updateContent();
                         }
@@ -245,8 +243,6 @@ class FilelistFilesPrepare {
             } else {
                 document.querySelector('#resultsToExecute').innerHTML = res.output.content;
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
         }
         Generation.hideSpinner();
     }
