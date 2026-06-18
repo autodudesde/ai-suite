@@ -24,8 +24,16 @@
 .searchable.dropdown button.dropdown-toggle {
     width: 100%;
     justify-content: flex-start;
+    text-align: left;
+    padding-right: 2.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
 }
 .searchable.dropdown button.dropdown-toggle:after {
     position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     right: 1rem;
 }

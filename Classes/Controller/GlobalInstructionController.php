@@ -145,6 +145,10 @@ class GlobalInstructionController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->globalInstructionsRepository->deactivateElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.globalInstruction.deactivated'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->overviewAction();
     }
@@ -153,6 +157,10 @@ class GlobalInstructionController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->globalInstructionsRepository->activateElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.globalInstruction.activated'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->overviewAction();
     }
@@ -161,6 +169,10 @@ class GlobalInstructionController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->globalInstructionsRepository->deleteElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.globalInstruction.deleted'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->overviewAction();
     }

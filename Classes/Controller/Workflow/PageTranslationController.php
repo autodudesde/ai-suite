@@ -78,7 +78,7 @@ class PageTranslationController extends AbstractBackendController
         try {
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::TRANSLATE, 'translate', ['text']);
             if ('Error' === $librariesAnswer->getType()) {
-                return $this->jsonError($response, $librariesAnswer->getResponseData()['message']);
+                return $this->jsonError($response, $librariesAnswer->getMessage());
             }
 
             $textTranslationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];

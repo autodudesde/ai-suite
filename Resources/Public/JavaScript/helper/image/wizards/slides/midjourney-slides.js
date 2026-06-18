@@ -35,6 +35,10 @@ class MidjourneySlides {
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
+                    Notification.error(
+                        TYPO3.lang['aiSuite.js.error.general'],
+                        error?.message || TYPO3.lang['aiSuite.js.error.imageGeneration']
+                    );
                 });
         });
     }
@@ -64,6 +68,10 @@ class MidjourneySlides {
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
+                    Notification.error(
+                        TYPO3.lang['aiSuite.js.error.general'],
+                        error?.message || TYPO3.lang['aiSuite.js.error.imageGeneration']
+                    );
                 });
         });
     }
@@ -98,6 +106,10 @@ class MidjourneySlides {
                 })
                 .catch(error => {
                     clearInterval(self.intervalId);
+                    Notification.error(
+                        TYPO3.lang['aiSuite.js.error.general'],
+                        error?.message || TYPO3.lang['aiSuite.js.error.imageGeneration']
+                    );
                 });
         });
     }

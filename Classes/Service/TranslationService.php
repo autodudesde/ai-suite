@@ -128,12 +128,13 @@ class TranslationService
         if ('flex' === $parameterArray['fieldConf']['config']['type']) {
             return;
         }
+        $fieldType = $parameterArray['fieldConf']['config']['type'] ?? '';
         if (!empty($parameterArray['fieldConf']['config']['renderType'])) {
             $renderType = $parameterArray['fieldConf']['config']['renderType'];
         } else {
-            $renderType = $parameterArray['fieldConf']['config']['type'];
+            $renderType = $fieldType;
         }
-        if (in_array($renderType, $this->consideredTextRenderTypes)) {
+        if (in_array($renderType, $this->consideredTextRenderTypes, true) || in_array($fieldType, $this->consideredTextRenderTypes, true)) {
             $fieldValue = $formData['databaseRow'][$fieldName] ?? '';
             $containerConfiguration = $formData['processedTca']['containerConfiguration'] ?? [];
             $isContainerElement = false;

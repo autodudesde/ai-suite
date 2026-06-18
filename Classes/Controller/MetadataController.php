@@ -108,7 +108,7 @@ class MetadataController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => true,
-                        'output' => $librariesAnswer->getResponseData()['message'],
+                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
                     ]
                 )
             );
@@ -220,7 +220,21 @@ class MetadataController extends AbstractBackendController
             ]
         );
         if ('Error' === $answer->getType()) {
-            $this->logError($answer->getResponseData()['message'], $response, 503);
+            $this->logError($answer->getMessage(), $response, 503);
+
+            return $response;
+        }
+        $metadataResult = $answer->getResponseData()['metadataResult'] ?? [];
+        $metadataSuggestions = array_values(array_filter(
+            array_map(static fn ($suggestion): string => trim((string) $suggestion), is_array($metadataResult) ? $metadataResult : []),
+            static fn (string $suggestion): bool => '' !== $suggestion
+        ));
+        if ([] === $metadataSuggestions) {
+            $this->logError(
+                $this->aiSuiteContext->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.metadata.noSuggestionsGenerated'),
+                $response,
+                422
+            );
 
             return $response;
         }
@@ -233,7 +247,7 @@ class MetadataController extends AbstractBackendController
         $suggestionCount = (int) $extConf['metadataSuggestionCount'];
         $params = [
             'textAiModel' => $params['textAiModel'],
-            'metadataSuggestions' => array_slice($answer->getResponseData()['metadataResult'], 0, $suggestionCount),
+            'metadataSuggestions' => array_slice($metadataSuggestions, 0, $suggestionCount),
             'fieldName' => $params['fieldName'] ?? '',
             'table' => $params['table'] ?? '',
             'id' => $pageUid,

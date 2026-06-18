@@ -15,7 +15,7 @@
                     </li>
                     <f:for each="{searchableList}" key="optionKey" as="optionLabel">
                         <li>
-                            <a class="dropdown-item" data-value="{optionKey}" href="#{optionKey}">{optionLabel} (PID: {optionKey})</a>
+                            <a class="dropdown-item" data-value="{optionKey}" href="#{optionKey}" title="{optionLabel} (PID: {optionKey})">{optionLabel} (PID: {optionKey})</a>
                         </li>
                     </f:for>
                 </ul>

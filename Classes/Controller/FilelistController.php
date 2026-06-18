@@ -95,8 +95,8 @@ final class FilelistController extends AbstractBackendController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
         if ('Error' === $librariesAnswer->getType()) {
             $this->view->addFlashMessage(
-                strip_tags($librariesAnswer->getResponseData()['message']),
-                '',
+                strip_tags($librariesAnswer->getMessage()),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
                 ContextualFeedbackSeverity::ERROR
             );
 
@@ -115,8 +115,8 @@ final class FilelistController extends AbstractBackendController
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::TRANSLATE, 'translate', ['text']);
         if ('Error' === $librariesAnswer->getType()) {
             $this->view->addFlashMessage(
-                strip_tags($librariesAnswer->getResponseData()['message']),
-                '',
+                strip_tags($librariesAnswer->getMessage()),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
                 ContextualFeedbackSeverity::ERROR
             );
 

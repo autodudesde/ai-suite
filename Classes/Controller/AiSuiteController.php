@@ -115,11 +115,21 @@ class AiSuiteController extends AbstractBackendController
                     ContextualFeedbackSeverity::WARNING
                 );
             }
+            $backendUserService = $this->aiSuiteContext->backendUserService;
             $this->view->assignMultiple([
                 'freeRequests' => $freeRequests,
                 'paidRequests' => $paidRequests,
                 'aboRequests' => (int) $modelType - $aboRequests.' / '.$modelType,
                 'modelType' => $modelType,
+                'cardPermissions' => [
+                    'globalSettingsSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_global_settings'),
+                    'workflowSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation'),
+                    'backgroundTaskSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling'),
+                    'manageGlobalInstructions' => $backendUserService->checkPermissions('tx_aisuite_features:enable_global_instructions_button'),
+                    'managePromptTemplates' => $backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button'),
+                    'createPagetree' => $backendUserService->checkPermissions('tx_aisuite_features:enable_pages_generation'),
+                    'agencySection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_agency'),
+                ],
             ]);
             BackendUtility::setUpdateSignal('updateTopbar');
         } catch (\Throwable $e) {

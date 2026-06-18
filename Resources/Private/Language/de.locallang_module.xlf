@@ -595,6 +595,10 @@
                 <source>0 (only this page)</source>
                 <target>0 (nur diese Seite)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.pages.abstract">
+                <source>Abstract</source>
+                <target>Inhaltsabriss</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.description">
                 <source>Description for search engines</source>
                 <target>Beschreibung für Suchmaschinen</target>
@@ -1660,6 +1664,10 @@
             <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title">
                 <source>Could not fetch the current status of the OpenAI API.</source>
                 <target>Der aktuelle Status der OpenAI-API konnte nicht abgerufen werden.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.warningFetchingTaskStatus.title">
+                <source>Could not fetch the current status of the background tasks.</source>
+                <target>Der aktuelle Status der Hintergrund-Aufgaben konnte nicht abgerufen werden.</target>
             </trans-unit>
         </body>
     </file>

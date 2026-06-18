@@ -76,7 +76,7 @@ class TranslationController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => $librariesAnswer->getResponseData()['message'],
+                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
                     ]
                 )
             );
@@ -141,7 +141,7 @@ class TranslationController extends AbstractBackendController
             );
 
             if ('Error' === $librariesAnswer->getType()) {
-                $this->logError($librariesAnswer->getResponseData()['message'], $response);
+                $this->logError($librariesAnswer->getMessage(), $response);
 
                 return $response;
             }

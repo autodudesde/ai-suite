@@ -164,6 +164,10 @@ class PromptTemplateController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->customPromptTemplateRepository->deactivateElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.promptTemplate.deactivated'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->manageCustomPromptTemplatesAction();
     }
@@ -172,6 +176,10 @@ class PromptTemplateController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->customPromptTemplateRepository->activateElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.promptTemplate.activated'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->manageCustomPromptTemplatesAction();
     }
@@ -180,6 +188,10 @@ class PromptTemplateController extends AbstractBackendController
     {
         $id = (int) $this->request->getQueryParams()['recordId'];
         $this->customPromptTemplateRepository->deleteElement($id);
+        $this->view->addFlashMessage(
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.promptTemplate.deleted'),
+            $this->aiSuiteContext->localizationService->translate('aiSuite.flashMessage.success.title')
+        );
 
         return $this->manageCustomPromptTemplatesAction();
     }
