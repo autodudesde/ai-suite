@@ -83,7 +83,7 @@ class FileMetadataController extends AbstractBackendController
         try {
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
             if ('Error' === $librariesAnswer->getType()) {
-                return $this->jsonSuccess($response, $librariesAnswer->getResponseData()['message']);
+                return $this->jsonError($response, $librariesAnswer->getMessage());
             }
             $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
             $textGenerationLibraries = $this->aiSuiteContext->libraryService->filterVisionLibraries($textGenerationLibraries);
@@ -242,7 +242,7 @@ class FileMetadataController extends AbstractBackendController
         try {
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
             if ('Error' === $librariesAnswer->getType()) {
-                return $this->jsonSuccess($response, $librariesAnswer->getResponseData()['message']);
+                return $this->jsonError($response, $librariesAnswer->getMessage());
             }
 
             $viewProperties = $this->workflowViewService->filelistFileDirectorySupport($librariesAnswer);

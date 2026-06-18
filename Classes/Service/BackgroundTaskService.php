@@ -49,6 +49,7 @@ class BackgroundTaskService implements SingletonInterface
             'og_description' => 0,
             'twitter_title' => 0,
             'twitter_description' => 0,
+            'abstract' => 0,
         ];
         foreach ($foundBackgroundTasksPages as $foundBackgroundTask) {
             if (!($this->backendUserService->getBackendUser()?->isInWebMount($foundBackgroundTask['table_uid']) ?? false)) {

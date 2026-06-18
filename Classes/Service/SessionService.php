@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
@@ -48,6 +49,7 @@ class SessionService implements SingletonInterface
         protected readonly BackendUserService $backendUserService,
         protected readonly UriBuilder $uriBuilder,
         protected readonly SiteFinder $siteFinder,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     public function trackRequestParameters(ServerRequestInterface $request, string $route): void
@@ -202,6 +204,11 @@ class SessionService implements SingletonInterface
 
             return true;
         } catch (\Exception $e) {
+            $this->logger->notice('Page id is not part of any site', [
+                'pageId' => $pageId,
+                'error' => $e->getMessage(),
+            ]);
+
             return false;
         }
     }

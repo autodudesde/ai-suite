@@ -125,6 +125,16 @@
                 <target>Wenn aktiv, wird der Button &quot;Seiten&quot; im Backend-Modul angezeigt</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.permissions.enableAgency">
+                <source>Enable &quot;Agency&quot; section within backend module</source>
+                <target>Aktiviere den Abschnitt „Agentur“ im Backend-Modul</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableAgencyDescription">
+                <source>If active the &quot;Agency&quot; button and dashboard card will be shown within the backend module</source>
+                <target>Wenn aktiv, werden der Button „Agentur“ und die Dashboard-Karte im Backend-Modul angezeigt</target>
+            </trans-unit>
+
             <trans-unit id="aiSuite.permissions.enablePromptTemplateButton">
                 <source>Enable &quot;Prompt Template&quot; section within backend module</source>
                 <target>Aktiviere den Abschnitt „Prompt Template“ im Backend-Modul</target>

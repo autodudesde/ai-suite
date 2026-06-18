@@ -128,11 +128,47 @@
                 <source>AI Suite server endpoint is currently not available.</source>
                 <target>AI Suite Server Endpunkt ist derzeit nicht verfügbar.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.unauthorized">
+                <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
+                <target>Ihr AI Suite API-Key fehlt oder ist ungültig. Bitte überprüfen Sie den Key in der Extension-Konfiguration. Einen Key erhalten Sie unter https://www.autodudes.de</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.forbidden">
+                <source>Your AI Suite API key is valid but does not have permission for this action. Please check your plan or contact support.</source>
+                <target>Ihr AI Suite API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfen Sie Ihren Tarif oder kontaktieren Sie den Support.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.apiKeyExpired">
+                <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
+                <target>Ihr AI Suite API-Key ist abgelaufen. Bitte erneuern Sie ihn unter https://www.autodudes.de</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.notEnoughRequests">
+                <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
+                <target>Ihr AI Suite API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte laden Sie Ihre Anfragen unter https://www.autodudes.de auf.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.requestLimitReached">
+                <source>Your AI Suite API key has reached its request limit. Please get further requests at https://www.autodudes.de</source>
+                <target>Ihr AI Suite API-Key hat sein Anfrage-Limit erreicht. Bitte beziehen Sie weitere Anfragen unter https://www.autodudes.de</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.missingAiModelApiKey">
+                <source>A required AI model API key is missing. Please check your "Bring Your Own Keys" settings in the extension configuration.</source>
+                <target>Ein benötigter API-Key für ein AI-Modell fehlt. Bitte prüfen Sie Ihre „Bring Your Own Keys"-Einstellungen in der Extension-Konfiguration.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.unexpected">
                 <source>Unexpected AI Suite server endpoint error</source>
                 <target>Unerwarteter AI Suite Server Endpunkt Fehler</target>
             </trans-unit>
+            <trans-unit id="aiSuite.error.apiKeyMissing.title">
+                <source>AI Suite API key missing</source>
+                <target>AI Suite API-Key fehlt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.apiKeyMissing.message">
+                <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
+                <target>Es ist kein AI Suite API-Key konfiguriert. Bitte hinterlegen Sie Ihren Key in der Extension-Konfiguration. Falls Sie noch keinen Key haben, erhalten Sie einen unter https://www.autodudes.de</target>
+            </trans-unit>
 
+            <trans-unit id="aiSuite.error.news.missingDetailPlugin">
+                <source>Metadata could not be generated: no news detail plugin page is available to render this news article. Please create or select a page that contains a news detail plugin.</source>
+                <target>Metadaten konnten nicht generiert werden: Es ist keine Seite mit einem News-Detail-Plugin verfügbar, um diesen News-Artikel darzustellen. Bitte legen Sie eine Seite mit einem News-Detail-Plugin an oder wählen Sie eine solche aus.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.site.notFound">
                 <source>No site found for language id %s and page uid %s</source>
                 <target>Keine Website für Sprach-ID %s und Seiten-UID %s gefunden</target>
@@ -147,10 +183,27 @@
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
                 <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.fetchContentInvalid">
+                <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
+                <target>Der abgerufene Seiteninhalt scheint ungültig zu sein oder ist eine Fehlerseite (zu kurz oder kein HTML-Body). Die Seite wird im Frontend möglicherweise nicht korrekt ausgegeben. Bitte prüfen Sie die Frontend-Ausgabe dieser Seite.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.metadata.noSuggestionsGenerated">
+                <source>No suggestions could be generated. The page may render too little readable content in the frontend (e.g. a custom page type whose template does not output the page content). Please check the frontend output of this page.</source>
+                <target>Es konnten keine Vorschläge generiert werden. Möglicherweise gibt die Seite im Frontend zu wenig lesbaren Inhalt aus (z. B. ein eigener Seitentyp, dessen Template den Seiteninhalt nicht ausgibt). Bitte prüfen Sie die Frontend-Ausgabe dieser Seite.</target>
+            </trans-unit>
 
             <trans-unit id="aiSuite.file.unsupportedImageFormat">
                 <source>Unsupported image format</source>
                 <target>Nicht unterstütztes Bildformat</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.file.unsupportedImageMimeType">
+                <source>This file (%s) cannot be analysed. Only JPEG, PNG, GIF and WebP images are supported for AI metadata generation.</source>
+                <target>Diese Datei (%s) kann nicht analysiert werden. Für die KI-Metadatengenerierung werden nur JPEG-, PNG-, GIF- und WebP-Bilder unterstützt.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.file.emptyFileContent">
+                <source>The file is empty or its contents could not be read, so no metadata can be generated.</source>
+                <target>Die Datei ist leer oder ihr Inhalt konnte nicht gelesen werden, daher können keine Metadaten generiert werden.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.flashMessage.metadata.autoGenerationSuccess.message">
@@ -188,6 +241,35 @@
             <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.message">
                 <source>Unexpected error during automatically generation of metadata for %s</source>
                 <target>Unerwarteter Fehler bei der automatischen Generierung von Metadaten für %s</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.flashMessage.success.title">
+                <source>Success</source>
+                <target>Erfolg</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.globalInstruction.activated">
+                <source>Global instruction activated.</source>
+                <target>Globale Anweisung aktiviert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.globalInstruction.deactivated">
+                <source>Global instruction deactivated.</source>
+                <target>Globale Anweisung deaktiviert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.globalInstruction.deleted">
+                <source>Global instruction deleted.</source>
+                <target>Globale Anweisung gelöscht.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.promptTemplate.activated">
+                <source>Prompt template activated.</source>
+                <target>Prompt-Vorlage aktiviert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.promptTemplate.deactivated">
+                <source>Prompt template deactivated.</source>
+                <target>Prompt-Vorlage deaktiviert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.flashMessage.promptTemplate.deleted">
+                <source>Prompt template deleted.</source>
+                <target>Prompt-Vorlage gelöscht.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.form.label.alternativeText">
@@ -347,9 +429,17 @@
                 <source>Failed to start whole page translation. Please check the console for details.</source>
                 <target>Fehler beim Starten der Ganzseitenübersetzung. Bitte prüfen Sie die Konsole für Details.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.nav.more">
+                <source>More</source>
+                <target>Mehr</target>
+            </trans-unit>
             <trans-unit id="aiSuite.js.error.general">
                 <source>Error</source>
                 <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.error.imageGeneration">
+                <source>Image generation failed. Please try again or check the logs for details.</source>
+                <target>Bildgenerierung fehlgeschlagen. Bitte versuchen Sie es erneut oder prüfen Sie die Logs für Details.</target>
             </trans-unit>
             <trans-unit id="aiSuite.js.error.invalidPageId">
                 <source>Invalid page ID.</source>
@@ -358,6 +448,10 @@
             <trans-unit id="aiSuite.js.error.loadWizardContent">
                 <source>Failed to load translation wizard content.</source>
                 <target>Fehler beim Laden des Übersetzungs-Assistenten.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.js.error.metadataGeneration">
+                <source>Metadata generation failed. Please try again or check the logs for details.</source>
+                <target>Metadaten-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut oder prüfen Sie die Logs für Details.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.loading.translationSummary">
@@ -790,10 +884,6 @@
                 <source>Task has been queued for retry</source>
                 <target>Aufgabe wurde zur Wiederholung eingereiht</target>
             </trans-unit>
-            <trans-unit id="aiSuite.errorDetails.retryFailed">
-                <source>Retry failed</source>
-                <target>Wiederholung fehlgeschlagen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.errorDetails.close">
                 <source>Close</source>
                 <target>Schließen</target>
@@ -801,10 +891,6 @@
             <trans-unit id="aiSuite.errorDetails.delete">
                 <source>Delete</source>
                 <target>Löschen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.errorDetails.deleteFailed">
-                <source>Delete failed</source>
-                <target>Löschen fehlgeschlagen</target>
             </trans-unit>
             <trans-unit id="aiSuite.createContent.fieldsOf">
                 <source>Fields of</source>

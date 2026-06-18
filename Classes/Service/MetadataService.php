@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception;
@@ -63,6 +64,7 @@ class MetadataService
         protected readonly SendRequestService $sendRequestService,
         protected readonly GlobalInstructionService $globalInstructionService,
         protected readonly UuidService $uuidService,
+        protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -75,27 +77,42 @@ class MetadataService
     public function fetchContent(ServerRequestInterface $request): string
     {
         /** @var array<string, mixed> $parsedBody */
-        $parsedBody = $request->getParsedBody();
-        if ('tx_news_domain_model_news' === $parsedBody['table']) {
+        $parsedBody = (array) $request->getParsedBody();
+        $table = (string) ($parsedBody['table'] ?? '');
+        if ('tx_news_domain_model_news' === $table) {
+            $newsDetailPluginId = (int) ($parsedBody['newsDetailPlugin'] ?? 0);
+            if ($newsDetailPluginId <= 0) {
+                throw new UnableToFetchNewsRecordException(
+                    $this->localizationService->translate('aiSuite.error.news.missingDetailPlugin')
+                );
+            }
+
             return $this->fetchContentOfNewsArticle(
-                (int) $parsedBody['id'],
-                (int) $parsedBody['newsDetailPlugin']
+                (int) ($parsedBody['id'] ?? 0),
+                $newsDetailPluginId
             );
         }
-        if ('sys_file_metadata' === $parsedBody['table'] || 'sys_file_reference' === $parsedBody['table']) {
-            return $this->getFileContent((int) $parsedBody['sysFileId']);
+        if ('sys_file_metadata' === $table || 'sys_file_reference' === $table) {
+            return $this->getFileContent((int) ($parsedBody['sysFileId'] ?? 0));
         }
-        $previewUrl = $this->getPreviewUrl((int) $parsedBody['pageId']);
+        $previewUrl = $this->getPreviewUrl((int) ($parsedBody['pageId'] ?? 0));
 
         return $this->fetchContentFromUrl($previewUrl);
     }
 
     /**
      * @throws FileDoesNotExistException
+     * @throws FetchedContentFailedException
      */
     public function getFileContent(int $sysFileId): string
     {
         $file = $this->resourceFactory->getFileObject($sysFileId);
+
+        if (!in_array($file->getMimeType(), self::SUPPORTED_IMAGE_MIME_TYPES, true)) {
+            throw new FetchedContentFailedException(
+                $this->localizationService->translate('aiSuite.file.unsupportedImageMimeType', [$file->getMimeType()])
+            );
+        }
 
         try {
             $data = $file->getContents();
@@ -104,11 +121,34 @@ class MetadataService
                 $data = $file->getContents();
             }
         } catch (\Throwable $e) {
+            $this->logger->warning('Could not read file contents directly, reloading from storage', [
+                'sysFileId' => $sysFileId,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
             $file = $this->reloadFileFromStorage($file);
             $data = $file->getContents();
         }
 
-        return 'data:'.$file->getMimeType().';base64,'.base64_encode($data);
+        if (empty($data)) {
+            throw new FetchedContentFailedException(
+                $this->localizationService->translate('aiSuite.file.emptyFileContent')
+            );
+        }
+
+        $detectedMimeType = $this->detectSupportedImageMimeType($data);
+        if (null === $detectedMimeType) {
+            $this->logger->warning('File content is not a supported image (declared MIME type does not match actual bytes)', [
+                'sysFileId' => $sysFileId,
+                'declaredMimeType' => $file->getMimeType(),
+            ]);
+
+            throw new FetchedContentFailedException(
+                $this->localizationService->translate('aiSuite.file.unsupportedImageMimeType', [$file->getMimeType()])
+            );
+        }
+
+        return 'data:'.$detectedMimeType.';base64,'.base64_encode($data);
     }
 
     public function getFilename(int $sysFileId): string
@@ -120,6 +160,12 @@ class MetadataService
         try {
             return $this->resourceFactory->getFileObject($sysFileId)->getName();
         } catch (\Throwable $e) {
+            $this->logger->warning('Could not resolve filename for sys file', [
+                'sysFileId' => $sysFileId,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return '';
         }
     }
@@ -158,11 +204,33 @@ class MetadataService
             $options['headers']['Authorization'] = 'Basic '.$basicAuth;
         }
 
+        $options['http_errors'] = false;
+
         $response = $this->requestFactory->request($previewUrl, 'GET', $options);
+        $statusCode = $response->getStatusCode();
         $fetchedContent = $response->getBody()->getContents();
+
+        if ($statusCode >= 400) {
+            $this->logger->warning('Preview URL returned an HTTP error status', [
+                'previewUrl' => $previewUrl,
+                'statusCode' => $statusCode,
+            ]);
+
+            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
+        }
 
         if (empty($fetchedContent)) {
             throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
+        }
+
+        if (!$this->isPlausiblePageContent($fetchedContent)) {
+            $this->logger->warning('Preview URL returned implausible content (possible error/handler page)', [
+                'previewUrl' => $previewUrl,
+                'statusCode' => $statusCode,
+                'contentLength' => strlen(trim($fetchedContent)),
+            ]);
+
+            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentInvalid'));
         }
 
         return $fetchedContent;
@@ -209,7 +277,7 @@ class MetadataService
     public function getMetadataColumns(): array
     {
         $metadataColumns = [
-            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description',
+            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'abstract',
         ];
 
         return $this->getAvailableColumns($metadataColumns, 'pages');
@@ -386,6 +454,51 @@ class MetadataService
         $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
         $messageQueue = $flashMessageService->getMessageQueueByIdentifier();
         $messageQueue->addMessage($message);
+    }
+
+    protected function detectSupportedImageMimeType(string $data): ?string
+    {
+        if (str_starts_with($data, "\xFF\xD8\xFF")) {
+            return 'image/jpeg';
+        }
+        if (str_starts_with($data, "\x89PNG\r\n\x1A\n")) {
+            return 'image/png';
+        }
+        if (str_starts_with($data, 'GIF87a') || str_starts_with($data, 'GIF89a')) {
+            return 'image/gif';
+        }
+        if (str_starts_with($data, 'RIFF') && 'WEBP' === substr($data, 8, 4)) {
+            return 'image/webp';
+        }
+
+        return null;
+    }
+
+    protected function isPlausiblePageContent(string $content): bool
+    {
+        $trimmed = trim($content);
+        if (strlen($trimmed) < $this->getMinPlausiblePageContentLength()) {
+            return false;
+        }
+
+        $lower = strtolower($trimmed);
+
+        return str_contains($lower, '<html') || str_contains($lower, '<body');
+    }
+
+    protected function getMinPlausiblePageContentLength(): int
+    {
+        try {
+            $extConf = $this->extensionConfiguration->get('ai_suite');
+
+            return (int) ($extConf['minPlausiblePageContentLength'] ?? 100);
+        } catch (\Exception $e) {
+            $this->logger->warning('Could not read extension configuration for minPlausiblePageContentLength, using default of 100', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return 100;
+        }
     }
 
     /**

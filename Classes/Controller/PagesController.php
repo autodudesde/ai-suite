@@ -94,6 +94,16 @@ class PagesController extends AbstractBackendController
         try {
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/creation.js');
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::PAGETREE, 'pageTree', ['text']);
+            if ('Error' === $librariesAnswer->getType()) {
+                $this->view->assign('error', true);
+                $this->view->addFlashMessage(
+                    strip_tags($this->requestService->getClientErrorMessage($librariesAnswer)),
+                    $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                    ContextualFeedbackSeverity::ERROR
+                );
+
+                return $this->view->renderResponse('Pages/PageStructure');
+            }
             $this->view->assignMultiple([
                 'pagesSelect' => $this->getPagesInWebMount(),
                 'textGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
@@ -187,8 +197,8 @@ class PagesController extends AbstractBackendController
             $this->pageStructureFactory->createFromArray(json_decode($selectedPageTreeContent, true), (int) $startStructureFromPid);
             BackendUtility::setUpdateSignal('updatePageTree');
             $this->view->addFlashMessage(
-                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pagetreeGenerationSuccessful.title'),
-                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pagetreeGenerationSuccessful.title'),
+                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pagetreeGenerationSuccessful.message'),
+                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pagetreeGenerationSuccessful.title')
             );
         } catch (\Throwable $e) {
             $this->view->assign('error', true);

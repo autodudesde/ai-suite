@@ -282,8 +282,6 @@ class PagesTranslationPrepare {
                     Notification.info(TYPO3.lang['aiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notificationTargetLanguage);
                 }
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
         }
     }
 
@@ -297,9 +295,8 @@ class PagesTranslationPrepare {
             if (statusElement !== null) {
                 statusElement.innerHTML = res.output.message + Object.keys(handledPages).length + ' / ' + Object.keys(selectedPages).length;
             }
-        } else {
-            Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.requestError']);
         }
+        // No else: Ajax.sendAjaxRequest already shows a Notification on failure (and returns null).
     }
 
 

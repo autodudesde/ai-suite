@@ -76,7 +76,8 @@ class BackgroundTaskRepository
             'p.og_title',
             'p.og_description',
             'p.twitter_title',
-            'p.twitter_description'
+            'p.twitter_description',
+            'p.abstract'
         )
             ->from($this->table, 'bt')
             ->leftJoin(

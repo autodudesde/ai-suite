@@ -16,8 +16,10 @@ namespace AutoDudes\AiSuite\Service;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Configuration\TranslationConfigurationProvider;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
@@ -29,15 +31,18 @@ class SiteService implements SingletonInterface
     protected SiteFinder $siteFinder;
     protected TranslationConfigurationProvider $translationConfigurationProvider;
     protected BackendUserService $backendUserService;
+    protected LoggerInterface $logger;
 
     public function __construct(
         ?SiteFinder $siteFinder = null,
         ?TranslationConfigurationProvider $translationConfigurationProvider = null,
-        ?BackendUserService $backendUserService = null
+        ?BackendUserService $backendUserService = null,
+        ?LoggerInterface $logger = null
     ) {
         $this->siteFinder = $siteFinder ?? GeneralUtility::makeInstance(SiteFinder::class);
         $this->translationConfigurationProvider = $translationConfigurationProvider ?? GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
         $this->backendUserService = $backendUserService ?? GeneralUtility::makeInstance(BackendUserService::class);
+        $this->logger = $logger ?? GeneralUtility::makeInstance(LogManager::class)->getLogger(self::class);
     }
 
     /**
@@ -123,6 +128,11 @@ class SiteService implements SingletonInterface
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
         } catch (SiteNotFoundException $e) {
+            $this->logger->notice('No site found while resolving language uids by isocodes', [
+                'pageId' => $pageId,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
 
@@ -146,6 +156,11 @@ class SiteService implements SingletonInterface
         try {
             $site = $this->siteFinder->getSiteByPageId($pageId);
         } catch (SiteNotFoundException $e) {
+            $this->logger->notice('No site found while resolving non-default language uids', [
+                'pageId' => $pageId,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
 
@@ -166,6 +181,11 @@ class SiteService implements SingletonInterface
 
             return $site->getRootPageId();
         } catch (SiteNotFoundException $e) {
+            $this->logger->notice('No site found while resolving site root page id', [
+                'pageId' => $pageId,
+                'error' => $e->getMessage(),
+            ]);
+
             return 0;
         }
     }
@@ -199,6 +219,13 @@ class SiteService implements SingletonInterface
 
             throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         } catch (\Exception $e) {
+            $this->logger->warning('Could not resolve ISO code by language id', [
+                'languageId' => $languageId,
+                'pageUid' => $pageUid,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         }
     }
@@ -210,6 +237,12 @@ class SiteService implements SingletonInterface
 
             return $site->getBase()->getHost();
         } catch (\Exception $e) {
+            $this->logger->warning('Could not resolve domain by root page id', [
+                'rootPageId' => $rootPageId,
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
             return 'Unknown Domain (ID: '.$rootPageId.')';
         }
     }

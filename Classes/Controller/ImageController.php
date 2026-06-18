@@ -79,9 +79,11 @@ class ImageController extends AbstractBackendController
     {
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::IMAGE, 'createImage', ['image']);
         if ('Error' === $librariesAnswer->getType()) {
-            $this->logger->error($this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title'));
+            $this->logger->error($this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFetchingLibraries.title'), [
+                'errorType' => $librariesAnswer->getErrorType(),
+            ]);
 
-            return new HtmlResponse($librariesAnswer->getResponseData()['message']);
+            return new HtmlResponse('<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>');
         }
 
         $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates('imageWizard');

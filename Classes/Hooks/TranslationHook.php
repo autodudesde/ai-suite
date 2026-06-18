@@ -81,6 +81,18 @@ class TranslationHook
         $allTranslateFields = $this->collectAllTranslatableContent($pageId, $destLangId, $dataHandler);
 
         if (empty($allTranslateFields)) {
+            $flashMessage = GeneralUtility::makeInstance(
+                FlashMessage::class,
+                $this->localizationService->translate('aiSuite.translation.noTranslatableFields'),
+                '',
+                ContextualFeedbackSeverity::WARNING,
+                true
+            );
+            $this->flashMessageService
+                ->getMessageQueueByIdentifier()
+                ->addMessage($flashMessage)
+            ;
+
             return;
         }
 

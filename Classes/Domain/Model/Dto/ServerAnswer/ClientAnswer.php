@@ -46,4 +46,14 @@ class ClientAnswer
     {
         return $this->responseData['type'];
     }
+
+    public function getMessage(): string
+    {
+        return (string) ($this->responseData['body']['message'] ?? '');
+    }
+
+    public function getErrorType(): string
+    {
+        return (string) ($this->responseData['body']['errorType'] ?? '');
+    }
 }
