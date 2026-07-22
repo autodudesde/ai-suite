@@ -9,6 +9,7 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
@@ -318,6 +319,7 @@ class BackgroundTaskService implements SingletonInterface
         $this->collectFileReferenceBackgroundTasks($uuidStatus);
         $this->collectFileMetadataBackgroundTasks($uuidStatus);
         $this->collectPageTranslationBackgroundTasks($uuidStatus);
+        $this->collectContentElementTranslationBackgroundTasks($uuidStatus);
         $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus);
 
         return $uuidStatus;
@@ -334,6 +336,7 @@ class BackgroundTaskService implements SingletonInterface
         $this->collectFileReferenceBackgroundTasks($uuidStatus, true);
         $this->collectFileMetadataBackgroundTasks($uuidStatus, true);
         $this->collectPageTranslationBackgroundTasks($uuidStatus, true);
+        $this->collectContentElementTranslationBackgroundTasks($uuidStatus, true);
         $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus, true);
 
         return $uuidStatus;
@@ -551,9 +554,6 @@ class BackgroundTaskService implements SingletonInterface
         }
     }
 
-    /**
-     * Reads the configured max-tasks limit for CLI processing from ext_conf, with a default of 50.
-     */
     public function getMaxTasksLimit(): int
     {
         try {
@@ -570,12 +570,9 @@ class BackgroundTaskService implements SingletonInterface
     }
 
     /**
-     * Retries all failed CLI background tasks (status: task-error) by instructing the AI server
-     * to re-run them. Local status is reset to 'pending' so the regular update cycle picks them up.
+     * @param array<string, mixed> $config
      *
-     * @param array<string, mixed> $config Filter config: type, status (default 'failed'), column, sysLanguage, parentUuid, model
-     *
-     * @return array<string, mixed> ['success' => bool, 'processed' => int, 'message' => string]
+     * @return array<string, mixed>
      */
     public function retryFailedTasks(array $config = []): array
     {
@@ -663,9 +660,6 @@ class BackgroundTaskService implements SingletonInterface
     }
 
     /**
-     * Polls the AI server for status of all CLI-handled background tasks, persists finished
-     * results to TYPO3 records and removes the local task entries.
-     *
      * @return array<string, mixed> ['success' => bool, 'message' => string]
      */
     public function updateAllTaskStatuses(): array
@@ -690,6 +684,8 @@ class BackgroundTaskService implements SingletonInterface
                     'status' => $foundBackgroundTask['status'],
                 ];
             }
+
+            $this->collectContentElementTranslationBackgroundTasks($uuidStatus);
 
             if (count($uuidStatus) > 0) {
                 $answer = $this->sendRequestService->sendDataRequest(
@@ -728,9 +724,12 @@ class BackgroundTaskService implements SingletonInterface
             foreach ($tasks as $task) {
                 if ('translation' === $task['type']) {
                     try {
-                        $this->translationService->processTranslationTask($task);
-                        ++$processed;
-                    } catch (\Exception $e) {
+                        if ($this->translationService->processTranslationTask($task)) {
+                            ++$processed;
+                        } else {
+                            ++$failed;
+                        }
+                    } catch (\Throwable $e) {
                         ++$failed;
                         $this->logger->error('Error processing translation task', [
                             'uuid' => $task['uuid'],
@@ -841,10 +840,56 @@ class BackgroundTaskService implements SingletonInterface
             ];
 
             if ($structuredResult) {
-                $uuidStatus['translation'][$foundBackgroundTask['table_uid']] = $taskData;
+                $this->mergeTranslationStatus($uuidStatus, (int) $foundBackgroundTask['table_uid'], $taskData);
             } else {
                 $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
             }
+        }
+    }
+
+    /**
+     * @param array<mixed>                        $uuidStatus
+     * @param array{uuid: string, status: string} $taskData
+     */
+    private function mergeTranslationStatus(array &$uuidStatus, int $pageId, array $taskData): void
+    {
+        $priority = ['finished' => 1, 'pending' => 2, 'task-error' => 3];
+        $existingStatus = $uuidStatus['translation'][$pageId]['status'] ?? null;
+        $existingPriority = null === $existingStatus ? 0 : ($priority[$existingStatus] ?? 0);
+        $newPriority = $priority[$taskData['status'] ?? ''] ?? 0;
+
+        if (null === $existingStatus || $newPriority > $existingPriority) {
+            $uuidStatus['translation'][$pageId] = $taskData;
+        }
+    }
+
+    /**
+     * @param array<mixed> $uuidStatus
+     */
+    private function collectContentElementTranslationBackgroundTasks(array &$uuidStatus, bool $structuredResult = false): void
+    {
+        $foundBackgroundTasks = $this->backgroundTaskRepository->findAllContentElementTranslationBackgroundTasks();
+        foreach ($foundBackgroundTasks as $foundBackgroundTask) {
+            $taskData = [
+                'uuid' => $foundBackgroundTask['uuid'],
+                'status' => $foundBackgroundTask['status'],
+            ];
+
+            if (!$structuredResult) {
+                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+
+                continue;
+            }
+
+            $contentElement = BackendUtility::getRecord('tt_content', (int) $foundBackgroundTask['table_uid'], 'pid');
+            $pageId = (int) ($contentElement['pid'] ?? 0);
+            if ($pageId <= 0
+                || !($this->backendUserService->getBackendUser()?->isInWebMount($pageId) ?? false)
+            ) {
+                continue;
+            }
+
+            $this->mergeTranslationStatus($uuidStatus, $pageId, $taskData);
         }
     }
 
@@ -897,12 +942,9 @@ class BackgroundTaskService implements SingletonInterface
     }
 
     /**
-     * Persists a finished CLI metadata task to its TYPO3 record and removes both the local
-     * background-task row and the server-side task copy.
-     *
      * @param array<string, mixed> $task
      *
-     * @return array<string, mixed> ['success' => bool, 'message' => string]
+     * @return array<string, mixed>
      */
     private function processFinishedMetadataTask(array $task): array
     {

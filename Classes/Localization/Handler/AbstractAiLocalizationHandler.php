@@ -78,9 +78,6 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
     abstract protected function getModelPermissionKey(): string;
 
     /**
-     * Localizes page properties and content elements in a single DataHandler run,
-     * so the TranslationHook can collect both and send one combined AI request.
-     *
      * @param int[]                $selectedRecordUids
      * @param array<string, mixed> $aiSuiteBase
      */

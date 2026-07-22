@@ -10,6 +10,14 @@ updateDeeplGlossaries = 1
 easyLanguageLibrary = ChatGPT
 # cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:disableTranslationFunctionality
 disableTranslationFunctionality = 0
+# cat=Translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:enableAutoTranslateOnSave
+enableAutoTranslateOnSave = 0
+# cat=Translation; type=options[Page module (apply on open)=pageModule,CLI scheduler=cli,Directly on save=direct]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMode
+autoTranslateMode = pageModule
+# cat=Translation; type=options[OpenAI=ChatGPT,DeepL=Deepl,Google Translate=GoogleTranslate,Claude=Anthropic,Mittwald AI=MittwaldMinistral14B]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateModel
+autoTranslateModel = ChatGPT
+# cat=Translation; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMaxElementsPerSave
+autoTranslateMaxElementsPerSave = 15
 # cat=Metadata; type=options[1=1,2=2,3=3,4=4,5=5]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataSuggestionCount
 metadataSuggestionCount = 5
 # cat=Media; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mediaStorageFolder

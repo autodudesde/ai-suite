@@ -9,7 +9,7 @@
     </h1>
 
     <div class="row d-flex align-items-stretch">
-        <f:if condition="{freeRequests} >= 0 && {paidRequests} >= 0 && {aboRequests} >= 0">
+        <f:if condition="{paidRequests} >= 0 && {aboRequests} >= 0">
             <div class="col-md-6 d-flex">
                 <div class="panel panel-default flex-fill">
                     <div class="panel-heading">
@@ -20,9 +20,6 @@
                     </div>
                     <div class="panel-body">
                         <div class="request-state d-flex flex-wrap gap-2 my-1">
-                        <span class="badge badge-warning">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.freeCredits"/>: {freeRequests} <small class="ms-1">(<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.creditsRemaining" />)</small>
-                        </span>
                             <span class="badge badge-warning">
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.paidCredits"/>: {paidRequests} <small class="ms-1">(<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.creditsRemaining" />)</small>
                         </span>

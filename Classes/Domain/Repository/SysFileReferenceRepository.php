@@ -35,9 +35,6 @@ class SysFileReferenceRepository extends AbstractRepository
     }
 
     /**
-     * Find file references by file UID and/or page ID.
-     * Joins sys_file for file info. At least one parameter must be non-null.
-     *
      * @return list<array<string, mixed>>
      */
     public function findByFileOrPage(?int $fileUid, ?int $pageId, int $limit = 200): array
@@ -75,48 +72,10 @@ class SysFileReferenceRepository extends AbstractRepository
         return $queryBuilder->orderBy('r.tablenames')->addOrderBy('r.sorting_foreign')
             ->setMaxResults($limit)
             ->executeQuery()->fetchAllAssociative()
-            ;
-    }
-
-    /**
-     * Image references on the given pages that have an empty or NULL `alternative` (alt text).
-     *
-     * @param list<int> $pageIds
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function findImagesWithoutAlt(array $pageIds, int $workspaceId): array
-    {
-        if ([] === $pageIds) {
-            return [];
-        }
-
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $queryBuilder->getRestrictions()->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
         ;
-
-        return $queryBuilder
-            ->select('r.uid', 'r.pid', 'r.alternative', 'f.name')
-            ->from($this->table, 'r')
-            ->join('r', 'sys_file', 'f', $queryBuilder->expr()->eq('f.uid', $queryBuilder->quoteIdentifier('r.uid_local')))
-            ->where(
-                $queryBuilder->expr()->in('r.pid', $queryBuilder->createNamedParameter($pageIds, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq('r.tablenames', $queryBuilder->createNamedParameter('tt_content')),
-                $queryBuilder->expr()->like('f.mime_type', $queryBuilder->createNamedParameter('image/%')),
-                $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->eq('r.alternative', $queryBuilder->createNamedParameter('')),
-                    $queryBuilder->expr()->isNull('r.alternative'),
-                ),
-            )
-            ->executeQuery()->fetchAllAssociative()
-            ;
     }
 
     /**
-     * Image references on the given pages joined with their default-language sys_file_metadata.
-     *
      * @param list<int> $pageIds
      *
      * @return list<array<string, mixed>>
@@ -148,6 +107,6 @@ class SysFileReferenceRepository extends AbstractRepository
                 $queryBuilder->expr()->like('f.mime_type', $queryBuilder->createNamedParameter('image/%')),
             )
             ->executeQuery()->fetchAllAssociative()
-            ;
+        ;
     }
 }

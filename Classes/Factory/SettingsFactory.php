@@ -118,7 +118,6 @@ class SettingsFactory
         foreach ($parts as $part) {
             if (str_starts_with($part, 'cat=')) {
                 $catValue = substr($part, 4);
-                // Normalize category: "HTTP Basic Auth" -> "HTTP Basic Auth"
                 $meta['category'] = explode('/', $catValue)[0];
             } elseif (str_starts_with($part, 'type=')) {
                 $typeValue = substr($part, 5);
@@ -145,7 +144,7 @@ class SettingsFactory
         }
 
         if (str_starts_with($typeValue, 'options[')) {
-            $optionsString = substr($typeValue, 8, -1); // strip "options[" and "]"
+            $optionsString = substr($typeValue, 8, -1);
             $options = [];
             foreach (explode(',', $optionsString) as $optionPair) {
                 $optionParts = explode('=', $optionPair, 2);

@@ -45,7 +45,6 @@ class FileControlsEventListener
 
             $objectPrefix = $event->getFormFieldIdentifier().'-'.$fieldConfig['foreign_table'];
 
-            // check maxitems
             if (
                 (array_key_exists('showNewFileReferenceButton', $fieldConfig['inline']) && false === $fieldConfig['inline']['showNewFileReferenceButton'])
                 || (array_key_exists('showCreateNewRelationButton', $fieldConfig['inline']) && false === $fieldConfig['inline']['showCreateNewRelationButton'])

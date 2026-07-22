@@ -5,6 +5,7 @@ import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import GenerationHandling from "@autodudes/ai-suite/helper/image/generation-handling.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class Creation {
 
@@ -25,11 +26,13 @@ class Creation {
     }
 
     hideShowImageLibraries() {
+        let self = this;
         let handleCheckboxChangeFn = this.handleCheckboxChange;
         let calculateRequestAmountFn = this.calculateRequestAmount;
         document.querySelectorAll('.request-field-checkbox[value="file"]').forEach(function (checkbox) {
             checkbox.addEventListener('change', () => {
                 handleCheckboxChangeFn('.request-field-checkbox[value="file"]', '.image-generation-library', calculateRequestAmountFn);
+                self.updateSubmitButtonState();
             });
         });
         let imageAiModel = document.querySelector('.image-generation-library input[name="libraries[imageGenerationLibrary]"]:checked');
@@ -38,11 +41,13 @@ class Creation {
         }
     }
     hideShowTextLibraries() {
+        let self = this;
         let handleCheckboxChangeFn = this.handleCheckboxChange;
         let calculateRequestAmountFn = this.calculateRequestAmount;
         document.querySelectorAll('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]').forEach(function (checkbox) {
             checkbox.addEventListener('change', () => {
                 handleCheckboxChangeFn('.request-field-checkbox[value="input"], .request-field-checkbox[value="text"]', '.text-generation-library', calculateRequestAmountFn);
+                self.updateSubmitButtonState();
             });
         });
     }
@@ -52,6 +57,7 @@ class Creation {
         document.querySelectorAll('.library input[type="radio"]').forEach(function (radio) {
             radio.addEventListener('change', function() {
                 self.calculateRequestAmount();
+                self.updateSubmitButtonState();
             });
         });
     }
@@ -130,9 +136,9 @@ class Creation {
         let calculatedRequests = 0;
         document.querySelectorAll('.library').forEach(function (library) {
             let amountField = library.querySelector('.request-amount span');
-            if(library.style.display !== 'none' && amountField !== null) {
-                let modelId = library.querySelector('input[type="radio"]:checked').id;
-                let amount = parseInt(library.querySelector('label[for="' + modelId +'"] .request-amount span').textContent);
+            let checkedModel = library.querySelector('input[type="radio"]:checked');
+            if(library.style.display !== 'none' && amountField !== null && checkedModel !== null) {
+                let amount = parseInt(library.querySelector('label[for="' + checkedModel.id +'"] .request-amount span').textContent);
                 calculatedRequests += amount;
             }
         });
@@ -145,16 +151,10 @@ class Creation {
 
     updateSubmitButtonState() {
         const submitButton = document.querySelector('div[data-module-id="aiSuite"] form.with-spinner button[type="submit"]');
-        if (!submitButton) {
+        if (!General.isUsable(submitButton)) {
             return;
         }
-
-        const libraries = document.querySelectorAll('.library input[type="radio"]');
-
-        if (libraries.length === 0) {
-            submitButton.disabled = true;
-            submitButton.style.opacity = '0.75';
-        }
+        LibrarySelection.update(document, [submitButton]);
     }
 }
 export default new Creation();

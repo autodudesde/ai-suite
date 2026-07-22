@@ -330,6 +330,25 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
+     * @throws UndefinedSchemaException
+     */
+    public function isSubSchemaDivisorForeignPointer(string $table): bool
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            $schema = $this->tcaSchemaFactory->get($table);
+            if (!$schema->supportsSubSchema()) {
+                return false;
+            }
+
+            return $schema->getSubSchemaTypeInformation()->isPointerToForeignFieldInForeignSchema();
+        }
+
+        $type = $GLOBALS['TCA'][$table]['ctrl']['type'] ?? null;
+
+        return is_string($type) && str_contains($type, ':');
+    }
+
+    /**
      * @return list<string>
      *
      * @throws UndefinedSchemaException
@@ -419,6 +438,176 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
+     * @return array<int|string, mixed>
+     *
+     * @throws UndefinedSchemaException
+     * @throws UndefinedFieldException
+     */
+    public function getFieldItems(string $table, string $field): array
+    {
+        return $this->getFieldConfiguration($table, $field)['items'] ?? [];
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws UndefinedSchemaException
+     * @throws UndefinedFieldException
+     */
+    public function getSlugFieldConfig(): array
+    {
+        return $this->getFieldConfiguration('pages', 'slug');
+    }
+
+    public function getShowitem(string $table, string $type): string
+    {
+        return (string) ($GLOBALS['TCA'][$table]['types'][$type]['showitem'] ?? '');
+    }
+
+    public function getFirstTypeShowitem(string $table): string
+    {
+        $types = $GLOBALS['TCA'][$table]['types'] ?? [];
+        $firstKey = array_key_first($types);
+
+        return null === $firstKey ? '' : (string) ($types[$firstKey]['showitem'] ?? '');
+    }
+
+    public function getPaletteShowitem(string $table, string $palette): string
+    {
+        return (string) ($GLOBALS['TCA'][$table]['palettes'][$palette]['showitem'] ?? '');
+    }
+
+    /**
+     * @return array<string, array<string, mixed>> field name => column config
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getColumnConfigs(string $table): array
+    {
+        $configs = [];
+        if (null !== $this->tcaSchemaFactory) {
+            if (!$this->tcaSchemaFactory->has($table)) {
+                return [];
+            }
+            foreach ($this->tcaSchemaFactory->get($table)->getFields() as $field) {
+                $configs[$field->getName()] = $field->getConfiguration();
+            }
+
+            return $configs;
+        }
+
+        foreach ($GLOBALS['TCA'][$table]['columns'] ?? [] as $field => $fieldConfig) {
+            $configs[(string) $field] = $fieldConfig['config'] ?? [];
+        }
+
+        return $configs;
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getFieldTca(string $table, string $field): array
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            if (!$this->tcaSchemaFactory->has($table)) {
+                return [];
+            }
+            $schema = $this->tcaSchemaFactory->get($table);
+            if (!$schema->hasField($field)) {
+                return [];
+            }
+            $fieldType = $schema->getField($field);
+
+            return [
+                'label' => $fieldType->getLabel(),
+                'config' => $fieldType->getConfiguration(),
+            ];
+        }
+
+        return $GLOBALS['TCA'][$table]['columns'][$field] ?? [];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getAllTableNames(): array
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            /** @var list<string> $names */
+            $names = $this->tcaSchemaFactory->all()->getNames();
+
+            return $names;
+        }
+
+        /** @var list<string> $names */
+        $names = array_keys($GLOBALS['TCA'] ?? []);
+
+        return $names;
+    }
+
+    /**
+     * @param list<string> $fieldNames
+     */
+    public function hasTranslatableFieldChange(string $table, array $fieldNames, bool $includeFlexForm = false): bool
+    {
+        if (null !== $this->tcaSchemaFactory && $this->tcaSchemaFactory->has($table)) {
+            $columnTypes = [TableColumnType::INPUT, TableColumnType::TEXT];
+            if ($includeFlexForm) {
+                $columnTypes[] = TableColumnType::FLEX;
+            }
+            $schema = $this->tcaSchemaFactory->get($table);
+            foreach ($fieldNames as $fieldName) {
+                if ($schema->hasField($fieldName) && $schema->getField($fieldName)->isType(...$columnTypes)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        $relevantTypes = ['input', 'text'];
+        if ($includeFlexForm) {
+            $relevantTypes[] = 'flex';
+        }
+        foreach ($fieldNames as $fieldName) {
+            $type = $GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type'] ?? '';
+            if (in_array($type, $relevantTypes, true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param list<string> $fieldNames
+     */
+    public function hasStructuralRelationChange(string $table, array $fieldNames): bool
+    {
+        if (null !== $this->tcaSchemaFactory && $this->tcaSchemaFactory->has($table)) {
+            $schema = $this->tcaSchemaFactory->get($table);
+            foreach ($fieldNames as $fieldName) {
+                if ($schema->hasField($fieldName) && $schema->getField($fieldName)->isType(TableColumnType::FILE, TableColumnType::INLINE)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        foreach ($fieldNames as $fieldName) {
+            $type = $GLOBALS['TCA'][$table]['columns'][$fieldName]['config']['type'] ?? '';
+            if (in_array($type, ['file', 'inline'], true)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @throws UndefinedSchemaException
      * @throws UndefinedFieldException
      */
@@ -471,6 +660,30 @@ class TcaCompatibilityService implements SingletonInterface
         $typeValue = (string) ($row[$typeField] ?? '');
 
         return '' !== $typeValue && $this->hasSubSchema($table, $typeValue) ? $typeValue : null;
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
+    public function resolveDefaultSubSchemaType(string $table): ?string
+    {
+        $typeField = $this->getSubSchemaDivisorFieldName($table);
+        if (null === $typeField) {
+            return null;
+        }
+
+        $default = $this->getEffectiveFieldConfiguration($table, null, $typeField)['default'] ?? null;
+        if (null !== $default && '' !== (string) $default && $this->hasSubSchema($table, (string) $default)) {
+            return (string) $default;
+        }
+
+        foreach (array_keys($GLOBALS['TCA'][$table]['types'] ?? []) as $type) {
+            if ($this->hasSubSchema($table, (string) $type)) {
+                return (string) $type;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -577,6 +790,27 @@ class TcaCompatibilityService implements SingletonInterface
         return false;
     }
 
+    /**
+     * @return list<string>
+     */
+    public function getSearchableTextFields(string $table): array
+    {
+        $fields = [];
+        foreach ($this->getFieldNamesForType($table, null) as $fieldName) {
+            $config = $this->getEffectiveFieldConfiguration($table, null, $fieldName);
+            $type = (string) ($config['type'] ?? '');
+            if ('text' !== $type && 'input' !== $type) {
+                continue;
+            }
+            if ('input' === $type && $this->isNonTextInput($config)) {
+                continue;
+            }
+            $fields[] = $fieldName;
+        }
+
+        return array_values(array_unique($fields));
+    }
+
     public function isDeletePlaceholderState(int|string|null $t3verState): bool
     {
         return self::T3VER_STATE_DELETE_PLACEHOLDER === (int) ($t3verState ?? 0);
@@ -593,17 +827,18 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $fieldTca the column TCA ($GLOBALS['TCA'][$table]['columns'][$field])
-     * @param array<string, mixed> $row      record row; pass an empty array for the default structure
+     * @param array<string, mixed> $fieldTca
+     * @param array<string, mixed> $row
      *
-     * @return array<string, mixed> the parsed data structure, e.g. ['sheets' => [...]]
+     * @return array<string, mixed>
      *
-     * @throws \Throwable when the data structure cannot be resolved
+     * @throws \Throwable
      */
     public function resolveFlexFormDataStructure(array $fieldTca, string $table, string $field, array $row): array
     {
         $flexFormTools = GeneralUtility::makeInstance(FlexFormTools::class);
         $tableTca = $GLOBALS['TCA'][$table] ?? [];
+        $row = $this->seedDataStructurePointerFields($fieldTca, $row);
 
         $normaliseDs = $this->typo3Version->getMajorVersion() < 14
             && is_string($fieldTca['config']['ds'] ?? null)
@@ -625,6 +860,44 @@ class TcaCompatibilityService implements SingletonInterface
                 $GLOBALS['TCA'][$table]['columns'][$field]['config']['ds'] = $originalGlobalDs;
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $fieldTca
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     */
+    private function seedDataStructurePointerFields(array $fieldTca, array $row): array
+    {
+        $pointerFields = GeneralUtility::trimExplode(',', (string) ($fieldTca['config']['ds_pointerField'] ?? ''), true);
+        foreach ($pointerFields as $pointerField) {
+            if (!array_key_exists($pointerField, $row)) {
+                $row[$pointerField] = '';
+            }
+        }
+
+        return $row;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function isNonTextInput(array $config): bool
+    {
+        $renderType = (string) ($config['renderType'] ?? '');
+        if (in_array($renderType, ['inputDateTime', 'colorpicker', 'inputLink'], true)) {
+            return true;
+        }
+
+        $eval = (string) ($config['eval'] ?? '');
+        foreach (['int', 'double2', 'datetime', 'date', 'time', 'timesec'] as $numericEval) {
+            if (str_contains($eval, $numericEval)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

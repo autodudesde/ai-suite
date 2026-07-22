@@ -1,9 +1,14 @@
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import General from "@autodudes/ai-suite/helper/general.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class Creation {
     constructor() {
         this.addFormSubmitEventListener();
+        LibrarySelection.initialize(
+            document.querySelector('div[data-module-id="aiSuite"] form.with-spinner'),
+            ['button[type="submit"]']
+        );
     }
 
     addFormSubmitEventListener() {

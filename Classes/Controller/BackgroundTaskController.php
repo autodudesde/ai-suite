@@ -167,7 +167,6 @@ class BackgroundTaskController extends AbstractBackendController
                 throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
             }
 
-            // Handle file metadata translation tasks
             if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
                 $this->backgroundTaskService->handleFileMetadataTranslationSave($backgroundTask, $data);
             } elseif ('NEW' === $backgroundTask['mode']) {

@@ -142,8 +142,9 @@ class GlobalInstructions {
         const positioning = this.calculateTooltipPosition(buttonElement);
         tooltip.style.cssText = `
             ${positioning}
-            background: white;
-            border: 1px solid #ccc;
+            background: var(--typo3-component-bg, #fff);
+            color: var(--typo3-component-color, #000);
+            border: 1px solid var(--typo3-component-border-color, #ccc);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border-radius: 4px;
             padding: 20px;
@@ -204,7 +205,8 @@ class GlobalInstructions {
 
     createBlock(content, hasMarginBottom) {
         const marginStyle = hasMarginBottom ? ' margin-bottom: 15px;' : '';
-        return `<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 12px;${marginStyle}"><pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-family: monospace;">${this.escapeHtml(content)}</pre></div>`;
+        const blockStyle = `background: var(--typo3-surface-container-high, #f8f9fa); border: 1px solid var(--typo3-component-border-color, #dee2e6); color: var(--typo3-component-color, #000); border-radius: 4px; padding: 12px;${marginStyle}`;
+        return `<div style="${blockStyle}"><pre style="white-space: pre-wrap; word-wrap: break-word; margin: 0; font-family: monospace;">${this.escapeHtml(content)}</pre></div>`;
     }
 
     initializeAllTooltips() {

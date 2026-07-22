@@ -432,6 +432,26 @@
                 <source>Global Instructions</source>
                 <target>Globale Anweisungen</target>
             </trans-unit>
+            <trans-unit id="aiSuite.permissions.modelGptImage">
+                <source>GPT Image</source>
+                <target>GPT Image</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableGlobalSettings">
+                <source>Enable &quot;Global Settings&quot; section within backend module</source>
+                <target>Bereich &quot;Globale Einstellungen&quot; im Backend-Modul aktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableGlobalSettingsDescription">
+                <source>If active the &quot;Global Settings&quot; button will be shown within the backend module to manage extension configuration</source>
+                <target>Wenn aktiv, wird der Button &quot;Globale Einstellungen&quot; im Backend-Modul angezeigt, um die Erweiterungskonfiguration zu verwalten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableCliWorkflowExecution">
+                <source>Allow CLI/Scheduler-based workflow execution</source>
+                <target>CLI-/Scheduler-basierte Workflow-Ausführung erlauben</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableCliWorkflowExecutionDescription">
+                <source>Shows the &quot;Generate with AI and auto-fill in background&quot; button in the workflow manager. Background tasks created this way are processed asynchronously by the scheduler-driven ai-suite:process-tasks command. Requires EXT:scheduler.</source>
+                <target>Zeigt den Button &quot;Mit KI generieren und im Hintergrund automatisch ausfüllen&quot; im Workflow-Manager. So erstellte Hintergrund-Aufgaben werden asynchron vom Scheduler-gesteuerten Befehl ai-suite:process-tasks verarbeitet. Erfordert EXT:scheduler.</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

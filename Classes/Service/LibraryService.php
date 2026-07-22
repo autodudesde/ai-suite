@@ -74,13 +74,9 @@ class LibraryService implements SingletonInterface
     }
 
     /**
-     * Resolves available text-generation models for a given workflow type.
-     * Used by both the workflow manager UI (for the model dropdown) and the CLI
-     * `ai-suite:execute-workflow` command (for the interactive model prompt).
+     * @return array<string, string>
      *
-     * @return array<string, string> Map of model_identifier => display name
-     *
-     * @throws \RuntimeException When the libraries request fails
+     * @throws \RuntimeException
      */
     public function findModelsForWorkflowType(string $workflowType): array
     {

@@ -17,6 +17,7 @@ namespace AutoDudes\AiSuite\Factory;
 use AutoDudes\AiSuite\Domain\Model\Pages;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\PagePermissionAssembler;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
@@ -28,6 +29,7 @@ class PageStructureFactory
         protected readonly BackendUserService $backendUserService,
         protected readonly PagesRepository $pagesRepository,
         protected readonly PagePermissionAssembler $pagePermissionAssembler,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
 
     /**
@@ -73,7 +75,7 @@ class PageStructureFactory
 
     protected function createSlug(string $uid): void
     {
-        $fieldConfig = $GLOBALS['TCA']['pages']['columns']['slug']['config'];
+        $fieldConfig = $this->tcaCompatibilityService->getSlugFieldConfig();
         $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);
         $originalRecord = BackendUtility::getRecord('pages', $uid);
         if (null === $originalRecord) {

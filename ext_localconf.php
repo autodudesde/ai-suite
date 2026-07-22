@@ -15,6 +15,7 @@ use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsAlternativeTitle;
 use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle;
+use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
 use AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook;
 use AutoDudes\AiSuite\Hooks\GlobalInstructionHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
@@ -127,10 +128,20 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 
 try {
     $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite');
-    if (!array_key_exists('disableTranslationFunctionality', $extensionConfiguration)
-        || false === (bool) $extensionConfiguration['disableTranslationFunctionality']) {
+    $translationFunctionalityEnabled = !array_key_exists('disableTranslationFunctionality', $extensionConfiguration)
+        || false === (bool) $extensionConfiguration['disableTranslationFunctionality'];
+    if ($translationFunctionalityEnabled) {
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
             = TranslationHook::class;
+
+        $autoTranslateOnSaveEnabled = array_key_exists('enableAutoTranslateOnSave', $extensionConfiguration)
+            && true === (bool) $extensionConfiguration['enableAutoTranslateOnSave'];
+        if ($autoTranslateOnSaveEnabled) {
+            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite_auto_translation']
+                = AutoTranslationHook::class;
+            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite_auto_translation']
+                = AutoTranslationHook::class;
+        }
     }
 } catch (Throwable $e) {
 }

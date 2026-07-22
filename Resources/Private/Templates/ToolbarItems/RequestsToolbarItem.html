@@ -3,10 +3,10 @@
         <f:then>
             <div class="d-flex justify-content-center align-items-center mx-3" style="height:45px;">
                 <core:icon identifier="tx-aisuite-extension" size="small"/>
-                <span class="mx-2">
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.freeCredits" />: {f:if(condition: requests, then: '{requests.free_requests}', else: '-')} <small class="opacity-75">(<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.creditsRemaining" />)</small>
+                <span class="mx-2 fw-bold">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.credits" />:
                 </span>
-                <span>
+                <span class="mx-2">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.paidCredits" />: {f:if(condition: requests, then: '{requests.paid_requests}', else: '-')} <small class="opacity-75">(<f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.creditsRemaining" />)</small>
                 </span>
                 <f:if condition="{requests.abo_requests}">

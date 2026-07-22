@@ -96,6 +96,10 @@
                 <source>Invalid server response or network error</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.error.noGenerationLibrarySelected">
+                <source>Please select a generation AI before sending the request. If no AI is selectable, no library is available for your account.</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.error.server.aiSuiteError">
                 <source>AI Suite Server error: %s</source>
             </trans-unit>
@@ -146,6 +150,14 @@
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.filelist.invalidFolder.title">
+                <source>Folder could not be opened</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.filelist.invalidFolder.message">
+                <source>The previously selected folder could not be opened. Please choose a folder in the file list again.</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.metadata.noSuggestionsGenerated">
@@ -652,6 +664,38 @@
                 <source>Translation failed for one or more elements.</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.autoTranslation.direct.title">
+                <source>Automatic translation</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.message">
+                <source>The content element was automatically translated into the following languages: %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.startTitle">
+                <source>Automatic translation</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.startMessage">
+                <source>The content element is being translated into the available target languages…</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingModelPermission.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingModelPermission.message">
+                <source>Automatic translation was skipped: you do not have permission to use the configured translation model (%s). Please contact your administrator.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.bulkLimit.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.bulkLimit.message">
+                <source>Automatic translation was skipped because this save changed %s content elements, which exceeds the configured limit of %s. Please translate the elements individually or via the bulk translation tools.</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.translation.noTranslatableFields">
                 <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
             </trans-unit>
@@ -932,7 +976,7 @@
                 <source>Update task status</source>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.noTasks">
-                <source>No failed tasks — everything looks fine.</source>
+                <source>No failed tasks, everything looks fine.</source>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.column.uuid">
                 <source>UUID</source>

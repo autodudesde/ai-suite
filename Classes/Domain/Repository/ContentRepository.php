@@ -32,8 +32,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Find content elements on a page with language filter.
-     *
      * @return list<array<string, mixed>>
      */
     public function findByPage(int $pageId, int $languageUid, bool $includeHidden = false, int $limit = 50, int $offset = 0): array
@@ -61,9 +59,6 @@ class ContentRepository extends AbstractRepository
         ;
     }
 
-    /**
-     * Count content elements on a page with language filter.
-     */
     public function countByPage(int $pageId, int $languageUid, bool $includeHidden = false): int
     {
         $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -85,9 +80,30 @@ class ContentRepository extends AbstractRepository
         ;
     }
 
-    /**
-     * Count file references for a content element.
-     */
+    public function hasFreeModeTranslation(int $sourceUid, int $languageUid): bool
+    {
+        if ($languageUid <= 0 || $sourceUid <= 0) {
+            return false;
+        }
+
+        $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $count = (int) $qb
+            ->count('uid')
+            ->from($this->table)
+            ->where(
+                $qb->expr()->eq('sys_language_uid', $qb->createNamedParameter($languageUid, Connection::PARAM_INT)),
+                $qb->expr()->eq('l18n_parent', $qb->createNamedParameter(0, Connection::PARAM_INT)),
+                $qb->expr()->eq('l10n_source', $qb->createNamedParameter($sourceUid, Connection::PARAM_INT)),
+            )
+            ->executeQuery()
+            ->fetchOne()
+        ;
+
+        return $count > 0;
+    }
+
     public function countFileReferences(int $contentUid): int
     {
         $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
@@ -106,14 +122,35 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Full-text search across content element fields.
-     *
-     * @param null|list<int> $restrictToPageIds null = no permission filter; [] = forced empty result;
-     *                                          non-empty list = WHERE pid IN (…)
+     * @return list<int>
+     */
+    public function getReferencedFileUids(int $contentUid): array
+    {
+        $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $uids = $qb
+            ->select('uid_local')
+            ->from('sys_file_reference')
+            ->where(
+                $qb->expr()->eq('uid_foreign', $qb->createNamedParameter($contentUid, Connection::PARAM_INT)),
+                $qb->expr()->eq('tablenames', $qb->createNamedParameter('tt_content')),
+            )
+            ->orderBy('sorting_foreign', 'ASC')
+            ->executeQuery()
+            ->fetchFirstColumn()
+        ;
+
+        return array_values(array_unique(array_map('intval', $uids)));
+    }
+
+    /**
+     * @param null|list<int>    $restrictToPageIds
+     * @param null|list<string> $searchFields
      *
      * @return list<array<string, mixed>>
      */
-    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null): array
+    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null, ?array $searchFields = null): array
     {
         if (null !== $restrictToPageIds && [] === $restrictToPageIds) {
             return [];
@@ -127,12 +164,21 @@ class ContentRepository extends AbstractRepository
         $this->addWorkspaceRestriction($qb);
         $searchTerm = '%'.$qb->escapeLikeWildcards($query).'%';
 
+        $fields = array_values($searchFields ?? []);
+        if ([] === $fields) {
+            throw new \InvalidArgumentException(
+                'searchByText() needs at least one search field. Pass the columns from TCA discovery (TcaCompatibilityService::getSearchableTextFields()).',
+                1752220800
+            );
+        }
+        $likes = array_map(
+            static fn (string $field): string => (string) $qb->expr()->like($field, $qb->createNamedParameter($searchTerm)),
+            $fields,
+        );
+
         $qb->select('uid', 'pid', 'header', 'bodytext', 'CType')
             ->from($this->table)
-            ->where($qb->expr()->or(
-                $qb->expr()->like('header', $qb->createNamedParameter($searchTerm)),
-                $qb->expr()->like('bodytext', $qb->createNamedParameter($searchTerm)),
-            ))
+            ->where($qb->expr()->or(...$likes))
             ->setMaxResults($maxResults)
         ;
 
@@ -146,8 +192,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Find visible content element UIDs by page IDs or specific UIDs.
-     *
      * @param list<int> $pageIds
      * @param list<int> $contentUids
      *
@@ -182,8 +226,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Find existing container records (b13/container) on a page, restricted to the given CTypes.
-     *
      * @param list<string> $containerCTypes CTypes registered as containers (from B13\Container\Tca\Registry::getRegisteredCTypes())
      *
      * @return list<array<string, mixed>>
@@ -214,8 +256,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Find children of a container (records with tx_container_parent = $containerUid).
-     *
      * @return list<array<string, mixed>>
      */
     public function findContainerChildren(int $containerUid, int $languageUid): array
@@ -243,9 +283,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Content elements with all columns for TCA-driven AI text extraction.
-     * Workspace-aware, hidden=0 explicit, ordered by colPos+sorting.
-     *
      * @return list<array<string, mixed>>
      */
     public function findContentForExtraction(int $pageId, int $languageUid, int $workspaceId): array
@@ -272,8 +309,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * IRRE child content rows for multiple container parents (b13/container).
-     *
      * @param list<int> $parentUids
      *
      * @return list<array<string, mixed>>
@@ -305,8 +340,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * Find stale records in any TCA table that have not been modified since the cutoff timestamp.
-     *
      * @param null|list<int> $restrictToPageIds Restrict by pid (or uid for pages table)
      *
      * @return list<array<string, mixed>>

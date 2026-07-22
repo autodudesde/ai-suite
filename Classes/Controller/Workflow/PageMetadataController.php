@@ -100,6 +100,7 @@ class PageMetadataController extends AbstractBackendController
                 [(int) $workflowData['startFromPid']],
                 (int) $workflowData['depth']
             );
+            $foundPageUids = $this->aiSuiteContext->backendUserService->filterPageUidsByEditAccess($foundPageUids);
             $pageMetadataColumns = $this->aiSuiteContext->metadataService->getMetadataColumns();
             $params['column'] = $workflowData['column'];
             $params['columnName'] = $pageMetadataColumns[$workflowData['column']];

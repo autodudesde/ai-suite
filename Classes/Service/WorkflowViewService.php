@@ -19,8 +19,10 @@ use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 class WorkflowViewService implements SingletonInterface
 {
@@ -59,8 +61,12 @@ class WorkflowViewService implements SingletonInterface
         $fileMetadata = [];
         $unsupportedFileMetadata = [];
         $folderName = '';
-        if ('' !== $directoryId) {
-            $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryId);
+        $folder = $this->sessionService->getFilelistFolder();
+        $this->warnAboutDroppedFolder($directoryId, $folder);
+        if (null === $folder) {
+            $directoryId = '';
+        }
+        if (null !== $folder) {
             $files = $folder->getFiles();
             $folderName = $folder->getName();
 
@@ -208,8 +214,12 @@ class WorkflowViewService implements SingletonInterface
         $fileMetadata = [];
         $folderName = '';
 
-        if ('' !== $directoryId) {
-            $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryId);
+        $folder = $this->sessionService->getFilelistFolder();
+        $this->warnAboutDroppedFolder($directoryId, $folder);
+        if (null === $folder) {
+            $directoryId = '';
+        }
+        if (null !== $folder) {
             $files = $folder->getFiles();
             $folderName = $folder->getName();
 
@@ -329,6 +339,18 @@ class WorkflowViewService implements SingletonInterface
             'globalInstructions' => $globalInstructions,
             'equalLanguages' => $sourceLanguageId === $targetLanguageId,
         ];
+    }
+
+    private function warnAboutDroppedFolder(string $directoryId, ?Folder $folder): void
+    {
+        if ('' === $directoryId || null !== $folder) {
+            return;
+        }
+        $this->metadataService->flashMessage(
+            $this->localizationService->translate('aiSuite.filelist.invalidFolder.message'),
+            $this->localizationService->translate('aiSuite.filelist.invalidFolder.title'),
+            ContextualFeedbackSeverity::WARNING
+        );
     }
 
     /**

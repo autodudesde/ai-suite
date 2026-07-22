@@ -117,7 +117,6 @@ class AiSuiteController extends AbstractBackendController
             }
             $backendUserService = $this->aiSuiteContext->backendUserService;
             $this->view->assignMultiple([
-                'freeRequests' => $freeRequests,
                 'paidRequests' => $paidRequests,
                 'aboRequests' => (int) $modelType - $aboRequests.' / '.$modelType,
                 'modelType' => $modelType,

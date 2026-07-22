@@ -13,13 +13,11 @@ export default class AiPluginUI extends Plugin {
     async init() {
         const editor = this.editor;
         this.contextualBalloon = editor.plugins.get( ContextualBalloon );
-        if(TYPO3.settings.aiSuite) {
-            this.languageCode = TYPO3.settings.aiSuite.rteLanguageCode;
-            this.pageId = TYPO3.settings.aiSuite.pageId;
-        } else {
-            this.languageCode = 'en';
-            this.pageId = 0;
-        }
+        // Prefer the per-editor configuration (inline-safe, travels with this editor instance);
+        // fall back to the legacy page-global setting only if it is not present.
+        const aiSuiteConfig = editor.config.get('aiSuite') || (TYPO3.settings && TYPO3.settings.aiSuite) || {};
+        this.languageCode = aiSuiteConfig.rteLanguageCode || 'en';
+        this.pageId = aiSuiteConfig.pageId || 0;
         const data = {
             pageId: this.pageId,
         }

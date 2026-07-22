@@ -109,8 +109,6 @@ class AbstractPromptTemplateRepository
     }
 
     /**
-     * Enabled (non-deleted, non-hidden) templates with the metadata fields needed for listings.
-     *
      * @return list<array<string, mixed>>
      */
     public function findAllEnabled(): array
