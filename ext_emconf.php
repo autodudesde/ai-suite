@@ -2,7 +2,7 @@
 
 $EM_CONF['ai_suite'] = [
     'title' => 'AI Suite',
-    'description' => 'The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies. It seamlessly integrates a wide variety of AI interfaces and the AI Suite open source models into the TYPO3 backend. Enables, among other things, more efficient creation and management of image and page metadata (individually and as batch processing), content translations (including "Easy Language"), content creation and modification, image generation and page structure generation.',
+    'description' => 'AI Suite brings powerful, GDPR-compliant AI directly into the TYPO3 backend. Generate and manage image and page metadata, translate content (including "Easy Language"), create and refine copy, and much more, both as single actions and in bulk. Built for agencies, freelancers and editorial teams who want to ship faster.',
     'category' => 'be',
     'author' => 'Manuel Schnabel, André Kraus',
     'author_email' => 'service@autodudes.de',
@@ -25,5 +25,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '12.20.0',
+    'version' => '12.21.0',
 ];

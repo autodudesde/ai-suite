@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -303,8 +302,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Fetch pages for translation with filter options and additional statistics.
-     *
      * @param list<int>            $foundPageUids
      * @param array<string, mixed> $workflowData
      *
@@ -328,7 +325,6 @@ class PagesRepository extends AbstractRepository
             )
         ;
 
-        // Filter by page type if specified
         if (isset($workflowData['pageType']) && (int) $workflowData['pageType'] > 0) {
             $queryBuilder->andWhere(
                 $queryBuilder->expr()->eq('doktype', $queryBuilder->createNamedParameter($workflowData['pageType'], Connection::PARAM_INT))
@@ -354,8 +350,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Get the UID of an existing page translation.
-     *
      * @throws Exception
      */
     public function getTranslatedPageUid(int $sourcePageUid, int $targetLanguageUid): ?int
@@ -440,8 +434,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Count translatable page properties for a page.
-     *
      * @throws Exception
      */
     public function countTranslatablePageProperties(int $pageUid, int $languageUid): int
@@ -490,8 +482,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Get translated page UID - alias for getTranslatedPageUid for consistency.
-     *
      * @throws Exception
      */
     public function getPageTranslationUid(int $sourcePageUid, int $targetLanguageUid): ?int
@@ -524,8 +514,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Get direct child pages of a parent, default language only.
-     *
      * @return list<array<string, mixed>>
      */
     public function getChildPageRows(int $parentId): array
@@ -548,9 +536,6 @@ class PagesRepository extends AbstractRepository
         ;
     }
 
-    /**
-     * Get the localized title of a page.
-     */
     public function getLocalizedTitle(int $pageId, int $languageUid): ?string
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -573,73 +558,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * SEO-relevant fields for a list of page UIDs (workspace-aware, hidden excluded).
-     *
-     * @param list<int> $pageIds
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function findSeoFields(array $pageIds, int $workspaceId): array
-    {
-        if ([] === $pageIds) {
-            return [];
-        }
-
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $queryBuilder->getRestrictions()->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
-            ->add(GeneralUtility::makeInstance(HiddenRestriction::class))
-        ;
-
-        return $queryBuilder
-            ->select('uid', 'title', 'seo_title', 'description', 'og_title', 'og_description')
-            ->from($this->table)
-            ->where($queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($pageIds, Connection::PARAM_INT_ARRAY)))
-            ->executeQuery()
-            ->fetchAllAssociative()
-        ;
-    }
-
-    /**
-     * Workspace-aware variant of {@see self::getSubtreePageIds()}.
-     *
-     * @return list<int>
-     */
-    public function getSubtreePageIdsWorkspaceAware(int $rootPageId, int $maxDepth, int $workspaceId): array
-    {
-        $allIds = [$rootPageId];
-        $currentLevel = [$rootPageId];
-
-        for ($depth = 0; $depth < $maxDepth; ++$depth) {
-            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-            $queryBuilder->getRestrictions()->removeAll()
-                ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-                ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
-            ;
-
-            $childIds = $queryBuilder->select('uid')
-                ->from($this->table)
-                ->where($queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($currentLevel, Connection::PARAM_INT_ARRAY)))
-                ->executeQuery()
-                ->fetchFirstColumn()
-            ;
-
-            if (empty($childIds)) {
-                break;
-            }
-
-            $childIds = array_map('intval', $childIds);
-            $allIds = array_merge($allIds, $childIds);
-            $currentLevel = $childIds;
-        }
-
-        return $allIds;
-    }
-
-    /**
-     * Collect all page UIDs within a subtree (including the root itself).
-     *
      * @return list<int>
      */
     public function getSubtreePageIds(int $rootPageId, int $maxDepth = 20): array
@@ -673,17 +591,23 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Full-text search across page fields.
-     *
-     * @param null|list<int> $restrictToPageIds null = no permission filter (admin/internal callers);
-     *                                          [] = forced empty result; non-empty list = WHERE uid IN (…)
+     * @param null|list<int>    $restrictToPageIds
+     * @param null|list<string> $searchFields
      *
      * @return list<array<string, mixed>>
      */
-    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null): array
+    public function searchByText(string $query, int $maxResults = 100, ?array $restrictToPageIds = null, ?array $searchFields = null): array
     {
         if (null !== $restrictToPageIds && [] === $restrictToPageIds) {
             return [];
+        }
+
+        $fields = array_values($searchFields ?? []);
+        if ([] === $fields) {
+            throw new \InvalidArgumentException(
+                'searchByText() needs at least one search field. Pass the columns from TCA discovery (TcaCompatibilityService::getSearchableTextFields()).',
+                1752220801
+            );
         }
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -693,13 +617,14 @@ class PagesRepository extends AbstractRepository
         $this->addWorkspaceRestriction($queryBuilder);
         $searchTerm = '%'.$queryBuilder->escapeLikeWildcards($query).'%';
 
-        $queryBuilder->select('uid', 'title', 'slug', 'seo_title', 'description')
+        $likes = array_map(
+            static fn (string $field): string => (string) $queryBuilder->expr()->like($field, $queryBuilder->createNamedParameter($searchTerm)),
+            $fields,
+        );
+
+        $queryBuilder->select('uid', 'title', 'slug')
             ->from($this->table)
-            ->where($queryBuilder->expr()->or(
-                $queryBuilder->expr()->like('title', $queryBuilder->createNamedParameter($searchTerm)),
-                $queryBuilder->expr()->like('seo_title', $queryBuilder->createNamedParameter($searchTerm)),
-                $queryBuilder->expr()->like('description', $queryBuilder->createNamedParameter($searchTerm)),
-            ))
+            ->where($queryBuilder->expr()->or(...$likes))
             ->setMaxResults($maxResults)
         ;
 
@@ -713,8 +638,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Find stale pages where neither the page nor its content was modified since cutoff.
-     *
      * @param null|list<int> $restrictToPageIds
      *
      * @return list<array<string, mixed>>
@@ -750,8 +673,6 @@ class PagesRepository extends AbstractRepository
     }
 
     /**
-     * Check if a page is already translated in the target language.
-     *
      * @throws Exception
      */
     protected function isAlreadyTranslated(int $pageUid, int $targetLanguageUid): bool

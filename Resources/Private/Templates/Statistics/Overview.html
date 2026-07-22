@@ -1,0 +1,40 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <h1 class="mb-3 fw-semibold">
+        <core:icon identifier="tx-aisuite-extension-v14" size="medium" />
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.statistics.header"/>
+    </h1>
+
+    <f:if condition="{monthOptions}">
+        <div class="mb-3 ai-suite-statistics__filter">
+            <label class="form-label fw-semibold" for="ai-suite-statistics-month">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.statistics.month.label"/>
+            </label>
+            <select id="ai-suite-statistics-month" class="form-select w-auto" data-ai-suite-statistics-month-filter>
+                <f:for each="{monthOptions}" as="option">
+                    <option value="{option.value}" data-url="{option.url}"<f:if condition="{option.active}"> selected="selected"</f:if>>{option.label}</option>
+                </f:for>
+            </select>
+        </div>
+    </f:if>
+
+    <f:if condition="{hasSections}">
+        <f:then>
+            <p class="text-muted">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.statistics.intro"/>
+            </p>
+            <div class="ai-suite-statistics" data-ai-suite-statistics-mount></div>
+            <script type="application/json" data-ai-suite-statistics-data><f:format.raw>{statisticsJson}</f:format.raw></script>
+        </f:then>
+        <f:else>
+            <div class="alert alert-info">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.statistics.noData"/>
+            </div>
+        </f:else>
+    </f:if>
+</f:section>
+
+</html>

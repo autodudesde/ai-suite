@@ -10,6 +10,9 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
@@ -49,6 +52,7 @@ class SessionService implements SingletonInterface
         protected readonly BackendUserService $backendUserService,
         protected readonly UriBuilder $uriBuilder,
         protected readonly SiteFinder $siteFinder,
+        protected readonly ResourceFactory $resourceFactory,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -103,7 +107,10 @@ class SessionService implements SingletonInterface
     {
         if (array_key_exists('id', $queryParams)) {
             if (str_contains($queryParams['id'], ':')) {
-                $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] = $queryParams['id'];
+                $folderIdentifier = $this->normalizeToFolderIdentifier((string) $queryParams['id']);
+                if (null !== $folderIdentifier) {
+                    $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] = $folderIdentifier;
+                }
             } else {
                 $pageId = (int) $queryParams['id'];
                 if ($this->isValidPageId($pageId)) {
@@ -124,6 +131,26 @@ class SessionService implements SingletonInterface
         $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
 
         return $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] ?? '';
+    }
+
+    public function getFilelistFolder(): ?Folder
+    {
+        $directoryId = $this->getFilelistFolderId();
+        if ('' === $directoryId) {
+            return null;
+        }
+
+        try {
+            return $this->resourceFactory->getFolderObjectFromCombinedIdentifier($directoryId);
+        } catch (\Exception $e) {
+            $this->logger->warning('Stored filelist folder identifier could not be resolved, resetting session value', [
+                'directory' => $directoryId,
+                'error' => $e->getMessage(),
+            ]);
+            $this->resetFilelistFolderId();
+
+            return null;
+        }
     }
 
     public function getWebPageId(): int
@@ -192,6 +219,37 @@ class SessionService implements SingletonInterface
                 );
             }
         }
+    }
+
+    private function resetFilelistFolderId(): void
+    {
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser) {
+            return;
+        }
+        $sessionData = $backendUser->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        unset($sessionData[self::AI_SUITE_FILELIST_FOLDER_ID]);
+        $backendUser->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
+    }
+
+    private function normalizeToFolderIdentifier(string $identifier): ?string
+    {
+        try {
+            $object = $this->resourceFactory->getObjectFromCombinedIdentifier($identifier);
+            if ($object instanceof Folder) {
+                return $object->getCombinedIdentifier();
+            }
+            if ($object instanceof File) {
+                return $object->getParentFolder()->getCombinedIdentifier();
+            }
+        } catch (\Exception $e) {
+            $this->logger->notice('Could not normalize filelist identifier to a folder', [
+                'identifier' => $identifier,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        return null;
     }
 
     private function isValidPageId(int $pageId): bool

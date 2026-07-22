@@ -197,7 +197,6 @@ class PageContentFactory
         $title = FileNameSanitizerService::sanitize($title);
         $targetFile = $this->filesystem->exists($destinationPath.$title.'.'.$fileExtension) ? $title.'-'.time().'.'.$fileExtension : $title.'.'.$fileExtension;
 
-        // Download to temp file, detect real MIME type, then add via FAL
         $tempBase = GeneralUtility::tempnam('ai_image_');
         $this->filesystem->copy($imageUrl, $tempBase);
 
@@ -207,7 +206,6 @@ class PageContentFactory
             throw new \RuntimeException(sprintf('Failed to download image from %s', $imageUrl));
         }
 
-        // Detect actual file type — server may return JPEG data with .png URL
         $detectedMime = mime_content_type($tempBase);
         $realExtension = match ($detectedMime) {
             'image/jpeg' => 'jpg',
@@ -217,12 +215,10 @@ class PageContentFactory
             default => $fileExtension,
         };
 
-        // Fix target filename if extension doesn't match actual content
         if ($realExtension !== $fileExtension) {
             $targetFile = str_replace('.'.$fileExtension, '.'.$realExtension, $targetFile);
         }
 
-        // Rename temp file with correct extension for TYPO3 ResourceConsistencyService
         $tempFile = $tempBase.'.'.$realExtension;
         rename($tempBase, $tempFile);
 
@@ -292,8 +288,6 @@ class PageContentFactory
             return $storage->getFolder($folderPath);
         }
 
-        // ResourceStorage::createFolder() only creates a single-segment folder,
-        // so walk the path and create each missing parent.
         $segments = array_values(array_filter(explode('/', $folderPath), static fn (string $segment): bool => '' !== $segment));
         $currentFolder = $storage->getRootLevelFolder(false);
         foreach ($segments as $segment) {

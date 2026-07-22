@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Enumeration\ModelTypeEnumeration;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class ModelService implements SingletonInterface
 {
+    public function __construct(
+        protected readonly LoggerInterface $logger,
+    ) {}
+
     /**
      * @param array<string, mixed> $extConf
      * @param list<string>         $modelTypes
@@ -18,10 +24,12 @@ class ModelService implements SingletonInterface
     {
         $modelKeys = [];
         foreach ($modelTypes as $modelType) {
-            $modelTypeUpper = str_replace('-', '', strtoupper($modelType));
-            $models = constant("\\AutoDudes\\AiSuite\\Enumeration\\ModelTypeEnumeration::{$modelTypeUpper}");
+            $models = $this->resolveModelTypeValue($modelType);
+            if (null === $models) {
+                continue;
+            }
             $modelsArr = explode(',', $models);
-            $modelKeys = self::fetchKeysByModel($extConf, $modelsArr, $modelKeys);
+            $modelKeys = $this->fetchKeysByModel($extConf, $modelsArr, $modelKeys);
         }
 
         return $modelKeys;
@@ -37,8 +45,10 @@ class ModelService implements SingletonInterface
     public function fetchKeysByModel(array $extConf, array $models, array $modelKeys = []): array
     {
         foreach ($models as $model) {
-            $modelUpper = str_replace('-', '', strtoupper($model));
-            $key = constant("\\AutoDudes\\AiSuite\\Enumeration\\ModelTypeEnumeration::{$modelUpper}");
+            $key = $this->resolveModelTypeValue($model);
+            if (null === $key) {
+                continue;
+            }
             $singleConfigs = explode(',', $key);
             $modelKeys[$model] = [];
             foreach ($singleConfigs as $singleConfig) {
@@ -49,5 +59,23 @@ class ModelService implements SingletonInterface
         }
 
         return $modelKeys;
+    }
+
+    private function resolveModelTypeValue(string $name): ?string
+    {
+        if ('' === trim($name)) {
+            $this->logger->warning('AI Suite: empty model name given, skipping key lookup');
+
+            return null;
+        }
+
+        $constantName = ModelTypeEnumeration::class.'::'.str_replace('-', '', strtoupper($name));
+        if (!defined($constantName)) {
+            $this->logger->warning('AI Suite: unknown model name given, skipping key lookup', ['model' => $name]);
+
+            return null;
+        }
+
+        return (string) constant($constantName);
     }
 }

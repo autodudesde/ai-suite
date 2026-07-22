@@ -16,12 +16,12 @@ use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsAlternativeTitle;
 use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle;
+use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
 use AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook;
 use AutoDudes\AiSuite\Hooks\GlobalInstructionHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
 use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -130,8 +130,9 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['proc
 
 try {
     $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite');
-    if (!array_key_exists('disableTranslationFunctionality', $extensionConfiguration)
-        || false === (bool) $extensionConfiguration['disableTranslationFunctionality']) {
+    $translationFunctionalityEnabled = !array_key_exists('disableTranslationFunctionality', $extensionConfiguration)
+        || false === (bool) $extensionConfiguration['disableTranslationFunctionality'];
+    if ($translationFunctionalityEnabled) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][TYPO3\CMS\Backend\Controller\Page\LocalizationController::class] = [
             'className' => LocalizationController::class,
         ];
@@ -140,6 +141,15 @@ try {
         ];
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite']
             = TranslationHook::class;
+
+        $autoTranslateOnSaveEnabled = array_key_exists('enableAutoTranslateOnSave', $extensionConfiguration)
+            && true === (bool) $extensionConfiguration['enableAutoTranslateOnSave'];
+        if ($autoTranslateOnSaveEnabled) {
+            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite_auto_translation']
+                = AutoTranslationHook::class;
+            $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite_auto_translation']
+                = AutoTranslationHook::class;
+        }
         ExtensionManagementUtility::addPageTSConfig(
             'templates.typo3/cms-backend.1720458914000 = autodudes/ai-suite:Resources/Private/'
         );

@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 class AbstractBackendController
 {
@@ -72,9 +73,9 @@ class AbstractBackendController
     protected function generateButtonBar(): void
     {
         $buttonBar = $this->view->getDocHeaderComponent()->getButtonBar();
-        $buttonBar->addButton($this->buildButton('actions-menu', 'module:aiSuite.module.actionmenu.dashboard', 'btn-md rounded', 'ai_suite_dashboard'));
+        $buttonBar->addButton($this->buildButton('actions-menu', 'module:aiSuite.module.actionmenu.dashboard', 'btn-md rounded', 'web_aisuite'));
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
-            $buttonBar->addButton($this->buildButton('actions-duplicate', 'module:aiSuite.module.actionmenu.workflow', 'btn-md rounded', 'ai_suite_workflow'));
+            $buttonBar->addButton($this->buildButton('actions-duplicate', 'module:aiSuite.module.actionmenu.workflow', 'btn-md rounded', 'web_aisuite.workflow'));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling')) {
             $additonalParams = [];
@@ -82,22 +83,25 @@ class AbstractBackendController
                 $additonalParams['backgroundTaskFilter'] = $this->aiSuiteContext->sessionService->getBackgroundTaskFilter();
                 $additonalParams['clickAndSave'] = $this->aiSuiteContext->sessionService->getClickAndSaveState();
             }
-            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'module:aiSuite.module.actionmenu.backgroundTask', 'btn-md rounded', 'ai_suite_backgroundtask', $additonalParams));
+            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'module:aiSuite.module.actionmenu.backgroundTask', 'btn-md rounded', 'web_aisuite.backgroundtask', $additonalParams));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_global_instructions_button')) {
-            $buttonBar->addButton($this->buildButton('apps-pagetree-page-content-from-page-root', 'module:aiSuite.module.actionmenu.globalInstructions', 'btn-md rounded', 'ai_suite_global_instructions'));
+            $buttonBar->addButton($this->buildButton('apps-pagetree-page-content-from-page-root', 'module:aiSuite.module.actionmenu.globalInstructions', 'btn-md rounded', 'web_aisuite.global_instructions'));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button')) {
-            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.promptTemplate', 'btn-md rounded', 'ai_suite_prompt'));
+            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.promptTemplate', 'btn-md rounded', 'web_aisuite.prompt'));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_pages_generation')) {
-            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.pages', 'btn-md rounded', 'ai_suite_page'));
+            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.pages', 'btn-md rounded', 'web_aisuite.page'));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_agency')) {
-            $buttonBar->addButton($this->buildButton('content-store', 'module:aiSuite.module.actionmenu.agencies', 'btn-md rounded', 'ai_suite_agencies'));
+            $buttonBar->addButton($this->buildButton('content-store', 'module:aiSuite.module.actionmenu.agencies', 'btn-md rounded', 'web_aisuite.agencies'));
         }
         if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_global_settings')) {
-            $buttonBar->addButton($this->buildButton('actions-cog', 'module:aiSuite.module.actionmenu.globalSettings', 'btn-md rounded', 'ai_suite_settings'));
+            $buttonBar->addButton($this->buildButton('actions-cog', 'module:aiSuite.module.actionmenu.globalSettings', 'btn-md rounded', 'web_aisuite.settings'));
+        }
+        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_statistics')) {
+            $buttonBar->addButton($this->buildButton('content-widget-chart-bar', 'module:aiSuite.module.actionmenu.statistics', 'btn-md rounded', 'web_aisuite.statistics'));
         }
         $this->eventDispatcher->dispatch(new AfterButtonBarGeneratedEvent($buttonBar, $this->request));
     }
@@ -110,8 +114,15 @@ class AbstractBackendController
     protected function buildButton(string $iconIdentifier, string $translationKey, string $classes, string $route, array $additionalParams = []): AiSuiteLinkButton
     {
         $rootPageId = $this->request->getAttribute('site')->getRootPageId();
+        $currentId = $this->request->getQueryParams()['id'] ?? null;
+        if (MathUtility::canBeInterpretedAsInteger($currentId)) {
+            $pageId = (int) $currentId;
+        } else {
+            $webPageId = $this->aiSuiteContext->sessionService->getWebPageId();
+            $pageId = $webPageId > 0 ? $webPageId : $rootPageId;
+        }
         $uriParameters = [
-            'id' => $this->request->getQueryParams()['id'] ?? $rootPageId,
+            'id' => $pageId,
         ];
         $uriParameters = array_merge_recursive($uriParameters, $additionalParams);
         $url = (string) $this->uriBuilder->buildUriFromRoute($route, $uriParameters);
@@ -131,10 +142,13 @@ class AbstractBackendController
     protected function isActiveRoute(string $route): bool
     {
         $currentRoute = (string) ($this->request->getAttribute('route')?->getOption('_identifier') ?? '');
-        if ('web_aisuite' === $currentRoute) {
-            $currentRoute = 'ai_suite_dashboard';
-        }
 
-        return $currentRoute === $route || str_starts_with($currentRoute, $route.'_');
+        $standalone = 'web_aisuite' === $route
+            ? 'ai_suite_dashboard'
+            : 'ai_suite_'.substr($route, strlen('web_aisuite.'));
+
+        return $currentRoute === $route
+            || $currentRoute === $standalone
+            || str_starts_with($currentRoute, $standalone.'_');
     }
 }

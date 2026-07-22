@@ -4,6 +4,7 @@ import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 
 class PagesTranslationPrepare {
@@ -282,6 +283,10 @@ class PagesTranslationPrepare {
                     Notification.info(TYPO3.lang['aiSuite.notification.sysLanguage.pageTreeChanged'], res.output.notificationTargetLanguage);
                 }
             }
+            LibrarySelection.initialize(
+                document.querySelector('#resultsToExecute'),
+                ['#pagesTranslationExecuteFormSubmitBtn', '#automaticPagesTranslationExecuteFormSubmitBtn']
+            );
         }
     }
 
@@ -304,9 +309,9 @@ class PagesTranslationPrepare {
         let calculatedRequests = 0;
         document.querySelectorAll('.library').forEach(function (library) {
             let amountField = library.querySelector('.request-amount span');
-            if(library.style.display !== 'none' && amountField !== null) {
-                let modelId = library.querySelector('input[type="radio"]:checked').id;
-                let amount = parseInt(library.querySelector('label[for="' + modelId +'"] .request-amount span').textContent);
+            let checkedModel = library.querySelector('input[type="radio"]:checked');
+            if(library.style.display !== 'none' && amountField !== null && checkedModel !== null) {
+                let amount = parseInt(library.querySelector('label[for="' + checkedModel.id +'"] .request-amount span').textContent);
                 calculatedRequests += amount;
             }
         });

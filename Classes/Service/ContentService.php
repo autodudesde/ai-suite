@@ -69,6 +69,7 @@ class ContentService implements SingletonInterface
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly LocalizationService $localizationService,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
 
     /**
@@ -103,7 +104,7 @@ class ContentService implements SingletonInterface
             'image' => [],
         ];
 
-        $itemList = $GLOBALS['TCA'][$table]['types'][$cType]['showitem'];
+        $itemList = $this->tcaCompatibilityService->getShowitem($table, $cType);
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
         $depthTracker = [];
         $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table, $depthTracker);
@@ -270,10 +271,11 @@ class ContentService implements SingletonInterface
         string $table,
         array &$depthTracker
     ): void {
-        if (empty($paletteName) || empty($GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'])) {
+        $paletteShowitem = $this->tcaCompatibilityService->getPaletteShowitem($table, $paletteName);
+        if (empty($paletteName) || '' === $paletteShowitem) {
             return;
         }
-        $fieldsArray = GeneralUtility::trimExplode(',', $GLOBALS['TCA'][$table]['palettes'][$paletteName]['showitem'], true);
+        $fieldsArray = GeneralUtility::trimExplode(',', $paletteShowitem, true);
         foreach ($fieldsArray as $fieldString) {
             $fieldArray = $this->explodeSingleFieldShowItemConfiguration($fieldString);
             $fieldName = $fieldArray['fieldName'];
@@ -311,8 +313,7 @@ class ContentService implements SingletonInterface
 
         $formData = $this->getFormData($request, $defaultValues, $pid, $table);
 
-        $showItemKey = array_key_first($GLOBALS['TCA'][$table]['types']);
-        $itemList = $GLOBALS['TCA'][$table]['types'][$showItemKey]['showitem'];
+        $itemList = $this->tcaCompatibilityService->getFirstTypeShowitem($table);
         $fieldsArray = GeneralUtility::trimExplode(',', $itemList, true);
         $this->iterateOverFieldsArray($fieldsArray, $requestFields, $formData, $pid, $table, $depthTracker);
     }

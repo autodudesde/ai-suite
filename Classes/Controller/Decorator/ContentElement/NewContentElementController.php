@@ -16,13 +16,10 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
     protected function wizardAction(ServerRequestInterface $request): ResponseInterface
     {
         if (!$this->id || [] === $this->pageInfo) {
-            // No pageId or no access.
             return new HtmlResponse('No Access');
         }
-        // Whether position selection must be performed (no colPos was yet defined)
         $positionSelection = null === $this->colPos;
 
-        // Get processed and modified wizard items
         /** @var ModifyNewContentElementWizardItemsEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ModifyNewContentElementWizardItemsEvent(
@@ -39,7 +36,6 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
         $key = 'common';
         $categories = [];
         foreach ($wizardItems as $wizardKey => $wizardItem) {
-            // An item is either a header or an item rendered with title/description and icon:
             if (isset($wizardItem['header'])) {
                 $key = $wizardKey;
                 $categories[$key] = [
@@ -48,7 +44,6 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                     'items' => [],
                 ];
             } else {
-                // Initialize the view variables for the item
                 $item = [
                     'identifier' => $wizardKey,
                     'icon' => $wizardItem['iconIdentifier'] ?? '',
@@ -56,12 +51,9 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
                     'description' => $wizardItem['description'] ?? '',
                 ];
 
-                // Get default values for the wizard item
                 $defVals = (array) ($wizardItem['tt_content_defValues'] ?? []);
                 if (!$positionSelection) {
-                    // In case no position has to be selected, we can just add the target
                     if ($wizardItem['saveAndClose'] ?? false) {
-                        // Go to DataHandler directly instead of FormEngine
                         $item['url'] = (string) $this->uriBuilder->buildUriFromRoute('tce_db', [
                             'data' => [
                                 'tt_content' => [
@@ -128,7 +120,6 @@ class NewContentElementController extends \TYPO3\CMS\Backend\Controller\ContentE
             }
         }
 
-        // Unset empty categories
         foreach ($categories as $key => $category) {
             if ([] === $category['items']) {
                 unset($categories[$key]);

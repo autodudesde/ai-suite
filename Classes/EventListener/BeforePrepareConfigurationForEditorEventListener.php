@@ -8,13 +8,11 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\SiteService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
 
 class BeforePrepareConfigurationForEditorEventListener
 {
     public function __construct(
-        protected readonly PageRenderer $pageRenderer,
         protected readonly BackendUserService $backendUserService,
         protected readonly SiteService $siteService,
         protected readonly LoggerInterface $logger,
@@ -35,9 +33,11 @@ class BeforePrepareConfigurationForEditorEventListener
 
             return;
         }
-        $this->pageRenderer->addInlineSetting('aiSuite', 'rteLanguageCode', $langIsoCode);
-        $this->pageRenderer->addInlineSetting('aiSuite', 'pageId', $event->getData()['effectivePid']);
         $configuration = $event->getConfiguration();
+        $configuration['aiSuite'] = [
+            'rteLanguageCode' => $langIsoCode,
+            'pageId' => (int) ($event->getData()['effectivePid'] ?? 0),
+        ];
         if ($this->backendUserService->checkPermissions('tx_aisuite_features:enable_rte_aiplugin')) {
             $configuration['importModules'][] = [
                 'module' => '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin.js',

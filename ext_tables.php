@@ -50,6 +50,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableTranslationSysFileMetadataDescription',
         ],
+        'enable_auto_translation' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAutoTranslation',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAutoTranslationDescription',
+        ],
         'enable_image_generation' => [
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableImageGeneration',
             'tx-aisuite-permissions',
@@ -114,6 +119,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableCliWorkflowExecution',
             'tx-aisuite-permissions',
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableCliWorkflowExecutionDescription',
+        ],
+        'enable_statistics' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableStatistics',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableStatisticsDescription',
         ],
     ],
 ];

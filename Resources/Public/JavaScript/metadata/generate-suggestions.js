@@ -7,6 +7,7 @@ import ResponseHandling from "@autodudes/ai-suite/helper/image/response-handling
 import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js";
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class GenerateSuggestions {
     constructor() {
@@ -61,6 +62,7 @@ class GenerateSuggestions {
             slide.html(res.output);
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             let aiSuiteGenerateButton = modal.find('.panel-body button#aiSuiteGenerateMetadataBtn');
+            LibrarySelection.initialize(modal.get(0), ['.panel-body button#aiSuiteGenerateMetadataBtn']);
             let postData = settings['postData'];
             postData.context = postData.table === 'pages' ? 'pages' : 'files';
             GlobalInstructions.fetchGlobalInstructionsMultiStepWizard({

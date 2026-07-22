@@ -54,15 +54,6 @@ class AbstractRepository
         return $this->selectQuery('uid', $uid);
     }
 
-    /**
-     * Adds a WorkspaceRestriction for the current Context workspace aspect to the
-     * QueryBuilder. Repositories shared between MCP-Sub and the host extension call
-     * this so workspace overlay is consistent across both call sites.
-     *
-     * Reads the Context aspect (not BE_USER->workspace) because MCP's writeMode=live
-     * sets the aspect to 0 even when the user's default workspace is non-zero — the
-     * aspect is the source of truth for read-side workspace selection.
-     */
     protected function addWorkspaceRestriction(QueryBuilder $queryBuilder): void
     {
         $workspaceId = 0;
@@ -72,7 +63,7 @@ class AbstractRepository
                 ->getPropertyFromAspect('workspace', 'id', 0)
             ;
         } catch (\Throwable) {
-            // No workspace aspect set — fall back to live (0).
+            // No workspace aspect set
         }
         $queryBuilder->getRestrictions()->add(
             GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId),
