@@ -32,8 +32,6 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 class WorkflowProcessingService implements SingletonInterface
 {
     /**
-     * Workflow types supported by the WorkflowProcessingService orchestrators.
-     *
      * @var array<string, string>
      */
     public const WORKFLOW_TYPES = [
@@ -64,6 +62,7 @@ class WorkflowProcessingService implements SingletonInterface
         protected readonly DomainResolverService $domainResolverService,
         protected readonly GlossarService $glossarService,
         protected readonly StorageRepository $storageRepository,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
 
     /**
@@ -72,7 +71,7 @@ class WorkflowProcessingService implements SingletonInterface
     public function getAvailablePageTypes(): array
     {
         $ignorePageTypes = [3, 4, 6, 7, 199, 254, 255];
-        $pageTypes = $GLOBALS['TCA']['pages']['columns']['doktype']['config']['items'] ?? [];
+        $pageTypes = $this->tcaCompatibilityService->getFieldItems('pages', 'doktype');
         $availablePageTypes = [
             -1 => $this->localizationService->translate('module:aiSuite.module.preparePages.allPageTypes'),
         ];
@@ -91,10 +90,9 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $workflowData   Must contain: parentUuid, column, textAiModel
-     * @param array<int, string>   $pages          Map of pageUid => pageSlug
-     * @param list<string>         $languageParts  [isoCode, languageId]
-     * @param callable             $contentFetcher fn(int $pageUid, int $languageId): string — fetches page content
+     * @param array<string, mixed> $workflowData
+     * @param array<int, string>   $pages
+     * @param list<string>         $languageParts
      *
      * @return array<string, mixed>
      */
@@ -153,13 +151,7 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<int, mixed> $pages             Map of pageUid => pageData (value is unused, only keys matter)
-     * @param string            $parentUuid        Parent UUID for grouping background tasks
-     * @param string            $translationScope  What to translate: 'all', 'metadata', or 'content'
-     * @param string            $sourceLanguage    ISO source language code (uppercase)
-     * @param string            $targetLanguage    ISO target language code (uppercase)
-     * @param int               $sourceLanguageUid TYPO3 sys_language_uid of source
-     * @param int               $targetLanguageUid TYPO3 sys_language_uid of target
+     * @param array<int, mixed> $pages
      *
      * @return array<string, mixed>
      */
@@ -237,12 +229,8 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<int|string, array<string, mixed>> $files                Map of sysFileMetaUid => ['column' => 'value', 'mode' => '...' ]
-     * @param array<int|string, array<string, mixed>> $metadataListFromRepo Metadata rows keyed by sysFileMetaUid (from SysFileMetadataRepository::findByUidList)
-     * @param string                                  $parentUuid           Parent UUID for grouping background tasks
-     * @param string                                  $sourceLanguage       ISO source language code (uppercase)
-     * @param string                                  $targetLanguage       ISO target language code (uppercase)
-     * @param int                                     $targetLanguageUid    TYPO3 sys_language_uid of target
+     * @param array<int|string, array<string, mixed>> $files
+     * @param array<int|string, array<string, mixed>> $metadataListFromRepo
      *
      * @return array<string, mixed>
      */
@@ -322,11 +310,9 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed>     $workflowData      Workflow data from request
-     * @param array<int|string, mixed> $workflowDataFiles Decoded files data
-     * @param list<string>             $languageParts     Language parts [locale, id]
-     * @param string                   $scope             Processing scope (e.g., 'fileMetadata')
-     * @param SendRequestService       $requestService    Request service for API calls
+     * @param array<string, mixed>     $workflowData
+     * @param array<int|string, mixed> $workflowDataFiles
+     * @param list<string>             $languageParts
      *
      * @return array<string, mixed>
      */
@@ -446,15 +432,9 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * Sends the final workflow request (createMassAction) to the AI server and persists the bulk
-     * background-task payload on success. Used as the closing step of every workflow execute action
-     * (and for the equivalent CLI orchestrators).
-     *
-     * @param list<array<string, mixed>> $payload     Per-task request payload
-     * @param list<BackgroundTask>       $bulkPayload Background-task DTOs to persist on success
-     * @param array<string, mixed>       $extraParams Extra data params (e.g. glossary, deepl_glossary_id)
-     *
-     * @return null|string Error message on failure, null on success (or when payload is empty)
+     * @param list<array<string, mixed>> $payload
+     * @param list<BackgroundTask>       $bulkPayload
+     * @param array<string, mixed>       $extraParams
      */
     public function sendWorkflowRequest(
         array $payload,
@@ -498,10 +478,9 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed>     $workflowData   Must contain: parentUuid, column, textAiModel, startFromPid
-     * @param array<int|string, mixed> $fileReferences Map of sysFileReferenceUid => sysFileUid (sysFileUid may be 0; resolved from sys_file_reference table)
-     * @param list<string>             $languageParts  [isoCode, languageId]
-     * @param SendRequestService       $requestService Request service for API calls
+     * @param array<string, mixed>     $workflowData
+     * @param array<int|string, mixed> $fileReferences
+     * @param list<string>             $languageParts
      *
      * @return array<string, mixed>
      */
@@ -692,17 +671,10 @@ class WorkflowProcessingService implements SingletonInterface
         }
     }
 
-    // -------------------------------------------------------------------------
-    // High-level workflow orchestrators (used by CLI commands)
-    //
-    // Each orchestrator combines: language-filter reinforce → record selection →
-    // pending/translated skip → process* payload build → sendWorkflowRequest.
-    // -------------------------------------------------------------------------
-
     /**
-     * @param array<string, mixed> $config Must contain: type='page', model, startFromPid, depth, pageType, column, sysLanguage, showOnlyEmpty
+     * @param array<string, mixed> $config
      *
-     * @return array<string, mixed> ['success' => bool, 'message' => string, 'failedFiles'|'failedPages' => list<int>]
+     * @return array<string, mixed>
      */
     public function prepareAndExecutePagesMetadataWorkflow(array $config): array
     {
@@ -789,7 +761,7 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $config Must contain: type='pageTranslate', model, startFromPid, depth, pageType, sourceLanguage, targetLanguage, translationScope
+     * @param array<string, mixed> $config
      *
      * @return array<string, mixed>
      */
@@ -889,7 +861,7 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $config Must contain: type='fileReferences', model, startFromPid, depth, column, sysLanguage, showOnlyEmpty
+     * @param array<string, mixed> $config
      *
      * @return array<string, mixed>
      */
@@ -977,7 +949,7 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $config Must contain: type='fileMetadata', model, directory, column, sysLanguage, showOnlyEmpty, showOnlyUsed
+     * @param array<string, mixed> $config
      *
      * @return array<string, mixed>
      */
@@ -1134,7 +1106,7 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
-     * @param array<string, mixed> $config Must contain: type='fileMetadataTranslation', model, directory, column, sourceLanguage, targetLanguage, showOnlyUsed, glossary?
+     * @param array<string, mixed> $config
      *
      * @return array<string, mixed>
      */
@@ -1301,10 +1273,6 @@ class WorkflowProcessingService implements SingletonInterface
         ];
     }
 
-    /**
-     * Accepts either a path relative to the default storage root (e.g. "/user_upload/")
-     * or a combined identifier (e.g. "1:/user_upload/") referencing a specific storage.
-     */
     private function resolveWorkflowFolder(string $directory): Folder
     {
         if ('' !== $directory && 1 === preg_match('/^\d+:/', $directory)) {
@@ -1385,11 +1353,6 @@ class WorkflowProcessingService implements SingletonInterface
         }
     }
 
-    /**
-     * Builds a content-fetcher callable for page metadata workflows. Mirrors the inline closure
-     * used in PageMetadataController::pagesExecuteAction so that CLI orchestrator and controller
-     * use identical content acquisition.
-     */
     private function buildPageContentFetcher(): callable
     {
         return function (int $pageUid, int $languageId): string {

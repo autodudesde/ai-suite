@@ -108,6 +108,7 @@ class PageTranslationController extends AbstractBackendController
                 [(int) $workflowData['startFromPid']],
                 (int) $workflowData['depth']
             );
+            $foundPageUids = $this->aiSuiteContext->backendUserService->filterPageUidsByEditAccess($foundPageUids);
 
             $params['sourceLanguage'] = $workflowData['sourceLanguage'];
             $params['targetLanguage'] = $workflowData['targetLanguage'];

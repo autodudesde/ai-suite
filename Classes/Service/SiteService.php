@@ -112,9 +112,6 @@ class SiteService implements SingletonInterface
     }
 
     /**
-     * Resolve ISO language codes (e.g. "en", "de") to language UIDs of the site
-     * containing the given page. Unknown ISO codes are silently skipped.
-     *
      * @param list<string> $isocodes
      *
      * @return list<int>
@@ -147,8 +144,6 @@ class SiteService implements SingletonInterface
     }
 
     /**
-     * Language UIDs of the site containing the given page, excluding the default language (uid 0).
-     *
      * @return list<int>
      */
     public function getNonDefaultLanguageUids(int $pageId): array
@@ -165,13 +160,31 @@ class SiteService implements SingletonInterface
         }
 
         $uids = [];
-        foreach ($site->getLanguages() as $language) {
+        foreach ($site->getAllLanguages() as $language) {
             if ($language->getLanguageId() > 0) {
                 $uids[] = $language->getLanguageId();
             }
         }
 
         return $uids;
+    }
+
+    /**
+     * @throws SiteNotFoundException
+     */
+    public function getIsoCodeByLanguageIdIncludingDisabled(int $languageId, int $pageUid): string
+    {
+        $site = $this->siteFinder->getSiteByPageId($pageUid);
+        if (-1 === $languageId) {
+            $languageId = $site->getDefaultLanguage()->getLanguageId();
+        }
+        foreach ($site->getAllLanguages() as $language) {
+            if ($language->getLanguageId() === $languageId) {
+                return $this->applyLanguageMapping($site, $language->getLocale()->getLanguageCode());
+            }
+        }
+
+        throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
     }
 
     public function getSiteRootPageId(int $pageId): int

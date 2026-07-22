@@ -583,6 +583,85 @@ class BackgroundTaskRepository
      *
      * @throws Exception
      */
+    public function findAllContentElementTranslationBackgroundTasks(): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('content-element-translation')),
+                $queryBuilder->expr()->eq('type', $queryBuilder->createNamedParameter('translation')),
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('tt_content'))
+            )
+            ->orderBy('crdate', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     *
+     * @throws Exception
+     */
+    public function findContentElementTranslationTasksForPage(int $pageUid, string $status): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return $queryBuilder
+            ->select('bt.*')
+            ->from($this->table, 'bt')
+            ->leftJoin(
+                'bt',
+                'tt_content',
+                'c',
+                $queryBuilder->expr()->eq('c.uid', $queryBuilder->quoteIdentifier('bt.table_uid'))
+            )
+            ->where(
+                $queryBuilder->expr()->eq('bt.scope', $queryBuilder->createNamedParameter('content-element-translation')),
+                $queryBuilder->expr()->eq('bt.type', $queryBuilder->createNamedParameter('translation')),
+                $queryBuilder->expr()->eq('bt.table_name', $queryBuilder->createNamedParameter('tt_content')),
+                $queryBuilder->expr()->eq('bt.status', $queryBuilder->createNamedParameter($status)),
+                $queryBuilder->expr()->eq('c.pid', $queryBuilder->createNamedParameter($pageUid, Connection::PARAM_INT))
+            )
+            ->orderBy('bt.crdate', 'DESC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
+     * @return list<int>
+     *
+     * @throws Exception
+     */
+    public function findUnappliedContentElementTranslationLanguageUids(int $sourceUid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        $rows = $queryBuilder
+            ->select('sys_language_uid')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('content-element-translation')),
+                $queryBuilder->expr()->eq('table_name', $queryBuilder->createNamedParameter('tt_content')),
+                $queryBuilder->expr()->eq('table_uid', $queryBuilder->createNamedParameter($sourceUid, Connection::PARAM_INT)),
+                $queryBuilder->expr()->in('status', $queryBuilder->createNamedParameter(['pending', 'finished'], Connection::PARAM_STR_ARRAY))
+            )
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+
+        return array_map(static fn (array $row): int => (int) $row['sys_language_uid'], $rows);
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     *
+     * @throws Exception
+     */
     public function findAllFileMetadataTranslationBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -643,7 +722,7 @@ class BackgroundTaskRepository
     }
 
     /**
-     * @param array<string, mixed> $config Filters: status (default 'pending', 'failed', 'all', or specific), type, column, sysLanguage, parentUuid
+     * @param array<string, mixed> $config
      *
      * @return list<array<string, mixed>>
      *
@@ -706,9 +785,6 @@ class BackgroundTaskRepository
         ;
     }
 
-    /**
-     * Maps a workflow type identifier to the scope value used in the database.
-     */
     protected function mapTypeToScope(string $type): ?string
     {
         return match ($type) {

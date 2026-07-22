@@ -78,16 +78,36 @@
                 <target>Erledige ganz spezielle Aufgaben, etwa das Übersetzen einer XLF-Datei oder das Importieren von Seiteninhalten aus einem anderen System.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.agencySection.linklabel">
-                <source>Open agency section</source>
-                <target>Bereich „Agenturen“</target>
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.title">
+                <source>Settings</source>
+                <target>Einstellungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.description">
+                <source>Configure global settings for AI Suite, e.g. AI Suite API Key, GDPR mode or directory protection.</source>
+                <target>Konfiguriere die globalen Einstellungen der AI Suite, z. B. AI Suite API Key, GDPR-Mode oder Verzeichnisschutz.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.agencySection.title">
-                <source>Agency features</source>
-                <target>Agenturfunktionen</target>
+                <source>Agencies</source>
+                <target>Agenturen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.title">
                 <source>TaskEngine</source>
                 <target>TaskEngine</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.description">
+                <source>Monitor and manage your background tasks, e.g. the processing of metadata generation for pages and images or of translations.</source>
+                <target>Überwache und verwalte deine Hintergrund-Aufgaben, z. B. die Verarbeitung der Metadaten-Generierung für Seiten und Bilder oder von Übersetzungen.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskStats.byColumn">
                 <source>By Column</source>
@@ -166,8 +186,8 @@
                 <target>Mithilfe von KI kannst du dir einen Seitenbaum erstellen lassen. Dieser wird mit den von dir gewünschten Seiten erstellt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.title">
-                <source>Create page tree</source>
-                <target>Seitenbaum erstellen</target>
+                <source>Page tree</source>
+                <target>Seitenbaum</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetreeWithContent.description">
                 <source>Advanced page tree creation: Workflow to create a page tree with page metadata and content inside the new pages.</source>
@@ -234,8 +254,8 @@
                 <target>Globale Anweisungen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.linklabel">
-                <source>Manage global instructions</source>
-                <target>Verwalten globaler Anweisungen</target>
+                <source>Manage</source>
+                <target>Verwalten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
                 <source>Metatdata</source>
@@ -250,8 +270,8 @@
                 <target>Speicher-Verzeichnis</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.title">
-                <source>Manage your global instructions</source>
-                <target>Verwalte deine globalen Anweisungen</target>
+                <source>Global instructions</source>
+                <target>Globale Anweisungen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.useForSubtree">
                 <source>Use for subtree</source>
@@ -294,8 +314,8 @@
                 <target>Sprache</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.linklabel">
-                <source>Manage custom prompt templates</source>
-                <target>Verwalten benutzerdefinierter Prompt-Vorlagen</target>
+                <source>Manage</source>
+                <target>Verwalten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.name">
                 <source>Name</source>
@@ -338,8 +358,8 @@
                 <target>Seitenbaumgenerierung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.title">
-                <source>Manage your custom prompt templates</source>
-                <target>Verwalte deine benutzerdefinierten Prompt-Vorlagen</target>
+                <source>Prompt templates</source>
+                <target>Prompt-Vorlagen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowFileReferences.description">
                 <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
@@ -390,12 +410,16 @@
                 <target>WorkflowManager für die Seitenübersetzung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowSection.description">
-                <source>Handle stuff via WorkflowManager at once.</source>
-                <target>Erledige Dinge sofort über den WorkflowManager.</target>
+                <source>Run tasks instantly via the WorkflowManager, e.g. metadata generation for pages and/or images as well as translations.</source>
+                <target>Erledige Aufgaben sofort über den WorkflowManager, z. B. Metadaten-Generierung für Seiten und/oder Bilder sowie Übersetzungen.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowSection.title">
                 <source>WorkflowManager</source>
                 <target>WorkflowManager</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.workflowSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowTranslations.description">
                 <source>Edit or update multiple translations at once.</source>
@@ -597,7 +621,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.abstract">
                 <source>Abstract</source>
-                <target>Inhaltsabriss</target>
+                <target>Zusammenfassung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.description">
                 <source>Description for search engines</source>
@@ -1081,10 +1105,6 @@
                 <source>What is missing?</source>
                 <target>Was fehlt?</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.freeCredits">
-                <source>Free Credits</source>
-                <target>Free Credits</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions">
                 <source>Create global instructions</source>
                 <target>Erstellen globaler Anweisungen</target>
@@ -1161,9 +1181,13 @@
                 <source>Generate page structure</source>
                 <target>Seitenstruktur generieren</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.credits">
+                <source>Credits</source>
+                <target>Credits</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.paidCredits">
-                <source>Paid Credits</source>
-                <target>Paid Credits</target>
+                <source>Pack</source>
+                <target>Pack</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.prepareFiles.showOnlyUsed">
                 <source>Show only in content included files</source>
@@ -1386,8 +1410,8 @@
                 <target>Inhalte erstellen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.linklabel">
-                <source>Create page tree</source>
-                <target>Seitenbaum erstellen</target>
+                <source>Create</source>
+                <target>Erstellen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.actions">
                 <source>Actions</source>
@@ -1631,7 +1655,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.preparePages.pageChooser">
                 <source>Select the page you want to start from:</source>
-                <target>Wähle die Seite aus, auf der du beginnen möchtest:</target>
+                <target>Seite, auf der du beginnen möchtest:</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.preparePages.pageSelected">
                 <source>Selected page:</source>
@@ -1668,6 +1692,158 @@
             <trans-unit id="aiSuite.module.warningFetchingTaskStatus.title">
                 <source>Could not fetch the current status of the background tasks.</source>
                 <target>Der aktuelle Status der Hintergrund-Aufgaben konnte nicht abgerufen werden.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.cliCommandExecuteBtn">
+                <source>Generate with AI and auto-fill in background</source>
+                <target>Mit KI generieren und im Hintergrund automatisch ausfüllen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.cliCommandExecuteTranslationBtn">
+                <source>Translate with AI and auto-fill in background</source>
+                <target>Mit KI übersetzen und im Hintergrund automatisch ausfüllen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.globalSettings">
+                <source>Global Settings</source>
+                <target>Globale Einstellungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.header">
+                <source>Global Settings</source>
+                <target>Globale Einstellungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.save">
+                <source>Save Settings</source>
+                <target>Einstellungen speichern</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.saveSuccess">
+                <source>Settings have been saved successfully.</source>
+                <target>Die Einstellungen wurden erfolgreich gespeichert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.saveError">
+                <source>An error occurred while saving the settings.</source>
+                <target>Beim Speichern der Einstellungen ist ein Fehler aufgetreten.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.maskedHint">
+                <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>
+                <target>Dieser Wert ist aus Sicherheitsgründen maskiert. Lasse ihn unverändert, um den aktuellen Wert beizubehalten, oder gib einen neuen Wert ein, um ihn zu aktualisieren.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.aiSuiteApi">
+                <source>AI Suite API</source>
+                <target>AI Suite API</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.media">
+                <source>Media</source>
+                <target>Medien</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.translation">
+                <source>Translation</source>
+                <target>Übersetzung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.metadata">
+                <source>Metadata</source>
+                <target>Metadaten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.byok">
+                <source>Bring Your Own Keys</source>
+                <target>Eigene API-Schlüssel (Bring Your Own Keys)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.category.basicAuth">
+                <source>HTTP Basic Authentication</source>
+                <target>HTTP-Basis-Authentifizierung (Verzeichnisschutz)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.aiSuiteApiKey">
+                <source>AI Suite License Key</source>
+                <target>AI Suite Lizenzschlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.aiSuiteServer">
+                <source>AI Suite Server URL</source>
+                <target>AI Suite Server-URL</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.mediaStorageFolder">
+                <source>Media Storage Folder</source>
+                <target>Medien-Speicherordner</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.translateFlexFormFields">
+                <source>Translate FlexForm fields</source>
+                <target>FlexForm-Felder übersetzen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.updateDeeplGlossaries">
+                <source>Update DeepL glossaries</source>
+                <target>DeepL-Glossare aktualisieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.easyLanguageLibrary">
+                <source>Easy Language Library</source>
+                <target>Bibliothek für Leichte Sprache</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.disableTranslationFunctionality">
+                <source>Disable translation functionality</source>
+                <target>Übersetzungsfunktion deaktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.metadataSuggestionCount">
+                <source>Metadata suggestion count</source>
+                <target>Anzahl der Metadaten-Vorschläge</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateTitle">
+                <source>Auto-generate image titles on upload</source>
+                <target>Bildtitel beim Upload automatisch generieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateAlternative">
+                <source>Auto-generate alternative text on upload</source>
+                <target>Alternativtext beim Upload automatisch generieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateModel">
+                <source>Auto-generate metadata model</source>
+                <target>Modell für automatische Metadaten-Generierung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateApproach">
+                <source>Auto-generate metadata approach</source>
+                <target>Vorgehen für automatische Metadaten-Generierung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.openAiApiKey">
+                <source>OpenAI API Key</source>
+                <target>OpenAI API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.anthropicApiKey">
+                <source>Anthropic API Key</source>
+                <target>Anthropic API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.googleTranslateApiKey">
+                <source>Google Translate API Key</source>
+                <target>Google Translate API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.deeplApiKey">
+                <source>DeepL API Key</source>
+                <target>DeepL API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.deeplApiMode">
+                <source>Free version of DeepL API</source>
+                <target>Kostenlose Version der DeepL-API</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.midjourneyApiKey">
+                <source>Midjourney API Key</source>
+                <target>Midjourney API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.midjourneyId">
+                <source>Midjourney ID</source>
+                <target>Midjourney-ID</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.fluxApiKey">
+                <source>Flux API Key</source>
+                <target>Flux API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.fluxBaseUrl">
+                <source>Flux Base URL</source>
+                <target>Flux Basis-URL</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
+                <source>Enable Basic Authentication</source>
+                <target>Basis-Authentifizierung aktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.basicAuth_user">
+                <source>Basic Auth Username</source>
+                <target>Benutzername (Basis-Auth)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.basicAuth_pass">
+                <source>Basic Auth Password</source>
+                <target>Passwort (Basis-Auth)</target>
             </trans-unit>
         </body>
     </file>

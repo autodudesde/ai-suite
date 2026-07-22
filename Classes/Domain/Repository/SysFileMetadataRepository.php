@@ -100,8 +100,6 @@ class SysFileMetadataRepository extends AbstractRepository
     }
 
     /**
-     * Find all metadata records for a file across all languages.
-     *
      * @return list<array<string, mixed>>
      */
     public function findAllByFileUid(int $fileUid): array

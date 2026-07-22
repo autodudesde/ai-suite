@@ -49,7 +49,7 @@ class CliOverviewController
         $view = $this->moduleTemplateFactory->create($request);
         $view->setModuleId('aiSuite');
 
-        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/cli-overview-dashboard.js');
+        $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/cli/overview.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
         $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
 

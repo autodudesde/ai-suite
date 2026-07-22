@@ -41,6 +41,7 @@ class BackendUserService implements SingletonInterface
         protected readonly ConnectionPool $connectionPool,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly LoggerInterface $logger,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
 
     public function checkPermissions(string $permissionsKey): bool
@@ -97,7 +98,6 @@ class BackendUserService implements SingletonInterface
         }
         $expressionBuilder = $this->connectionPool->getQueryBuilderForTable('pages')->expr();
         $permsClause = $backendUser->getPagePermsClause(Permission::PAGE_SHOW);
-        // This will hide records from display - it has nothing to do with user rights!!
         $pidList = GeneralUtility::intExplode(',', (string) ($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? '1'), true);
         if (!empty($pidList)) {
             $permsClause .= ' AND '.$expressionBuilder->notIn('pages.uid', $pidList);
@@ -118,11 +118,11 @@ class BackendUserService implements SingletonInterface
      */
     public function getAccessablePageTypes(): array
     {
-        $pageTypes = $GLOBALS['TCA']['pages']['columns']['doktype']['config']['items'] ?? [];
+        $pageTypes = $this->tcaCompatibilityService->getFieldItems('pages', 'doktype');
         $availablePageTypes = [
             -1 => $this->localizationService->translate('module:aiSuite.module.preparePages.allPageTypes'),
         ];
-        if (is_array($pageTypes) && [] !== $pageTypes) {
+        if ([] !== $pageTypes) {
             $backendUser = $this->getBackendUser();
             if (null === $backendUser) {
                 return $availablePageTypes;
@@ -175,6 +175,34 @@ class BackendUserService implements SingletonInterface
     }
 
     /**
+     * @param array<int|string> $pageUids
+     *
+     * @return list<int>
+     */
+    public function filterPageUidsByEditAccess(array $pageUids): array
+    {
+        $backendUser = $this->getBackendUser();
+        if (null === $backendUser) {
+            return [];
+        }
+        if ($backendUser->isAdmin()) {
+            return array_values(array_map('intval', $pageUids));
+        }
+
+        $accessiblePageUids = [];
+        foreach ($pageUids as $pageUid) {
+            $pageUid = (int) $pageUid;
+            $pageInWebMount = $backendUser->isInWebMount($pageUid);
+            $pageEditAccess = BackendUtility::readPageAccess($pageUid, $backendUser->getPagePermsClause(2));
+            if (null !== $pageInWebMount && is_array($pageEditAccess)) {
+                $accessiblePageUids[] = $pageUid;
+            }
+        }
+
+        return $accessiblePageUids;
+    }
+
+    /**
      * @param array<string, mixed> $globalInstruction
      */
     public function hasFileAccessPermissions(array $globalInstruction): bool
@@ -215,10 +243,8 @@ class BackendUserService implements SingletonInterface
     }
 
     /**
-     * Resolve a folder by combined identifier and verify the BE user may read it.
-     *
-     * @throws NotInMountPointException                   folder is outside the user's filemounts or storage is not browsable
-     * @throws InsufficientFolderReadPermissionsException folder exists but the user lacks read permission on it
+     * @throws NotInMountPointException
+     * @throws InsufficientFolderReadPermissionsException
      */
     public function getReadableFolder(string $combinedIdentifier): Folder
     {
@@ -243,10 +269,8 @@ class BackendUserService implements SingletonInterface
     }
 
     /**
-     * Resolve a folder by combined identifier and verify the BE user may write to it.
-     *
-     * @throws NotInMountPointException                    folder is outside the user's filemounts or storage is not browsable
-     * @throws InsufficientFolderWritePermissionsException folder exists but the user lacks write permission on it
+     * @throws NotInMountPointException
+     * @throws InsufficientFolderWritePermissionsException
      */
     public function getWriteableFolder(string $combinedIdentifier): Folder
     {
@@ -270,21 +294,11 @@ class BackendUserService implements SingletonInterface
         return $folder;
     }
 
-    /**
-     * Whether the current backend user may edit `sys_file_metadata` for the given file.
-     * Requires write access to the file's mount (`editMeta`) and `tables_modify` on `sys_file_metadata`.
-     */
     public function canEditFileMetadata(int $fileUid): bool
     {
         return $this->canEditFile($fileUid, 'sys_file_metadata', 'editMeta');
     }
 
-    /**
-     * Whether the current backend user may edit a `sys_file_reference` row pointing at the given file
-     * (e.g. the `alternative` field on an inline image reference). Requires only `read` access to the
-     * file plus `tables_modify` on `sys_file_reference`, since the reference record is independent
-     * of `sys_file_metadata` and is saved together with its parent record.
-     */
     public function canEditFileReferenceMetadata(int $fileUid): bool
     {
         return $this->canEditFile($fileUid, 'sys_file_reference', 'read');

@@ -3,6 +3,7 @@ import Severity from "@typo3/backend/severity.js";
 import Modal from "@typo3/backend/modal.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class GenerationHandling {
     showGeneralImageSettingsModal(data, scope = '') {
@@ -44,6 +45,7 @@ class GenerationHandling {
     ) {
         let self = this;
         let aiSuiteGenerateImageButton = modal.querySelector('.panel-body button#aiSuiteGenerateImageBtn');
+        LibrarySelection.initialize(modal, ['.panel-body button#aiSuiteGenerateImageBtn']);
 
         aiSuiteGenerateImageButton.addEventListener('click', async function (ev) {
             if (aiSuiteGenerateImageButton.dataset.aiWizardOpening === '1') {

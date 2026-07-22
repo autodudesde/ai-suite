@@ -3,6 +3,7 @@ import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import Notification from "@typo3/backend/notification.js";
 import General from "@autodudes/ai-suite/helper/general.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class Creation {
     constructor() {
@@ -11,6 +12,10 @@ class Creation {
         PromptTemplate.loadPromptTemplates('plainPrompt');
         Generation.languageSelectionEventListener();
         this.addGlobalInstructionEventListener().then();
+        LibrarySelection.initialize(
+            document.querySelector('div[data-module-id="aiSuite"] form.with-spinner'),
+            ['button[type="submit"]']
+        );
     }
 
     addFormSubmitEventListener(promptInputName) {

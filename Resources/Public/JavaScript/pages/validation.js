@@ -4,6 +4,7 @@ import Generation from "@autodudes/ai-suite/helper/generation.js";
 import Sortable from "@autodudes/ai-suite/helper/sortable.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
+import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 
 class Validation {
     constructor() {
@@ -16,6 +17,10 @@ class Validation {
         Generation.languageSelectionEventListener();
         this.addGlobalInstructionEventListener().then();
         GlobalInstructions.initializeAllTooltips();
+        LibrarySelection.initialize(
+            document.querySelector('div[data-module-id="aiSuite"] form.with-spinner'),
+            ['button[type="submit"]']
+        );
     }
 
     addEventListenerGeneratePageStructure() {

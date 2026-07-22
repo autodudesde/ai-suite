@@ -32,9 +32,6 @@ class ViewFactoryService implements SingletonInterface
     ) {}
 
     /**
-     * Render the standard AI Suite AJAX template — adds inline styles and dispatches
-     * BeforeAiSuiteAjaxTemplateRenderEvent.
-     *
      * @param array<string, mixed> $params
      */
     public function renderTemplate(
@@ -60,8 +57,6 @@ class ViewFactoryService implements SingletonInterface
     }
 
     /**
-     * Render a Fluid template in a TYPO3-version-agnostic way.
-     *
      * On TYPO3 v13/v14 ViewFactoryInterface is used; on v12 it falls back to StandaloneView.
      *
      * @param list<string>         $templateRootPaths

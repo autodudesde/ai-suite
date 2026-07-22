@@ -14,11 +14,10 @@ export default class AiEasyLanguagePluginUi extends Plugin {
 
     async init() {
         const editor = this.editor;
-        if(TYPO3.settings.aiSuite) {
-            this.languageCode = TYPO3.settings.aiSuite.rteLanguageCode;
-        } else {
-            this.languageCode = 'en';
-        }
+        // Prefer the per-editor configuration (inline-safe, travels with this editor instance);
+        // fall back to the legacy page-global setting only if it is not present.
+        const aiSuiteConfig = editor.config.get('aiSuite') || (TYPO3.settings && TYPO3.settings.aiSuite) || {};
+        this.languageCode = aiSuiteConfig.rteLanguageCode || 'en';
         this.selectedContent = '';
         const prefillContent = await this._fetchRteContent();
         this.library = prefillContent['library'];

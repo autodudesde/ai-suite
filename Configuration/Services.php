@@ -13,19 +13,26 @@ declare(strict_types=1);
  */
 
 use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
+use AutoDudes\AiSuite\Controller\Ajax\CreditsAjaxController;
 use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\Decorator\Page\LocalizationController;
 use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\EventListener\LoadCreditsToolbarListener;
+use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
 use AutoDudes\AiSuite\Providers\PagesContextMenuProvider;
 use AutoDudes\AiSuite\Service\MetadataService;
+use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
+use B13\Container\Service\RecordLocalizeSummaryModifier;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Filesystem\Filesystem;
+use TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent;
+use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -68,7 +75,8 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             if (false === $disableTranslationFunctionality) {
                 if ($container->hasDefinition(DatabaseRecordList::class)) {
                     $container->getDefinition(DatabaseRecordList::class)
-                        ->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class);
+                        ->setDecoratedService(TYPO3\CMS\Backend\RecordList\DatabaseRecordList::class)
+                    ;
                 }
                 if ($container->hasDefinition(LocalizationController::class)) {
                     $container->getDefinition(LocalizationController::class)
@@ -88,11 +96,17 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(TranslationHook::class)
         ->public()
     ;
+    $services->set(AutoTranslationHook::class)
+        ->public()
+    ;
 
     $services->set(MetadataService::class)
         ->public()
     ;
     $services->set(TranslationService::class)
+        ->public()
+    ;
+    $services->set(MultiLanguageTranslationService::class)
         ->public()
     ;
     $services->set(SendRequestService::class)
@@ -107,4 +121,20 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(CliOverviewAjaxController::class)
         ->public()
     ;
+    $services->set(CreditsAjaxController::class)
+        ->public()
+    ;
+
+    $services->set(LoadCreditsToolbarListener::class)
+        ->tag('event.listener', [
+            'identifier' => 'ai-suite/credits-toolbar',
+            'event' => AfterBackendPageRenderEvent::class,
+        ])
+    ;
+
+    if (class_exists(RecordLocalizeSummaryModifier::class)) {
+        $services->set(RecordLocalizeSummaryModifier::class)
+            ->public()
+        ;
+    }
 };

@@ -120,6 +120,11 @@
                 <target>Ungültige Serverantwort oder Netzwerkfehler</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.error.noGenerationLibrarySelected">
+                <source>Please select a generation AI before sending the request. If no AI is selectable, no library is available for your account.</source>
+                <target>Bitte wähle eine Generierungs-KI aus, bevor du die Anfrage abschickst. Ist keine KI auswählbar, steht deinem Account aktuell keine Bibliothek zur Verfügung.</target>
+            </trans-unit>
+
             <trans-unit id="aiSuite.error.server.aiSuiteError">
                 <source>AI Suite Server error: %s</source>
                 <target>AI Suite Server Fehler: %s</target>
@@ -186,6 +191,16 @@
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
                 <target>Der abgerufene Seiteninhalt scheint ungültig zu sein oder ist eine Fehlerseite (zu kurz oder kein HTML-Body). Die Seite wird im Frontend möglicherweise nicht korrekt ausgegeben. Bitte prüfen Sie die Frontend-Ausgabe dieser Seite.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.filelist.invalidFolder.title">
+                <source>Folder could not be opened</source>
+                <target>Ordner konnte nicht geöffnet werden</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.filelist.invalidFolder.message">
+                <source>The previously selected folder could not be opened. Please choose a folder in the file list again.</source>
+                <target>Der zuvor gewählte Ordner konnte nicht geöffnet werden. Bitte wähle in der Dateiliste erneut einen Ordner aus.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.metadata.noSuggestionsGenerated">
@@ -830,6 +845,46 @@
                 <target>Die Übersetzung ist bei einem oder mehreren Elementen fehlgeschlagen.</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.autoTranslation.direct.title">
+                <source>Automatic translation</source>
+                <target>Automatische Übersetzung</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.message">
+                <source>The content element was automatically translated into the following languages: %s</source>
+                <target>Das Inhaltselement wurde automatisch in folgende Sprachen übersetzt: %s</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.startTitle">
+                <source>Automatic translation</source>
+                <target>Automatische Übersetzung</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.direct.startMessage">
+                <source>The content element is being translated into the available target languages…</source>
+                <target>Das Inhaltselement wird in die verfügbaren Zielsprachen übersetzt…</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingModelPermission.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingModelPermission.message">
+                <source>Automatic translation was skipped: you do not have permission to use the configured translation model (%s). Please contact your administrator.</source>
+                <target>Die automatische Übersetzung wurde übersprungen: Ihnen fehlt die Berechtigung für das konfigurierte Übersetzungsmodell (%s). Bitte wenden Sie sich an Ihren Administrator.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.bulkLimit.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.bulkLimit.message">
+                <source>Automatic translation was skipped because this save changed %s content elements, which exceeds the configured limit of %s. Please translate the elements individually or via the bulk translation tools.</source>
+                <target>Die automatische Übersetzung wurde übersprungen, weil dieser Speichervorgang %s Inhaltselemente geändert hat und damit das konfigurierte Limit von %s überschreitet. Bitte übersetzen Sie die Elemente einzeln oder über die Massen-Übersetzungsfunktionen.</target>
+            </trans-unit>
+
             <trans-unit id="aiSuite.translation.noTranslatableFields">
                 <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
                 <target>Keine übersetzbaren Felder gefunden. Die ausgewählten Inhaltselemente haben möglicherweise keinen Textinhalt oder verwenden unbekannte Inhaltstypen.</target>
@@ -1201,8 +1256,8 @@
                 <target>Task-Status aktualisieren</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.noTasks">
-                <source>No failed tasks — everything looks fine.</source>
-                <target>Keine fehlgeschlagenen Tasks – alles in Ordnung.</target>
+                <source>No failed tasks, everything looks fine.</source>
+                <target>Keine fehlgeschlagenen Tasks, alles in Ordnung.</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.column.uuid">
                 <source>UUID</source>
@@ -1251,6 +1306,10 @@
             <trans-unit id="aiSuite.cliOverview.scope.metadata">
                 <source>File Metadata Translation</source>
                 <target>Datei-Metadaten-Übersetzung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.form.label.description">
+                <source>Description</source>
+                <target>Beschreibung</target>
             </trans-unit>
         </body>
     </file>

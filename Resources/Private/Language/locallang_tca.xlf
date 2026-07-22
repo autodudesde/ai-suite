@@ -171,6 +171,14 @@
                 <source>Allow users to translate file metadata using AI translation services</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.permissions.enableAutoTranslation">
+                <source>Enable automatic translation of content elements on save</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.permissions.enableAutoTranslationDescription">
+                <source>Allow automatic translation of content elements into all site languages when they are saved in the source language</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.permissions.enableTranslationWholePage">
                 <source>Show buttons &quot;Translate whole page with AI&quot; within page and list module</source>
             </trans-unit>
@@ -354,6 +362,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableCliWorkflowExecutionDescription">
                 <source>Shows the &quot;Generate with AI and auto-fill in background&quot; button in the workflow manager. Background tasks created this way are processed asynchronously by the scheduler-driven ai-suite:process-tasks command. Requires EXT:scheduler.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableStatistics">
+                <source>Show usage statistics view</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableStatisticsDescription">
+                <source>Allow backend users of this group to open the AI Suite "Statistics" view with usage charts (requests per month, by model, and add-on charts such as ChEddi chat usage).</source>
             </trans-unit>
         </body>
     </file>

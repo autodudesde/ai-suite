@@ -61,16 +61,16 @@
                 <source>Do very special stuff like translating a XLF file.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.agencySection.linklabel">
-                <source>Open agency section</source>
+                <source>Open</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.agencySection.title">
-                <source>Agency features</source>
+                <source>Agencies</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.description">
-                <source>Monitor and manage your background tasks.</source>
+                <source>Monitor and manage your background tasks, e.g. the processing of metadata generation for pages and images or of translations.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.linklabel">
-                <source>Open TaskEngine</source>
+                <source>Open</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.title">
                 <source>TaskEngine</source>
@@ -133,7 +133,7 @@
                 <source>With the help of AI, you can have a page tree created. This is created with the pages you want.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.title">
-                <source>Create page tree</source>
+                <source>Page tree</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetreeWithContent.description">
                 <source>Advanced page tree creation: Workflow to create a page tree with page metadata and content inside the new pages.</source>
@@ -169,10 +169,10 @@
                 <source>File Management</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.description">
-                <source>Configure global settings for AI Suite.</source>
+                <source>Configure global settings for AI Suite, e.g. AI Suite API Key, GDPR mode or directory protection.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.title">
-                <source>Global Settings</source>
+                <source>Settings</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.context">
                 <source>Context</source>
@@ -190,7 +190,7 @@
                 <source>Global Instructions</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.linklabel">
-                <source>Manage global instructions</source>
+                <source>Manage</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
                 <source>Metatdata</source>
@@ -202,7 +202,7 @@
                 <source>Storage page</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.title">
-                <source>Manage your global instructions</source>
+                <source>Global instructions</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.useForSubtree">
                 <source>Use for subtree</source>
@@ -235,7 +235,7 @@
                 <source>Language</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.linklabel">
-                <source>Manage custom prompt templates</source>
+                <source>Manage</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.name">
                 <source>Name</source>
@@ -268,7 +268,7 @@
                 <source>Page tree generation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.title">
-                <source>Manage your custom prompt templates</source>
+                <source>Prompt templates</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowFileReferences.description">
                 <source>Edit or update the meta properties of multiple file relations on a page and subpages at once.</source>
@@ -307,10 +307,10 @@
                 <source>WorkflowManager for page translation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowSection.description">
-                <source>Handle stuff via WorkflowManager at once.</source>
+                <source>Run tasks instantly via the WorkflowManager, e.g. metadata generation for pages and/or images as well as translations.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowSection.linklabel">
-                <source>Open WorkflowManager</source>
+                <source>Open</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowSection.title">
                 <source>WorkflowManager</source>
@@ -842,9 +842,6 @@
             <trans-unit id="aiSuite.module.feedbackTitle">
                 <source>What is missing?</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.freeCredits">
-                <source>Free Credits</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions">
                 <source>Create global instructions</source>
             </trans-unit>
@@ -902,8 +899,11 @@
             <trans-unit id="aiSuite.module.pageStructure.submit">
                 <source>Generate page structure</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.credits">
+                <source>Credits</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.paidCredits">
-                <source>Paid Credits</source>
+                <source>Pack</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.prepareFiles.showOnlyUsed">
                 <source>Show only in content included files</source>
@@ -1071,7 +1071,7 @@
                 <source>Create content</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.linklabel">
-                <source>Create page tree</source>
+                <source>Create</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.actions">
                 <source>Actions</source>
@@ -1288,6 +1288,42 @@
             <trans-unit id="aiSuite.module.actionmenu.globalSettings">
                 <source>Global Settings</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.statistics">
+                <source>Statistics</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.header">
+                <source>Usage Statistics</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.intro">
+                <source>Your AI Suite usage for the selected month.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.month.label">
+                <source>Month</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requests">
+                <source>Requests</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsMonthly">
+                <source>Requests (last 3 months)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsDaily">
+                <source>Requests per day</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsByModel">
+                <source>Requests by model</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noData">
+                <source>No usage data available yet.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noAccess.title">
+                <source>No access</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noAccess.message">
+                <source>You are not allowed to view the AI Suite statistics.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.fetchError.title">
+                <source>Could not load statistics</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.settings.header">
                 <source>Global Settings</source>
             </trans-unit>
@@ -1304,7 +1340,7 @@
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.linklabel">
-                <source>Open Settings</source>
+                <source>Open</source>
             </trans-unit>
 
             <!-- Settings categories -->

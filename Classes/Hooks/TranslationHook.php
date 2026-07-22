@@ -193,9 +193,6 @@ class TranslationHook
     }
 
     /**
-     * Collects page properties and all localized content element fields of a
-     * whole-page translation, so they can be sent to the AI in one request.
-     *
      * @return array<string, mixed>
      */
     protected function collectAllTranslatableContent(int $pageId, int $destLangId, DataHandler $dataHandler): array
@@ -229,11 +226,6 @@ class TranslationHook
         return $allTranslateFields;
     }
 
-    /**
-     * Resolves the uid of the translated page record. When the page was localized
-     * in the current DataHandler run it is read from the copy mapping, otherwise
-     * an already existing translation is looked up.
-     */
     protected function resolveTargetPageUid(DataHandler $dataHandler, int $sourcePageId, int $destLangId): int
     {
         $mappedUid = (int) ($dataHandler->copyMappingArray_merged['pages'][$sourcePageId] ?? 0);

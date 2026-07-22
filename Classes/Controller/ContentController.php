@@ -274,6 +274,18 @@ class ContentController extends AbstractBackendController
         $scope = count($defVals) > 0 ? 'contentElement' : 'newsRecord';
         $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', $scope, $content['pid']);
         $models = $this->contentService->checkRequestModels($requestFields, ['text' => $textAi, 'image' => $imageAi]);
+        $missingModels = array_keys(array_filter($models, static fn ($model): bool => '' === trim((string) $model)));
+        if ([] !== $missingModels) {
+            $this->logger->warning('No generation library selected', ['missingModels' => $missingModels]);
+            $this->view->addFlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noGenerationLibrarySelected'),
+                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.cannotSendRequest.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+            $this->view->assign('error', true);
+
+            return $this->view->renderResponse('Content/RequestContent');
+        }
         $answer = $this->requestService->sendDataRequest(
             'createContentElement',
             [
@@ -438,6 +450,13 @@ class ContentController extends AbstractBackendController
         $response = new Response();
         $parsedBody = (array) $request->getParsedBody();
         $pageUid = $parsedBody['pageId'] ?? 0;
+        $textModel = trim((string) ($parsedBody['textModel'] ?? ''));
+        if ('' === $textModel) {
+            return $this->logError(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noGenerationLibrarySelected'),
+                $response
+            );
+        }
         $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'editContent', (int) $pageUid);
         $answer = $this->requestService->sendDataRequest(
             'editContent',
@@ -451,7 +470,7 @@ class ContentController extends AbstractBackendController
             $parsedBody['prompt'] ?? '',
             $parsedBody['languageCode'] ?? 'en',
             [
-                'text' => $parsedBody['textModel'],
+                'text' => $textModel,
             ],
         );
         if ('Error' === $answer->getType()) {

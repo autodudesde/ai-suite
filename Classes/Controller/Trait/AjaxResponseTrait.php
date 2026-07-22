@@ -21,7 +21,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * @property CliCommandAvailabilityService $cliCommandAvailabilityService Optional dependency, only required when consuming controllers call resolveHandledByCli().
+ * @property CliCommandAvailabilityService $cliCommandAvailabilityService
  */
 trait AjaxResponseTrait
 {
@@ -99,15 +99,6 @@ trait AjaxResponseTrait
         }
     }
 
-    /**
-     * Defense-in-depth check for the optional CLI-trigger flag posted by the workflow UI.
-     * Silently downgrades to sync execution when the user lacks permission, the scheduler
-     * is missing or the required commands are not registered — ensures form-level tampering
-     * cannot bypass the gate the template enforces.
-     *
-     * Requires the consuming controller to inject CliCommandAvailabilityService as
-     * `$this->cliCommandAvailabilityService`.
-     */
     protected function resolveHandledByCli(bool $requested, string $workflowType): bool
     {
         if (!$requested) {
