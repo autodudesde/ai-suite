@@ -1,0 +1,24 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+    <div class="ai-suite-custom-prompt mb-3">
+        <button
+            class="btn btn-link p-0 collapsed ai-suite-custom-prompt-toggle"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#aiSuiteCustomPromptCollapse"
+            aria-expanded="false"
+            aria-controls="aiSuiteCustomPromptCollapse"
+        >
+            <core:icon identifier="actions-chevron-right" size="small" />
+            <span class="fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.useOwnPrompt"/>
+            </span>
+            <span class="badge badge-info ai-suite-custom-prompt-active d-none">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.ownPromptActive"/>
+            </span>
+        </button>
+        <div id="aiSuiteCustomPromptCollapse" class="collapse mt-2">
+            <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
+            <f:render partial="Libs/PromptField" arguments="{propertyName: 'metadataGenerationPrompt', value: '', globalInstructions: globalInstructions, labelKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.general.metadataPrompt'}" />
+        </div>
+    </div>
+</html>

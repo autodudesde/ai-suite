@@ -382,6 +382,7 @@ class MetadataService
                             'request_content' => $fileContent,
                             'global_instructions' => $globalInstructions,
                             'override_predefined_prompt' => $globalInstructionsOverride,
+                            'custom_prompt' => trim((string) ($extConf['metadataAutogeneratePrompt'] ?? '')),
                         ],
                         '',
                         $languageParts[0],

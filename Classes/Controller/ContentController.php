@@ -474,9 +474,7 @@ class ContentController extends AbstractBackendController
             ],
         );
         if ('Error' === $answer->getType()) {
-            $this->logError($answer->getResponseData()['message'], $response, 503);
-
-            return $response;
+            return $this->logError($answer->getResponseData()['message'], $response, 503);
         }
         $response->getBody()->write(
             (string) json_encode(

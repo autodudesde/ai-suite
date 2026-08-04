@@ -20,7 +20,7 @@ final class ModelTypeEnumeration
     public const TEXT = 'CHATGPT,Vision';
     public const IMAGE = 'GPTImage,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
-    public const CHAT = 'ChatGptMini,IonosGptOss120b,IonosMistralSmall24b,IonosQwen35,ClaudeHaiku45';
+    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45';
 
     // model - api mapping
     public const CHATGPT = 'openAiApiKey';
@@ -28,7 +28,7 @@ final class ModelTypeEnumeration
     public const VISION = 'openAiApiKey';
     public const GPTIMAGE = 'openAiApiKey';
     public const MIDJOURNEY = 'midjourneyApiKey,midjourneyId';
-    public const FLUX = 'fluxApiKey,fluxBaseUrl';
+    public const FLUX = 'aiModelHubApiKey';
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';
     public const DEEPL = 'deeplApiKey,deeplApiMode';
     public const DEEPLGLOSSARYMANAGER = 'deeplApiKey,deeplApiMode';
@@ -37,9 +37,7 @@ final class ModelTypeEnumeration
     public const MITTWALDMINISTRAL14B = 'mittwaldAiModelHubApiKey';
     public const MITTWALDMINISTRAL14BVISION = 'mittwaldAiModelHubApiKey';
 
-    public const CHATGPTMINI = '';
-    public const IONOSGPTOSS120B = '';
-    public const IONOSMISTRALSMALL24B = '';
+    public const OPENAILUNA = '';
     public const IONOSQWEN35 = '';
     public const CLAUDEHAIKU45 = '';
 }

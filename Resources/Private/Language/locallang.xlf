@@ -134,11 +134,17 @@
                 <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.error.localization.recordNotFound">
+                <source>The record to be localized could not be found (table "%s", uid %s)</source>
+            </trans-unit>
             <trans-unit id="aiSuite.error.news.missingDetailPlugin">
                 <source>Metadata could not be generated: no news detail plugin page is available to render this news article. Please create or select a page that contains a news detail plugin.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.site.notFound">
                 <source>No site found for language id %s and page uid %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.site.notFoundForPage">
+                <source>No site configuration found for page uid %s. Please check the site configuration of this page tree.</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.error_no_credits_table">

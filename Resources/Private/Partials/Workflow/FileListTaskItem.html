@@ -1,0 +1,85 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<div class="list-group-item nested" data-folder-identifier="{groupIdentifier}">
+    <div class="d-flex w-100">
+        <div class="preview-image">
+            <label for="file-selection[{metadata.uid}]">
+                <f:image src="{fileUid}" width="100px"  />
+            </label>
+        </div>
+        <div class="file-meta-content d-flex flex-column w-100">
+            <f:variable name="taskStatus">{aiSuite:inArray(needle: metadata.uid, haystack: alreadyPendingFiles)}</f:variable>
+            <div class="file-meta-content-info badge badge-info"
+                 data-table="sys_file_metadata"
+                 data-uid="{metadata.uid}"
+            >
+                <core:icon identifier="actions-document-info" size="small" /> <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.status.info"/>
+            </div>
+            <label class="d-flex gap-2 fw-bold mb-3" for="file-selection[{metadata.uid}]">
+                <f:if condition="{taskStatus} != ''">
+                    <f:then>
+                        <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                    </f:then>
+                    <f:else if="{metadata.size} > {maxAllowedFileSize}">
+                        <span class="badge badge-warning">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.imageSizeTooLargeBadge" />
+                        </span>
+                    </f:else>
+                    <f:else>
+                        <input
+                            type="checkbox"
+                            name="file-selection[{metadata.uid}]"
+                            id="file-selection[{metadata.uid}]"
+                            value="{metadata.uid}"
+                        >
+                    </f:else>
+                </f:if>
+                <f:if condition="{metadata.mode} == 'NEW'">
+                    <span class="badge badge-success badge-new"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.badge.new" /></span>
+                </f:if>
+                <span>{metadata.name}</span>
+                <f:if condition="{metadata.size} > {maxAllowedFileSize}">
+                    <div class="size-info">
+                        <core:icon identifier="actions-exclamation-triangle" size="small" />
+                        <span class="error-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.imageSizeTooLarge" /></span>
+                    </div>
+                </f:if>
+            </label>
+            <f:if condition="{taskStatus} === ''">
+                <div class="filelist-input title {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'title\'', then: 'd-block', else: 'd-none')}">
+                    <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.title"/></label>
+                    <input
+                        class="w-100 file-metadata-field"
+                        name="files[{metadata.uid}][title]"
+                        value="{metadata.title}"
+                        data-sys-file-uid="{metadata.fileUid}"
+                        data-mode="{metadata.mode}"
+                    />
+                </div>
+                <div class="filelist-input alternative {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'alternative\'', then: 'd-block', else: 'd-none')}">
+                    <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.alternativeText"/></label>
+                    <input class="w-100 file-metadata-field"
+                           name="files[{metadata.uid}][alternative]"
+                           value="{metadata.alternative}"
+                           data-sys-file-uid="{metadata.fileUid}"
+                           data-mode="{metadata.mode}"
+                    />
+                </div>
+                <div class="filelist-input description {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'description\'', then: 'd-block', else: 'd-none')}">
+                    <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.description"/></label>
+                    <textarea class="w-100 h-50 file-metadata-field"
+                              name="files[{metadata.uid}][description]"
+                              data-sys-file-uid="{metadata.fileUid}"
+                              data-mode="{metadata.mode}"
+                              rows="5"
+                    >{metadata.description}</textarea>
+                </div>
+            </f:if>
+        </div>
+    </div>
+</div>
+</html>

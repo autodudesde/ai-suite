@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
-use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Domain\Repository\ContentRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\MetadataService;
+use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
@@ -48,7 +49,8 @@ class MetadataController extends AbstractBackendController
         EventDispatcher $eventDispatcher,
         AiSuiteContext $aiSuiteContext,
         protected readonly MetadataService $metadataService,
-        protected readonly PagesRepository $pagesRepository,
+        protected readonly PromptTemplateScopeService $promptTemplateScopeService,
+        protected readonly ContentRepository $contentRepository,
         protected readonly SiteFinder $siteFinder,
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly ViewFactoryService $viewFactoryService,
@@ -119,7 +121,7 @@ class MetadataController extends AbstractBackendController
         if ('tx_news_domain_model_news' === $parsedBody['table']) {
             $rootPageId = $this->siteFinder->getSiteByPageId((int) $parsedBody['pageId'])->getRootPageId();
             $searchableWebMounts = $this->aiSuiteContext->backendUserService->getSearchableWebmounts($rootPageId, 10);
-            $params['availableNewsDetailPlugins'] = $this->pagesRepository->getAvailableNewsDetailPlugins($searchableWebMounts, (int) $parsedBody['languageId']);
+            $params['availableNewsDetailPlugins'] = $this->contentRepository->getAvailableNewsDetailPlugins($searchableWebMounts, (int) $parsedBody['languageId']);
         }
         if ('sys_file_metadata' === $parsedBody['table']) {
             $params['sysLanguages'] = $this->aiSuiteContext->siteService->getAvailableLanguages();
@@ -137,6 +139,11 @@ class MetadataController extends AbstractBackendController
         $params['textGenerationLibraries'] = $this->aiSuiteContext->libraryService->prepareLibraries($textGenerationLibraries);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];
         $params['uuid'] = $this->uuidService->generateUuid();
+        $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates(
+            PromptTemplateScopeService::SCOPE_METADATA,
+            $this->promptTemplateScopeService->buildMetadataType((string) ($parsedBody['table'] ?? ''), (string) ($parsedBody['fieldName'] ?? '')),
+            (int) ($parsedBody['languageId'] ?? 0)
+        );
         $output = $this->viewFactoryService->renderTemplate(
             $request,
             'WizardSlideOne',
@@ -211,6 +218,7 @@ class MetadataController extends AbstractBackendController
                 'request_content' => $requestContent,
                 'global_instructions' => $globalInstructions,
                 'override_predefined_prompt' => $globalInstructionsOverride,
+                'custom_prompt' => trim((string) ($params['customPrompt'] ?? '')),
                 'filename' => $filename,
             ],
             '',

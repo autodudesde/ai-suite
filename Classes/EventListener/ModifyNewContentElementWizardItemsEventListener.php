@@ -6,6 +6,7 @@ namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
+use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
 use TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 
@@ -37,8 +38,8 @@ class ModifyNewContentElementWizardItemsEventListener
                 continue;
             }
             $cType = $wizardItem['defaultValues']['CType'];
-            if (in_array($currentTabKey, AfterTcaCompilationEventListener::EXCLUDE_TAB_LIST)
-                || in_array($cType, AfterTcaCompilationEventListener::EXCLUDE_CTYPE_LIST)) {
+            if (in_array($currentTabKey, PromptTemplateTypeItemsProcFunc::EXCLUDE_TAB_LIST)
+                || in_array($cType, PromptTemplateTypeItemsProcFunc::EXCLUDE_CTYPE_LIST)) {
                 continue;
             }
             if (in_array($cType, $addedAiSuiteWizardItems)) {

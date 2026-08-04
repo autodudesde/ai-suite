@@ -122,6 +122,7 @@ return [
                     ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeContentElement', 'value' => 'contentElement'],
                     ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord', 'value' => 'newsRecord'],
                     ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeEditContent', 'value' => 'editContent'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scopeMetadata', 'value' => 'metadata'],
                 ],
                 'size' => 1,
                 'eval' => 'trim',
@@ -130,11 +131,12 @@ return [
         'type' => [
             'exclude' => true,
             'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope',
-            'displayCond' => 'FIELD:scope:=:contentElement',
+            'displayCond' => 'FIELD:scope:IN:contentElement,metadata',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
                 'items' => [],
+                'itemsProcFunc' => AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc::class.'->getTypeItems',
                 'size' => 3,
                 'eval' => 'trim',
                 'default' => '',

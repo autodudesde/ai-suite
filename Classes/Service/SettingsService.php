@@ -27,7 +27,7 @@ class SettingsService implements SingletonInterface
         'googleTranslateApiKey',
         'deeplApiKey',
         'midjourneyApiKey',
-        'fluxApiKey',
+        'aiModelHubApiKey',
         'basicAuth.pass',
     ];
 

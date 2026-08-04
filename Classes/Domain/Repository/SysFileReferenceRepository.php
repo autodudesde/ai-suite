@@ -14,24 +14,64 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SysFileReferenceRepository extends AbstractRepository
 {
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'sys_file_reference',
         string $sortBy = 'title'
     ) {
         parent::__construct(
             $connectionPool,
+            $workspaceContextService,
             $table,
             $sortBy
         );
+    }
+
+    /**
+     * @param list<int> $pagesUids
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function fetchSysFileReferences(array $pagesUids, string $column, int $sysLanguageUid, bool $showOnlyEmpty): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
+        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.'.$column.' AS columnValue', 'sf.name AS fileName', 'sf.mime_type AS fileMimeType', 'sf.size AS size')
+            ->from('sys_file_reference', 'sfr')
+            ->leftJoin(
+                'sfr',
+                'sys_file',
+                'sf',
+                $queryBuilder->expr()->eq('sf.uid', $queryBuilder->quoteIdentifier('sfr.uid_local'))
+            )
+            ->where(
+                $queryBuilder->expr()->eq('sf.type', 2),
+                $queryBuilder->expr()->in('sfr.pid', $pagesUids),
+                $queryBuilder->expr()->eq('sfr.sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid)),
+                $queryBuilder->expr()->eq('sf.missing', 0),
+            )
+        ;
+        if (true === $showOnlyEmpty) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->isNull('sfr.'.$column),
+                    $queryBuilder->expr()->eq('sfr.'.$column, $queryBuilder->createNamedParameter('', Connection::PARAM_STR))
+                )
+            );
+        }
+
+        return $queryBuilder
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
@@ -71,41 +111,6 @@ class SysFileReferenceRepository extends AbstractRepository
 
         return $queryBuilder->orderBy('r.tablenames')->addOrderBy('r.sorting_foreign')
             ->setMaxResults($limit)
-            ->executeQuery()->fetchAllAssociative()
-        ;
-    }
-
-    /**
-     * @param list<int> $pageIds
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function findImagesWithMetadata(array $pageIds, int $workspaceId): array
-    {
-        if ([] === $pageIds) {
-            return [];
-        }
-
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $queryBuilder->getRestrictions()->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId))
-        ;
-
-        $metadataJoinCondition = (string) $queryBuilder->expr()->and(
-            $queryBuilder->expr()->eq('m.file', $queryBuilder->quoteIdentifier('r.uid_local')),
-            $queryBuilder->expr()->eq('m.sys_language_uid', 0),
-        );
-
-        return $queryBuilder
-            ->select('r.uid_local', 'r.pid', 'm.title', 'm.alternative', 'm.description', 'f.name')
-            ->from($this->table, 'r')
-            ->join('r', 'sys_file', 'f', $queryBuilder->expr()->eq('f.uid', $queryBuilder->quoteIdentifier('r.uid_local')))
-            ->leftJoin('r', 'sys_file_metadata', 'm', $metadataJoinCondition)
-            ->where(
-                $queryBuilder->expr()->in('r.pid', $queryBuilder->createNamedParameter($pageIds, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->like('f.mime_type', $queryBuilder->createNamedParameter('image/%')),
-            )
             ->executeQuery()->fetchAllAssociative()
         ;
     }

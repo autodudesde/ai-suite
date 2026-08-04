@@ -32,17 +32,20 @@ class SiteService implements SingletonInterface
     protected TranslationConfigurationProvider $translationConfigurationProvider;
     protected BackendUserService $backendUserService;
     protected LoggerInterface $logger;
+    protected LocalizationService $localizationService;
 
     public function __construct(
         ?SiteFinder $siteFinder = null,
         ?TranslationConfigurationProvider $translationConfigurationProvider = null,
         ?BackendUserService $backendUserService = null,
-        ?LoggerInterface $logger = null
+        ?LoggerInterface $logger = null,
+        ?LocalizationService $localizationService = null
     ) {
         $this->siteFinder = $siteFinder ?? GeneralUtility::makeInstance(SiteFinder::class);
         $this->translationConfigurationProvider = $translationConfigurationProvider ?? GeneralUtility::makeInstance(TranslationConfigurationProvider::class);
         $this->backendUserService = $backendUserService ?? GeneralUtility::makeInstance(BackendUserService::class);
         $this->logger = $logger ?? GeneralUtility::makeInstance(LogManager::class)->getLogger(self::class);
+        $this->localizationService = $localizationService ?? GeneralUtility::makeInstance(LocalizationService::class);
     }
 
     /**
@@ -112,38 +115,6 @@ class SiteService implements SingletonInterface
     }
 
     /**
-     * @param list<string> $isocodes
-     *
-     * @return list<int>
-     */
-    public function getLanguageUidsByIsocodes(array $isocodes, int $pageId): array
-    {
-        if ([] === $isocodes) {
-            return [];
-        }
-
-        try {
-            $site = $this->siteFinder->getSiteByPageId($pageId);
-        } catch (SiteNotFoundException $e) {
-            $this->logger->notice('No site found while resolving language uids by isocodes', [
-                'pageId' => $pageId,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
-
-        $uids = [];
-        foreach ($site->getLanguages() as $language) {
-            if (in_array($language->getLocale()->getLanguageCode(), $isocodes, true)) {
-                $uids[] = $language->getLanguageId();
-            }
-        }
-
-        return $uids;
-    }
-
-    /**
      * @return list<int>
      */
     public function getNonDefaultLanguageUids(int $pageId): array
@@ -174,7 +145,7 @@ class SiteService implements SingletonInterface
      */
     public function getIsoCodeByLanguageIdIncludingDisabled(int $languageId, int $pageUid): string
     {
-        $site = $this->siteFinder->getSiteByPageId($pageUid);
+        $site = $this->findSiteByPageId($pageUid);
         if (-1 === $languageId) {
             $languageId = $site->getDefaultLanguage()->getLanguageId();
         }
@@ -184,7 +155,7 @@ class SiteService implements SingletonInterface
             }
         }
 
-        throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+        throw new SiteNotFoundException($this->localizationService->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
     }
 
     public function getSiteRootPageId(int $pageId): int
@@ -208,13 +179,14 @@ class SiteService implements SingletonInterface
      */
     public function getIsoCodeByLanguageId(int $languageId, int $pageUid): string
     {
+        $site = $this->findSiteByPageId($pageUid);
+
         try {
             $backendUser = $this->backendUserService->getBackendUser();
             if (null === $backendUser) {
                 throw new SiteNotFoundException('No backend user available');
             }
             $allSystemLanguages = $this->translationConfigurationProvider->getSystemLanguages($pageUid);
-            $site = $this->siteFinder->getSiteByPageId($pageUid);
             $updatedSystemLanguages = $this->addSiteLanguagesToConsolidatedList(
                 $allSystemLanguages,
                 $site->getAvailableLanguages($backendUser, true)
@@ -230,7 +202,7 @@ class SiteService implements SingletonInterface
                 }
             }
 
-            throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException($this->localizationService->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
         } catch (\Exception $e) {
             $this->logger->warning('Could not resolve ISO code by language id', [
                 'languageId' => $languageId,
@@ -239,7 +211,7 @@ class SiteService implements SingletonInterface
                 'error' => $e->getMessage(),
             ]);
 
-            throw new SiteNotFoundException(GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622);
+            throw new SiteNotFoundException($this->localizationService->translate('aiSuite.error.site.notFound', [$languageId, $pageUid]), 1521716622, $e);
         }
     }
 
@@ -277,14 +249,14 @@ class SiteService implements SingletonInterface
 
                 if ($languageData[0] === $currentLanguageData[0]) {
                     $sysLanguageToUse = $key;
-                    $notification = GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.notification.'.$fieldName.'.selectAvailableLanguageOfPageTree');
+                    $notification = $this->localizationService->translate('aiSuite.notification.'.$fieldName.'.selectAvailableLanguageOfPageTree');
 
                     break;
                 }
 
                 if (0 === (int) $languageData[1]) {
                     $sysLanguageToUse = $key;
-                    $notification = GeneralUtility::makeInstance(LocalizationService::class)->translate('aiSuite.notification.'.$fieldName.'.selectDefaultLanguageOfPageTree');
+                    $notification = $this->localizationService->translate('aiSuite.notification.'.$fieldName.'.selectDefaultLanguageOfPageTree');
                 }
             }
         }
@@ -313,6 +285,27 @@ class SiteService implements SingletonInterface
         }
 
         return $absoluteUri;
+    }
+
+    /**
+     * @throws SiteNotFoundException
+     */
+    protected function findSiteByPageId(int $pageUid): Site
+    {
+        try {
+            return $this->siteFinder->getSiteByPageId($pageUid);
+        } catch (SiteNotFoundException $e) {
+            $this->logger->warning('No site found for page uid', [
+                'pageUid' => $pageUid,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw new SiteNotFoundException(
+                $this->localizationService->translate('aiSuite.error.site.notFoundForPage', [$pageUid]),
+                1521716622,
+                $e
+            );
+        }
     }
 
     protected function applyLanguageMapping(Site $site, string $isoCode): string

@@ -18,6 +18,7 @@
             <trans-unit id="tx_aisuite.module.general.selectPromptTemplate" resname="tx_aisuite.module.general.selectPromptTemplate">
                 <source>Select prompt template</source>
             <target>Wählen Sie eine Eingabeaufforderungsvorlage aus</target></trans-unit>
+
         </body>
     </file>
 </xliff>

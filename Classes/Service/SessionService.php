@@ -18,6 +18,10 @@ use TYPO3\CMS\Core\Site\SiteFinder;
 
 class SessionService implements SingletonInterface
 {
+    public const ROUTE_FILELIST_METADATA = 'ai_suite_workflow_filelist_files_prepare';
+    public const ROUTE_FILELIST_TRANSLATION = 'ai_suite_workflow_filelist_files_translate_prepare';
+    public const RESET_FOLDER_SELECTION_PARAM = 'aiSuiteResetFolderSelection';
+
     private const SESSION_NAMESPACE = 'ai_suite';
 
     private const AI_SUITE_ROUTES = [
@@ -27,6 +31,7 @@ class SessionService implements SingletonInterface
         'ajax_aisuite_workflow_pages_translation_prepare' => 'ai_suite_workflow_pages_translation_prepare',
         'ajax_aisuite_workflow_filelist_files_translate_update_view' => 'ai_suite_workflow_filelist_files_translate_prepare',
         'ajax_aisuite_glossary_fetch_page_translation' => 'ai_suite_workflow_pages_translation_prepare',
+        'ajax_aisuite_glossary_fetch_file_translation' => 'ai_suite_workflow_filelist_files_translate_prepare',
         'ai_suite_workflow_pages_prepare' => 'ai_suite_workflow_pages_prepare',
         'ai_suite_workflow_filereferences_prepare' => 'ai_suite_workflow_filereferences_prepare',
         'ai_suite_workflow_filelist_files_prepare' => 'ai_suite_workflow_filelist_files_prepare',
@@ -118,6 +123,14 @@ class SessionService implements SingletonInterface
                 }
             }
         }
+        if ('1' === (string) ($queryParams[self::RESET_FOLDER_SELECTION_PARAM] ?? '')) {
+            foreach ([self::ROUTE_FILELIST_METADATA, self::ROUTE_FILELIST_TRANSLATION] as $route) {
+                unset(
+                    $sessionData[$route]['options']['directories'],
+                    $sessionData[$route]['options']['directoriesTouched'],
+                );
+            }
+        }
         if (array_key_exists('backgroundTaskFilter', $queryParams)) {
             $sessionData[self::AI_SUITE_BACKGROUND_TASK_FILTER] = $queryParams['backgroundTaskFilter'];
         }
@@ -131,6 +144,48 @@ class SessionService implements SingletonInterface
         $sessionData = $this->backendUserService->getBackendUser()?->getSessionData(self::SESSION_NAMESPACE) ?? [];
 
         return $sessionData[self::AI_SUITE_FILELIST_FOLDER_ID] ?? '';
+    }
+
+    /**
+     * The file tree only seeds the selection as long as the user has not touched the picker.
+     * "Picker never touched" and "user cleared the selection" both arrive without a
+     * "directories" key, so the distinction rides on the explicit marker.
+     *
+     * @return list<string>
+     */
+    public function getFilelistDirectories(string $route): array
+    {
+        $options = $this->getParametersForRoute($route)['options'] ?? [];
+
+        if ('1' === (string) ($options['directoriesTouched'] ?? '0')) {
+            return $this->normalizeIdentifierList(is_array($options['directories'] ?? null) ? $options['directories'] : []);
+        }
+
+        $seedFolder = $this->getFilelistFolder();
+
+        return null === $seedFolder ? [] : [$seedFolder->getCombinedIdentifier()];
+    }
+
+    public function getFilelistDepth(string $route): int
+    {
+        $options = $this->getParametersForRoute($route)['options'] ?? [];
+
+        return max(0, min(FolderSelectionService::MAX_DEPTH, (int) ($options['depth'] ?? 0)));
+    }
+
+    public function resetFilelistSelection(string $route): void
+    {
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser) {
+            return;
+        }
+
+        $sessionData = $backendUser->getSessionData(self::SESSION_NAMESPACE) ?? [];
+        unset(
+            $sessionData[$route]['options']['directories'],
+            $sessionData[$route]['options']['directoriesTouched'],
+        );
+        $backendUser->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
     }
 
     public function getFilelistFolder(): ?Folder
@@ -250,6 +305,28 @@ class SessionService implements SingletonInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param array<int|string, mixed> $identifiers
+     *
+     * @return list<string>
+     */
+    private function normalizeIdentifierList(array $identifiers): array
+    {
+        $normalized = [];
+        foreach ($identifiers as $identifier) {
+            if (!is_string($identifier) || '' === trim($identifier)) {
+                continue;
+            }
+            $folderIdentifier = $this->normalizeToFolderIdentifier(trim($identifier));
+            if (null === $folderIdentifier) {
+                continue;
+            }
+            $normalized[$folderIdentifier] = $folderIdentifier;
+        }
+
+        return array_values($normalized);
     }
 
     private function isValidPageId(int $pageId): bool

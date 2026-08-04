@@ -196,3 +196,19 @@
     width: 100%;
     height: auto;
 }
+
+.ai-suite-custom-prompt-toggle {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.ai-suite-custom-prompt-toggle .icon-actions-chevron-right {
+    transform: rotate(90deg);
+    transition: transform 0.15s ease;
+}
+
+.ai-suite-custom-prompt-toggle.collapsed .icon-actions-chevron-right {
+    transform: rotate(0deg);
+}

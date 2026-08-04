@@ -25,7 +25,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 trait AjaxResponseTrait
 {
-    protected function logError(string $errorMessage, Response $response, int $statusCode = 400): Response
+    protected function logError(string $errorMessage, Response &$response, int $statusCode = 400): Response
     {
         $this->logger->error($errorMessage);
         $response = $response->withStatus($statusCode);

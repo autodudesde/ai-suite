@@ -298,8 +298,8 @@
                 <target>Bearbeiten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope">
-                <source>ContentElements (leave empty for all elements)</source>
-                <target>ContentElements (für alle Elemente leer lassen)</target>
+                <source>ContentElements / metadata fields (leave empty for all)</source>
+                <target>ContentElements / Metadatenfelder (für alle leer lassen)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
                 <source>Custom prompt templates</source>
@@ -348,6 +348,10 @@
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeImageWizard">
                 <source>Image generation</source>
                 <target>Bildgenerierung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeMetadata">
+                <source>Metadata generation</source>
+                <target>Metadaten-Generierung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
                 <source>News</source>
@@ -588,6 +592,14 @@
                 <source>Input statement for the AI (prompt)</source>
                 <target>Eingabeanweisung für die KI (Prompt)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.general.metadataPrompt">
+                <source>Own prompt (optional, replaces the serverside predefined instruction)</source>
+                <target>Eigener Prompt (optional, ersetzt die serverseitig vordefinierte Anweisung)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.ownPromptActive">
+                <source>active</source>
+                <target>aktiv</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.general.promptTemplates">
                 <source>Prompt Templates</source>
                 <target>Prompt-Vorlagen</target>
@@ -595,6 +607,10 @@
             <trans-unit id="aiSuite.module.general.selectPromptTemplate">
                 <source>Select prompt template</source>
                 <target>Prompt-Vorlage auswählen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.useOwnPrompt">
+                <source>Use own prompt</source>
+                <target>Eigenen Prompt verwenden</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.globalInstructionStorageMessage">
@@ -670,6 +686,14 @@
             <trans-unit id="aiSuite.module.workflow.columns.sys_file_reference.title">
                 <source>Image title</source>
                 <target>Bildtitel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.tx_news_domain_model_news.alternative_title">
+                <source>News alternative title</source>
+                <target>News-Alternativtitel</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.tx_news_domain_model_news.description">
+                <source>News description</source>
+                <target>News-Beschreibung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.translation.scope.all">
                 <source>All (metadata, content)</source>
@@ -1149,6 +1173,54 @@
                 <source>Selected directory</source>
                 <target>Ausgewähltes Verzeichnis</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.selectedDirectories">
+                <source>Selected directories</source>
+                <target>Ausgewählte Verzeichnisse</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.addDirectory">
+                <source>Add directory</source>
+                <target>Verzeichnis hinzufügen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.removeDirectory">
+                <source>Remove directory</source>
+                <target>Verzeichnis entfernen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.selectDirectories">
+                <source>Select directories</source>
+                <target>Verzeichnisse auswählen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.noDirectorySelected">
+                <source>No directory selected</source>
+                <target>Kein Verzeichnis ausgewählt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderDepth">
+                <source>Sub-level depth</source>
+                <target>Unterebenen-Tiefe</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderDepth.selectedOnly">
+                <source>Only the selected directories</source>
+                <target>Nur die ausgewählten Verzeichnisse</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.empty">
+                <source>No matching files in this directory.</source>
+                <target>Keine passenden Dateien in diesem Verzeichnis.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.toggle">
+                <source>Show or hide the files of this directory</source>
+                <target>Dateien dieses Verzeichnisses ein- oder ausblenden</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.fileCount">
+                <source>%s file(s)</source>
+                <target>%s Datei(en)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.limitReached">
+                <source>Too many folders or files selected, the result list was truncated.</source>
+                <target>Zu viele Ordner oder Dateien ausgewählt, die Ergebnisliste wurde gekürzt.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.skippedDirectories">
+                <source>Some directories were skipped (missing permissions or not found).</source>
+                <target>Einige Verzeichnisse wurden übersprungen (fehlende Berechtigungen oder nicht gefunden).</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.generatedPreselectionImageOptions">
                 <source>Generated pre-selection image options</source>
                 <target>Generierte Vorauswahlbildoptionen</target>
@@ -1164,6 +1236,10 @@
             <trans-unit id="aiSuite.module.openDocumentation">
                 <source>Open documentation</source>
                 <target>Dokumentation öffnen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.quickStart">
+                <source>Quick Start</source>
+                <target>Schnellstart</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
@@ -1621,26 +1697,6 @@
                 <source>No page selected</source>
                 <target>Keine Seite ausgewählt</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.critical">
-                <source>Major Service Outage</source>
-                <target>Größerer Dienstausfall</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.detailedInfo">
-                <source>For a detailed status overview visit the </source>
-                <target>Eine detaillierte Statusübersicht findest du im</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.linkTitle">
-                <source>OpenAI status page</source>
-                <target>OpenAI-Statusseite</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.ok">
-                <source>All Systems Operational</source>
-                <target>Alle Systeme betriebsbereit</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.warning">
-                <source>Partial System Outage</source>
-                <target>Teilweiser Systemausfall</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.defaultPrompt">
                 <source>Create me a page structure for [...].</source>
                 <target>Erstelle mir eine Seitenstruktur für […].</target>
@@ -1684,10 +1740,6 @@
             <trans-unit id="aiSuite.module.sourceXliffFileEmpty.title">
                 <source>XLIFF file is empty</source>
                 <target>Die XLIFF-Datei ist leer</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title">
-                <source>Could not fetch the current status of the OpenAI API.</source>
-                <target>Der aktuelle Status der OpenAI-API konnte nicht abgerufen werden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.warningFetchingTaskStatus.title">
                 <source>Could not fetch the current status of the background tasks.</source>
@@ -1825,13 +1877,9 @@
                 <source>Midjourney ID</source>
                 <target>Midjourney-ID</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.fluxApiKey">
-                <source>Flux API Key</source>
-                <target>Flux API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.fluxBaseUrl">
-                <source>Flux Base URL</source>
-                <target>Flux Basis-URL</target>
+            <trans-unit id="aiSuite.module.settings.field.aiModelHubApiKey">
+                <source>AI Model Hub API Key</source>
+                <target>AI Model Hub API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
                 <source>Enable Basic Authentication</source>
