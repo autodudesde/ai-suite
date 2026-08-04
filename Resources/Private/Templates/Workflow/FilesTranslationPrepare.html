@@ -21,22 +21,8 @@
                     <p>
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.filelistFilesTranslation.description"/>
                     </p>
-                    <p>
-                        <strong>
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.selectedDirectory"/>:
-                            <f:if condition="{directory} == ''">
-                                <f:then>
-                                    -
-                                </f:then>
-                                <f:else>
-                                    {directory}
-                                </f:else>
-                            </f:if>
-                        </strong>
-                    </p>
-
                     <form id="ai-suite-filelist-files-translation" name="filesTranslationPrepareExecute" enctype="multipart/form-data">
-            <input type="hidden" name="options[directory]" id="directory" value="{directory}" />
+            <f:render partial="Libs/FolderSelect" arguments="{_all}"/>
             <input type="hidden" name="options[parentUuid]" id="parentUuid" value="{parentUuid}" />
             <div class="row">
                 <div class="col-md-4">

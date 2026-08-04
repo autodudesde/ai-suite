@@ -6,7 +6,9 @@ namespace AutoDudes\AiSuite\Localization\Handler;
 
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\SiteService;
+use Psr\Log\LoggerInterface;
 
 class DynamicAiLocalizationHandler extends AbstractAiLocalizationHandler
 {
@@ -19,12 +21,14 @@ class DynamicAiLocalizationHandler extends AbstractAiLocalizationHandler
         SiteService $siteService,
         BackendUserService $backendUserService,
         PagesRepository $pagesRepository,
+        LocalizationService $localizationService,
+        LoggerInterface $logger,
         string $identifier,
         string $label,
         string $description,
         string $iconIdentifier = 'tx-aisuite-extension',
     ) {
-        parent::__construct($siteService, $backendUserService, $pagesRepository);
+        parent::__construct($siteService, $backendUserService, $pagesRepository, $localizationService, $logger);
         $this->identifier = $identifier;
         $this->label = $label;
         $this->description = $description;

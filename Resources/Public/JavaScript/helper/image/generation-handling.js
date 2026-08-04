@@ -4,6 +4,7 @@ import Modal from "@typo3/backend/modal.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 
 class GenerationHandling {
     showGeneralImageSettingsModal(data, scope = '') {
@@ -16,11 +17,7 @@ class GenerationHandling {
                 severity: Severity.notice,
                 ajaxCallback: (currentModal) => {
                     this.addAdditionalImageGenerationSettingsHandling(currentModal);
-                    if (General.isUsable(currentModal.querySelector('#wizardSlideOne select[name="promptTemplates"]'))) {
-                        currentModal.querySelector('#wizardSlideOne select[name="promptTemplates"]').addEventListener('change', function (event) {
-                            currentModal.querySelector('#wizardSlideOne textarea#imageGenerationPrompt').value = event.target.value;
-                        });
-                    }
+                    PromptTemplate.bindInContainer(currentModal.querySelector('#wizardSlideOne'), 'textarea#imageGenerationPrompt');
                     if(General.isUsable(data.imagePrompt)) {
                         let cleanedPrompt = data.imagePrompt.replace(/\s--[a-zA-Z]+\s[^\s-]+/g, '').trim();
                         currentModal.querySelector('.panel-body textarea#imageGenerationPrompt').value = cleanedPrompt;

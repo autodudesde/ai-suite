@@ -304,6 +304,22 @@ class BackendUserService implements SingletonInterface
         return $this->canEditFile($fileUid, 'sys_file_reference', 'read');
     }
 
+    public function canReadFolder(Folder $folder): bool
+    {
+        try {
+            return $folder->checkActionPermission('read')
+                && $folder->getStorage()->isWithinFileMountBoundaries($folder);
+        } catch (\Exception $e) {
+            $this->logger->warning('Folder read permission check failed', [
+                'folder' => $folder->getCombinedIdentifier(),
+                'exception' => $e::class,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
     public function isPathWithinStorageMountBoundaries(string $currentPath, string $parentPath): bool
     {
         $currentFolder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($currentPath);

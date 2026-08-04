@@ -14,8 +14,8 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -26,6 +26,7 @@ class AbstractRepository
 {
     public function __construct(
         protected readonly ConnectionPool $connectionPool,
+        protected readonly WorkspaceContextService $workspaceContextService,
         protected readonly string $table = '',
         protected readonly string $sortBy = '',
     ) {}
@@ -56,17 +57,8 @@ class AbstractRepository
 
     protected function addWorkspaceRestriction(QueryBuilder $queryBuilder): void
     {
-        $workspaceId = 0;
-
-        try {
-            $workspaceId = (int) GeneralUtility::makeInstance(Context::class)
-                ->getPropertyFromAspect('workspace', 'id', 0)
-            ;
-        } catch (\Throwable) {
-            // No workspace aspect set
-        }
         $queryBuilder->getRestrictions()->add(
-            GeneralUtility::makeInstance(WorkspaceRestriction::class, $workspaceId),
+            GeneralUtility::makeInstance(WorkspaceRestriction::class, $this->workspaceContextService->getWorkspaceId()),
         );
     }
 

@@ -76,7 +76,7 @@ class AiSuiteLinkButton extends AbstractButton
         $attributesString = GeneralUtility::implodeAttributes($attributes, true);
 
         return '<a '.$attributesString.'>'
-            .$this->getIcon()->render().htmlspecialchars($labelText)
+            .($this->getIcon()?->render() ?? '').htmlspecialchars($labelText)
             .'</a>';
     }
 }

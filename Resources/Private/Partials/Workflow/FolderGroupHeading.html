@@ -1,0 +1,39 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<div class="folder-group-heading d-flex align-items-center gap-2 mt-3 mb-2">
+    <button type="button"
+            class="folder-group-collapse btn btn-link btn-sm p-0"
+            aria-expanded="true"
+            title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderGroup.toggle')}"
+    >
+        <span class="folder-group-collapse-open">
+            <core:icon identifier="actions-chevron-down" size="small" />
+        </span>
+        <span class="folder-group-collapse-closed d-none">
+            <core:icon identifier="actions-chevron-right" size="small" />
+        </span>
+    </button>
+    <f:if condition="{group.count} > 0">
+        <f:then>
+            <label class="d-flex gap-2 fw-bold align-items-center mb-0">
+                <input type="checkbox" class="folder-group-toggle" value="1" />
+                <core:icon identifier="apps-filetree-folder-default" size="small" />
+                <span class="folder-group-path">{group.path}</span>
+            </label>
+        </f:then>
+        <f:else>
+            <span class="d-flex gap-2 fw-bold align-items-center">
+                <core:icon identifier="apps-filetree-folder-default" size="small" />
+                <span class="folder-group-path">{group.path}</span>
+            </span>
+        </f:else>
+    </f:if>
+    <span class="badge folder-group-count">
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderGroup.fileCount" arguments="{0: group.count}"/>
+    </span>
+    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: group.globalInstructions}" />
+</div>
+</html>

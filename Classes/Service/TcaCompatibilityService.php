@@ -21,6 +21,19 @@ class TcaCompatibilityService implements SingletonInterface
     private const T3VER_STATE_NEW_PLACEHOLDER = 1;
     private const T3VER_STATE_DELETE_PLACEHOLDER = 2;
 
+    private const NON_DEFAULTABLE_TYPES = [
+        'category',
+        'file',
+        'flex',
+        'folder',
+        'group',
+        'imageManipulation',
+        'inline',
+        'none',
+        'passthrough',
+        'user',
+    ];
+
     private readonly ?TcaSchemaFactory $tcaSchemaFactory;
 
     public function __construct(private readonly Typo3Version $typo3Version)
@@ -635,6 +648,22 @@ class TcaCompatibilityService implements SingletonInterface
 
     /**
      * @throws UndefinedSchemaException
+     * @throws UndefinedFieldException
+     */
+    public function isRawMarkupField(string $table, string $field, ?string $typeKey = null): bool
+    {
+        if (null !== $typeKey) {
+            $config = $this->getEffectiveFieldConfiguration($table, $typeKey, $field);
+            if ([] !== $config) {
+                return $this->isRawMarkupFieldConfig($config);
+            }
+        }
+
+        return $this->isRawMarkupFieldConfig($this->getFieldConfiguration($table, $field));
+    }
+
+    /**
+     * @throws UndefinedSchemaException
      */
     public function hasSubSchema(string $table, string $type): bool
     {
@@ -724,6 +753,37 @@ class TcaCompatibilityService implements SingletonInterface
      *
      * @throws UndefinedSchemaException
      */
+    public function getDefaultsForType(string $table, ?string $typeKey): array
+    {
+        $typeField = $this->getSubSchemaDivisorFieldName($table);
+        $defaults = [];
+        foreach ($this->getFieldNamesForType($table, $typeKey) as $fieldName) {
+            if ($fieldName === $typeField) {
+                continue;
+            }
+            $config = $this->getEffectiveFieldConfiguration($table, $typeKey, $fieldName);
+            if ([] === $config || in_array((string) ($config['type'] ?? ''), self::NON_DEFAULTABLE_TYPES, true)) {
+                continue;
+            }
+            if (array_key_exists('default', $config)) {
+                $defaults[$fieldName] = $config['default'];
+
+                continue;
+            }
+            $firstItemValue = $this->resolveFirstSelectItemValue($config);
+            if (null !== $firstItemValue) {
+                $defaults[$fieldName] = $firstItemValue;
+            }
+        }
+
+        return $defaults;
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws UndefinedSchemaException
+     */
     public function getEffectiveFieldConfiguration(string $table, ?string $typeKey, string $fieldName): array
     {
         if (null !== $this->tcaSchemaFactory) {
@@ -772,6 +832,22 @@ class TcaCompatibilityService implements SingletonInterface
     public function isRichTextFieldConfig(array $config): bool
     {
         return 'text' === ($config['type'] ?? '') && !empty($config['enableRichtext']);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    public function isRawMarkupFieldConfig(array $config): bool
+    {
+        if ('text' !== ($config['type'] ?? '')) {
+            return false;
+        }
+
+        if ('' !== (string) ($config['format'] ?? '')) {
+            return true;
+        }
+
+        return in_array((string) ($config['renderType'] ?? ''), ['codeEditor', 't3editor'], true);
     }
 
     /**
@@ -860,6 +936,32 @@ class TcaCompatibilityService implements SingletonInterface
                 $GLOBALS['TCA'][$table]['columns'][$field]['config']['ds'] = $originalGlobalDs;
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function resolveFirstSelectItemValue(array $config): ?string
+    {
+        if ('select' !== ($config['type'] ?? '') || 'selectSingle' !== ($config['renderType'] ?? '')) {
+            return null;
+        }
+        if (isset($config['itemsProcFunc']) || !is_array($config['items'] ?? null)) {
+            return null;
+        }
+        foreach ($config['items'] as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $value = $item['value'] ?? $item[1] ?? null;
+            if (!is_scalar($value) || '--div--' === $value) {
+                continue;
+            }
+
+            return '' !== (string) $value ? (string) $value : null;
+        }
+
+        return null;
     }
 
     /**

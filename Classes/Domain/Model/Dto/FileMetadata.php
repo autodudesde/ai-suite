@@ -37,6 +37,8 @@ class FileMetadata
         protected int $fileUid = 0,
         protected string $mode = '',
         protected array $sourceMetadata = [],
+        protected string $folderIdentifier = '',
+        protected string $folderPath = '',
     ) {}
 
     /**
@@ -45,6 +47,7 @@ class FileMetadata
     public static function createFromFileObject(File $file, array $metadata = []): self
     {
         $meta = count($metadata) > 0 ? $metadata : $file->getMetaData();
+        $parentFolder = $file->getParentFolder();
 
         return new self(
             uid: (string) $meta['uid'],
@@ -58,10 +61,13 @@ class FileMetadata
             userCanRead: $file->checkActionPermission('read'),
             userCanWrite: $file->checkActionPermission('write'),
             userCanDelete: $file->checkActionPermission('delete'),
-            size: $file->getSize(),
+            // getSize() is nullable up to TYPO3 v12
+            size: (int) $file->getSize(),
             fileUid: $meta['file'] ?? 0,
             mode: $meta['mode'] ?? '',
             sourceMetadata: $meta['sourceMetadata'] ?? [],
+            folderIdentifier: $parentFolder->getCombinedIdentifier(),
+            folderPath: $parentFolder->getReadablePath(),
         );
     }
 
@@ -143,6 +149,16 @@ class FileMetadata
         return $this->sourceMetadata;
     }
 
+    public function getFolderIdentifier(): string
+    {
+        return $this->folderIdentifier;
+    }
+
+    public function getFolderPath(): string
+    {
+        return $this->folderPath;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -163,6 +179,8 @@ class FileMetadata
             'fileUid' => $this->fileUid,
             'mode' => $this->mode,
             'sourceMetadata' => $this->sourceMetadata,
+            'folderIdentifier' => $this->folderIdentifier,
+            'folderPath' => $this->folderPath,
         ];
     }
 }

@@ -5,6 +5,7 @@ import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 
 class FileReferencePrepare {
     parentUuid;
@@ -13,6 +14,8 @@ class FileReferencePrepare {
         Generation.cancelGeneration();
         this.fileReferencesSelectionEventDelegation();
         GlobalInstructions.metadataTooltipEventDelegation();
+        PromptTemplate.bindWithDelegation(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
+        PromptTemplate.bindCollapsibleState(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
         this.parentUuid = '';
         this.init();
     }
@@ -108,6 +111,7 @@ class FileReferencePrepare {
                                 sysLanguage: document.querySelector('select[name="workflowFileReferencesPrepare[sysLanguage]"]').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
                                 startFromPid: document.querySelector('input[name="workflowFileReferencesPrepare[startFromPid]"]').value,
+                                customPrompt: PromptTemplate.readPrompt(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt'),
                                 handledByCli: handledByCli,
                             };
 
@@ -224,6 +228,7 @@ class FileReferencePrepare {
         formData.append('workflowFileReferencesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowFileReferencesExecute[startFromPid]', baseFormData.startFromPid);
         formData.append('workflowFileReferencesExecute[fileReferences]', JSON.stringify(currentFileReferences));
+        formData.append('workflowFileReferencesExecute[customPrompt]', baseFormData.customPrompt ?? '');
         if (baseFormData.handledByCli) {
             formData.append('workflowFileReferencesExecute[handledByCli]', '1');
         }

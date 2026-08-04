@@ -15,8 +15,6 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
 
@@ -24,7 +22,6 @@ class DomainResolverService implements SingletonInterface
 {
     public function __construct(
         protected readonly SiteFinder $siteFinder,
-        protected readonly ConnectionPool $connectionPool,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -59,56 +56,6 @@ class DomainResolverService implements SingletonInterface
             ]);
 
             return '';
-        }
-    }
-
-    public function getDomainByTask(string $tableName, int $tableUid): string
-    {
-        if ('pages' === $tableName) {
-            return $this->getDomainByPageId($tableUid);
-        }
-
-        if ('sys_file_reference' === $tableName) {
-            $pageId = $this->getPageIdFromTable('sys_file_reference', $tableUid);
-            if ($pageId > 0) {
-                return $this->getDomainByPageId($pageId);
-            }
-        }
-
-        if ('sys_file_metadata' === $tableName) {
-            $pageId = $this->getPageIdFromTable('sys_file_metadata', $tableUid);
-            if ($pageId > 0) {
-                return $this->getDomainByPageId($pageId);
-            }
-        }
-
-        return '';
-    }
-
-    private function getPageIdFromTable(string $tableName, int $uid): int
-    {
-        try {
-            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($tableName);
-            $row = $queryBuilder
-                ->select('pid')
-                ->from($tableName)
-                ->where(
-                    $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT))
-                )
-                ->executeQuery()
-                ->fetchAssociative()
-            ;
-
-            return (int) ($row['pid'] ?? 0);
-        } catch (\Exception $e) {
-            $this->logger->warning('Could not resolve page id from table', [
-                'tableName' => $tableName,
-                'uid' => $uid,
-                'exception' => $e::class,
-                'error' => $e->getMessage(),
-            ]);
-
-            return 0;
         }
     }
 }

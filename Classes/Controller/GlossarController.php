@@ -71,7 +71,7 @@ class GlossarController extends AbstractBackendController
         $response = new Response();
 
         try {
-            $success = $this->glossarService->syncDeeplGlossar((int) ((array) $request->getParsedBody())['pid']);
+            $success = $this->glossarService->syncDeeplGlossar((int) (((array) $request->getParsedBody())['pid'] ?? 0));
         } catch (\Throwable $exception) {
             $this->logger->error($exception->getMessage());
         }

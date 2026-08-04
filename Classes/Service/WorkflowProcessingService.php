@@ -24,10 +24,9 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class WorkflowProcessingService implements SingletonInterface
 {
@@ -61,7 +60,7 @@ class WorkflowProcessingService implements SingletonInterface
         protected readonly PageRepository $pageRepository,
         protected readonly DomainResolverService $domainResolverService,
         protected readonly GlossarService $glossarService,
-        protected readonly StorageRepository $storageRepository,
+        protected readonly FolderSelectionService $folderSelectionService,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
 
@@ -106,6 +105,7 @@ class WorkflowProcessingService implements SingletonInterface
         $payload = [];
         $bulkPayload = [];
         $failedPages = [];
+        $customPrompt = trim((string) ($workflowData['customPrompt'] ?? ''));
 
         foreach ($pages as $pageUid => $pageSlug) {
             try {
@@ -136,6 +136,7 @@ class WorkflowProcessingService implements SingletonInterface
                     'uuid' => $uuid,
                     'global_instructions' => $globalInstructions,
                     'override_predefined_prompt' => $globalInstructionsOverride,
+                    'custom_prompt' => $customPrompt,
                 ];
             } catch (\Exception $e) {
                 $this->logger->error('Error while fetching page content for page '.$pageUid.': '.$e->getMessage());
@@ -325,6 +326,7 @@ class WorkflowProcessingService implements SingletonInterface
         bool $handledByCli = false,
         ?string $requestSystemDomain = null,
     ): array {
+        $customPrompt = trim((string) ($workflowData['customPrompt'] ?? ''));
         $filesMetadataUidList = [];
         $files = [];
         foreach ($workflowDataFiles as $sysFileMetaUid => $data) {
@@ -414,6 +416,7 @@ class WorkflowProcessingService implements SingletonInterface
                         'uuid' => $uuid,
                         'global_instructions' => $globalInstructions,
                         'override_predefined_prompt' => $globalInstructionsOverride,
+                        'custom_prompt' => $customPrompt,
                         'filename' => $filename,
                     ];
                     $fileSizeSumInBytes += $fileSize;
@@ -495,6 +498,7 @@ class WorkflowProcessingService implements SingletonInterface
         $payload = [];
         $bulkPayload = [];
         $failedFileReferences = [];
+        $customPrompt = trim((string) ($workflowData['customPrompt'] ?? ''));
         $allowedFileSize = $this->directiveService->getEffectiveMaxUploadSize();
         $fileSizeSumInBytes = 0;
 
@@ -561,6 +565,7 @@ class WorkflowProcessingService implements SingletonInterface
                     'uuid' => $uuid,
                     'global_instructions' => $globalInstructions,
                     'override_predefined_prompt' => $globalInstructionsOverride,
+                    'custom_prompt' => $customPrompt,
                     'filename' => $filename,
                 ];
                 $fileSizeSumInBytes += $fileSize;
@@ -611,6 +616,7 @@ class WorkflowProcessingService implements SingletonInterface
                 'column' => $column,
                 'sysLanguage' => $firstLanguageKey,
                 'textAiModel' => $extConf['metadataAutogenerateModel'],
+                'customPrompt' => $extConf['metadataAutogeneratePrompt'] ?? '',
             ];
             $scope = 'fileMetadata';
             $languageParts = explode('__', (string) $workflowData['sysLanguage']);
@@ -716,6 +722,7 @@ class WorkflowProcessingService implements SingletonInterface
             'parentUuid' => $parentUuid,
             'column' => $config['column'],
             'textAiModel' => $config['model'],
+            'customPrompt' => $config['customPrompt'] ?? '',
         ];
 
         $contentFetcher = $this->buildPageContentFetcher();
@@ -874,7 +881,7 @@ class WorkflowProcessingService implements SingletonInterface
         $languageParts = explode('__', (string) $config['sysLanguage']);
 
         $foundPageUids = $this->pageRepository->getPageIdsRecursive([$pageId], (int) $config['depth']);
-        $foundFileReferences = $this->pagesRepository->fetchSysFileReferences(
+        $foundFileReferences = $this->sysFileReferenceRepository->fetchSysFileReferences(
             $foundPageUids,
             (string) $config['column'],
             (int) $languageParts[1],
@@ -906,6 +913,7 @@ class WorkflowProcessingService implements SingletonInterface
             'column' => $config['column'],
             'textAiModel' => $config['model'],
             'startFromPid' => $config['startFromPid'],
+            'customPrompt' => $config['customPrompt'] ?? '',
         ];
         $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
 
@@ -962,15 +970,14 @@ class WorkflowProcessingService implements SingletonInterface
         $showOnlyEmpty = (bool) ($config['showOnlyEmpty'] ?? false);
         $showOnlyUsed = (bool) ($config['showOnlyUsed'] ?? false);
 
-        try {
-            $folder = $this->resolveWorkflowFolder($directory);
-            $files = $folder->getFiles();
-        } catch (\Exception $e) {
+        $collected = $this->collectWorkflowFiles($directory, $config, [2]);
+        if (null === $collected) {
             return [
                 'success' => false,
-                'message' => 'Specified directory could not be found: '.$e->getMessage(),
+                'message' => 'Specified directory could not be found.',
             ];
         }
+        $files = $collected;
 
         if (empty($files)) {
             return [
@@ -979,16 +986,7 @@ class WorkflowProcessingService implements SingletonInterface
             ];
         }
 
-        $fileUids = [];
-        foreach ($files as $file) {
-            if (!$this->backendUserService->canEditFileMetadata($file->getUid())) {
-                continue;
-            }
-            if (2 !== $file->getType()) {
-                continue;
-            }
-            $fileUids[] = $file->getUid();
-        }
+        $fileUids = array_keys($files);
 
         $metadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
             $fileUids,
@@ -1059,6 +1057,7 @@ class WorkflowProcessingService implements SingletonInterface
             'parentUuid' => $parentUuid,
             'column' => $column,
             'textAiModel' => $config['model'],
+            'customPrompt' => $config['customPrompt'] ?? '',
         ];
         $requestSystemDomain = $this->domainResolverService->getDomainBySiteIdentifier(end($languageParts));
 
@@ -1119,26 +1118,14 @@ class WorkflowProcessingService implements SingletonInterface
         $column = (string) $config['column'];
         $showOnlyUsed = (bool) ($config['showOnlyUsed'] ?? false);
 
-        try {
-            $folder = $this->resolveWorkflowFolder($directory);
-            $files = $folder->getFiles();
-        } catch (\Exception $e) {
+        $collected = $this->collectWorkflowFiles($directory, $config, [2]);
+        if (null === $collected) {
             return [
                 'success' => false,
-                'message' => 'Specified directory could not be found: '.$e->getMessage(),
+                'message' => 'Specified directory could not be found.',
             ];
         }
-
-        $fileUids = [];
-        foreach ($files as $file) {
-            if (!$this->backendUserService->canEditFileMetadata($file->getUid())) {
-                continue;
-            }
-            if (2 !== $file->getType()) {
-                continue;
-            }
-            $fileUids[] = $file->getUid();
-        }
+        $fileUids = array_keys($collected);
 
         $defaultMetadataList = $this->sysFileMetadataRepository->findByLangUidAndFileIdList(
             $fileUids,
@@ -1273,24 +1260,37 @@ class WorkflowProcessingService implements SingletonInterface
         ];
     }
 
-    private function resolveWorkflowFolder(string $directory): Folder
+    /**
+     * @param array<string, mixed> $config
+     * @param list<int>            $allowedFileTypes
+     *
+     * @return null|array<int, FileInterface>
+     */
+    private function collectWorkflowFiles(string $directory, array $config, array $allowedFileTypes): ?array
     {
-        if ('' !== $directory && 1 === preg_match('/^\d+:/', $directory)) {
-            $storage = $this->storageRepository->findByCombinedIdentifier($directory);
-            if (null === $storage) {
-                throw new \RuntimeException(sprintf('Storage for combined identifier "%s" not found.', $directory));
+        $directories = GeneralUtility::trimExplode(',', $directory, true);
+        if ([] === $directories) {
+            $directories = [''];
+        }
+
+        $collected = $this->folderSelectionService->collectFilesByFolder(
+            $directories,
+            (int) ($config['depth'] ?? 0),
+            $allowedFileTypes
+        );
+
+        if ([] === $collected['groups'] && [] !== $collected['skipped']) {
+            return null;
+        }
+
+        $files = [];
+        foreach ($collected['groups'] as $group) {
+            foreach ($group['files'] as $fileUid => $file) {
+                $files[$fileUid] = $file;
             }
-            [, $folderPath] = explode(':', $directory, 2);
-
-            return $storage->getFolder('/'.ltrim($folderPath, '/'));
         }
 
-        $defaultStorage = $this->storageRepository->getDefaultStorage();
-        if (null === $defaultStorage) {
-            throw new \RuntimeException('No default storage available.');
-        }
-
-        return $defaultStorage->getFolder($directory);
+        return $files;
     }
 
     /**

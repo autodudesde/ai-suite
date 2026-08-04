@@ -17,12 +17,13 @@ namespace AutoDudes\AiSuite\Controller\Workflow;
 use AutoDudes\AiSuite\Controller\AbstractBackendController;
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
-use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
+use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\DirectiveService;
 use AutoDudes\AiSuite\Service\MetadataService;
+use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
@@ -58,11 +59,12 @@ class FileMetadataController extends AbstractBackendController
         protected readonly WorkflowViewService $workflowViewService,
         protected readonly LoggerInterface $logger,
         protected readonly PageRepository $pageRepository,
-        protected readonly PagesRepository $pagesRepository,
+        protected readonly SysFileReferenceRepository $sysFileReferenceRepository,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly DirectiveService $directiveService,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
+        protected readonly PromptTemplateScopeService $promptTemplateScopeService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -110,7 +112,7 @@ class FileMetadataController extends AbstractBackendController
             $params['column'] = $workflowData['column'];
             $params['columnName'] = $fileReferenceMetadataColumns[$workflowData['column']];
 
-            $foundFileReferences = $this->pagesRepository->fetchSysFileReferences(array_values($foundPageUids), $workflowData['column'], (int) $languageParts[1], $workflowData['showOnlyEmpty']);
+            $foundFileReferences = $this->sysFileReferenceRepository->fetchSysFileReferences(array_values($foundPageUids), $workflowData['column'], (int) $languageParts[1], $workflowData['showOnlyEmpty']);
             $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
                 if (!$this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($fileReference['uid_local'])) {
                     return false;
@@ -136,6 +138,11 @@ class FileMetadataController extends AbstractBackendController
 
             $params['maxAllowedFileSize'] = $this->directiveService->getEffectiveMaxUploadSize();
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+            $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates(
+                PromptTemplateScopeService::SCOPE_METADATA,
+                $this->promptTemplateScopeService->buildMetadataType('sys_file_reference', (string) $workflowData['column']),
+                (int) $languageParts[1]
+            );
             $params['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileReferences');
 
             $output = $this->viewFactoryService->renderTemplate(

@@ -9,6 +9,7 @@ use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Localization\Handler\DynamicAiLocalizationHandler;
 use AutoDudes\AiSuite\Localization\Handler\NoModelsAvailableHandler;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\SiteService;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -28,6 +29,7 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
         private readonly BackendUserService $backendUserService,
         private readonly SiteService $siteService,
         private readonly PagesRepository $pagesRepository,
+        private readonly LocalizationService $localizationService,
         private readonly LoggerInterface $logger,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
@@ -117,6 +119,8 @@ class AiSuiteLocalizationHandlerRegistry extends LocalizationHandlerRegistry
                     $this->siteService,
                     $this->backendUserService,
                     $this->pagesRepository,
+                    $this->localizationService,
+                    $this->logger,
                     $identifier,
                     $library['name'] ?? $identifier,
                     $library['info'] ? strip_tags($library['info']) : '',

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class LibraryService implements SingletonInterface
@@ -22,6 +23,7 @@ class LibraryService implements SingletonInterface
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly SendRequestService $sendRequestService,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -34,6 +36,13 @@ class LibraryService implements SingletonInterface
         $processedLibraries = [];
 
         foreach ($libraries as $library) {
+            if ('' === (string) ($library['model_identifier'] ?? '')) {
+                $this->logger->warning('Skipping a generation library without a model identifier', [
+                    'library' => $library,
+                ]);
+
+                continue;
+            }
             if (!($this->backendUserService->getBackendUser()?->isAdmin() ?? false)
                 && !$this->backendUserService->checkPermissions('tx_aisuite_models:'.$library['model_identifier'])
             ) {
@@ -60,7 +69,7 @@ class LibraryService implements SingletonInterface
      */
     public function filterVisionLibraries(array $libraries): array
     {
-        return array_filter($libraries, static fn (array $library): bool => 'Vision' === $library['name'] || 'MittwaldMinistral14BVision' === $library['model_identifier']);
+        return array_filter($libraries, static fn (array $library): bool => 'Vision' === ($library['name'] ?? '') || 'MittwaldMinistral14BVision' === ($library['model_identifier'] ?? ''));
     }
 
     /**
@@ -70,7 +79,7 @@ class LibraryService implements SingletonInterface
      */
     public function filterNonVisionLibraries(array $libraries): array
     {
-        return array_filter($libraries, static fn (array $library): bool => 'Vision' !== $library['name'] && 'MittwaldMinistral14BVision' !== $library['model_identifier']);
+        return array_filter($libraries, static fn (array $library): bool => 'Vision' !== ($library['name'] ?? '') && 'MittwaldMinistral14BVision' !== ($library['model_identifier'] ?? ''));
     }
 
     /**

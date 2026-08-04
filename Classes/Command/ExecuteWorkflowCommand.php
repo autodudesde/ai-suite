@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Command;
 
 use AutoDudes\AiSuite\Command\Trait\CliBackendBootstrapTrait;
+use AutoDudes\AiSuite\Service\FolderSelectionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
@@ -54,15 +55,16 @@ class ExecuteWorkflowCommand extends Command
             ->addOption('model', 'm', InputOption::VALUE_OPTIONAL, 'AI model identifier to use')
             ->addOption('start-from-pid', null, InputOption::VALUE_OPTIONAL, 'Starting page ID (for page-based types)')
             ->addOption('page-type', null, InputOption::VALUE_OPTIONAL, 'Page type filter')
-            ->addOption('depth', null, InputOption::VALUE_OPTIONAL, 'Depth for page traversal')
+            ->addOption('depth', null, InputOption::VALUE_OPTIONAL, 'Traversal depth. For page based types the page tree depth, for file based types the number of sub folder levels below the given directories (0 = only the given directories, max 5)')
             ->addOption('column', null, InputOption::VALUE_OPTIONAL, 'Column to process')
             ->addOption('sys-language', null, InputOption::VALUE_OPTIONAL, 'System language (locale__id)')
             ->addOption('show-only-empty', null, InputOption::VALUE_NONE, 'Show only empty fields')
             ->addOption('source-language', null, InputOption::VALUE_OPTIONAL, 'Source language for translation (locale__id)')
             ->addOption('target-language', null, InputOption::VALUE_OPTIONAL, 'Target language for translation (locale__id)')
             ->addOption('translation-scope', null, InputOption::VALUE_OPTIONAL, 'Translation scope (all, metadata, content)')
-            ->addOption('directory', null, InputOption::VALUE_OPTIONAL, 'Directory to process. Accepts either a path relative to the default file storage root (e.g. "/", "/user_upload/", "/user_upload/images/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Use a leading and trailing slash; pass "/" or leave empty to use the default storage root.')
+            ->addOption('directory', null, InputOption::VALUE_OPTIONAL, 'Directories to process, comma separated for more than one. Accepts either a path relative to the default file storage root (e.g. "/", "/user_upload/", "/user_upload/images/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"), for example "/user_upload/,1:/images/". Use a leading and trailing slash; pass "/" or leave empty to use the default storage root.')
             ->addOption('show-only-used', null, InputOption::VALUE_NONE, 'Show only used files')
+            ->addOption('prompt', null, InputOption::VALUE_OPTIONAL, 'Own prompt for metadata generation. Replaces the predefined instruction of the selected field.')
         ;
     }
 
@@ -77,6 +79,7 @@ class ExecuteWorkflowCommand extends Command
         }
 
         $this->addTypeSpecificFilters($config['type'], $input, $io, $config);
+        $config['customPrompt'] = trim((string) ($input->getOption('prompt') ?? ''));
 
         $io->text('Running workflow with configuration:');
         $io->table(
@@ -236,7 +239,8 @@ class ExecuteWorkflowCommand extends Command
      */
     private function addFileMetadataFilters(InputInterface $input, SymfonyStyle $io, array &$config): void
     {
-        $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directory to process — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
+        $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directories to process, comma separated for more than one — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
+        $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Sub folder levels below the given directories (0 = only the given directories, max '.FolderSelectionService::MAX_DEPTH.')', 0);
         $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
             'title' => 'Title',
             'alternative' => 'Alternative Text',
@@ -252,7 +256,8 @@ class ExecuteWorkflowCommand extends Command
      */
     private function addFileMetadataTranslationFilters(InputInterface $input, SymfonyStyle $io, array &$config): void
     {
-        $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directory to process — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
+        $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directories to process, comma separated for more than one — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
+        $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Sub folder levels below the given directories (0 = only the given directories, max '.FolderSelectionService::MAX_DEPTH.')', 0);
         $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
             'title' => 'Title',
             'alternative' => 'Alternative Text',
@@ -347,7 +352,7 @@ class ExecuteWorkflowCommand extends Command
     private function integerValidator(?string $answer): string
     {
         if (null === $answer || !is_numeric($answer)) {
-            throw new \RuntimeException('Enter a valid page identifier number.');
+            throw new \RuntimeException('Enter a valid number.');
         }
 
         return $answer;

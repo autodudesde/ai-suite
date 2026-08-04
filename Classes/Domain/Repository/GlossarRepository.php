@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -14,10 +15,11 @@ class GlossarRepository extends AbstractRepository
 {
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'tx_aisuite_domain_model_glossar',
         string $sortBy = 'input'
     ) {
-        parent::__construct($connectionPool, $table, $sortBy);
+        parent::__construct($connectionPool, $workspaceContextService, $table, $sortBy);
     }
 
     /**

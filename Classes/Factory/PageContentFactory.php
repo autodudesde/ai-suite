@@ -17,6 +17,7 @@ namespace AutoDudes\AiSuite\Factory;
 use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\FileNameSanitizerService;
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Core\Environment;
@@ -39,6 +40,7 @@ class PageContentFactory
         protected readonly LinkService $linkService,
         protected readonly SettingsFactory $settingsFactory,
         protected readonly BackendUserService $backendUserService,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
         protected readonly LoggerInterface $logger,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
@@ -146,6 +148,8 @@ class PageContentFactory
                 }
             }
         }
+
+        $data = $this->addTypeSpecificDefaults($data);
 
         try {
             $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
@@ -307,5 +311,27 @@ class PageContentFactory
                 0,
                 22
             );
+    }
+
+    /**
+     * @param array<string, array<string, array<string, mixed>>> $data
+     *
+     * @return array<string, array<string, array<string, mixed>>>
+     */
+    private function addTypeSpecificDefaults(array $data): array
+    {
+        foreach ($data as $table => $records) {
+            if ('sys_file_reference' === $table || !$this->tcaCompatibilityService->hasTable($table)) {
+                continue;
+            }
+            foreach ($records as $recordId => $row) {
+                $typeKey = $this->tcaCompatibilityService->resolveSubSchemaType($table, $row);
+                foreach ($this->tcaCompatibilityService->getDefaultsForType($table, $typeKey) as $fieldName => $default) {
+                    $data[$table][$recordId][$fieldName] ??= $default;
+                }
+            }
+        }
+
+        return $data;
     }
 }

@@ -59,6 +59,9 @@ class DatabaseRecordList extends \TYPO3\CMS\Backend\RecordList\DatabaseRecordLis
         $this->translationService = $translationService;
     }
 
+    /**
+     * @param array<int, mixed> $translations
+     */
     public function makeLocalizationPanel(string $table, RecordInterface $record, array $translations): string
     {
         $out = parent::makeLocalizationPanel($table, $record, $translations);

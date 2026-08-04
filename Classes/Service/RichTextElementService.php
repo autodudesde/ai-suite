@@ -164,8 +164,9 @@ class RichTextElementService implements SingletonInterface
     {
         $externalPlugins = $this->rteConfiguration['externalPlugins'] ?? [];
 
-        /** @var BeforeGetExternalPluginsEvent $beforeEvent */
-        $beforeEvent = $this->eventDispatcher->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $data));
+        // dispatch() is only generic from TYPO3 v13 on, so read from the event object
+        $beforeEvent = new BeforeGetExternalPluginsEvent($externalPlugins, $data);
+        $this->eventDispatcher->dispatch($beforeEvent);
         $externalPlugins = $beforeEvent->getConfiguration();
 
         $urlParameters = [
@@ -194,8 +195,8 @@ class RichTextElementService implements SingletonInterface
             $pluginConfiguration[$pluginName]['config'] = $configuration;
         }
 
-        /** @var AfterGetExternalPluginsEvent $afterEvent */
-        $afterEvent = $this->eventDispatcher->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data));
+        $afterEvent = new AfterGetExternalPluginsEvent($pluginConfiguration, $data);
+        $this->eventDispatcher->dispatch($afterEvent);
 
         return $afterEvent->getConfiguration();
     }
@@ -254,7 +255,7 @@ class RichTextElementService implements SingletonInterface
      *
      * @param array<string, mixed> $data
      *
-     * @return array<string, mixed> the configuration
+     * @return array<string, mixed>
      */
     protected function prepareConfigurationForEditor(array $data): array
     {
@@ -272,8 +273,8 @@ class RichTextElementService implements SingletonInterface
             $configuration = array_replace_recursive($configuration, $this->rteConfiguration['config']);
         }
 
-        /** @var BeforePrepareConfigurationForEditorEvent $beforeConfigEvent */
-        $beforeConfigEvent = $this->eventDispatcher->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $data));
+        $beforeConfigEvent = new BeforePrepareConfigurationForEditorEvent($configuration, $data);
+        $this->eventDispatcher->dispatch($beforeConfigEvent);
         $configuration = $beforeConfigEvent->getConfiguration();
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
@@ -313,8 +314,8 @@ class RichTextElementService implements SingletonInterface
             $configuration['removePlugins'] = explode(',', $configuration['removePlugins']);
         }
 
-        /** @var AfterPrepareConfigurationForEditorEvent $afterConfigEvent */
-        $afterConfigEvent = $this->eventDispatcher->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data));
+        $afterConfigEvent = new AfterPrepareConfigurationForEditorEvent($configuration, $data);
+        $this->eventDispatcher->dispatch($afterConfigEvent);
         $configuration = $afterConfigEvent->getConfiguration();
 
         return $configuration;

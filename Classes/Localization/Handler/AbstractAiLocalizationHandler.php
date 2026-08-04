@@ -6,11 +6,14 @@ namespace AutoDudes\AiSuite\Localization\Handler;
 
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\SiteService;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Localization\Finisher\ReloadLocalizationFinisher;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerInterface;
 use TYPO3\CMS\Backend\Localization\LocalizationInstructions;
 use TYPO3\CMS\Backend\Localization\LocalizationResult;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -20,6 +23,8 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
         protected readonly SiteService $siteService,
         protected readonly BackendUserService $backendUserService,
         protected readonly PagesRepository $pagesRepository,
+        protected readonly LocalizationService $localizationService,
+        protected readonly LoggerInterface $logger,
     ) {}
 
     public function isAvailable(LocalizationInstructions $instructions): bool
@@ -30,10 +35,26 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
 
     public function processLocalization(LocalizationInstructions $instructions): LocalizationResult
     {
-        $pageId = $instructions->recordUid;
+        $recordType = $instructions->mainRecordType;
+        $recordUid = $instructions->recordUid;
         $srcLanguageId = $instructions->sourceLanguageId;
         $destLanguageId = $instructions->targetLanguageId;
         $additionalData = $instructions->additionalData;
+
+        if ('pages' === $recordType) {
+            $pageId = $recordUid;
+        } else {
+            $record = BackendUtility::getRecord($recordType, $recordUid, 'pid');
+            if (null === $record) {
+                return LocalizationResult::error([
+                    $this->localizationService->translate(
+                        'aiSuite.error.localization.recordNotFound',
+                        [$recordType, $recordUid]
+                    ),
+                ]);
+            }
+            $pageId = (int) $record['pid'];
+        }
 
         $uuid = (string) ($additionalData['uuid'] ?? '');
         $wholePageMode = (bool) ($additionalData['wholePageMode'] ?? false);
@@ -54,8 +75,17 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
             'pageId' => $pageId,
         ];
 
-        if ($wholePageMode) {
-            $this->processWholePageTranslation(
+        if ('pages' !== $recordType) {
+            $errorLog = $this->processSingleRecordTranslation(
+                $recordType,
+                $recordUid,
+                $pageId,
+                $destLanguageId,
+                $instructions->mode->getDataHandlerCommand(),
+                $aiSuiteBase
+            );
+        } elseif ($wholePageMode) {
+            $errorLog = $this->processWholePageTranslation(
                 $pageId,
                 $destLanguageId,
                 array_map('intval', $selectedRecordUids),
@@ -63,13 +93,25 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
                 $aiSuiteBase
             );
         } elseif (!empty($selectedRecordUids)) {
-            $this->processContentTranslation(
+            $errorLog = $this->processContentTranslation(
                 $pageId,
                 $destLanguageId,
                 array_map('intval', $selectedRecordUids),
                 $instructions->mode->getDataHandlerCommand(),
                 $aiSuiteBase
             );
+        } else {
+            $errorLog = [];
+        }
+
+        if ([] !== $errorLog) {
+            $this->logger->warning('DataHandler reported problems while localizing', [
+                'recordType' => $recordType,
+                'recordUid' => $recordUid,
+                'pageId' => $pageId,
+                'targetLanguageId' => $destLanguageId,
+                'errors' => $errorLog,
+            ]);
         }
 
         return LocalizationResult::success(new ReloadLocalizationFinisher());
@@ -80,6 +122,8 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
     /**
      * @param int[]                $selectedRecordUids
      * @param array<string, mixed> $aiSuiteBase
+     *
+     * @return list<string>
      */
     protected function processWholePageTranslation(
         int $pageId,
@@ -87,7 +131,7 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
         array $selectedRecordUids,
         string $dataHandlerCommand,
         array $aiSuiteBase
-    ): void {
+    ): array {
         $cmd = [];
 
         if (!$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId)) {
@@ -102,14 +146,14 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
             'wholePageMode' => true,
         ]);
 
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], $cmd);
-        $dataHandler->process_cmdmap();
+        return $this->executeCommandMap($cmd);
     }
 
     /**
      * @param int[]                $selectedRecordUids
      * @param array<string, mixed> $aiSuiteBase
+     *
+     * @return list<string>
      */
     protected function processContentTranslation(
         int $pageId,
@@ -117,13 +161,8 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
         array $selectedRecordUids,
         string $dataHandlerCommand,
         array $aiSuiteBase
-    ): void {
-        if (!$this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId)) {
-            $pageCmd = ['pages' => [$pageId => ['localize' => $destLanguageId]]];
-            $pageDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $pageDataHandler->start([], $pageCmd);
-            $pageDataHandler->process_cmdmap();
-        }
+    ): array {
+        $errorLog = $this->localizePageIfMissing($pageId, $destLanguageId);
 
         $cmd = ['tt_content' => []];
         foreach ($selectedRecordUids as $uid) {
@@ -132,8 +171,59 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
 
         $cmd['localization'][0]['aiSuite'] = $aiSuiteBase;
 
+        return array_merge($errorLog, $this->executeCommandMap($cmd));
+    }
+
+    /**
+     * @param array<string, mixed> $aiSuiteBase
+     *
+     * @return list<string>
+     */
+    protected function processSingleRecordTranslation(
+        string $table,
+        int $recordUid,
+        int $pageId,
+        int $destLanguageId,
+        string $dataHandlerCommand,
+        array $aiSuiteBase
+    ): array {
+        $errorLog = 'tt_content' === $table
+            ? $this->localizePageIfMissing($pageId, $destLanguageId)
+            : [];
+
+        $cmd = [
+            $table => [
+                $recordUid => [$dataHandlerCommand => $destLanguageId],
+            ],
+        ];
+        $cmd['localization'][0]['aiSuite'] = $aiSuiteBase;
+
+        return array_merge($errorLog, $this->executeCommandMap($cmd));
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function localizePageIfMissing(int $pageId, int $destLanguageId): array
+    {
+        if ($this->pagesRepository->checkPageTranslationExists($pageId, $destLanguageId)) {
+            return [];
+        }
+
+        return $this->executeCommandMap(['pages' => [$pageId => ['localize' => $destLanguageId]]]);
+    }
+
+    /**
+     * @param array<string, mixed> $cmd
+     *
+     * @return list<string>
+     */
+    protected function executeCommandMap(array $cmd): array
+    {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
+
+        return array_values(array_map(static fn ($message): string => (string) $message, $dataHandler->errorLog));
     }
 }

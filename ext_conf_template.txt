@@ -42,10 +42,8 @@ deeplApiMode =
 midjourneyApiKey =
 # cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyId
 midjourneyId =
-# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:fluxApiKey
-fluxApiKey =
-# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:fluxBaseUrl
-fluxBaseUrl =
+# cat=Bring your own keys; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiModelHubApiKey
+aiModelHubApiKey =
 # cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateTitle
 metadataAutogenerateTitle =
 # cat=Metadata; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateAlternative
@@ -54,6 +52,8 @@ metadataAutogenerateAlternative =
 metadataAutogenerateModel = Vision
 # cat=Metadata; type=options[Add generated suggestions to TaskEngine=taskEngine,Save (first suggestion) directly=saveDirectly]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateApproach
 metadataAutogenerateApproach = taskEngine
+# cat=Metadata; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogeneratePrompt
+metadataAutogeneratePrompt =
 # cat=Metadata; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:minPlausiblePageContentLength
 minPlausiblePageContentLength = 100
 # cat=GDPR; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:forceGdpa

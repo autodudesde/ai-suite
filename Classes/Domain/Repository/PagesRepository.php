@@ -15,13 +15,12 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Domain\Repository;
 
 use AutoDudes\AiSuite\Domain\Model\Pages;
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PagesRepository extends AbstractRepository
@@ -31,10 +30,11 @@ class PagesRepository extends AbstractRepository
 
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'pages',
         string $sortBy = 'sorting'
     ) {
-        parent::__construct($connectionPool, $table, $sortBy);
+        parent::__construct($connectionPool, $workspaceContextService, $table, $sortBy);
     }
 
     /**
@@ -83,13 +83,12 @@ class PagesRepository extends AbstractRepository
      */
     public function fetchNecessaryPageData(array $workflowData, array $foundPageUids, string $mode = 'pages'): array
     {
-        $context = GeneralUtility::makeInstance(Context::class);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $context->getPropertyFromAspect('workspace', 'id')))
         ;
+        $this->addWorkspaceRestriction($queryBuilder);
         $fields = ['uid', 'title', 'slug'];
         if ('pages' === $mode) {
             $fields[] = $workflowData['column'].' AS columnValue';
@@ -137,76 +136,6 @@ class PagesRepository extends AbstractRepository
         ;
     }
 
-    /**
-     * @todo: PageRepository should not be responsible for fetching tt_content
-     *
-     * @param list<int> $pids
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function getAvailableNewsDetailPlugins(array $pids, int $languageId): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
-
-        return $queryBuilder->select('tt_content.pid', 'p.title')
-            ->from('tt_content')
-            ->leftJoin(
-                'tt_content',
-                $this->table,
-                'p',
-                $queryBuilder->expr()->eq('p.uid', $queryBuilder->quoteIdentifier('tt_content.pid'))
-            )
-            ->where(
-                $queryBuilder->expr()->in('tt_content.pid', $pids),
-                $queryBuilder->expr()->eq('tt_content.sys_language_uid', $languageId),
-                $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail')),
-                $queryBuilder->expr()->eq('p.deleted', 0)
-            )
-            ->executeQuery()
-            ->fetchAllAssociative()
-        ;
-    }
-
-    /**
-     * @todo: PageRepository should not be responsible for fetching sys_file_references
-     *
-     * @param list<int> $pagesUids
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function fetchSysFileReferences(array $pagesUids, string $column, int $sysLanguageUid, bool $showOnlyEmpty): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $queryBuilder->select('sfr.uid', 'sfr.pid', 'sfr.tablenames', 'sfr.fieldname', 'sfr.uid_local', 'sfr.uid_foreign', 'sfr.'.$column.' AS columnValue', 'sf.name AS fileName', 'sf.mime_type AS fileMimeType', 'sf.size AS size')
-            ->from('sys_file_reference', 'sfr')
-            ->leftJoin(
-                'sfr',
-                'sys_file',
-                'sf',
-                $queryBuilder->expr()->eq('sf.uid', $queryBuilder->quoteIdentifier('sfr.uid_local'))
-            )
-            ->where(
-                $queryBuilder->expr()->eq('sf.type', 2),
-                $queryBuilder->expr()->in('sfr.pid', $pagesUids),
-                $queryBuilder->expr()->eq('sfr.sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid)),
-                $queryBuilder->expr()->eq('sf.missing', 0),
-            )
-        ;
-        if (true === $showOnlyEmpty) {
-            $queryBuilder->andWhere(
-                $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->isNull('sfr.'.$column),
-                    $queryBuilder->expr()->eq('sfr.'.$column, $queryBuilder->createNamedParameter('', Connection::PARAM_STR))
-                )
-            );
-        }
-
-        return $queryBuilder
-            ->executeQuery()
-            ->fetchAllAssociative()
-        ;
-    }
-
     public function checkPageTranslationExists(int $pageId, int $languageUid): bool
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
@@ -226,25 +155,6 @@ class PagesRepository extends AbstractRepository
         ;
 
         return $pageTranslationExists > 0;
-    }
-
-    public function getPageIdFromFileReference(int $fileRefUid): ?int
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-
-        $result = $queryBuilder
-            ->select('p.uid')
-            ->from('sys_file_reference', 'sfr')
-            ->join('sfr', 'pages', 'p', 'sfr.uid_foreign = p.uid')
-            ->where(
-                $queryBuilder->expr()->eq('sfr.uid', $queryBuilder->createNamedParameter($fileRefUid, ParameterType::INTEGER)),
-                $queryBuilder->expr()->eq('sfr.tablenames', $queryBuilder->createNamedParameter('pages'))
-            )
-            ->executeQuery()
-            ->fetchAssociative()
-        ;
-
-        return $result ? (int) $result['uid'] : null;
     }
 
     /**
@@ -309,15 +219,29 @@ class PagesRepository extends AbstractRepository
      */
     public function fetchPagesForTranslation(array $foundPageUids, int $sourceLanguageUid, int $targetLanguageUid, array $workflowData): array
     {
-        $context = GeneralUtility::makeInstance(Context::class);
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(WorkspaceRestriction::class, $context->getPropertyFromAspect('workspace', 'id')))
         ;
+        $this->addWorkspaceRestriction($queryBuilder);
 
-        $queryBuilder->select('uid', 'title', 'slug', 'doktype')
+        $queryBuilder->select(
+            'uid',
+            'title',
+            'slug',
+            'doktype',
+            'hidden',
+            'starttime',
+            'endtime',
+            'fe_group',
+            'extendToSubpages',
+            'nav_hide',
+            'is_siteroot',
+            'module',
+            'content_from_pid',
+            't3ver_state',
+        )
             ->from($this->table)
             ->where(
                 $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter($foundPageUids, Connection::PARAM_INT_ARRAY)),
@@ -622,7 +546,12 @@ class PagesRepository extends AbstractRepository
             $fields,
         );
 
-        $queryBuilder->select('uid', 'title', 'slug')
+        $select = array_values(array_unique(array_merge(
+            ['uid', 'title', 'slug', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
+            $fields,
+        )));
+
+        $queryBuilder->select(...$select)
             ->from($this->table)
             ->where($queryBuilder->expr()->or(...$likes))
             ->setMaxResults($maxResults)
