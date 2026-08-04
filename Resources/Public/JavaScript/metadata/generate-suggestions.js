@@ -8,6 +8,7 @@ import StatusHandling from "@autodudes/ai-suite/helper/image/status-handling.js"
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 
 class GenerateSuggestions {
     constructor() {
@@ -63,6 +64,8 @@ class GenerateSuggestions {
             let modal = MultiStepWizard.setup.$carousel.closest('.modal');
             let aiSuiteGenerateButton = modal.find('.panel-body button#aiSuiteGenerateMetadataBtn');
             LibrarySelection.initialize(modal.get(0), ['.panel-body button#aiSuiteGenerateMetadataBtn']);
+            PromptTemplate.bindInContainer(modal.get(0), 'textarea#metadataGenerationPrompt');
+            PromptTemplate.bindCollapsibleState(modal.get(0), 'textarea#metadataGenerationPrompt');
             let postData = settings['postData'];
             postData.context = postData.table === 'pages' ? 'pages' : 'files';
             GlobalInstructions.fetchGlobalInstructionsMultiStepWizard({
@@ -79,8 +82,10 @@ class GenerateSuggestions {
                     Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
                 }
+                let customPrompt = modal.find('.panel-body textarea#metadataGenerationPrompt');
                 postData.uuid = ev.target.getAttribute('data-uuid');
                 postData.textAiModel = textAiModel;
+                postData.customPrompt = customPrompt.length > 0 ? customPrompt.val().trim() : '';
                 postData.newsDetailPlugin = newsDetailPlugin.val();
                 if(sysLanguageSelection.length > 0) {
                     postData.langIsoCode = sysLanguageSelection.val();

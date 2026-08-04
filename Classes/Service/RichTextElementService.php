@@ -21,7 +21,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Localization\Locales;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -54,7 +53,7 @@ class RichTextElementService implements SingletonInterface
         protected readonly Typo3Version $typo3Version,
     ) {
         $versionParts = explode('.', $this->typo3Version->getVersion());
-        $this->typo3PatchVersion = (int)$versionParts[2];
+        $this->typo3PatchVersion = (int) $versionParts[2];
     }
 
     /**
@@ -88,9 +87,9 @@ class RichTextElementService implements SingletonInterface
             'typo3PatchVersion' => $this->typo3PatchVersion,
         ];
 
-        if($this->typo3PatchVersion >= 23) {
+        if ($this->typo3PatchVersion >= 23) {
             $ckeditorAttributes = GeneralUtility::implodeAttributes([
-                'id' => $fieldId . 'ckeditor5',
+                'id' => $fieldId.'ckeditor5',
                 'options' => GeneralUtility::jsonEncodeForHtmlAttribute($ckeditorConfiguration, false),
             ], true);
 
@@ -108,7 +107,6 @@ class RichTextElementService implements SingletonInterface
                 'typo3PatchVersion' => $this->typo3PatchVersion,
             ];
         }
-
 
         $this->pageRenderer->loadJavaScriptModule('@typo3/rte-ckeditor/ckeditor5.js');
 
@@ -192,8 +190,9 @@ class RichTextElementService implements SingletonInterface
     {
         $externalPlugins = $this->rteConfiguration['externalPlugins'] ?? [];
 
-        /** @var BeforeGetExternalPluginsEvent $beforeEvent */
-        $beforeEvent = $this->eventDispatcher->dispatch(new BeforeGetExternalPluginsEvent($externalPlugins, $data));
+        // dispatch() is only generic from TYPO3 v13 on, so read from the event object
+        $beforeEvent = new BeforeGetExternalPluginsEvent($externalPlugins, $data);
+        $this->eventDispatcher->dispatch($beforeEvent);
         $externalPlugins = $beforeEvent->getConfiguration();
 
         $urlParameters = [
@@ -223,10 +222,10 @@ class RichTextElementService implements SingletonInterface
             $pluginConfiguration[$pluginName]['config'] = $configuration;
         }
 
-        $pluginConfiguration = $this->eventDispatcher
+        return $this->eventDispatcher
             ->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data))
-            ->getConfiguration();
-        return $pluginConfiguration;
+            ->getConfiguration()
+        ;
     }
 
     /**
@@ -283,7 +282,7 @@ class RichTextElementService implements SingletonInterface
      *
      * @param array<string, mixed> $data
      *
-     * @return array<string, mixed> the configuration
+     * @return array<string, mixed>
      */
     protected function prepareConfigurationForEditor(array $data): array
     {
@@ -301,8 +300,8 @@ class RichTextElementService implements SingletonInterface
             $configuration = array_replace_recursive($configuration, $this->rteConfiguration['config']);
         }
 
-        /** @var BeforePrepareConfigurationForEditorEvent $beforeConfigEvent */
-        $beforeConfigEvent = $this->eventDispatcher->dispatch(new BeforePrepareConfigurationForEditorEvent($configuration, $data));
+        $beforeConfigEvent = new BeforePrepareConfigurationForEditorEvent($configuration, $data);
+        $this->eventDispatcher->dispatch($beforeConfigEvent);
         $configuration = $beforeConfigEvent->getConfiguration();
 
         // Set the UI language of the editor if not hard-coded by the existing configuration
@@ -344,7 +343,8 @@ class RichTextElementService implements SingletonInterface
 
         $configuration = $this->eventDispatcher
             ->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data))
-            ->getConfiguration();
+            ->getConfiguration()
+        ;
 
         return $configuration;
     }

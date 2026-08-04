@@ -21,6 +21,7 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
+use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
@@ -59,6 +60,7 @@ class PageMetadataController extends AbstractBackendController
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
+        protected readonly PromptTemplateScopeService $promptTemplateScopeService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -116,6 +118,11 @@ class PageMetadataController extends AbstractBackendController
                 }, []);
             }
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
+            $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates(
+                PromptTemplateScopeService::SCOPE_METADATA,
+                $this->promptTemplateScopeService->buildMetadataType('pages', (string) $workflowData['column']),
+                (int) (explode('__', (string) $workflowData['sysLanguage'])[1] ?? 0)
+            );
             $params['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('page');
 
             $output = $this->viewFactoryService->renderTemplate(

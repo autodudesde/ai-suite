@@ -10,36 +10,23 @@ use TYPO3\CMS\Core\Security\ContentSecurityPolicy\Scope;
 use TYPO3\CMS\Core\Security\ContentSecurityPolicy\UriValue;
 use TYPO3\CMS\Core\Type\Map;
 
-$aiSuiteCollection = new MutationCollection(
-    new Mutation(
-        MutationMode::Extend,
-        Directive::DefaultSrc,
-        new UriValue('https://cdn.discordapp.com'),
-        new UriValue('https://picsum.photos'),
-        new UriValue('https://fastly.picsum.photos'),
-        new UriValue('https://ai-suite-server.ddev.site'),
-        new UriValue('https://api.autodudes.de'),
-    ),
+$mutations = [
     new Mutation(
         MutationMode::Extend,
         Directive::ImgSrc,
-        new UriValue('https://cdn.discordapp.com'),
-        new UriValue('https://picsum.photos'),
-        new UriValue('https://fastly.picsum.photos'),
-        new UriValue('https://ai-suite-server.ddev.site'),
         new UriValue('https://api.autodudes.de'),
-    ),
-    new Mutation(
-        MutationMode::Extend,
-        Directive::ScriptSrc,
         new UriValue('https://cdn.discordapp.com'),
-        new UriValue('https://picsum.photos'),
-        new UriValue('https://fastly.picsum.photos'),
-        new UriValue('https://ai-suite-server.ddev.site'),
-        new UriValue('https://api.autodudes.de'),
     ),
-);
+];
+
+$localPolicies = __DIR__.'/ContentSecurityPolicies.local.php';
+if (file_exists($localPolicies)) {
+    $localCollection = require $localPolicies;
+    if ($localCollection instanceof MutationCollection) {
+        $mutations = array_merge($mutations, $localCollection->mutations);
+    }
+}
 
 return Map::fromEntries(
-    [Scope::backend(), $aiSuiteCollection],
+    [Scope::backend(), new MutationCollection(...$mutations)],
 );

@@ -24,9 +24,7 @@
                                 <f:if condition="{fieldData.rteConfig.typo3PatchVersion} >= 23">
                                     <f:then>
                                         <typo3-rte-ckeditor-ckeditor5 {fieldData.rteConfig.ckeditorAttributes -> f:format.raw()}>
-                                            <textarea {fieldData.rteConfig.textareaAttributes -> f:format.raw()}>
-                                                <f:format.htmlspecialchars>{fieldData.content}</f:format.htmlspecialchars>
-                                            </textarea>
+                                            <textarea {fieldData.rteConfig.textareaAttributes -> f:format.raw()}><f:format.htmlspecialchars>{fieldData.content}</f:format.htmlspecialchars></textarea>
                                         </typo3-rte-ckeditor-ckeditor5>
                                     </f:then>
                                     <f:else>

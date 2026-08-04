@@ -26,6 +26,7 @@ use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
+use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
 use B13\Container\Service\RecordLocalizeSummaryModifier;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,6 +60,10 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     ;
 
     $services->set(DatabaseRecordList::class);
+
+    $services->set(PromptTemplateTypeItemsProcFunc::class)
+        ->public()
+    ;
 
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container): void
@@ -149,13 +154,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             'method' => '__invoke',
             'event' => \TYPO3\CMS\Backend\Controller\Event\ModifyNewContentElementWizardItemsEvent::class,
             'identifier' => 'tx-ai-suite/modify-new-content-element-wizard-items-event-listener'
-        ]);
-
-    $services->set(\AutoDudes\AiSuite\EventListener\AfterTcaCompilationEventListener::class)
-        ->tag('event.listener', [
-            'method' => '__invoke',
-            'event' => \TYPO3\CMS\Core\Configuration\Event\AfterTcaCompilationEvent::class,
-            'identifier' => 'tx-ai-suite/after-tca-compilation-event-listener'
         ]);
 
     $services->set(\AutoDudes\AiSuite\EventListener\AfterFormEnginePageInitializedEventListener::class)

@@ -5,6 +5,7 @@ import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 
 class PagesPrepare {
     parentUuid;
@@ -13,6 +14,8 @@ class PagesPrepare {
         Generation.cancelGeneration();
         this.pageSelectionEventDelegation();
         GlobalInstructions.metadataTooltipEventDelegation();
+        PromptTemplate.bindWithDelegation(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
+        PromptTemplate.bindCollapsibleState(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
         this.parentUuid = '';
         this.init();
     }
@@ -108,6 +111,7 @@ class PagesPrepare {
                                 column: document.querySelector('select[name="workflowPagesPrepare[column]"]').value,
                                 sysLanguage: document.querySelector('select[name="workflowPagesPrepare[sysLanguage]"]').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
+                                customPrompt: PromptTemplate.readPrompt(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt'),
                                 handledByCli: handledByCli,
                             };
 
@@ -262,6 +266,7 @@ class PagesPrepare {
         formData.append('workflowPagesExecute[sysLanguage]', baseFormData.sysLanguage);
         formData.append('workflowPagesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowPagesExecute[pages]', JSON.stringify(currentPages));
+        formData.append('workflowPagesExecute[customPrompt]', baseFormData.customPrompt ?? '');
         if (baseFormData.handledByCli) {
             formData.append('workflowPagesExecute[handledByCli]', '1');
         }

@@ -5,6 +5,8 @@ import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
+import FolderSelection from "@autodudes/ai-suite/helper/folder-selection.js";
 
 class FilelistFilesPrepare {
 
@@ -13,6 +15,9 @@ class FilelistFilesPrepare {
         Generation.cancelGeneration();
         this.fileSelectionEventDelegation();
         GlobalInstructions.metadataTooltipEventDelegation();
+        FolderSelection.initialize(document.querySelector('#folderSelection'));
+        PromptTemplate.bindWithDelegation(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
+        PromptTemplate.bindCollapsibleState(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
     }
 
     filesPrepareFormEventListener() {
@@ -85,6 +90,7 @@ class FilelistFilesPrepare {
                                 column: document.querySelector('select#column').value,
                                 sysLanguage: document.querySelector('select#sysLanguage').value,
                                 textAiModel: document.querySelector('.text-generation-library input[type="radio"]:checked').value,
+                                customPrompt: PromptTemplate.readPrompt(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt'),
                                 handledByCli: handledByCli,
                             };
 
@@ -101,11 +107,35 @@ class FilelistFilesPrepare {
                             selectedFiles = null;
                         }
                     }
+                    if(ev.target.closest('.folder-group-collapse') !== null) {
+                        ev.preventDefault();
+                        let button = ev.target.closest('.folder-group-collapse');
+                        let group = button.closest('.folder-group');
+                        if(group !== null) {
+                            let items = group.querySelector('.folder-group-items');
+                            let collapsed = items.classList.toggle('d-none');
+                            button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                            button.querySelector('.folder-group-collapse-open').classList.toggle('d-none', collapsed);
+                            button.querySelector('.folder-group-collapse-closed').classList.toggle('d-none', !collapsed);
+                        }
+                    }
                     if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.id === 'toggleFileSelection') {
                         let checkboxes = document.querySelectorAll('input[name^="file-selection"]');
                         checkboxes.forEach(function(checkbox) {
                             checkbox.checked = ev.target.checked;
                         });
+                        document.querySelectorAll('.folder-group-toggle').forEach(function(groupToggle) {
+                            groupToggle.checked = ev.target.checked;
+                        });
+                        self.calculateRequestAmount();
+                    }
+                    if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.classList.contains('folder-group-toggle')) {
+                        let group = ev.target.closest('.folder-group');
+                        if(group !== null) {
+                            group.querySelectorAll('input[name^="file-selection"]').forEach(function(checkbox) {
+                                checkbox.checked = ev.target.checked;
+                            });
+                        }
                         self.calculateRequestAmount();
                     }
                     if((ev.target.nodeName === 'INPUT' || ev.target.nodeName === 'TEXTAREA') && ev.target.classList.contains('file-metadata-field')) {
@@ -188,6 +218,7 @@ class FilelistFilesPrepare {
         formData.append('workflowFilesExecute[sysLanguage]', baseFormData.sysLanguage);
         formData.append('workflowFilesExecute[textAiModel]', baseFormData.textAiModel);
         formData.append('workflowFilesExecute[files]', JSON.stringify(currentFiles));
+        formData.append('workflowFilesExecute[customPrompt]', baseFormData.customPrompt ?? '');
         if (baseFormData.handledByCli) {
             formData.append('workflowFilesExecute[handledByCli]', '1');
         }
@@ -235,6 +266,8 @@ class FilelistFilesPrepare {
 
     async updateContent() {
         Generation.showSpinner();
+        // The whole result section is replaced, so a prompt the editor already typed would be lost.
+        const previousPrompt = PromptTemplate.readPrompt(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
         let filesForm = document.querySelector('form[name="filesPrepareExecute"]');
         const formData = new FormData(filesForm);
         let res = await Ajax.sendAjaxRequest('aisuite_workflow_filelist_files_update_view', formData);
@@ -248,6 +281,11 @@ class FilelistFilesPrepare {
                 document.querySelector('#resultsToExecute'),
                 ['#filesExecuteFormSubmitBtn', '#automaticFilesExecuteFormSubmitBtn']
             );
+            const promptField = document.querySelector('#resultsToExecute textarea#metadataGenerationPrompt');
+            if (promptField !== null && previousPrompt !== '') {
+                promptField.value = previousPrompt;
+            }
+            PromptTemplate.refreshCollapsibleState(document.querySelector('#resultsToExecute'));
         }
         Generation.hideSpinner();
     }

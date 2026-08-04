@@ -223,7 +223,7 @@
                 <source>Edit</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope">
-                <source>ContentElements (leave empty for all elements)</source>
+                <source>ContentElements / metadata fields (leave empty for all)</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
                 <source>Custom prompt templates</source>
@@ -260,6 +260,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeImageWizard">
                 <source>Image generation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeMetadata">
+                <source>Metadata generation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.scopeNewsRecord">
                 <source>News</source>
@@ -443,11 +446,20 @@
             <trans-unit id="aiSuite.module.general.prompt">
                 <source>Input statement for the AI (prompt)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.general.metadataPrompt">
+                <source>Own prompt (optional, replaces the serverside predefined instruction)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.ownPromptActive">
+                <source>active</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.general.promptTemplates">
                 <source>Prompt Templates</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.general.selectPromptTemplate">
                 <source>Select prompt template</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.useOwnPrompt">
+                <source>Use own prompt</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.globalInstructionStorageMessage">
@@ -505,6 +517,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.sys_file_reference.title">
                 <source>Image title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.tx_news_domain_model_news.alternative_title">
+                <source>News alternative title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.tx_news_domain_model_news.description">
+                <source>News description</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.translation.scope.all">
                 <source>All (metadata, content)</source>
@@ -875,6 +893,42 @@
             <trans-unit id="aiSuite.module.workflowFilelist.selectedDirectory">
                 <source>Selected directory</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.selectedDirectories">
+                <source>Selected directories</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.addDirectory">
+                <source>Add directory</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.removeDirectory">
+                <source>Remove directory</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.selectDirectories">
+                <source>Select directories</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.noDirectorySelected">
+                <source>No directory selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderDepth">
+                <source>Sub-level depth</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderDepth.selectedOnly">
+                <source>Only the selected directories</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.empty">
+                <source>No matching files in this directory.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.toggle">
+                <source>Show or hide the files of this directory</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.folderGroup.fileCount">
+                <source>%s file(s)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.limitReached">
+                <source>Too many folders or files selected, the result list was truncated.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflowFilelist.skippedDirectories">
+                <source>Some directories were skipped (missing permissions or not found).</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.generatedPreselectionImageOptions">
                 <source>Generated pre-selection image options</source>
             </trans-unit>
@@ -886,6 +940,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.openDocumentation">
                 <source>Open documentation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.quickStart">
+                <source>Quick Start</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
@@ -1229,21 +1286,6 @@
             <trans-unit id="aiSuite.module.notification.modal.noSelectedPageTitle">
                 <source>No page selected</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.critical">
-                <source>Major Service Outage</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.detailedInfo">
-                <source>For a detailed status overview visit the </source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.linkTitle">
-                <source>OpenAI status page</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.ok">
-                <source>All Systems Operational</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.openAiStatus.warning">
-                <source>Partial System Outage</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.defaultPrompt">
                 <source>Create me a page structure for [...].</source>
             </trans-unit>
@@ -1276,9 +1318,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.sourceXliffFileEmpty.title">
                 <source>XLIFF file is empty</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.warningFetchingOpenAiStatus.title">
-                <source>Could not fetch the current status of the OpenAI API.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.warningFetchingTaskStatus.title">
                 <source>Could not fetch the current status of the background tasks.</source>
@@ -1421,11 +1460,8 @@
             <trans-unit id="aiSuite.module.settings.field.midjourneyId">
                 <source>Midjourney ID</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.fluxApiKey">
-                <source>Flux API Key</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.fluxBaseUrl">
-                <source>Flux Base URL</source>
+            <trans-unit id="aiSuite.module.settings.field.aiModelHubApiKey">
+                <source>AI Model Hub API Key</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
                 <source>Enable Basic Authentication</source>

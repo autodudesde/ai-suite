@@ -18,6 +18,7 @@ use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
@@ -41,6 +42,7 @@ class ModifyButtonBarEventListener
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly FlashMessageService $flashMessageService,
         protected readonly BackendRouteService $backendRouteService,
+        protected readonly Typo3Version $typo3Version,
     ) {
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
@@ -135,7 +137,9 @@ class ModifyButtonBarEventListener
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang.xlf');
                 $this->pageRenderer->addInlineLanguageLabelFile('EXT:ai_suite/Resources/Private/Language/locallang_module.xlf');
                 $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/backend-basics-styles.css');
-                $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+                if ($this->typo3Version->getMajorVersion() < 14) {
+                    $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/localization.js');
+                }
                 $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/translation/page-localization.js');
             }
             $returnUrl = $request->getQueryParams()['returnUrl'] ?? '';

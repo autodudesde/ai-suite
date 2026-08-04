@@ -13,102 +13,54 @@
             </label>
         </div>
         <div class="panel-body">
+            <f:if condition="{limitReached}">
+                <f:render partial="Libs/Notification" arguments="{type: 'warning', iconIdentifier: 'actions-exclamation-triangle', iconSize: 'small', titleKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.info', messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.limitReached'}"/>
+            </f:if>
+            <f:if condition="{skippedDirectories}">
+                <f:render partial="Libs/Notification" arguments="{type: 'warning', iconIdentifier: 'actions-exclamation-triangle', iconSize: 'small', titleKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.info', messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.skippedDirectories'}"/>
+            </f:if>
             <f:if condition="{fileMetadata -> f:count()} > 0">
                 <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
-                <label class="mb-3 d-flex gap-2 fw-bold align-items-center">
-                    <f:render partial="Libs/GlobalInstructions" arguments="{globalInstructions: globalInstructions}" />
-                </label>
+                <f:render partial="Libs/CollapsiblePromptField" arguments="{promptTemplates: promptTemplates, globalInstructions: globalInstructions}" />
                 <label class="mb-3 d-flex gap-2 fw-bold">
                     <input type="checkbox" id="toggleFileSelection" value="1" />
                     <span>
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.toggleAll" />
                     </span>
                 </label>
+            </f:if>
+            <f:if condition="{folderGroups -> f:count()} > 0">
                 <div id="sortable-files" class="sortable-wrap list-group nested-sortable">
-                <f:for each="{fileMetadata}" as="metadata" key="fileUid">
-                    <div class="list-group-item nested">
-                        <div class="d-flex w-100">
-                            <div class="preview-image">
-                                <label for="file-selection[{metadata.uid}]">
-                                    <f:image src="{fileUid}" width="100px"  />
-                                </label>
-                            </div>
-                            <div class="file-meta-content d-flex flex-column w-100">
-                                <f:variable name="taskStatus">{aiSuite:inArray(needle: metadata.uid, haystack: alreadyPendingFiles)}</f:variable>
-                                <div class="file-meta-content-info badge badge-info"
-                                     data-table="sys_file_metadata"
-                                     data-uid="{metadata.uid}"
-                                >
-                                    <core:icon identifier="actions-document-info" size="small" /> <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.status.info"/>
-                                </div>
-                                <label class="d-flex gap-2 fw-bold mb-3" for="file-selection[{metadata.uid}]">
-                                    <f:if condition="{taskStatus} != ''">
-                                        <f:then>
-                                            <span class="badge badge-{taskStatus}">{taskStatus}</span>
-                                        </f:then>
-                                        <f:else if="{metadata.size} > {maxAllowedFileSize}">
-                                            <span class="badge badge-warning">
-                                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.imageSizeTooLargeBadge" />
-                                            </span>
-                                        </f:else>
-                                        <f:else>
-                                            <input
-                                                type="checkbox"
-                                                name="file-selection[{metadata.uid}]"
-                                                id="file-selection[{metadata.uid}]"
-                                                value="{metadata.uid}"
-                                            >
-                                        </f:else>
-                                    </f:if>
-                                    <f:if condition="{metadata.mode} == 'NEW'">
-                                        <span class="badge badge-success badge-new"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.badge.new" /></span>
-                                    </f:if>
-                                    <span>{metadata.name}</span>
-                                    <f:if condition="{metadata.size} > {maxAllowedFileSize}">
-                                        <div class="size-info">
-                                            <core:icon identifier="actions-exclamation-triangle" size="small" />
-                                            <span class="error-message"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.notification.imageSizeTooLarge" /></span>
-                                        </div>
-                                    </f:if>
-                                </label>
-                                <f:if condition="{taskStatus} === ''">
-                                    <div class="filelist-input title {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'title\'', then: 'd-block', else: 'd-none')}">
-                                        <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.title"/></label>
-                                        <input
-                                            class="w-100 file-metadata-field"
-                                            name="files[{metadata.uid}][title]"
-                                            value="{metadata.title}"
-                                            data-sys-file-uid="{metadata.fileUid}"
-                                            data-mode="{metadata.mode}"
-                                        />
-                                    </div>
-                                    <div class="filelist-input alternative {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'alternative\'', then: 'd-block', else: 'd-none')}">
-                                        <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.alternativeText"/></label>
-                                        <input class="w-100 file-metadata-field"
-                                               name="files[{metadata.uid}][alternative]"
-                                               value="{metadata.alternative}"
-                                               data-sys-file-uid="{metadata.fileUid}"
-                                               data-mode="{metadata.mode}"
-                                        />
-                                    </div>
-                                    <div class="filelist-input description {f:if(condition: '{activeColumn} == \'all\' || {activeColumn} == \'description\'', then: 'd-block', else: 'd-none')}">
-                                        <label><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.description"/></label>
-                                        <textarea class="w-100 h-50 file-metadata-field"
-                                                  name="files[{metadata.uid}][description]"
-                                                  data-sys-file-uid="{metadata.fileUid}"
-                                                  data-mode="{metadata.mode}"
-                                                  rows="5"
-                                        >{metadata.description}</textarea>
-                                    </div>
-                                </f:if>
-                            </div>
+                <f:for each="{folderGroups}" as="group">
+                    <div class="folder-group" data-folder-identifier="{group.identifier}">
+                        <f:render partial="Workflow/FolderGroupHeading" arguments="{group: group}"/>
+                        <div class="folder-group-items">
+                            <f:if condition="{group.count} > 0">
+                                <f:then>
+                                    <f:for each="{group.fileMetadata}" as="metadata" key="fileUid">
+                                        <f:render partial="Workflow/FileListTaskItem" arguments="{
+                                            metadata: metadata,
+                                            fileUid: fileUid,
+                                            groupIdentifier: group.identifier,
+                                            alreadyPendingFiles: alreadyPendingFiles,
+                                            maxAllowedFileSize: maxAllowedFileSize,
+                                            activeColumn: activeColumn
+                                        }"/>
+                                    </f:for>
+                                </f:then>
+                                <f:else>
+                                    <p class="folder-group-empty text-muted mb-0">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderGroup.empty"/>
+                                    </p>
+                                </f:else>
+                            </f:if>
                         </div>
                     </div>
                 </f:for>
                 </div>
             </f:if>
             <f:if condition="{unsupportedFileMetadata -> f:count()} > 0">
-                <div id="sortable-files" class="sortable-wrap list-group nested-sortable">
+                <div id="sortable-unsupported-files" class="sortable-wrap list-group nested-sortable">
                 <f:for each="{unsupportedFileMetadata}" as="unsupportedMetadata" key="unsupportedFileUid">
                     <div class="list-group-item nested">
                         <div class="d-flex w-100">
@@ -150,7 +102,7 @@
                 </div>
                 <p class="calculated-requests"></p>
             </f:if>
-            <f:if condition="{fileMetadata -> f:count()} == 0 && {unsupportedFileMetadata -> f:count()} == 0">
+            <f:if condition="{fileMetadata -> f:count()} == 0 && {unsupportedFileMetadata -> f:count()} == 0 && {folderGroups -> f:count()} == 0">
                 <div class="my-4">
                     <f:render partial="Libs/Notification" arguments="{type: 'info', iconIdentifier: 'actions-info', iconSize: 'small', titleKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.info', messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.noFilesFound'}"/>
                 </div>

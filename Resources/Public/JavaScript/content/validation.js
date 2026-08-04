@@ -48,9 +48,17 @@ class Validation {
                 let rteTextFields = document.querySelectorAll('.rte-textarea');
                 rteTextFields.forEach(function(rte) {
                     let rteFieldIdentifier = rte.getAttribute('data-field-identifier');
-                    let rteContent = rte.querySelector('typo3-rte-ckeditor-ckeditor5 textarea').innerHTML;
                     let rteContentField = document.querySelector('input.rte-content[name="' + rteFieldIdentifier + '"]');
-                    rteContentField.value = rteContent;
+                    if (rteContentField === null) {
+                        return;
+                    }
+                    let rteTextarea = rte.querySelector('typo3-rte-ckeditor-ckeditor5 textarea');
+                    let ckeditorInstance = rte.querySelector('.ck-editor__editable')?.ckeditorInstance ?? rteTextarea?.ckeditorInstance;
+                    if (ckeditorInstance) {
+                        rteContentField.value = ckeditorInstance.getData();
+                    } else if (rteTextarea !== null) {
+                        rteContentField.value = rteTextarea.value.trim();
+                    }
                 });
                 if(imageFieldsWithoutSelection !== '') {
                     ContentElement.showImageFieldsWithoutSelectionModal(imageFieldsWithoutSelection, form);

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -24,11 +25,13 @@ class TranslationRepository extends AbstractRepository
 {
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'tt_content',
         string $sortBy = 'uid'
     ) {
         parent::__construct(
             $connectionPool,
+            $workspaceContextService,
             $table,
             $sortBy
         );

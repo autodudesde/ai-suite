@@ -170,6 +170,10 @@
                 <target>Es ist kein AI Suite API-Key konfiguriert. Bitte hinterlegen Sie Ihren Key in der Extension-Konfiguration. Falls Sie noch keinen Key haben, erhalten Sie einen unter https://www.autodudes.de</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.error.localization.recordNotFound">
+                <source>The record to be localized could not be found (table "%s", uid %s)</source>
+                <target>Der zu lokalisierende Datensatz wurde nicht gefunden (Tabelle „%s“, UID %s)</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.news.missingDetailPlugin">
                 <source>Metadata could not be generated: no news detail plugin page is available to render this news article. Please create or select a page that contains a news detail plugin.</source>
                 <target>Metadaten konnten nicht generiert werden: Es ist keine Seite mit einem News-Detail-Plugin verfügbar, um diesen News-Artikel darzustellen. Bitte legen Sie eine Seite mit einem News-Detail-Plugin an oder wählen Sie eine solche aus.</target>
@@ -177,6 +181,10 @@
             <trans-unit id="aiSuite.error.site.notFound">
                 <source>No site found for language id %s and page uid %s</source>
                 <target>Keine Website für Sprach-ID %s und Seiten-UID %s gefunden</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.site.notFoundForPage">
+                <source>No site configuration found for page uid %s. Please check the site configuration of this page tree.</source>
+                <target>Für die Seiten-UID %s wurde keine Site-Konfiguration gefunden. Bitte prüfen Sie die Site-Konfiguration dieses Seitenbaums.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.error_no_credits_table">

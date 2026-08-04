@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
@@ -21,11 +22,13 @@ class SysFileMetadataRepository extends AbstractRepository
 {
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'sys_file_metadata',
         string $sortBy = 'title'
     ) {
         parent::__construct(
             $connectionPool,
+            $workspaceContextService,
             $table,
             $sortBy
         );
@@ -190,22 +193,5 @@ class SysFileMetadataRepository extends AbstractRepository
         ;
 
         return $queryBuilder->executeQuery()->fetchOne() > 0;
-    }
-
-    /**
-     * @return list<int>
-     */
-    public function findUidByFile(int $fileUid): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $queryBuilder
-            ->select('uid')
-            ->from($this->table)
-            ->where(
-                $queryBuilder->expr()->eq('file', $fileUid),
-            )
-        ;
-
-        return $queryBuilder->executeQuery()->fetchFirstColumn();
     }
 }

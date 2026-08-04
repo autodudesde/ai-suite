@@ -42,6 +42,9 @@ class PageStructureFactory
             $parentPageUid = 0;
         }
         foreach ($data as $pageData) {
+            if (!is_array($pageData) || '' === trim((string) ($pageData['title'] ?? ''))) {
+                continue;
+            }
             $beUserUid = $this->backendUserService->getBackendUser()?->user['uid'] ?? 0;
             $beUserGroup = $this->backendUserService->getBackendUser()?->firstMainGroup ?? 0;
             $permissions = $this->pagePermissionAssembler->applyDefaults([], $parentPageUid, $beUserUid, $beUserGroup);

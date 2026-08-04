@@ -17,6 +17,7 @@ namespace AutoDudes\AiSuite\Hooks;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
 use AutoDudes\AiSuite\Service\TcaCompatibilityService;
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -41,6 +42,7 @@ class AutoTranslationHook implements SingletonInterface
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly BackendUserService $backendUserService,
+        protected readonly WorkspaceContextService $workspaceContextService,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -114,7 +116,7 @@ class AutoTranslationHook implements SingletonInterface
         $this->autoTranslateQueue = [];
 
         // Never auto-translate inside a workspace
-        if (($this->backendUserService->getBackendUser()?->workspace ?? 0) > 0) {
+        if ($this->workspaceContextService->getWorkspaceId() > 0) {
             return;
         }
 

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Providers;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\SessionService;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 
@@ -51,6 +52,12 @@ class PagesContextMenuProvider extends AbstractProvider
                 ],
                 'divider1' => [
                     'type' => 'divider',
+                ],
+                'pagesTranslationWorkflow' => [
+                    'type' => 'item',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.workflowPagesTranslation.title',
+                    'iconIdentifier' => 'actions-localize',
+                    'callbackAction' => 'contextMenuLink',
                 ],
                 'translateWholePage' => [
                     'type' => 'item',
@@ -136,7 +143,15 @@ class PagesContextMenuProvider extends AbstractProvider
                 break;
 
             case 'filelistMetaWorkflow':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_prepare', ['id' => $this->identifier])->__toString();
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_prepare', [
+                    'id' => $this->identifier,
+                    SessionService::RESET_FOLDER_SELECTION_PARAM => 1,
+                ])->__toString();
+
+                break;
+
+            case 'pagesTranslationWorkflow':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_pages_translation_prepare', ['id' => $this->identifier])->__toString();
 
                 break;
 
@@ -146,7 +161,10 @@ class PagesContextMenuProvider extends AbstractProvider
                 break;
 
             case 'translateFileMetadata':
-                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_translate_prepare', ['id' => $this->identifier])->__toString();
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_filelist_files_translate_prepare', [
+                    'id' => $this->identifier,
+                    SessionService::RESET_FOLDER_SELECTION_PARAM => 1,
+                ])->__toString();
 
                 break;
         }
@@ -190,6 +208,11 @@ class PagesContextMenuProvider extends AbstractProvider
 
                 break;
 
+            case 'pagesTranslationWorkflow':
+                $canRender = $this->canPagesTranslationWorkflow();
+
+                break;
+
             case 'translateWholePage':
                 $canRender = $this->canTranslateWholePage();
 
@@ -206,7 +229,12 @@ class PagesContextMenuProvider extends AbstractProvider
 
     protected function canShowAiSuite(): bool
     {
-        return $this->canPageWorkflow() || $this->canFileReferencesWorkflow() || $this->canFilelistWorkflow() || $this->canTranslateWholePage() || $this->canTranslateFileMetadata();
+        return $this->canPageWorkflow() || $this->canFileReferencesWorkflow() || $this->canFilelistWorkflow() || $this->canPagesTranslationWorkflow() || $this->canTranslateWholePage() || $this->canTranslateFileMetadata();
+    }
+
+    protected function canPagesTranslationWorkflow(): bool
+    {
+        return 'pages' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation');
     }
 
     protected function canPageWorkflow(): bool

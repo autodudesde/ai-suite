@@ -1,0 +1,76 @@
+<html
+    data-namespace-typo3-fluid="true"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+>
+<f:variable name="fieldNamespace">{f:if(condition: namespace, then: namespace, else: 'options')}</f:variable>
+<div class="ai-suite-folder-select" id="folderSelection" data-namespace="{fieldNamespace}">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label class="fw-bold mb-2">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.selectedDirectories"/>
+                </label>
+                <input type="hidden"
+                       name="{fieldNamespace}[directoriesTouched]"
+                       id="directoriesTouched"
+                       value="{f:if(condition: directoriesTouched, then: '1', else: '0')}"
+                />
+                <div class="ai-suite-folder-chips d-flex flex-wrap gap-2 mb-2" id="folderChips">
+                    <f:for each="{directories}" as="identifier">
+                        <span class="badge badge-info ai-suite-folder-chip d-inline-flex align-items-center gap-2"
+                              data-identifier="{identifier}"
+                        >
+                            <input type="hidden" name="{fieldNamespace}[directories][]" value="{identifier}" />
+                            <span class="ai-suite-folder-label">{identifier}</span>
+                            <button type="button"
+                                    class="ai-suite-folder-remove btn btn-link btn-sm p-0"
+                                    data-identifier="{identifier}"
+                                    title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.removeDirectory')}"
+                            >
+                                <core:icon identifier="actions-close" size="small" />
+                            </button>
+                        </span>
+                    </f:for>
+                </div>
+                <p class="ai-suite-folder-empty text-muted {f:if(condition: directories, then: 'd-none', else: 'd-block')}">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.noDirectorySelected"/>
+                </p>
+                <button type="button" class="btn btn-default btn-sm" id="addFolderBtn" data-browser-url="{folderBrowserUrl}">
+                    <core:icon identifier="apps-filetree-folder-default" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.addDirectory"/>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label class="fw-bold mb-2">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderDepth"/>
+                </label>
+                <select name="{fieldNamespace}[depth]" class="form-select" id="depth">
+                    <f:for each="{depths}" as="depthOption" key="value">
+                        <f:if condition="{depth} == {value}">
+                            <f:then>
+                                <option value="{value}" selected="selected">
+                                    <f:if condition="{value} == 0">
+                                        <f:then><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderDepth.selectedOnly"/></f:then>
+                                        <f:else>{depthOption}</f:else>
+                                    </f:if>
+                                </option>
+                            </f:then>
+                            <f:else>
+                                <option value="{value}">
+                                    <f:if condition="{value} == 0">
+                                        <f:then><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflowFilelist.folderDepth.selectedOnly"/></f:then>
+                                        <f:else>{depthOption}</f:else>
+                                    </f:if>
+                                </option>
+                            </f:else>
+                        </f:if>
+                    </f:for>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+</html>

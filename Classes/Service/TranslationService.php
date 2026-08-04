@@ -72,6 +72,7 @@ class TranslationService
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
         protected readonly LocalizationService $localizationService,
         protected readonly BackendUserService $backendUserService,
+        protected readonly WorkspaceContextService $workspaceContextService,
     ) {}
 
     /**
@@ -326,21 +327,33 @@ class TranslationService
     /**
      * @param list<array<string, mixed>> $tasks Background tasks from BackgroundTaskRepository::findByParentUuid()
      *
-     * @return array{applied: int, errors: string[]}
+     * @return array{applied: int, skipped: int, failed: int, errors: string[]}
      */
     public function applyBatchTranslationResults(array $tasks): array
     {
         $applied = 0;
+        $skipped = 0;
+        $failed = 0;
         $errors = [];
 
         foreach ($tasks as $task) {
-            if ('finished' !== ($task['status'] ?? '')) {
+            $status = (string) ($task['status'] ?? '');
+            if ('finished' !== $status) {
+                if ('pending' === $status) {
+                    ++$skipped;
+                } else {
+                    ++$failed;
+                    $errors[] = $this->describeUnusableTask($task, $status);
+                }
+
                 continue;
             }
 
             $answer = json_decode((string) ($task['answer'] ?? ''), true);
             $translationData = $answer['body']['translationResults'] ?? [];
             if (empty($translationData)) {
+                ++$skipped;
+
                 continue;
             }
 
@@ -380,21 +393,34 @@ class TranslationService
                     }
                 }
 
-                if (!empty($datamap)) {
-                    $this->executeDataHandler($datamap, []);
-                    ++$applied;
+                if (empty($datamap)) {
+                    ++$failed;
+                    $message = sprintf('Page %d: no target record could be localized.', $pageUid);
+                    $errors[] = $message;
+                    $this->markTranslationTaskAsError($task, $message);
+                    $this->logger->warning('Batch translation applied nothing', [
+                        'uuid' => $task['uuid'],
+                        'pageUid' => $pageUid,
+                    ]);
 
-                    if (isset($datamap['pages'])) {
-                        $translatedPageUid = (int) array_key_first($datamap['pages']);
-                        if ($translatedPageUid > 0) {
-                            $this->updatePageSlug($translatedPageUid);
-                        }
+                    continue;
+                }
+
+                $this->executeDataHandler($datamap, []);
+                ++$applied;
+
+                if (isset($datamap['pages'])) {
+                    $translatedPageUid = (int) array_key_first($datamap['pages']);
+                    if ($translatedPageUid > 0) {
+                        $this->updatePageSlug($translatedPageUid);
                     }
                 }
 
                 $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
             } catch (\Throwable $e) {
+                ++$failed;
                 $errors[] = sprintf('Page %d: %s', $pageUid, $e->getMessage());
+                $this->markTranslationTaskAsError($task, $e->getMessage());
                 $this->logger->error('Failed to apply batch translation', [
                     'uuid' => $task['uuid'],
                     'pageUid' => $pageUid,
@@ -403,7 +429,7 @@ class TranslationService
             }
         }
 
-        return ['applied' => $applied, 'errors' => $errors];
+        return ['applied' => $applied, 'skipped' => $skipped, 'failed' => $failed, 'errors' => $errors];
     }
 
     public function getPageIdFromRequest(ServerRequestInterface $request): int
@@ -484,7 +510,7 @@ class TranslationService
         $processedCount = 0;
         $errorCount = 0;
 
-        if (($this->backendUserService->getBackendUser()?->workspace ?? 0) > 0) {
+        if ($this->workspaceContextService->getWorkspaceId() > 0) {
             return [
                 'success' => true,
                 'processedCount' => 0,
@@ -1350,7 +1376,7 @@ class TranslationService
 
         // Getting workspace overlay if possible. This will localize versions in workspace if any
         $row = BackendUtility::getRecordWSOL($table, $uid);
-        BackendUtility::workspaceOL($table, $row, $this->backendUserService->getBackendUser()?->workspace ?? 0);
+        BackendUtility::workspaceOL($table, $row, $this->workspaceContextService->getWorkspaceId());
         if (!is_array($row)) {
             return;
         }
@@ -1432,7 +1458,7 @@ class TranslationService
         if (!is_array($row)) {
             return;
         }
-        BackendUtility::workspaceOL($table, $row, $this->backendUserService->getBackendUser()?->workspace ?? 0);
+        BackendUtility::workspaceOL($table, $row, $this->workspaceContextService->getWorkspaceId());
         if (!is_array($row)) {
             return;
         }
@@ -1457,12 +1483,12 @@ class TranslationService
         }
 
         $nonFields = array_unique(GeneralUtility::trimExplode(',', 'uid,perms_userid,perms_groupid,perms_user,perms_group,perms_everybody,t3ver_oid,t3ver_wsid,t3ver_state,t3ver_stage,'.$excludeFields, true));
-        BackendUtility::workspaceOL($table, $row, $this->backendUserService->getBackendUser()?->workspace ?? 0);
+        BackendUtility::workspaceOL($table, $row, $this->workspaceContextService->getWorkspaceId());
         if (!is_array($row)) {
             return;
         }
         if (BackendUtility::isTableWorkspaceEnabled($table)
-            && ($this->backendUserService->getBackendUser()?->workspace ?? 0) > 0
+            && $this->workspaceContextService->getWorkspaceId() > 0
             && $this->tcaCompatibilityService->isDeletePlaceholderState($row['t3ver_state'] ?? 0)
         ) {
             return;
@@ -1561,7 +1587,7 @@ class TranslationService
     {
         $isWorkspacesLoaded = ExtensionManagementUtility::isLoaded('workspaces');
         $relationHandler = GeneralUtility::makeInstance(RelationHandler::class);
-        $relationHandler->setWorkspaceId($this->backendUserService->getBackendUser()?->workspace ?? 0);
+        $relationHandler->setWorkspaceId($this->workspaceContextService->getWorkspaceId());
         $relationHandler->setUseLiveReferenceIds($isWorkspacesLoaded);
         $relationHandler->setUseLiveParentIds($isWorkspacesLoaded);
 
@@ -1600,5 +1626,19 @@ class TranslationService
         }
 
         return ('group' === $conf['type']) || (('select' === $conf['type'] || 'category' === $conf['type']) && !empty($conf['foreign_table']));
+    }
+
+    /**
+     * @param array<string, mixed> $task
+     */
+    private function describeUnusableTask(array $task, string $status): string
+    {
+        $reason = trim((string) ($task['error'] ?? ''));
+
+        return sprintf(
+            'Task %s: %s',
+            (string) ($task['uuid'] ?? 'unknown'),
+            '' !== $reason ? $reason : sprintf('not applied, status is "%s"', $status),
+        );
     }
 }

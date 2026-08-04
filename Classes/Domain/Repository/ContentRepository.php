@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -25,10 +26,39 @@ class ContentRepository extends AbstractRepository
 {
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
         string $table = 'tt_content',
         string $sortBy = 'sorting',
     ) {
-        parent::__construct($connectionPool, $table, $sortBy);
+        parent::__construct($connectionPool, $workspaceContextService, $table, $sortBy);
+    }
+
+    /**
+     * @param list<int> $pids
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function getAvailableNewsDetailPlugins(array $pids, int $languageId): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tt_content');
+
+        return $queryBuilder->select('tt_content.pid', 'p.title')
+            ->from('tt_content')
+            ->leftJoin(
+                'tt_content',
+                'pages',
+                'p',
+                $queryBuilder->expr()->eq('p.uid', $queryBuilder->quoteIdentifier('tt_content.pid'))
+            )
+            ->where(
+                $queryBuilder->expr()->in('tt_content.pid', $pids),
+                $queryBuilder->expr()->eq('tt_content.sys_language_uid', $languageId),
+                $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail')),
+                $queryBuilder->expr()->eq('p.deleted', 0)
+            )
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
     }
 
     /**
@@ -42,9 +72,10 @@ class ContentRepository extends AbstractRepository
         if (!$includeHidden) {
             $qb->getRestrictions()->add(GeneralUtility::makeInstance(HiddenRestriction::class));
         }
+        $this->addWorkspaceRestriction($qb);
 
         return $qb
-            ->select('uid', 'pid', 'colPos', 'CType', 'header', 'bodytext', 'hidden', 'sorting', 'image', 'assets', 'media', 'sys_language_uid')
+            ->select('uid', 'pid', 'colPos', 'CType', 'header', 'bodytext', 'hidden', 'sorting', 'image', 'assets', 'media', 'sys_language_uid', 't3ver_oid', 't3ver_wsid', 't3ver_state')
             ->from($this->table)
             ->where(
                 $qb->expr()->eq('pid', $qb->createNamedParameter($pageId, Connection::PARAM_INT)),
@@ -67,6 +98,7 @@ class ContentRepository extends AbstractRepository
         if (!$includeHidden) {
             $qb->getRestrictions()->add(GeneralUtility::makeInstance(HiddenRestriction::class));
         }
+        $this->addWorkspaceRestriction($qb);
 
         return (int) $qb
             ->count('uid')
@@ -102,23 +134,6 @@ class ContentRepository extends AbstractRepository
         ;
 
         return $count > 0;
-    }
-
-    public function countFileReferences(int $contentUid): int
-    {
-        $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-
-        return (int) $qb
-            ->count('uid')
-            ->from('sys_file_reference')
-            ->where(
-                $qb->expr()->eq('uid_foreign', $qb->createNamedParameter($contentUid, Connection::PARAM_INT)),
-                $qb->expr()->eq('tablenames', $qb->createNamedParameter('tt_content')),
-            )
-            ->executeQuery()
-            ->fetchOne()
-        ;
     }
 
     /**
@@ -176,7 +191,12 @@ class ContentRepository extends AbstractRepository
             $fields,
         );
 
-        $qb->select('uid', 'pid', 'header', 'bodytext', 'CType')
+        $select = array_values(array_unique(array_merge(
+            ['uid', 'pid', 'header', 'bodytext', 'CType', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
+            $fields,
+        )));
+
+        $qb->select(...$select)
             ->from($this->table)
             ->where($qb->expr()->or(...$likes))
             ->setMaxResults($maxResults)

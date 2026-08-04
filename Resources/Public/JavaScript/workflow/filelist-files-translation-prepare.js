@@ -5,6 +5,7 @@ import Notification from "@typo3/backend/notification.js";
 import InfoWindow from "@typo3/backend/info-window.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import FolderSelection from "@autodudes/ai-suite/helper/folder-selection.js";
 
 class FilelistFilesTranslationPrepare {
 
@@ -13,6 +14,7 @@ class FilelistFilesTranslationPrepare {
         Generation.cancelGeneration();
         this.fileSelectionEventDelegation();
         GlobalInstructions.metadataTooltipEventDelegation();
+        FolderSelection.initialize(document.querySelector('#folderSelection'));
         this.initGlossaries().then();
     }
 
@@ -84,11 +86,35 @@ class FilelistFilesTranslationPrepare {
                             selectedFiles = null;
                         }
                     }
+                    if(ev.target.closest('.folder-group-collapse') !== null) {
+                        ev.preventDefault();
+                        let button = ev.target.closest('.folder-group-collapse');
+                        let group = button.closest('.folder-group');
+                        if(group !== null) {
+                            let items = group.querySelector('.folder-group-items');
+                            let collapsed = items.classList.toggle('d-none');
+                            button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                            button.querySelector('.folder-group-collapse-open').classList.toggle('d-none', collapsed);
+                            button.querySelector('.folder-group-collapse-closed').classList.toggle('d-none', !collapsed);
+                        }
+                    }
                     if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.id === 'toggleFileTranslationSelection') {
                         let checkboxes = document.querySelectorAll('input[name^="file-selection"]');
                         checkboxes.forEach(function(checkbox) {
                             checkbox.checked = ev.target.checked;
                         });
+                        document.querySelectorAll('.folder-group-toggle').forEach(function(groupToggle) {
+                            groupToggle.checked = ev.target.checked;
+                        });
+                        self.calculateRequestAmount();
+                    }
+                    if(ev.target.nodeName === 'INPUT' && ev.target.type === 'checkbox' && ev.target.classList.contains('folder-group-toggle')) {
+                        let group = ev.target.closest('.folder-group');
+                        if(group !== null) {
+                            group.querySelectorAll('input[name^="file-selection"]').forEach(function(checkbox) {
+                                checkbox.checked = ev.target.checked;
+                            });
+                        }
                         self.calculateRequestAmount();
                     }
                     if(ev.target.nodeName === 'INPUT' && ev.target.classList.contains('file-metadata-field')) {

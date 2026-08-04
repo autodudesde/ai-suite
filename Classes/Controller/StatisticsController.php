@@ -112,9 +112,9 @@ class StatisticsController extends AbstractBackendController
             );
         }
 
-        $event = $this->eventDispatcher->dispatch(
-            new CollectUsageStatisticsEvent((string) ($this->extConf['aiSuiteApiKey'] ?? ''), $this->request)
-        );
+        // dispatch() is only generic from TYPO3 v13 on, so read from the event object
+        $event = new CollectUsageStatisticsEvent((string) ($this->extConf['aiSuiteApiKey'] ?? ''), $this->request);
+        $this->eventDispatcher->dispatch($event);
         $sections = array_merge($sections, $event->getSections());
 
         $this->view->assignMultiple([
