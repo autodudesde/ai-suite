@@ -33,8 +33,8 @@ class ModifyNewContentElementWizardItemsEventListener
                 continue;
             }
             $cType = $wizardItem['tt_content_defValues']['CType'];
-            if (in_array($currentTabKey, PromptTemplateTypeItemsProcFunc::EXCLUDE_TAB_LIST) ||
-                in_array($cType, PromptTemplateTypeItemsProcFunc::EXCLUDE_CTYPE_LIST)) {
+            if (in_array($currentTabKey, PromptTemplateTypeItemsProcFunc::EXCLUDE_TAB_LIST)
+                || in_array($cType, PromptTemplateTypeItemsProcFunc::EXCLUDE_CTYPE_LIST)) {
                 continue;
             }
             if (in_array($cType, $addedAiSuiteWizardItems)) {
@@ -55,8 +55,8 @@ class ModifyNewContentElementWizardItemsEventListener
                 'aisuite_'.$cType,
                 [
                     'iconIdentifier' => $wizardItem['iconIdentifier'] ?? '',
-                    'title' => ($wizardItem['title']  ?? '') . ' (' . $this->localizationService->translate('aiSuite.mlangTabsTab') . ')',
-                    'description' => ($wizardItem['description'] ?? '') . ' (with AI generated content)',
+                    'title' => ($wizardItem['title'] ?? '').' ('.$this->localizationService->translate('aiSuite.mlangTabsTab').')',
+                    'description' => ($wizardItem['description'] ?? '').' (with AI generated content)',
                     'tt_content_defValues' => $wizardItem['tt_content_defValues'] ?? [],
                 ]
             );

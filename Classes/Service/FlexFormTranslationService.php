@@ -49,7 +49,7 @@ class FlexFormTranslationService implements SingletonInterface
         if (empty($flexForm)) {
             return;
         }
-        $originalFlexFormStructure = $formData["processedTca"]["columns"][$fieldName]["config"]["ds"];
+        $originalFlexFormStructure = $formData['processedTca']['columns'][$fieldName]['config']['ds'];
         $newStructure = $this->flexFormTools->removeElementTceFormsRecursive($originalFlexFormStructure);
         $newStructure = $this->flexFormTools->migrateFlexFormTcaRecursive($newStructure);
 
@@ -79,9 +79,7 @@ class FlexFormTranslationService implements SingletonInterface
      */
     protected function checkValue_flex_procInData_travDS(array &$dataValues, array $DSelements, string $structurePath): void
     {
-        // For each DS element:
         foreach ($DSelements as $key => $dsConf) {
-            // Array/Section:
             if (isset($DSelements[$key]['type']) && 'array' === $DSelements[$key]['type']) {
                 if (!is_array($dataValues[$key]['el'] ?? null)) {
                     continue;
@@ -112,10 +110,8 @@ class FlexFormTranslationService implements SingletonInterface
                 }
             } else {
                 $fieldConfiguration = $dsConf['config'] ?? null;
-                // init with value from config for passthrough fields
                 if (!empty($fieldConfiguration['type']) && 'passthrough' === $fieldConfiguration['type']) {
                     if (!empty($fieldConfiguration['default'])) {
-                        // If is new record and a default is specified for field, use it.
                         $dataValues[$key]['vDEF'] = $fieldConfiguration['default'];
                     }
                 }

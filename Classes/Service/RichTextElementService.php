@@ -222,10 +222,10 @@ class RichTextElementService implements SingletonInterface
             $pluginConfiguration[$pluginName]['config'] = $configuration;
         }
 
-        return $this->eventDispatcher
-            ->dispatch(new AfterGetExternalPluginsEvent($pluginConfiguration, $data))
-            ->getConfiguration()
-        ;
+        $afterEvent = new AfterGetExternalPluginsEvent($pluginConfiguration, $data);
+        $this->eventDispatcher->dispatch($afterEvent);
+
+        return $afterEvent->getConfiguration();
     }
 
     /**
@@ -341,12 +341,10 @@ class RichTextElementService implements SingletonInterface
             $configuration['removePlugins'] = explode(',', $configuration['removePlugins']);
         }
 
-        $configuration = $this->eventDispatcher
-            ->dispatch(new AfterPrepareConfigurationForEditorEvent($configuration, $data))
-            ->getConfiguration()
-        ;
+        $afterConfigEvent = new AfterPrepareConfigurationForEditorEvent($configuration, $data);
+        $this->eventDispatcher->dispatch($afterConfigEvent);
 
-        return $configuration;
+        return $afterConfigEvent->getConfiguration();
     }
 
     protected function sanitizeFieldId(string $itemFormElementName): string

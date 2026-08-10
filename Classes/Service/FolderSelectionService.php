@@ -172,8 +172,6 @@ class FolderSelectionService implements SingletonInterface
                 );
 
                 $isSelectedRoot = array_key_exists($combinedIdentifier, $selectedRootIdentifiers);
-                // An explicitly selected folder stays in the result even without matches,
-                // otherwise it silently disappears and reads like a traversal bug.
                 if ([] !== $files || $isSelectedRoot) {
                     $groups[$combinedIdentifier] = [
                         'identifier' => $combinedIdentifier,

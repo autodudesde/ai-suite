@@ -19,7 +19,6 @@ use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Tree\Repository\PageTreeRepository;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderWritePermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\NotInMountPointException;
@@ -38,7 +37,6 @@ class BackendUserService implements SingletonInterface
         protected readonly LocalizationService $localizationService,
         protected readonly PageTreeRepository $pageTreeRepository,
         protected readonly PagesRepository $pagesRepository,
-        protected readonly ConnectionPool $connectionPool,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly LoggerInterface $logger,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
@@ -96,12 +94,7 @@ class BackendUserService implements SingletonInterface
         } else {
             $mountPoints = [$id];
         }
-        $expressionBuilder = $this->connectionPool->getQueryBuilderForTable('pages')->expr();
         $permsClause = $backendUser->getPagePermsClause(Permission::PAGE_SHOW);
-        $pidList = GeneralUtility::intExplode(',', (string) ($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? '1'), true);
-        if (!empty($pidList)) {
-            $permsClause .= ' AND '.$expressionBuilder->notIn('pages.uid', $pidList);
-        }
 
         $idList = $mountPoints;
         $this->pageTreeRepository->setAdditionalWhereClause($permsClause);
@@ -110,7 +103,11 @@ class BackendUserService implements SingletonInterface
             $idList[] = (int) $page['uid'];
         }
 
-        return array_values(array_unique($idList));
+        $idList = array_values(array_unique($idList));
+
+        $hidden = GeneralUtility::intExplode(',', (string) ($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? '1'), true);
+
+        return [] === $hidden ? $idList : array_values(array_diff($idList, $hidden));
     }
 
     /**

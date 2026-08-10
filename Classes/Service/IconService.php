@@ -36,9 +36,6 @@ class IconService implements SingletonInterface
         return $this->iconFactory->getIcon($identifier, $size, $overlayIdentifier);
     }
 
-    /**
-     * @return string Empty string if the icon cannot be resolved
-     */
     public function getPublicIconUrl(string $identifier, ?ServerRequestInterface $request = null): string
     {
         try {

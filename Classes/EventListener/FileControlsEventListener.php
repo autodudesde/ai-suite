@@ -8,11 +8,7 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\IconService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use TYPO3\CMS\Backend\Form\Event\CustomFileControlsEvent;
-use TYPO3\CMS\Core\Attribute\AsEventListener;
-use TYPO3\CMS\Core\Imaging\IconFactory;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
-
 
 class FileControlsEventListener
 {

@@ -660,7 +660,7 @@ class BackgroundTaskService implements SingletonInterface
     }
 
     /**
-     * @return array<string, mixed> ['success' => bool, 'message' => string]
+     * @return array<string, mixed>
      */
     public function updateAllTaskStatuses(): array
     {

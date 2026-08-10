@@ -104,15 +104,15 @@ class PageTreeTranslationStatusEventListener
         ContextualFeedbackSeverity $severity,
         int $priority
     ): void {
-        $icon = match($severity) {
+        $icon = match ($severity) {
             ContextualFeedbackSeverity::OK => 'tx-aisuite-translate-action-finished',
             ContextualFeedbackSeverity::NOTICE => 'tx-aisuite-translate-action-pending',
             ContextualFeedbackSeverity::ERROR => 'tx-aisuite-translate-action-error',
             default => ''
         };
 
-        $item['tip'] = $item['tip'] . '; ' . $label;
-        if(!empty($icon)) {
+        $item['tip'] = $item['tip'].'; '.$label;
+        if (!empty($icon)) {
             $item['icon'] = $icon;
         }
     }

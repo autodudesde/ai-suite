@@ -172,10 +172,7 @@ class ContentRepository extends AbstractRepository
         }
 
         $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $qb->getRestrictions()->removeAll()
-            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
-            ->add(GeneralUtility::makeInstance(HiddenRestriction::class))
-        ;
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $this->addWorkspaceRestriction($qb);
         $searchTerm = '%'.$qb->escapeLikeWildcards($query).'%';
 
@@ -192,7 +189,7 @@ class ContentRepository extends AbstractRepository
         );
 
         $select = array_values(array_unique(array_merge(
-            ['uid', 'pid', 'header', 'bodytext', 'CType', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
+            ['uid', 'pid', 'header', 'bodytext', 'CType', 'sys_language_uid', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
             $fields,
         )));
 
@@ -246,7 +243,7 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * @param list<string> $containerCTypes CTypes registered as containers (from B13\Container\Tca\Registry::getRegisteredCTypes())
+     * @param list<string> $containerCTypes
      *
      * @return list<array<string, mixed>>
      */
@@ -360,7 +357,7 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * @param null|list<int> $restrictToPageIds Restrict by pid (or uid for pages table)
+     * @param null|list<int> $restrictToPageIds
      *
      * @return list<array<string, mixed>>
      */

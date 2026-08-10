@@ -18,12 +18,6 @@ use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
 use TYPO3\CMS\Core\Http\ServerRequest;
 
-/**
- * CLI bootstrap helpers for AI Suite commands. The workflow services depend on a
- * BE request being present (FormDataCompiler, Clipboard, ConfigurationManager) and
- * on an authenticated _cli_ backend user (DataHandler, permissions). Commands call
- * these helpers from their constructor to set up that context.
- */
 trait CliBackendBootstrapTrait
 {
     public function initializeFakeRequest(): void
