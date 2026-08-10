@@ -96,9 +96,6 @@ class RetryTasksCommand extends Command
         return Command::FAILURE;
     }
 
-    /**
-     * @return null|false|string A workflow type key, null (= no filter, all types), or false on validation error
-     */
     private function resolveType(InputInterface $input, SymfonyStyle $io): false|string|null
     {
         $type = $input->getOption('type');
@@ -149,8 +146,6 @@ class RetryTasksCommand extends Command
                 $availableModels = [];
             }
             if (!empty($availableModels)) {
-                // ChoiceQuestion returns the key for associative arrays — exactly
-                // the model_identifier we need to pass to the AI server.
                 return (string) $io->choice('Select model', $availableModels);
             }
         }

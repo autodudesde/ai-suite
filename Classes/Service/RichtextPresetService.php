@@ -29,9 +29,6 @@ class RichtextPresetService implements SingletonInterface
     ) {}
 
     /**
-     * Tags that survive RteHtmlParser when an editor saves the record. Markup outside this list is
-     * dropped on the next backend save, so an agent writing it loses the content silently.
-     *
      * @param array<string, mixed> $fieldConfig
      *
      * @return list<string>

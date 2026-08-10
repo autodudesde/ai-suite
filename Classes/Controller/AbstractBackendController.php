@@ -73,37 +73,35 @@ class AbstractBackendController
     protected function generateButtonBar(): void
     {
         $buttonBar = $this->view->getDocHeaderComponent()->getButtonBar();
-        $buttonBar->addButton($this->buildButton('actions-menu', 'module:aiSuite.module.actionmenu.dashboard', 'btn-md rounded', 'web_aisuite'));
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_massaction_generation')) {
-            $buttonBar->addButton($this->buildButton('actions-duplicate', 'module:aiSuite.module.actionmenu.workflow', 'btn-md rounded', 'web_aisuite.workflow'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_background_task_handling')) {
-            $additonalParams = [];
-            if (!empty($this->aiSuiteContext->sessionService->getBackgroundTaskFilter())) {
-                $additonalParams['backgroundTaskFilter'] = $this->aiSuiteContext->sessionService->getBackgroundTaskFilter();
-                $additonalParams['clickAndSave'] = $this->aiSuiteContext->sessionService->getClickAndSaveState();
-            }
-            $buttonBar->addButton($this->buildButton('overlay-scheduled', 'module:aiSuite.module.actionmenu.backgroundTask', 'btn-md rounded', 'web_aisuite.backgroundtask', $additonalParams));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_global_instructions_button')) {
-            $buttonBar->addButton($this->buildButton('apps-pagetree-page-content-from-page-root', 'module:aiSuite.module.actionmenu.globalInstructions', 'btn-md rounded', 'web_aisuite.global_instructions'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button')) {
-            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.promptTemplate', 'btn-md rounded', 'web_aisuite.prompt'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_pages_generation')) {
-            $buttonBar->addButton($this->buildButton('actions-file-text', 'module:aiSuite.module.actionmenu.pages', 'btn-md rounded', 'web_aisuite.page'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_agency')) {
-            $buttonBar->addButton($this->buildButton('content-store', 'module:aiSuite.module.actionmenu.agencies', 'btn-md rounded', 'web_aisuite.agencies'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_global_settings')) {
-            $buttonBar->addButton($this->buildButton('actions-cog', 'module:aiSuite.module.actionmenu.globalSettings', 'btn-md rounded', 'web_aisuite.settings'));
-        }
-        if ($this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:enable_statistics')) {
-            $buttonBar->addButton($this->buildButton('content-widget-chart-bar', 'module:aiSuite.module.actionmenu.statistics', 'btn-md rounded', 'web_aisuite.statistics'));
+        foreach ($this->aiSuiteContext->moduleNavigationService->getPermittedEntries() as $entry) {
+            $buttonBar->addButton($this->buildButton(
+                $entry['icon'],
+                $entry['labelKey'],
+                'btn-md rounded',
+                $entry['route'],
+                $this->buttonParams($entry['route']),
+            ));
         }
         $this->eventDispatcher->dispatch(new AfterButtonBarGeneratedEvent($buttonBar, $this->request));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function buttonParams(string $route): array
+    {
+        if ('web_aisuite.backgroundtask' !== $route) {
+            return [];
+        }
+        $filter = $this->aiSuiteContext->sessionService->getBackgroundTaskFilter();
+        if (empty($filter)) {
+            return [];
+        }
+
+        return [
+            'backgroundTaskFilter' => $filter,
+            'clickAndSave' => $this->aiSuiteContext->sessionService->getClickAndSaveState(),
+        ];
     }
 
     /**

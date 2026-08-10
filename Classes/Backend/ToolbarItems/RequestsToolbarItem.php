@@ -86,9 +86,6 @@ class RequestsToolbarItem implements ToolbarItemInterface, RequestAwareToolbarIt
         return '';
     }
 
-    /**
-     * Position relative to others, requests should be very left.
-     */
     public function getIndex(): int
     {
         return 15;

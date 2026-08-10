@@ -20,5 +20,6 @@ class AiSuiteContext implements SingletonInterface
         public SendRequestService $sendRequestService,
         public UuidService $uuidService,
         public MetadataService $metadataService,
+        public AiSuiteModuleNavigationService $moduleNavigationService,
     ) {}
 }

@@ -6,6 +6,9 @@
             <trans-unit id="aiSuite.beGroups.field.aiSuiteApiKey">
                 <source>Group specific AI Suite API key</source>
             </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.aiModelHubApiKey">
+                <source>Group specific AI Model Hub API key (IONOS, also used for Flux)</source>
+            </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
                 <source>Group specific Anthropic/Claude API key</source>
             </trans-unit>
