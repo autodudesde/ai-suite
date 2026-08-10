@@ -43,8 +43,6 @@ class AbstractRepository
     }
 
     /**
-     * @param int $uid the unique id
-     *
      * @return list<array<string, mixed>>
      *
      * @throws Exception

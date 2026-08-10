@@ -183,7 +183,6 @@ class PageContentFactory
             $defaultFolder = $this->resolveDefaultFolder($regenerateReturnUrl);
             $mediaFolder = trim($mediaFolderSetting, '/');
 
-            // Avoid path nesting if the default folder already ends with the target folder name
             if (rtrim($defaultFolder->getName(), '/') === $mediaFolder) {
                 $aiImagesFolder = $defaultFolder;
             } elseif ($defaultFolder->hasFolder($mediaFolder)) {

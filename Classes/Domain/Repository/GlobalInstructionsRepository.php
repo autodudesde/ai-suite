@@ -153,9 +153,6 @@ class GlobalInstructionsRepository
     }
 
     /**
-     * Distinct (pid, scope) pairs of non-deleted instructions — used to enumerate
-     * which pages have any guidelines configured.
-     *
      * @return list<array{pid: int, scope: string}>
      */
     public function findDistinctPidScopes(): array

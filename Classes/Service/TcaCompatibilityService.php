@@ -198,6 +198,20 @@ class TcaCompatibilityService implements SingletonInterface
     /**
      * @throws UndefinedSchemaException
      */
+    public function getDisabledFieldName(string $table): ?string
+    {
+        $config = null !== $this->tcaSchemaFactory
+            ? $this->tcaSchemaFactory->get($table)->getRawConfiguration()
+            : ($GLOBALS['TCA'][$table]['ctrl'] ?? []);
+
+        $field = (string) ($config['enablecolumns']['disabled'] ?? '');
+
+        return '' !== $field ? $field : null;
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
     public function isRootLevel(string $table): bool
     {
         $rootLevel = null !== $this->tcaSchemaFactory
@@ -491,7 +505,7 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * @return array<string, array<string, mixed>> field name => column config
+     * @return array<string, array<string, mixed>>
      *
      * @throws UndefinedSchemaException
      */

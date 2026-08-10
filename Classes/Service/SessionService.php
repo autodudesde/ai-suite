@@ -147,10 +147,6 @@ class SessionService implements SingletonInterface
     }
 
     /**
-     * The file tree only seeds the selection as long as the user has not touched the picker.
-     * "Picker never touched" and "user cleared the selection" both arrive without a
-     * "directories" key, so the distinction rides on the explicit marker.
-     *
      * @return list<string>
      */
     public function getFilelistDirectories(string $route): array

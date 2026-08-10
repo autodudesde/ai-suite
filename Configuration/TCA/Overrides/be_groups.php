@@ -28,6 +28,13 @@ $beGroupColumns = [
             'eval' => 'trim',
         ],
     ],
+    'aiModelHubApiKey' => [
+        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.aiModelHubApiKey',
+        'config' => [
+            'type' => 'input',
+            'eval' => 'trim',
+        ],
+    ],
     'googleTranslateApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.googleTranslateApiKey',
         'config' => [
@@ -77,7 +84,7 @@ ExtensionManagementUtility::addTCAcolumns(
 );
 ExtensionManagementUtility::addToAllTCAtypes(
     'be_groups',
-    '--div--;'.$lll.'aiSuite.beGroups.tab.settings, aiSuiteApiKey, openAiApiKey, anthropicApiKey, googleTranslateApiKey, deeplApiKey, deeplApiMode, midjourneyApiKey, midjourneyId, mediaStorageFolder',
+    '--div--;'.$lll.'aiSuite.beGroups.tab.settings, aiSuiteApiKey, openAiApiKey, anthropicApiKey, aiModelHubApiKey, googleTranslateApiKey, deeplApiKey, deeplApiMode, midjourneyApiKey, midjourneyId, mediaStorageFolder',
     '',
     'after:category_perms'
 );

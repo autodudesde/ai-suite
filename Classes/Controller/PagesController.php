@@ -138,7 +138,6 @@ class PagesController extends AbstractBackendController
             } else {
                 $langIsoCode = $this->aiSuiteContext->siteService->getIsoCodeByLanguageId(0, (int) $parsedBody['startStructureFromPid']);
             }
-            // $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'pageTree', $parsedBody['startStructureFromPid']);
             $answer = $this->requestService->sendDataRequest(
                 'pageTree',
                 [

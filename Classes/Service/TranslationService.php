@@ -281,7 +281,6 @@ class TranslationService
     ): array {
         $translateFields = [];
 
-        // Page metadata
         if ('content' !== $translationScope) {
             $translatedPageUid = $this->findOrCreateLocalization('pages', $pageUid, $targetLanguageUid, 'l10n_parent');
             if (null !== $translatedPageUid) {
@@ -292,7 +291,6 @@ class TranslationService
             }
         }
 
-        // Content elements
         if ('metadata' !== $translationScope) {
             $contentElements = $this->translationRepository->getElementsOnPage($pageUid, $sourceLanguageUid);
             foreach ($contentElements as $contentElement) {
@@ -325,7 +323,7 @@ class TranslationService
     }
 
     /**
-     * @param list<array<string, mixed>> $tasks Background tasks from BackgroundTaskRepository::findByParentUuid()
+     * @param list<array<string, mixed>> $tasks
      *
      * @return array{applied: int, skipped: int, failed: int, errors: string[]}
      */
@@ -364,7 +362,6 @@ class TranslationService
             try {
                 $datamap = [];
 
-                // Page metadata
                 if ('content' !== $translationScope && isset($translationData['pages'])) {
                     $translatedPageUid = $this->findOrCreateLocalization('pages', $pageUid, $targetLanguageUid, 'l10n_parent');
                     if (null !== $translatedPageUid) {
@@ -655,7 +652,6 @@ class TranslationService
 
         $translatableContent = [];
         if ($wasNew) {
-            // Deep localize: creates the translation and copies file references + inline children.
             $copyMappingArray = [];
             $this->localize($copyMappingArray, 'tt_content', $sourceUid, $targetLanguageUid);
             foreach ($copyMappingArray as $table => $uidMapping) {
@@ -1374,7 +1370,6 @@ class TranslationService
             return;
         }
 
-        // Getting workspace overlay if possible. This will localize versions in workspace if any
         $row = BackendUtility::getRecordWSOL($table, $uid);
         BackendUtility::workspaceOL($table, $row, $this->workspaceContextService->getWorkspaceId());
         if (!is_array($row)) {

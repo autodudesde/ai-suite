@@ -16,13 +16,11 @@ namespace AutoDudes\AiSuite\Enumeration;
 
 final class ModelTypeEnumeration
 {
-    // general models
     public const TEXT = 'CHATGPT,Vision';
     public const IMAGE = 'GPTImage,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
-    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45';
+    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45,ClaudeSonnet5';
 
-    // model - api mapping
     public const CHATGPT = 'openAiApiKey';
     public const ANTHROPIC = 'anthropicApiKey';
     public const VISION = 'openAiApiKey';
@@ -37,7 +35,9 @@ final class ModelTypeEnumeration
     public const MITTWALDMINISTRAL14B = 'mittwaldAiModelHubApiKey';
     public const MITTWALDMINISTRAL14BVISION = 'mittwaldAiModelHubApiKey';
 
-    public const OPENAILUNA = '';
-    public const IONOSQWEN35 = '';
-    public const CLAUDEHAIKU45 = '';
+    public const OPENAILUNA = 'openAiApiKey';
+    public const OPENAITERRA = 'openAiApiKey';
+    public const IONOSQWEN35 = 'aiModelHubApiKey';
+    public const CLAUDEHAIKU45 = 'anthropicApiKey';
+    public const CLAUDESONNET5 = 'anthropicApiKey';
 }

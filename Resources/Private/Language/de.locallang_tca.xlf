@@ -7,6 +7,10 @@
                 <source>Group specific AI Suite API key</source>
                 <target>Gruppenspezifischer AI Suite API-Schlüssel</target>
             </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.aiModelHubApiKey">
+                <source>Group specific AI Model Hub API key (IONOS, also used for Flux)</source>
+                <target>Gruppenspezifischer AI Model Hub API-Schlüssel (IONOS, auch für Flux)</target>
+            </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
                 <source>Group specific Anthropic/Claude API key</source>
                 <target>Gruppenspezifischer Anthropic/Claude API-Schlüssel</target>

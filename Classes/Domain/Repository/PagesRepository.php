@@ -257,7 +257,6 @@ class PagesRepository extends AbstractRepository
 
         $sourcePages = $queryBuilder->executeQuery()->fetchAllAssociative();
 
-        // Filter out pages that already have translations in target language and enhance with statistics
         $pages = [];
         foreach ($sourcePages as $page) {
             $pageUid = (int) $page['uid'];
@@ -547,7 +546,7 @@ class PagesRepository extends AbstractRepository
         );
 
         $select = array_values(array_unique(array_merge(
-            ['uid', 'title', 'slug', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
+            ['uid', 'title', 'slug', 'sys_language_uid', 't3ver_oid', 't3ver_wsid', 't3ver_state'],
             $fields,
         )));
 
