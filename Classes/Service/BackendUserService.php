@@ -105,7 +105,7 @@ class BackendUserService implements SingletonInterface
 
         $idList = array_values(array_unique($idList));
 
-        $hidden = GeneralUtility::intExplode(',', (string) ($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? '1'), true);
+        $hidden = GeneralUtility::intExplode(',', (string) ($backendUser->getTSConfig()['options.']['hideRecords.']['pages'] ?? ''), true);
 
         return [] === $hidden ? $idList : array_values(array_diff($idList, $hidden));
     }

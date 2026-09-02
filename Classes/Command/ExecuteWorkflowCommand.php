@@ -18,7 +18,9 @@ use AutoDudes\AiSuite\Command\Trait\CliBackendBootstrapTrait;
 use AutoDudes\AiSuite\Service\FolderSelectionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\SystemDomainResolver;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,13 +40,15 @@ class ExecuteWorkflowCommand extends Command
         protected readonly WorkflowProcessingService $workflowProcessingService,
         protected readonly LibraryService $libraryService,
         protected readonly SiteService $siteService,
+        protected readonly SystemDomainResolver $systemDomainResolver,
+        protected readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->initializeFakeRequest();
+        $this->initializeFakeRequest($this->systemDomainResolver->resolveBaseUrl());
         $this->initializeBackendAuthentication();
     }
 
@@ -59,6 +63,7 @@ class ExecuteWorkflowCommand extends Command
             ->addOption('column', null, InputOption::VALUE_OPTIONAL, 'Column to process')
             ->addOption('sys-language', null, InputOption::VALUE_OPTIONAL, 'System language (locale__id)')
             ->addOption('show-only-empty', null, InputOption::VALUE_NONE, 'Show only empty fields')
+            ->addOption('include-hidden', null, InputOption::VALUE_NONE, 'Include hidden and time-restricted pages. They cannot be rendered for an anonymous request, so their content fetch will usually fail.')
             ->addOption('source-language', null, InputOption::VALUE_OPTIONAL, 'Source language for translation (locale__id)')
             ->addOption('target-language', null, InputOption::VALUE_OPTIONAL, 'Target language for translation (locale__id)')
             ->addOption('translation-scope', null, InputOption::VALUE_OPTIONAL, 'Translation scope (all, metadata, content)')
@@ -94,14 +99,30 @@ class ExecuteWorkflowCommand extends Command
             ),
         );
 
-        $result = match ($config['type']) {
-            'page' => $this->workflowProcessingService->prepareAndExecutePagesMetadataWorkflow($config),
-            'pageTranslate' => $this->workflowProcessingService->prepareAndExecutePageTranslationWorkflow($config),
-            'fileReferences' => $this->workflowProcessingService->prepareAndExecuteFileReferencesMetadataWorkflow($config),
-            'fileMetadata' => $this->workflowProcessingService->prepareAndExecuteFileMetadataWorkflow($config),
-            'fileMetadataTranslation' => $this->workflowProcessingService->prepareAndExecuteFileMetadataTranslationWorkflow($config),
-            default => ['success' => false, 'message' => 'Unsupported workflow type: '.$config['type']],
+        $progress = static function (int $chunk, int $dispatched, int $total) use ($io): void {
+            $io->text(sprintf('Chunk %d: %d/%d item(s) dispatched', $chunk, $dispatched, $total));
         };
+
+        try {
+            $result = match ($config['type']) {
+                'page' => $this->workflowProcessingService->prepareAndExecutePagesMetadataWorkflow($config, $progress),
+                'pageTranslate' => $this->workflowProcessingService->prepareAndExecutePageTranslationWorkflow($config, $progress),
+                'fileReferences' => $this->workflowProcessingService->prepareAndExecuteFileReferencesMetadataWorkflow($config),
+                'fileMetadata' => $this->workflowProcessingService->prepareAndExecuteFileMetadataWorkflow($config),
+                'fileMetadataTranslation' => $this->workflowProcessingService->prepareAndExecuteFileMetadataTranslationWorkflow($config),
+                default => ['success' => false, 'message' => 'Unsupported workflow type: '.$config['type']],
+            };
+        } catch (\Throwable $e) {
+            $this->logger->error('Workflow aborted', [
+                'type' => $config['type'],
+                'exception' => $e,
+            ]);
+            $io->error(sprintf('Workflow aborted with %s: %s', $e::class, $e->getMessage()));
+
+            return Command::FAILURE;
+        }
+
+        $this->reportSkippedItems($io, $result);
 
         if ($result['success']) {
             $io->success($result['message']);
@@ -109,9 +130,35 @@ class ExecuteWorkflowCommand extends Command
             return Command::SUCCESS;
         }
 
+        $this->logger->error('Workflow finished with an error', [
+            'type' => $config['type'],
+            'message' => $result['message'],
+            'chunks' => $result['chunks'] ?? 0,
+        ]);
+
+        if (($result['chunks'] ?? 0) > 0) {
+            $io->note(sprintf('%d chunk(s) were dispatched and stored before the failure.', $result['chunks']));
+        }
+
         $io->error($result['message']);
 
         return Command::FAILURE;
+    }
+
+    /**
+     * @param array<string, mixed> $result
+     */
+    private function reportSkippedItems(SymfonyStyle $io, array $result): void
+    {
+        foreach (['failedPages' => 'page(s)', 'failedFiles' => 'file(s)', 'failedFileReferences' => 'file reference(s)'] as $key => $label) {
+            $failed = $result[$key] ?? [];
+            if (!is_array($failed) || 0 === count($failed)) {
+                continue;
+            }
+
+            $io->warning(sprintf('%d %s were skipped and are not part of this run.', count($failed), $label));
+            $io->listing(array_map(static fn ($uid): string => (string) $uid, $failed));
+        }
     }
 
     /**
@@ -203,6 +250,7 @@ class ExecuteWorkflowCommand extends Command
         ]);
         $config['sysLanguage'] = $this->resolveLanguageOption($input, $io, 'sys-language', 'System language', $config['startFromPid']);
         $config['showOnlyEmpty'] = $this->resolveBooleanOption($input, $io, 'show-only-empty', 'Consider only empty fields?');
+        $config['includeHidden'] = (bool) $input->getOption('include-hidden');
     }
 
     /**

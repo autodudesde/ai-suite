@@ -4,6 +4,7 @@ import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.j
 import Notification from "@typo3/backend/notification.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PagePicker from "@autodudes/ai-suite/helper/page-picker.js";
 
 class Creation {
     constructor() {
@@ -11,6 +12,14 @@ class Creation {
         this.addFormSubmitEventListener('plainPrompt');
         PromptTemplate.loadPromptTemplates('plainPrompt');
         Generation.languageSelectionEventListener();
+        PagePicker.initAll((pageId) => {
+            Generation.checkLanguageSelection(document.querySelectorAll('.language-selection'));
+            GlobalInstructions.fetchGlobalInstructions({
+                context: 'pages',
+                scope: 'pageTree',
+                pageId: pageId > 0 ? pageId : 0
+            });
+        });
         this.addGlobalInstructionEventListener().then();
         LibrarySelection.initialize(
             document.querySelector('div[data-module-id="aiSuite"] form.with-spinner'),

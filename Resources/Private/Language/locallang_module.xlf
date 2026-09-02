@@ -1472,6 +1472,669 @@
             <trans-unit id="aiSuite.module.settings.field.basicAuth_pass">
                 <source>Basic Auth Password</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.audit">
+                <source>Audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.headline">
+                <source>SEO &amp; accessibility audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.description">
+                <source>Audits one publicly reachable page URL through the AutoDudes audit infrastructure. SEO audits include technical on-page checks, Lighthouse scores and AI-visibility (GEO) signals; accessibility audits run a WCAG scan (conformance level configurable in the extension settings, default Level AA).</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type">
+                <source>What to audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.seo">
+                <source>SEO &amp; performance</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.a11y">
+                <source>Accessibility</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.url">
+                <source>Page URL</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keyword">
+                <source>Focus keyword (optional)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keyword.help">
+                <source>Adds the market view: your Google position, the top 10 competitors and the monthly search volume.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.submit">
+                <source>Run audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner">
+                <source>Running the audit — please wait.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.seo">
+                <source>Running the SEO &amp; performance audit — Lighthouse data can take up to a minute.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.a11y">
+                <source>Running the accessibility scan — this usually takes a few seconds.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.questions">
+                <source>Analysing question coverage — fetching search questions and rating them against the page content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.gap">
+                <source>Analysing the content gap — fetching ranking data and rating it against the page content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.cluster">
+                <source>Building topic clusters — fetching market data and rating the coverage against the page content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.spinner.competitors">
+                <source>Analysing competitors — fetching market data and rating the keyword gap against the page content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.invalidUrl.title">
+                <source>Invalid URL</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.invalidUrl.message">
+                <source>Please enter an absolute, valid URL (e.g. https://example.com/page).</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.headline">
+                <source>Audit result</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.unreachable">
+                <source>The page is not publicly reachable — the audit could not run. Only public URLs can be audited.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.errors">
+                <source>errors</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.warnings">
+                <source>warnings</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.notices">
+                <source>notices</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse">
+                <source>Lighthouse scores</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.market">
+                <source>Market view for</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.searchVolume">
+                <source>Search volume</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.ownPosition">
+                <source>Your Google position</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.notInSerp">
+                <source>not in the top 20</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.avgTitleLength">
+                <source>Average title length in the top 10</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.newAudit">
+                <source>New audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fixability.one-click">
+                <source>Fixable with AI Suite (one click)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fixability.ai-assist">
+                <source>AI explains — editor fixes</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fixability.dev-handoff">
+                <source>Hand over to your developer or agency</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fixability.manual">
+                <source>Information only</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.pageChooser">
+                <source>Page to audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.externalUrl">
+                <source>External URL (optional)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.externalUrl.help">
+                <source>Overrides the page selection — audits any public URL instead (no caching, no one-click actions).</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.seo">
+                <source>Last SEO audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.a11y">
+                <source>Last accessibility audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.view">
+                <source>view</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cachedHint">
+                <source>Cached result from</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.noCachedResult.title">
+                <source>No cached audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.noCachedResult.message">
+                <source>There is no stored audit result for this page yet — run a new audit.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.action.metadata">
+                <source>Generate metadata with AI Suite</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.action.altTexts">
+                <source>Generate image alt texts</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.saveKeyword.question">
+                <source>Save this focus keyword to the page properties (keywords field)?</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.saveKeyword.button">
+                <source>Save focus keyword</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keywordSaved.title">
+                <source>Focus keyword saved</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keywordSaved.message">
+                <source>The keyword was written to the page properties and will prefill future audits.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.contextMenu">
+                <source>Audit page (SEO / accessibility)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.selectPage">
+                <source>Select page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.noPageSelected">
+                <source>No page selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.single">
+                <source>Fix with AI</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.all">
+                <source>Process all AI fixes</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.fixed">
+                <source>Fixed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.nothingToFix">
+                <source>No AI-fixable issues found for this selection.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.rerunHint">
+                <source>Changes saved. Re-run the audit to verify the fixes.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.field.seo_title">
+                <source>SEO title (search result title)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.field.description">
+                <source>Meta description</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.field.og_title">
+                <source>Open Graph title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.field.og_description">
+                <source>Open Graph description</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.field.alternative">
+                <source>Alternative text (alt)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.title">
+                <source>Fix with AI</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.slideOne">
+                <source>Model selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.slideTwo">
+                <source>Suggestions and save</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.slideOneHeader">
+                <source>Select AI model</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.queueInfo">
+                <source>%1$s steps — about %2$s AI requests will be made.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.visionLibrary">
+                <source>Vision model (image alt texts)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.startButton">
+                <source>Start generation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.loading">
+                <source>Preparing ...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.generating">
+                <source>Generating suggestions ...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.stepHeader">
+                <source>Suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.currentValue">
+                <source>Current value</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.optimizeHint">
+                <source>Select a suggestion and optimize it here before saving</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.save">
+                <source>Save</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.skip">
+                <source>Skip</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.summary.title">
+                <source>Done</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.summary.saved">
+                <source>Saved fixes</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.summary.skipped">
+                <source>Skipped</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.summary.errors">
+                <source>The following steps failed and were skipped:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.wizard.close">
+                <source>Close</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.moreInfo">
+                <source>More info</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.docLink">
+                <source>Documentation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.advice.title">
+                <source>AI suggestion</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.advice.button">
+                <source>Generate AI suggestion (1 credit)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.fix.advice.loading">
+                <source>Generating suggestion ...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.export.button">
+                <source>Export CSV</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keywordUnavailable.title">
+                <source>Keyword market data unavailable</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.keywordUnavailable.message">
+                <source>The audit ran successfully, but the keyword market view (search volume, SERP) could not be loaded right now.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.title">
+                <source>Keyword candidates</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.button">
+                <source>Determine keyword candidates (2 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.loading">
+                <source>Determining candidates ...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.keyword">
+                <source>Keyword</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.volume">
+                <source>Searches/month</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.competition">
+                <source>Competition</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.adopt">
+                <source>Adopt as focus keyword</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.questions">
+                <source>Questions/FAQ coverage</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.seo">
+                <source>(One SEO audit costs 3 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.a11y">
+                <source>(One accessibility audit costs 3 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.questions">
+                <source>(One question analysis costs 2 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.questions">
+                <source>Last question analysis</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.question">
+                <source>Question</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.note">
+                <source>Assessment</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.answered">
+                <source>answered</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.partial">
+                <source>partially answered</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.open">
+                <source>open</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.source.serp">
+                <source>Google question</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.serpUnavailable">
+                <source>Live search questions were unavailable — this list is AI-derived from the page content only.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.generateHint">
+                <source>Open and partially answered questions can be turned into content on this page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.generate">
+                <source>Generate answers as content (AI)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.questions.generatePrompt">
+                <source>Answer the following user questions on this page. Use each question as a heading with a concise, helpful answer below it (2-4 sentences), most important information first:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.answers.hint">
+                <source>This page is outside this TYPO3 installation — the answers can be generated as text to copy into the target system.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.answers.button">
+                <source>Generate answers as copyable text (1 credit)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.answers.loading">
+                <source>Generating answers ...</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.answers.copy">
+                <source>Copy all answers</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.answers.copied">
+                <source>Copied!</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.title">
+                <source>Insert generated content</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.header">
+                <source>Where and as what should the content be inserted?</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.ctype">
+                <source>Content element type</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.recommended">
+                <source>Recommended</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.others">
+                <source>Other types</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.column">
+                <source>Column</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.position">
+                <source>Position</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.position.top">
+                <source>At the top of the column</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.position.after">
+                <source>after:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.target.continue">
+                <source>Continue to generation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.intent">
+                <source>Search intent</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.gap">
+                <source>Content gap (rankings)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.gap">
+                <source>(One content gap analysis costs 3 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.gap">
+                <source>Last content gap analysis</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.query">
+                <source>Keyword</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.position">
+                <source>Avg. position</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.source">
+                <source>Ranking data for domain</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.noCandidates">
+                <source>No underperforming rankings found — this page converts its visibility well.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.generateHint">
+                <source>Open and partially covered keywords can be turned into new topic sections on this page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.generate">
+                <source>Generate topic sections (AI)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.generatePrompt">
+                <source>Write new topic sections for this page that cover the following keywords the page already ranks weakly for. One clear section per topic: heading plus 2-4 helpful paragraphs, most important information first:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.cluster">
+                <source>Topic clusters (SEO)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.cluster">
+                <source>(One topic cluster analysis costs 3 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.cluster">
+                <source>Last topic cluster analysis</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.keywordRequired.title">
+                <source>Focus keyword missing</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.keywordRequired.message">
+                <source>The topic cluster analysis needs a focus keyword to explore the topic around it.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.noClusters">
+                <source>No cluster data found for this keyword — try a broader focus keyword.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.subtopic">
+                <source>Subtopic</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.queries">
+                <source>Queries</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.generate">
+                <source>Generate topic section (AI)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.generatePrompt">
+                <source>Write a new topic section for this page covering the following subtopic and the search queries behind it. One clear section: heading plus 2-4 helpful paragraphs, most important information first:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.pagetreeHint">
+                <source>Uncovered subtopics can also become their own subpages. The button opens the page tree generator with a prefilled proposal — you review and confirm every page before anything is created.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.pagetreeButton">
+                <source>Propose as page tree</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.cluster.pagetreePrompt">
+                <source>Create a page tree proposal for the following subtopics of one main topic. One page per subtopic; the search queries in brackets describe what each page must cover:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.type.competitors">
+                <source>Competitors (SEO)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint.competitors">
+                <source>(One competitor analysis costs 3 credits)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.lastAudit.competitors">
+                <source>Last competitor analysis</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.header">
+                <source>Top competitors</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.shared">
+                <source>Shared keywords</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.top10">
+                <source>Top-10 rankings</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.etv">
+                <source>Est. monthly traffic</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.gapHeader">
+                <source>Keyword gap vs.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.position">
+                <source>Competitor position</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.noDomainData">
+                <source>No ranking data exists for this page's domain yet - it may be new or not indexed. The competitor analysis needs existing rankings to determine competitors; start with the SEO audit and indexable content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.noCandidates">
+                <source>No keyword gap found against your closest competitor — your page covers this market well.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.generatePrompt">
+                <source>Write a new topic section for this page covering the following keyword a competitor already ranks for. One clear section: heading plus 2-4 helpful paragraphs, most important information first:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.competitors.pagetreePrompt">
+                <source>Create a page tree proposal covering the following keywords a competitor ranks for and this site does not. One page per topic:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.difficulty">
+                <source>Difficulty</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.market">
+                <source>Search market</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.market.help">
+                <source>The market whose search data (rankings, volumes, competitors) the analysis uses. Prefilled from the selected page's site language.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.model">
+                <source>AI model for the analysis</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.model.help">
+                <source>A default model for audits can be configured in the extension settings ("Default AI model for audit analyses") - with it, this selection step is skipped.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.language">
+                <source>Language</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.language.help">
+                <source>Audits the page in this language; results are cached per language. One-click and AI fix actions are available in the default language.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.score">
+                <source>Audit score (0-100, calculated from the findings)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.translationReadOnly">
+                <source>This is a translated page's audit - fix and generation actions run on the default language.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.tile.title">
+                <source>AI Suite Audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.tile.view">
+                <source>Show audit result</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.tile.noAudit">
+                <source>No audit yet for this page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.tile.run">
+                <source>Open audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.title">
+                <source>Audit a whole page tree</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.description">
+                <source>Runs the audit page by page for the selected page and its subpages. You see the total cost BEFORE anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.depth">
+                <source>Depth</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.depth.0">
+                <source>Only this page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.depth.1">
+                <source>This page + direct subpages</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.depth.all">
+                <source>Whole subtree</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.plan">
+                <source>Calculate cost estimate</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.noPage">
+                <source>Please select a page first.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.planFailed">
+                <source>The estimate could not be calculated.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.estimate">
+                <source>{pages} pages × {price} credits = {total} credits.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.available">
+                <source>Available: {available} credits.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.notEnough">
+                <source>That is enough for the first {affordable} pages.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.start">
+                <source>Start ({pages} pages)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.startPartial">
+                <source>Start anyway ({affordable} pages)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.stop">
+                <source>Stop</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.running">
+                <source>Auditing {current}/{total}: {title}</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.exhausted">
+                <source>{done} of {total} pages audited — credits exhausted. Everything finished is saved; resume to audit the rest.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.stopped">
+                <source>{done} of {total} pages audited.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.resume">
+                <source>Resume ({remaining} pages left)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.distribution">
+                <source>Distribution: {high} green, {medium} orange, {low} red.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.batch.done">
+                <source>Done — all {total} pages audited.</source>
+            </trans-unit>
+            <trans-unit id="widgets.group.aiSuite">
+                <source>AI Suite</source>
+            </trans-unit>
+            <trans-unit id="widgets.auditScores.title">
+                <source>Audit score distribution</source>
+            </trans-unit>
+            <trans-unit id="widgets.auditScores.description">
+                <source>How the AI Suite SEO audit scores are distributed across the audited pages (green/orange/red).</source>
+            </trans-unit>
+            <trans-unit id="widgets.auditScores.high">
+                <source>Good (90-100)</source>
+            </trans-unit>
+            <trans-unit id="widgets.auditScores.medium">
+                <source>Needs work (50-89)</source>
+            </trans-unit>
+            <trans-unit id="widgets.auditScores.low">
+                <source>Critical (0-49)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.auditModel.perRun">
+                <source>- Let editors choose per run -</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.noDomainData">
+                <source>No ranking data exists for this domain yet - it may be new or not indexed. The content gap analysis needs existing rankings; start with the SEO audit and indexable content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.gap.pageNotRanking">
+                <source>The domain ranks, but this page has no rankings of its own yet - so there is nothing to convert. The questions or topic cluster analysis helps building ranking content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.button">
+                <source>Generate author box (AI)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.title">
+                <source>Author box</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.factsHeader">
+                <source>Author facts — the AI only phrases, it invents nothing</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.noInvent">
+                <source>The AI will write a short bio text exclusively from the facts you enter here. It will not invent qualifications or experience.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.name">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.role">
+                <source>Role / credentials</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.rolePlaceholder">
+                <source>e.g. Certified landscape gardener, 15 years of experience</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.link">
+                <source>Profile link (optional)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.saveAuthor">
+                <source>Also save the name as the page author (pages.author)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.continue">
+                <source>Continue to target selection</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.nameRequired">
+                <source>Name is required</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.nameRequiredInfo">
+                <source>The author box needs at least the author's name.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.authorbox.promptIntro">
+                <source>Write a short author box (2-3 sentences) for this page. Use ONLY the following facts - do not invent qualifications, experience or achievements. Relate the author's competence to the page's topic. Use the name as the heading:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.creditsHint">
+                <source>One audit costs 3 credits.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -106,6 +106,12 @@
             <trans-unit id="aiSuite.error.server.notAvailable">
                 <source>AI Suite server endpoint is currently not available.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.httpStatus">
+                <source>The AI Suite Server answered with HTTP %s. See the AI Suite log for details.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.payloadTooLarge">
+                <source>The request was too large for the AI Suite Server (HTTP 413). Reduce the number of pages processed per run.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.unauthorized">
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
             </trans-unit>
@@ -114,6 +120,27 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.invalidRequest">
+                <source>The AI Suite server rejected the request because a value was missing or malformed. The details are in the message below.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.requestRateLimited">
+                <source>Too many requests in a short time. Please wait a moment and try again.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.gdprModelBlocked">
+                <source>GDPR mode is active, so this AI model may not be used. Pick a data-protection-compliant model.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.targetLanguageNotSupported">
+                <source>The selected AI model does not support this target language.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.thirdPartyApi">
+                <source>The AI provider did not return a usable answer. Failed requests are not billed; please try again later.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.webSearchUnavailable">
+                <source>Web research is not available for this installation under the current data-protection settings.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.promptViolation">
+                <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
@@ -153,6 +180,12 @@
 
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
+                <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.unauthorized">
+                <source>Page content could not be loaded (HTTP %s). If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
@@ -670,6 +703,18 @@
                 <source>Translation failed for one or more elements.</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.translation.nothingTranslated">
+                <source>The AI model did not return a usable translation. Nothing was written; the records remain in the source language.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.partiallyUntranslated">
+                <source>%s record(s) could not be translated by the AI model and were left in the source language: %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.elementsSkipped">
+                <source>%s record(s) could not be written to the target language and were left untranslated: %s</source>
+            </trans-unit>
+
             <trans-unit id="aiSuite.autoTranslation.direct.title">
                 <source>Automatic translation</source>
             </trans-unit>
@@ -1019,6 +1064,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.scope.metadata">
                 <source>File Metadata Translation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.generationNotAllowed">
+                <source>You do not have permission to use AI content generation.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.noPageEditPermission">
+                <source>You do not have permission to edit content on the target page.</source>
             </trans-unit>
         </body>
     </file>

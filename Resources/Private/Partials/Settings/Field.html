@@ -1,0 +1,62 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div class="form-group mb-3">
+    <f:if condition="{setting.type} == 'boolean'">
+        <f:then>
+            <div class="form-check d-flex align-items-center gap-2">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="settings_{setting.formKey}"
+                       name="settings[{setting.formKey}]"
+                       value="1"
+                       {f:if(condition: setting.value, then: 'checked="checked"')} />
+                <label class="form-check-label" for="settings_{setting.formKey}">
+                    <f:translate key="{setting.label}" default="{setting.label}" />
+                </label>
+            </div>
+        </f:then>
+        <f:else if="{setting.type} == 'select'">
+            <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                <f:translate key="{setting.label}" default="{setting.label}" />
+            </label>
+            <select class="form-select"
+                    id="settings_{setting.formKey}"
+                    name="settings[{setting.formKey}]">
+                <f:for each="{setting.options}" key="optionValue" as="optionLabel">
+                    <option value="{optionValue}" {f:if(condition: '{setting.currentValue} == {optionValue}', then: 'selected="selected"')}>{optionLabel}</option>
+                </f:for>
+            </select>
+        </f:else>
+        <f:else if="{setting.type} == 'int'">
+            <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                <f:translate key="{setting.label}" default="{setting.label}" />
+            </label>
+            <input type="number"
+                   class="form-control"
+                   id="settings_{setting.formKey}"
+                   name="settings[{setting.formKey}]"
+                   value="{setting.value}"
+                   min="0" />
+        </f:else>
+        <f:else>
+            <label class="form-label fw-bold" for="settings_{setting.formKey}">
+                <f:translate key="{setting.label}" default="{setting.label}" />
+            </label>
+            <input type="{f:if(condition: setting.masked, then: 'password', else: 'text')}"
+                   class="form-control"
+                   id="settings_{setting.formKey}"
+                   name="settings[{setting.formKey}]"
+                   value="{setting.value}"
+                   {f:if(condition: setting.masked, then: 'autocomplete="off"')} />
+            <f:if condition="{setting.masked}">
+                <small class="form-text text-muted">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.maskedHint" />
+                </small>
+            </f:if>
+        </f:else>
+    </f:if>
+</div>
+
+</html>

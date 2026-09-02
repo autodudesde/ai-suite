@@ -36,6 +36,10 @@ class MetadataService
         'image/webp',
     ];
 
+    private const PREVIEW_CONNECT_TIMEOUT = 10;
+
+    private const PREVIEW_TIMEOUT = 30;
+
     /** @var list<string> */
     protected array $pageMetadataColumns = [
         'title',
@@ -178,9 +182,12 @@ class MetadataService
         try {
             return $this->getContentFromPreviewUrl($previewUrl);
         } catch (FetchedContentFailedException $e) {
-            $previewUrl = rtrim($previewUrl, '/');
+            $retryUrl = rtrim($previewUrl, '/');
+            if ($retryUrl === $previewUrl) {
+                throw $e;
+            }
 
-            return $this->getContentFromPreviewUrl($previewUrl);
+            return $this->getContentFromPreviewUrl($retryUrl);
         }
     }
 
@@ -205,6 +212,8 @@ class MetadataService
         }
 
         $options['http_errors'] = false;
+        $options['connect_timeout'] = self::PREVIEW_CONNECT_TIMEOUT;
+        $options['timeout'] = self::PREVIEW_TIMEOUT;
 
         $response = $this->requestFactory->request($previewUrl, 'GET', $options);
         $statusCode = $response->getStatusCode();
@@ -216,7 +225,11 @@ class MetadataService
                 'statusCode' => $statusCode,
             ]);
 
-            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
+            $messageKey = in_array($statusCode, [401, 403, 407], true)
+                ? 'aiSuite.fetchContentFailed.unauthorized'
+                : 'aiSuite.fetchContentFailed.httpStatus';
+
+            throw new FetchedContentFailedException($this->localizationService->translate($messageKey, [$statusCode]));
         }
 
         if (empty($fetchedContent)) {
@@ -242,20 +255,21 @@ class MetadataService
      * @throws UnableToLinkToPageException
      * @throws UnableToFetchNewsRecordException
      */
-    public function getPreviewUrl(int $pageId, array $additionalQueryParameters = []): string
+    public function getPreviewUrl(int $pageId, array $additionalQueryParameters = [], ?int $languageUid = null): string
     {
         $page = $this->pageRepository->getPage($pageId);
-        if (1 === $page['is_siteroot'] && $page['l10n_parent'] > 0) {
-            $pageId = $page['l10n_parent'];
+        if (1 === (int) ($page['is_siteroot'] ?? 0) && (int) ($page['l10n_parent'] ?? 0) > 0) {
+            $pageId = (int) $page['l10n_parent'];
         }
-        $additionalGetVars = '_language='.$page['sys_language_uid'];
+        $previewLanguage = $languageUid ?? (int) ($page['sys_language_uid'] ?? 0);
+        $additionalGetVars = '_language='.$previewLanguage;
         foreach ($additionalQueryParameters as $key => $value) {
             $additionalGetVars .= '&'.$key.'='.$value;
         }
 
         $previewUriBuilder = PreviewUriBuilder::create($pageId);
         $previewUri = $previewUriBuilder
-            ->withLanguage($page['sys_language_uid'])
+            ->withLanguage($previewLanguage)
             ->withAdditionalQueryParameters($additionalGetVars)
             ->buildUri()
         ;
@@ -265,7 +279,7 @@ class MetadataService
                 throw new UnableToFetchNewsRecordException($this->localizationService->translate('aiSuite.unableToFetchNewsRecord', [$additionalQueryParameters['tx_news_pi1[news]'], $pageId]));
             }
 
-            throw new UnableToLinkToPageException($this->localizationService->translate('aiSuite.unableToLinkToPage', [$pageId, $page['sys_language_uid']]));
+            throw new UnableToLinkToPageException($this->localizationService->translate('aiSuite.unableToLinkToPage', [$pageId, $languageUid]));
         }
 
         return $this->siteService->buildAbsoluteUri($previewUri);

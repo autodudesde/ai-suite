@@ -1,6 +1,22 @@
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
 import Notification from "@typo3/backend/notification.js";
 
+async function errorDetail(error) {
+    if (error && typeof error.resolve === "function") {
+        try {
+            const body = await error.resolve();
+            const parsed = typeof body === "string" ? JSON.parse(body) : body;
+            if (parsed && parsed.error) {
+                return parsed.error;
+            }
+        } catch (ignored) {
+            // Not a JSON body, fall through to whatever the error object itself offers.
+        }
+    }
+
+    return error?.statusText || error?.message || "";
+}
+
 class Ajax {
     sendStatusAjaxRequest(postData) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls['aisuite_generation_status'])
@@ -17,9 +33,6 @@ class Ajax {
                 }
             })
             .catch(() => {
-                // Status polling is a progress mechanism running alongside the main generation
-                // request, which surfaces the real error itself — so a failed poll is non-fatal
-                // and stays silent to avoid a redundant/spurious toast.
                 return null;
             });
     }
@@ -42,8 +55,8 @@ class Ajax {
                     }
                 }
             })
-            .catch((error) => {
-                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], error.statusText);
+            .catch(async (error) => {
+                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], await errorDetail(error));
                 return null;
             });
     }
@@ -60,10 +73,10 @@ class Ajax {
                     return responseBody;
                 }
             })
-            .catch((error) => {
+            .catch(async (error) => {
                 Notification.error(
                     TYPO3.lang['aiSuite.notification.generation.error'],
-                    error?.statusText || error?.message || ''
+                    await errorDetail(error)
                 );
                 return null;
             });
@@ -83,10 +96,10 @@ class Ajax {
                     return responseBody;
                 }
             })
-            .catch((error) => {
+            .catch(async (error) => {
                 Notification.error(
                     TYPO3.lang['aiSuite.notification.generation.error'],
-                    error?.statusText || error?.message || ''
+                    await errorDetail(error)
                 );
                 return null;
             });

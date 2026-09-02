@@ -98,6 +98,7 @@ class PageMetadataController extends AbstractBackendController
 
             $workflowData['sysLanguage'] = $sysLanguageToUse;
             $workflowData['showOnlyEmpty'] = (array_key_exists('showOnlyEmpty', $workflowData) && $workflowData['showOnlyEmpty']);
+            $workflowData['includeHidden'] = true;
             $foundPageUids = $this->pageRepository->getPageIdsRecursive(
                 [(int) $workflowData['startFromPid']],
                 (int) $workflowData['depth']

@@ -1,0 +1,48 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
+
+    <div class="panel panel-default wizard-slide" id="auditAuthorboxForm">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.factsHeader" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-info">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.noInvent" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label fw-bold" for="authorboxName">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.name" /> *
+                </label>
+                <input type="text" class="form-control" id="authorboxName" maxlength="255" value="{prefillName}" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label fw-bold" for="authorboxRole">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.role" />
+                </label>
+                <input type="text" class="form-control" id="authorboxRole" maxlength="255"
+                       placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.rolePlaceholder')}" />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label fw-bold" for="authorboxLink">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.link" />
+                </label>
+                <input type="url" class="form-control" id="authorboxLink" maxlength="255" placeholder="https://" />
+            </div>
+            <div class="form-check mb-3">
+                <input type="checkbox" class="form-check-input" id="authorboxSaveAuthor" />
+                <label class="form-check-label" for="authorboxSaveAuthor">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.saveAuthor" />
+                </label>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="aiSuiteAuthorboxContinueBtn">
+                    <core:icon identifier="actions-arrow-right" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.continue" />
+                </button>
+            </div>
+        </div>
+    </div>
+</html>

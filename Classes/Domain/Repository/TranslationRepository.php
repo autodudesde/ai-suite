@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
 use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\Connection;
@@ -26,6 +27,7 @@ class TranslationRepository extends AbstractRepository
     public function __construct(
         ConnectionPool $connectionPool,
         WorkspaceContextService $workspaceContextService,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
         string $table = 'tt_content',
         string $sortBy = 'uid'
     ) {
@@ -46,15 +48,21 @@ class TranslationRepository extends AbstractRepository
      */
     public function getTranslatedElements(array $elementUids, int $targetLanguageUid, string $table): array
     {
+        $languageField = $this->tcaCompatibilityService->getLanguageFieldName($table);
+        $parentField = $this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table);
+        if (null === $languageField || null === $parentField) {
+            return [];
+        }
+
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
         return $queryBuilder
-            ->select('uid', 'l10n_parent')
+            ->select('uid', $parentField)
             ->from($table)
             ->where(
-                $queryBuilder->expr()->in('l10n_parent', $queryBuilder->createNamedParameter($elementUids, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid))
+                $queryBuilder->expr()->in($parentField, $queryBuilder->createNamedParameter($elementUids, Connection::PARAM_INT_ARRAY)),
+                $queryBuilder->expr()->eq($languageField, $queryBuilder->createNamedParameter($targetLanguageUid))
             )
             ->executeQuery()
             ->fetchAllAssociative()
@@ -115,6 +123,11 @@ class TranslationRepository extends AbstractRepository
      */
     public function getRecordTranslation(int $sourceContentUid, int $targetLanguageUid, string $table, string $languageParentField): ?array
     {
+        $languageField = $this->tcaCompatibilityService->getLanguageFieldName($table);
+        if (null === $languageField) {
+            return null;
+        }
+
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
         $element = $queryBuilder
@@ -122,7 +135,7 @@ class TranslationRepository extends AbstractRepository
             ->from($table)
             ->where(
                 $queryBuilder->expr()->eq($languageParentField, $queryBuilder->createNamedParameter($sourceContentUid)),
-                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($targetLanguageUid)),
+                $queryBuilder->expr()->eq($languageField, $queryBuilder->createNamedParameter($targetLanguageUid)),
             )
             ->executeQuery()
             ->fetchAssociative()

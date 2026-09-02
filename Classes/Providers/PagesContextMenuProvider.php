@@ -32,6 +32,12 @@ class PagesContextMenuProvider extends AbstractProvider
             'iconIdentifier' => 'tx-aisuite-extension',
             'callbackAction' => 'openSubmenu',
             'childItems' => [
+                'auditPage' => [
+                    'type' => 'item',
+                    'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.contextMenu',
+                    'iconIdentifier' => 'actions-search',
+                    'callbackAction' => 'contextMenuLink',
+                ],
                 'pageMetaWorkflow' => [
                     'type' => 'item',
                     'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.workflowPages.title',
@@ -132,6 +138,11 @@ class PagesContextMenuProvider extends AbstractProvider
         $moduleUrl = '';
 
         switch ($itemName) {
+            case 'auditPage':
+                $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_audit', ['id' => $this->identifier])->__toString();
+
+                break;
+
             case 'pageMetaWorkflow':
                 $moduleUrl = $this->uriBuilder->buildUriFromRoute('ai_suite_workflow_pages_prepare', ['id' => $this->identifier])->__toString();
 
@@ -190,6 +201,11 @@ class PagesContextMenuProvider extends AbstractProvider
         switch ($itemName) {
             case 'aisuite':
                 $canRender = $this->canShowAiSuite();
+
+                break;
+
+            case 'auditPage':
+                $canRender = 'pages' === $this->table && $this->backendUserService->checkPermissions('tx_aisuite_features:enable_audit');
 
                 break;
 

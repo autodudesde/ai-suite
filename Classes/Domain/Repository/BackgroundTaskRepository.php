@@ -23,6 +23,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class BackgroundTaskRepository
 {
+    private const INSERT_CHUNK_SIZE = 100;
+
     protected ConnectionPool $connectionPool;
     protected string $table = 'tx_aisuite_domain_model_backgroundtask';
     protected string $sortBy = 'status';
@@ -325,15 +327,15 @@ class BackgroundTaskRepository
             $bulkPayload[] = $bulkPayloadItem->getBulkInsertPayload();
         }
 
-        $this->connectionPool
-            ->getConnectionForTable($this->table)
-            ->bulkInsert(
+        $connection = $this->connectionPool->getConnectionForTable($this->table);
+        foreach (array_chunk($bulkPayload, self::INSERT_CHUNK_SIZE) as $chunk) {
+            $connection->bulkInsert(
                 $this->table,
-                $bulkPayload,
+                $chunk,
                 BackgroundTask::getDbColumnsForBulkInsert(),
                 BackgroundTask::getTypesForBulkInsert()
-            )
-        ;
+            );
+        }
     }
 
     /**

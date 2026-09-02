@@ -16,6 +16,8 @@ namespace AutoDudes\AiSuite\Command;
 
 use AutoDudes\AiSuite\Command\Trait\CliBackendBootstrapTrait;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
+use AutoDudes\AiSuite\Service\SystemDomainResolver;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,13 +34,15 @@ class ProcessTasksCommand extends Command
 
     public function __construct(
         protected readonly BackgroundTaskService $backgroundTaskService,
+        protected readonly SystemDomainResolver $systemDomainResolver,
+        protected readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->initializeFakeRequest();
+        $this->initializeFakeRequest($this->systemDomainResolver->resolveBaseUrl());
         $this->initializeBackendAuthentication();
     }
 
@@ -47,7 +51,14 @@ class ProcessTasksCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Task status update');
 
-        $result = $this->backgroundTaskService->updateAllTaskStatuses();
+        try {
+            $result = $this->backgroundTaskService->updateAllTaskStatuses();
+        } catch (\Throwable $e) {
+            $this->logger->error('Task status update aborted', ['exception' => $e]);
+            $io->error(sprintf('Task status update aborted with %s: %s', $e::class, $e->getMessage()));
+
+            return Command::FAILURE;
+        }
 
         if ($result['success']) {
             $io->success($result['message']);

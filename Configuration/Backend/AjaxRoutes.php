@@ -3,6 +3,8 @@
 use AutoDudes\AiSuite\Controller\AiSuiteController;
 use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
 use AutoDudes\AiSuite\Controller\Ajax\CreditsAjaxController;
+use AutoDudes\AiSuite\Controller\Ajax\PageInfoAjaxController;
+use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\ContentController;
 use AutoDudes\AiSuite\Controller\GlobalInstructionController;
@@ -16,6 +18,58 @@ use AutoDudes\AiSuite\Controller\Workflow\PageMetadataController;
 use AutoDudes\AiSuite\Controller\Workflow\PageTranslationController;
 
 return [
+    'aisuite_audit_last_audits' => [
+        'path' => '/aisuite/audit/last-audits',
+        'target' => AuditController::class.'::lastAuditsAction',
+    ],
+    'aisuite_audit_fix_start' => [
+        'path' => '/aisuite/audit/fix-start',
+        'target' => AuditController::class.'::fixStartAction',
+    ],
+    'aisuite_audit_fix_suggestions' => [
+        'path' => '/aisuite/audit/fix-suggestions',
+        'target' => AuditController::class.'::fixSuggestionsAction',
+    ],
+    'aisuite_audit_fix_apply' => [
+        'path' => '/aisuite/audit/fix-apply',
+        'target' => AuditController::class.'::fixApplyAction',
+    ],
+    'aisuite_audit_advice' => [
+        'path' => '/aisuite/audit/advice',
+        'target' => AuditController::class.'::adviceAction',
+    ],
+    'aisuite_audit_keyword_candidates' => [
+        'path' => '/aisuite/audit/keyword-candidates',
+        'target' => AuditController::class.'::candidatesAction',
+    ],
+    'aisuite_audit_questions_answers' => [
+        'path' => '/aisuite/audit/questions-answers',
+        'target' => AuditController::class.'::questionsAnswersAction',
+    ],
+    'aisuite_audit_content_targets' => [
+        'path' => '/aisuite/audit/content-targets',
+        'target' => AuditController::class.'::contentTargetsAction',
+    ],
+    'aisuite_page_info' => [
+        'path' => '/aisuite/page/info',
+        'target' => PageInfoAjaxController::class.'::infoAction',
+    ],
+    'aisuite_audit_batch_plan' => [
+        'path' => '/aisuite/audit/batch/plan',
+        'target' => AuditController::class.'::batchPlanAction',
+    ],
+    'aisuite_audit_batch_run_one' => [
+        'path' => '/aisuite/audit/batch/run-one',
+        'target' => AuditController::class.'::batchRunOneAction',
+    ],
+    'aisuite_audit_authorbox_form' => [
+        'path' => '/aisuite/audit/authorbox-form',
+        'target' => AuditController::class.'::authorboxFormAction',
+    ],
+    'aisuite_audit_authorbox_save_author' => [
+        'path' => '/aisuite/audit/authorbox-save-author',
+        'target' => AuditController::class.'::authorboxSaveAuthorAction',
+    ],
     'description_generation' => [
         'path' => '/generate/meta-description',
         'target' => MetadataController::class.'::generateMetaDescriptionAction',

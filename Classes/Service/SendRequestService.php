@@ -22,13 +22,19 @@ use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\RequestFactory;
 
 class SendRequestService
 {
     public const JSON_SAFE_FLAGS = JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE;
+
+    private const SERVER_CONNECT_TIMEOUT = 10;
+
+    private const SERVER_TIMEOUT = 180;
 
     /**
      * @var array<string, string>
@@ -41,7 +47,14 @@ class SendRequestService
         'notEnoughRequests' => 'aiSuite.error.server.notEnoughRequests',
         'requestLimitReached' => 'aiSuite.error.server.requestLimitReached',
         'missingAiModelApiKey' => 'aiSuite.error.server.missingAiModelApiKey',
-        'forbidden' => 'aiSuite.error.server.forbidden',
+        'invalidRequest' => 'aiSuite.error.server.invalidRequest',
+        'requestRateLimited' => 'aiSuite.error.server.requestRateLimited',
+        'gdprModelBlocked' => 'aiSuite.error.server.gdprModelBlocked',
+        'targetLanguageNotSupported' => 'aiSuite.error.server.targetLanguageNotSupported',
+        'thirdPartyApi' => 'aiSuite.error.server.thirdPartyApi',
+        'webSearchUnavailable' => 'aiSuite.error.server.webSearchUnavailable',
+        'promptViolation' => 'aiSuite.error.server.promptViolation',
+        'payloadTooLarge' => 'aiSuite.error.server.payloadTooLarge',
     ];
 
     /** @var array<string, mixed> */
@@ -55,6 +68,7 @@ class SendRequestService
         protected readonly LocalizationService $localizationService,
         protected readonly LoggerInterface $logger,
         protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
+        protected readonly SystemDomainResolver $systemDomainResolver,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
@@ -69,13 +83,38 @@ class SendRequestService
 
         try {
             $data = $serverRequest->getDataForRequest();
+            $data['connect_timeout'] = self::SERVER_CONNECT_TIMEOUT;
+            $data['timeout'] = self::SERVER_TIMEOUT;
+            $data['http_errors'] = false;
             $endpoint = $serverRequest->getEndpoint();
             $request = $this->requestFactory->request(
                 $endpoint,
                 'POST',
                 $data
             );
-            $requestContent = json_decode($request->getBody()->getContents(), true);
+            $statusCode = $request->getStatusCode();
+            $responseBody = $request->getBody()->getContents();
+
+            if ($statusCode >= 400) {
+                $this->logger->error('AI Suite Server answered with an HTTP error status', [
+                    'endpoint' => $endpoint,
+                    'statusCode' => $statusCode,
+                    'body' => substr($responseBody, 0, 512),
+                ]);
+
+                if (413 === $statusCode) {
+                    return $this->buildErrorAnswer(
+                        $this->localizationService->translate('aiSuite.error.server.payloadTooLarge'),
+                        'payloadTooLarge'
+                    );
+                }
+
+                return $this->buildErrorAnswer(
+                    $this->localizationService->translate('aiSuite.error.server.httpStatus', [$statusCode])
+                );
+            }
+
+            $requestContent = json_decode($responseBody, true);
             if (null === $requestContent) {
                 throw new AiSuiteServerException('Could not fetch a valid response from request', 500);
             }
@@ -108,6 +147,7 @@ class SendRequestService
      */
     public function sendLibrariesRequest(string $libraryTypes, string $targetEndpoint, array $keyModelTypes): ClientAnswer
     {
+        $clientAddresses = $this->resolveClientAddresses();
         $librariesAnswer = $this->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -117,7 +157,13 @@ class SendRequestService
                     'target_endpoint' => $targetEndpoint,
                     'keys' => $this->modelService->fetchKeysByModelType($this->extConf, $keyModelTypes),
                     'force_gdpa' => !empty($this->extConf['forceGdpa']) ? 1 : 0,
-                ]
+                ],
+                '',
+                '',
+                [],
+                $this->systemDomainResolver->resolve(),
+                $clientAddresses['ip'],
+                $clientAddresses['forwardIp'],
             )
         );
 
@@ -149,8 +195,19 @@ class SendRequestService
         if ([] !== $models) {
             $additionalData['keys'] = $this->modelService->fetchKeysByModel($this->extConf, $models);
         }
+        $clientAddresses = $this->resolveClientAddresses();
         $answer = $this->sendRequest(
-            new ServerRequest($this->extConf, $targetEndpoint, $additionalData, $prompt, $langIsoCode, $models, $requestSystemDomain)
+            new ServerRequest(
+                $this->extConf,
+                $targetEndpoint,
+                $additionalData,
+                $prompt,
+                $langIsoCode,
+                $models,
+                $this->systemDomainResolver->resolve($requestSystemDomain),
+                $clientAddresses['ip'],
+                $clientAddresses['forwardIp'],
+            )
         );
         if ('Error' === $answer->getType()) {
             return $answer;
@@ -210,6 +267,24 @@ class SendRequestService
         }
 
         return trim($answer->getMessage());
+    }
+
+    /**
+     * @return array{ip: string, forwardIp: string}
+     */
+    private function resolveClientAddresses(): array
+    {
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if (!$request instanceof ServerRequestInterface) {
+            return ['ip' => '', 'forwardIp' => ''];
+        }
+
+        $normalizedParams = $request->getAttribute('normalizedParams');
+
+        return [
+            'ip' => $normalizedParams instanceof NormalizedParams ? $normalizedParams->getRemoteAddress() : '',
+            'forwardIp' => $request->getHeaderLine('X-Forwarded-For'),
+        ];
     }
 
     private function buildErrorAnswer(string $message, string $errorType = ''): ClientAnswer

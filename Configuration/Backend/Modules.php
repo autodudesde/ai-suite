@@ -2,6 +2,7 @@
 
 use AutoDudes\AiSuite\Controller\AgencyController;
 use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\FilelistController;
@@ -25,6 +26,10 @@ return [
         'routes' => [
             '_default' => [
                 'target' => AiSuiteController::class.'::handleRequest',
+            ],
+            'audit' => [
+                'path' => '/audit',
+                'target' => AuditController::class.'::handleRequest',
             ],
             'workflow' => [
                 'path' => '/workflow',

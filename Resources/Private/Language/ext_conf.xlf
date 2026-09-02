@@ -3,11 +3,68 @@
 	<file source-language="en" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/locallang.xlf" date="2023-10-12T13:12:24Z" product-name="ai_suite">
 		<header/>
 		<body>
+            <trans-unit id="category.license" resname="category.license">
+                <source>License &amp; server</source>
+            </trans-unit>
+            <trans-unit id="category.keys" resname="category.keys">
+                <source>Own API keys</source>
+            </trans-unit>
+            <trans-unit id="category.translation" resname="category.translation">
+                <source>Translation</source>
+            </trans-unit>
+            <trans-unit id="category.metadata" resname="category.metadata">
+                <source>Metadata</source>
+            </trans-unit>
+            <trans-unit id="category.general" resname="category.general">
+                <source>General</source>
+            </trans-unit>
+            <trans-unit id="subcategory.license" resname="subcategory.license">
+                <source>License</source>
+            </trans-unit>
+            <trans-unit id="subcategory.basicAuth" resname="subcategory.basicAuth">
+                <source>HTTP basic auth</source>
+            </trans-unit>
+            <trans-unit id="subcategory.keysText" resname="subcategory.keysText">
+                <source>Text models</source>
+            </trans-unit>
+            <trans-unit id="subcategory.keysTranslation" resname="subcategory.keysTranslation">
+                <source>Translation services</source>
+            </trans-unit>
+            <trans-unit id="subcategory.keysImage" resname="subcategory.keysImage">
+                <source>Image models</source>
+            </trans-unit>
+            <trans-unit id="subcategory.translation" resname="subcategory.translation">
+                <source>Translation</source>
+            </trans-unit>
+            <trans-unit id="subcategory.autoTranslation" resname="subcategory.autoTranslation">
+                <source>Automatic translation on save</source>
+            </trans-unit>
+            <trans-unit id="subcategory.metadata" resname="subcategory.metadata">
+                <source>Metadata generation</source>
+            </trans-unit>
+            <trans-unit id="subcategory.metadataUpload" resname="subcategory.metadataUpload">
+                <source>Automatic generation on file upload</source>
+            </trans-unit>
+            <trans-unit id="subcategory.mediaStorage" resname="subcategory.mediaStorage">
+                <source>Media storage</source>
+            </trans-unit>
+            <trans-unit id="subcategory.dataProtection" resname="subcategory.dataProtection">
+                <source>Data protection</source>
+            </trans-unit>
+            <trans-unit id="subcategory.backgroundTasks" resname="subcategory.backgroundTasks">
+                <source>Background tasks</source>
+            </trans-unit>
+            <trans-unit id="subcategory.audit" resname="subcategory.audit">
+                <source>Accessibility audit</source>
+            </trans-unit>
             <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
                 <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
             </trans-unit>
             <trans-unit id="aiSuiteServer" resname="aiSuiteServer">
                 <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
+            </trans-unit>
+            <trans-unit id="aiSuiteSystemDomain" resname="aiSuiteSystemDomain">
+                <source>System domain: Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available. Leave empty to auto-detect it from the site configuration.</source>
             </trans-unit>
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
@@ -42,8 +99,11 @@
             <trans-unit id="openAiApiKey" resname="openAiApiKey">
                 <source>Enter your OpenAI API key</source>
             </trans-unit>
-            <trans-unit id="anthropicApiKey" resname="openAiApiKey">
+            <trans-unit id="anthropicApiKey" resname="anthropicApiKey">
                 <source>Enter your Anthropic API key</source>
+            </trans-unit>
+            <trans-unit id="staanApiKey" resname="staanApiKey">
+                <source>Enter your Staan API key. Only needed on a plan that runs on your own provider keys, and only for web research under GDPR mode.</source>
             </trans-unit>
             <trans-unit id="googleTranslateApiKey" resname="googleTranslateApiKey">
                 <source>Enter your GoogleTranslate API key</source>
@@ -95,6 +155,12 @@
             </trans-unit>
             <trans-unit id="maxTasks" resname="maxTasks">
                 <source>Maximum number of CLI background tasks processed per scheduler run (default 50)</source>
+            </trans-unit>
+            <trans-unit id="auditWcagStandard" resname="auditWcagStandard">
+                <source>WCAG conformance level for accessibility audits (HTML_CodeSniffer runner; the axe runner checks its own rule set). Default: WCAG 2 Level AA</source>
+            </trans-unit>
+            <trans-unit id="auditDefaultTextModel" resname="auditDefaultTextModel">
+                <source>Default AI model for audit analyses (model identifier, e.g. "Anthropic"). If set, the model selection on the audit form is skipped; leave empty to let editors choose per run.</source>
             </trans-unit>
 		</body>
 	</file>

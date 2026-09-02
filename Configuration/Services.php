@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
 use AutoDudes\AiSuite\Controller\Ajax\CreditsAjaxController;
+use AutoDudes\AiSuite\Controller\Ajax\PageInfoAjaxController;
 use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\Decorator\Page\LocalizationController;
 use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
@@ -27,15 +28,19 @@ use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
+use AutoDudes\AiSuite\Widgets\Provider\AuditScoreDistributionDataProvider;
 use B13\Container\Service\RecordLocalizeSummaryModifier;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
 use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
+use TYPO3\CMS\Dashboard\Widgets\DoughnutChartWidget;
 
 return function (ContainerConfigurator $configurator, ContainerBuilder $containerBuilder) {
     $services = $configurator->services();
@@ -129,6 +134,9 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(CreditsAjaxController::class)
         ->public()
     ;
+    $services->set(PageInfoAjaxController::class)
+        ->public()
+    ;
 
     $services->set(LoadCreditsToolbarListener::class)
         ->tag('event.listener', [
@@ -136,6 +144,24 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             'event' => AfterBackendPageRenderEvent::class,
         ])
     ;
+
+    // Dashboard-Widget NUR registrieren, wenn typo3/cms-dashboard installiert
+    // ist — in Kundenprojekten ohne Dashboard: stiller Skip, kein Log-Eintrag.
+    if (interface_exists(ChartDataProviderInterface::class)) {
+        $services->set(AuditScoreDistributionDataProvider::class);
+        $services->set('dashboard.widget.aiSuiteAuditScores')
+            ->class(DoughnutChartWidget::class)
+            ->arg('$dataProvider', new ReferenceConfigurator(AuditScoreDistributionDataProvider::class))
+            ->tag('dashboard.widget', [
+                'identifier' => 'aiSuiteAuditScores',
+                'groupNames' => 'aiSuite',
+                'title' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:widgets.auditScores.title',
+                'description' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:widgets.auditScores.description',
+                'iconIdentifier' => 'content-widget-chart-pie',
+                'height' => 'medium',
+            ])
+        ;
+    }
 
     if (class_exists(RecordLocalizeSummaryModifier::class)) {
         $services->set(RecordLocalizeSummaryModifier::class)

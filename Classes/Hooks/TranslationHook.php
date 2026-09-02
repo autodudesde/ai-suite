@@ -23,6 +23,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class TranslationHook
 {
+    /**
+     * @var \WeakMap<DataHandler, array<string, mixed>>
+     */
+    private \WeakMap $pendingAiSuiteConfig;
+
     public function __construct(
         protected readonly TranslationService $translationService,
         protected readonly LocalizationService $localizationService,
@@ -34,7 +39,21 @@ class TranslationHook
         protected readonly MetadataService $metadataService,
         protected readonly PagesRepository $pagesRepository,
         protected readonly GlobalInstructionService $globalInstructionService,
-    ) {}
+    ) {
+        $this->pendingAiSuiteConfig = new \WeakMap();
+    }
+
+    // Removed before the core iterates the map: it would report the pseudo table as one the user may not modify.
+    public function processCmdmap_beforeStart(DataHandler $dataHandler): void
+    {
+        $aiSuiteConfig = $this->readMarker($dataHandler);
+        if ([] === $aiSuiteConfig) {
+            return;
+        }
+
+        $this->pendingAiSuiteConfig[$dataHandler] = $aiSuiteConfig;
+        unset($dataHandler->cmdmap['localization']);
+    }
 
     /**
      * @throws AspectNotFoundException
@@ -42,15 +61,18 @@ class TranslationHook
      */
     public function processCmdmap_afterFinish(DataHandler $dataHandler): void
     {
-        try {
-            if (isset($dataHandler->cmdmap['localization'][0]['aiSuite'])) {
-                $aiSuiteConfig = $dataHandler->cmdmap['localization'][0]['aiSuite'];
+        $aiSuiteConfig = $this->pendingAiSuiteConfig[$dataHandler] ?? $this->readMarker($dataHandler);
+        unset($this->pendingAiSuiteConfig[$dataHandler]);
 
-                if ($this->isWholePageTranslation($aiSuiteConfig)) {
-                    $this->processWholePageTranslation($dataHandler, $aiSuiteConfig);
-                } else {
-                    $this->processSingleRecordTranslation($dataHandler, $aiSuiteConfig);
-                }
+        if ([] === $aiSuiteConfig) {
+            return;
+        }
+
+        try {
+            if ($this->isWholePageTranslation($aiSuiteConfig)) {
+                $this->processWholePageTranslation($dataHandler, $aiSuiteConfig);
+            } else {
+                $this->processSingleRecordTranslation($dataHandler, $aiSuiteConfig);
             }
         } catch (\Throwable $e) {
             $this->logger->error('Error in TranslationHook: '.$e->getMessage());
@@ -181,14 +203,7 @@ class TranslationHook
                 ->addMessage($flashMessage)
             ;
         } else {
-            $translationResults = is_array($answer->getResponseData()['translationResults']) ? $answer->getResponseData()['translationResults'] : json_decode($answer->getResponseData()['translationResults'], true);
-            $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $localDataHandler->start($translationResults, [], $dataHandler->BE_USER);
-            $localDataHandler->process_datamap();
-            $errorLog = $localDataHandler->errorLog;
-            if (count($errorLog) > 0) {
-                $this->addErrorFlashMessage();
-            }
+            $this->writeTranslationResults($answer->getResponseData(), $dataHandler);
         }
     }
 
@@ -291,14 +306,7 @@ class TranslationHook
                 ->addMessage($flashMessage)
             ;
         } else {
-            $translationResults = is_array($answer->getResponseData()['translationResults']) ? $answer->getResponseData()['translationResults'] : json_decode($answer->getResponseData()['translationResults'], true);
-            $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-            $localDataHandler->start($translationResults, [], $dataHandler->BE_USER);
-            $localDataHandler->process_datamap();
-            $errorLog = $localDataHandler->errorLog;
-            if (count($errorLog) > 0) {
-                $this->addErrorFlashMessage();
-            } else {
+            if ($this->writeTranslationResults($answer->getResponseData(), $dataHandler)) {
                 $pageUid = (int) array_key_first($allTranslateFields['pages'] ?? []);
                 if ($pageUid > 0) {
                     $this->translationService->updatePageSlug($pageUid);
@@ -320,13 +328,83 @@ class TranslationHook
         return $count;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    private function readMarker(DataHandler $dataHandler): array
+    {
+        $marker = $dataHandler->cmdmap['localization'][0]['aiSuite'] ?? null;
+        if (!is_array($marker)) {
+            return [];
+        }
+
+        $aiSuiteConfig = [];
+        foreach ($marker as $key => $value) {
+            $aiSuiteConfig[(string) $key] = $value;
+        }
+
+        return $aiSuiteConfig;
+    }
+
+    /**
+     * @param array<string, mixed> $responseData
+     */
+    private function writeTranslationResults(array $responseData, DataHandler $dataHandler): bool
+    {
+        $translationResults = $this->translationService->extractTranslationResults($responseData);
+        [$translationResults, $untranslated] = $this->translationService->stripUntranslatedRecords($responseData, $translationResults);
+
+        if ([] === $translationResults) {
+            $this->addFlashMessage('aiSuite.translation.nothingTranslated', ContextualFeedbackSeverity::WARNING);
+
+            return false;
+        }
+
+        foreach ($translationResults as $table => $records) {
+            if (!is_array($records)) {
+                continue;
+            }
+            foreach ($records as $uid => $fields) {
+                if (is_array($fields)) {
+                    $translationResults[$table][$uid] = $this->translationService->claimTranslatedFields((string) $table, $fields);
+                }
+            }
+        }
+
+        $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $localDataHandler->start($translationResults, [], $dataHandler->BE_USER);
+        $localDataHandler->process_datamap();
+        if (count($localDataHandler->errorLog) > 0) {
+            $this->addErrorFlashMessage();
+
+            return false;
+        }
+
+        if ([] !== $untranslated) {
+            $this->addFlashMessage('aiSuite.translation.partiallyUntranslated', ContextualFeedbackSeverity::WARNING, [
+                (string) count($untranslated),
+                implode(', ', $untranslated),
+            ]);
+        }
+
+        return true;
+    }
+
     private function addErrorFlashMessage(): void
+    {
+        $this->addFlashMessage('aiSuite.translation.failed', ContextualFeedbackSeverity::ERROR);
+    }
+
+    /**
+     * @param list<string> $arguments
+     */
+    private function addFlashMessage(string $xlfKey, ContextualFeedbackSeverity $severity, array $arguments = []): void
     {
         $flashMessage = GeneralUtility::makeInstance(
             FlashMessage::class,
-            $this->localizationService->translate('aiSuite.translation.failed'),
+            $this->localizationService->translate($xlfKey, $arguments),
             '',
-            ContextualFeedbackSeverity::ERROR,
+            $severity,
             true
         );
         $this->flashMessageService

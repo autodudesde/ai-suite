@@ -93,7 +93,7 @@ class PageContentFactory
                         $data[$table][$newStrings[$table]]['tx_container_parent'] = $content['containerParentUid'];
                     }
                     foreach ($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
+                        $data[$table][$newStrings[$table]][$fieldName] = $this->sanitizeTextFieldValue($table, (string) $content['CType'], $fieldName, (string) $fieldValue);
                     }
                 } elseif ('tx_news_domain_model_news' === $table) {
                     $newStrings[$table] = $this->newStringPlaceholder($table);
@@ -101,14 +101,14 @@ class PageContentFactory
                     $data[$table][$newStrings[$table]]['sys_language_uid'] = $content['sysLanguageUid'];
                     $data[$table][$newStrings[$table]]['datetime'] = time();
                     foreach ($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table]][$fieldName] = html_entity_decode($fieldValue);
+                        $data[$table][$newStrings[$table]][$fieldName] = $this->sanitizeTextFieldValue($table, null, $fieldName, (string) $fieldValue);
                     }
                 } else {
                     $newStrings[$table][$key] = $this->newStringPlaceholder($table, $key);
                     $data[$table][$newStrings[$table][$key]]['pid'] = $content['pid'];
                     $data[$table][$newStrings[$table][$key]]['sys_language_uid'] = $content['sysLanguageUid'];
                     foreach ($fields as $fieldName => $fieldValue) {
-                        $data[$table][$newStrings[$table][$key]][$fieldName] = html_entity_decode($fieldValue);
+                        $data[$table][$newStrings[$table][$key]][$fieldName] = $this->sanitizeTextFieldValue($table, null, $fieldName, (string) $fieldValue);
                     }
                 }
             }
@@ -300,6 +300,21 @@ class PageContentFactory
         }
 
         return $currentFolder;
+    }
+
+    protected function sanitizeTextFieldValue(string $table, ?string $typeKey, string $fieldName, string $value): string
+    {
+        $decoded = html_entity_decode($value);
+
+        try {
+            if ($this->tcaCompatibilityService->isRichTextField($table, $fieldName, $typeKey)) {
+                return $decoded;
+            }
+        } catch (\Throwable) {
+            // unbekanntes Feld/Typ: konservativ als Nicht-RTE behandeln
+        }
+
+        return trim(strip_tags($decoded));
     }
 
     protected function newStringPlaceholder(string $table, int $key = 0): string
