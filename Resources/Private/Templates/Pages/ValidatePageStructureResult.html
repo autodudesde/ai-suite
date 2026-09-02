@@ -21,7 +21,7 @@
                         <form method="POST" action="{f:be.uri(route: 'ai_suite_page_validate_pagetree_create')}" name="input" enctype="multipart/form-data" class="page-structure-create">
                             <f:render partial="Libs/Sortable/Sortable" arguments="{sortableList: aiResult.children}" />
                             <div class="mt-2">
-                                <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                                <f:render partial="Libs/PagePicker" arguments="{propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selectedPid: selectedPid, selectedPageTitle: selectedPageTitle, pageBrowserUrl: pageBrowserUrl, rootOption: pagePickerRootOption, rootLabel: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pages.newRootPage'}" />
                             </div>
                             <div class="language-selection mb-3">
                                 <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
@@ -51,7 +51,7 @@
                         <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
                         <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: prompt, globalInstructions: globalInstructions}" />
-                        <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                        <f:render partial="Libs/PagePicker" arguments="{propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selectedPid: selectedPid, selectedPageTitle: selectedPageTitle, pageBrowserUrl: pageBrowserUrl, rootOption: pagePickerRootOption, rootLabel: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pages.newRootPage'}" />
                         <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: selectedSysLanguage}" />
                         </div>

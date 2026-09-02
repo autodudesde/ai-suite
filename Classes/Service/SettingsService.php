@@ -28,6 +28,7 @@ class SettingsService implements SingletonInterface
         'deeplApiKey',
         'midjourneyApiKey',
         'aiModelHubApiKey',
+        'staanApiKey',
         'basicAuth.pass',
     ];
 
@@ -68,6 +69,56 @@ class SettingsService implements SingletonInterface
         }
 
         return $settings;
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $definitions
+     * @param array<string, array<string, mixed>> $settings
+     *
+     * @return list<array{key: string, label: string, sections: list<array{label: string, settings: list<array<string, mixed>>}>}>
+     */
+    public function buildCategoryTree(array $definitions, array $settings): array
+    {
+        $tree = [];
+        foreach ($definitions as $key => $definition) {
+            if (!isset($settings[$key])) {
+                continue;
+            }
+            $category = (string) ($definition['category'] ?? '');
+            $subcategory = (string) ($definition['subcategory'] ?? '');
+            if (!isset($tree[$category])) {
+                $tree[$category] = [
+                    'key' => $category,
+                    'label' => (string) ($definition['categoryLabel'] ?? $category),
+                    'sections' => [],
+                ];
+            }
+            if (!isset($tree[$category]['sections'][$subcategory])) {
+                $tree[$category]['sections'][$subcategory] = [
+                    'label' => (string) ($definition['subcategoryLabel'] ?? $subcategory),
+                    'settings' => [],
+                ];
+            }
+            $tree[$category]['sections'][$subcategory]['settings'][] = $settings[$key];
+        }
+
+        $categories = [];
+        foreach ($tree as $category) {
+            $sections = [];
+            foreach ($category['sections'] as $section) {
+                $sections[] = [
+                    'label' => $section['label'],
+                    'settings' => $section['settings'],
+                ];
+            }
+            $categories[] = [
+                'key' => $category['key'],
+                'label' => $category['label'],
+                'sections' => $sections,
+            ];
+        }
+
+        return $categories;
     }
 
     /**

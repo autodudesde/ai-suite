@@ -128,13 +128,9 @@ class MetadataController extends AbstractBackendController
         }
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
         if ('sys_file_metadata' !== $parsedBody['table'] && 'sys_file_reference' !== $parsedBody['table']) {
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return 'Vision' !== $library['model_identifier'] && 'MittwaldMinistral14BVision' !== $library['model_identifier'];
-            });
+            $textGenerationLibraries = $this->aiSuiteContext->libraryService->filterNonVisionLibraries($textGenerationLibraries);
         } else {
-            $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-                return 'Vision' === $library['model_identifier'] || 'MittwaldMinistral14BVision' === $library['model_identifier'];
-            });
+            $textGenerationLibraries = $this->aiSuiteContext->libraryService->filterVisionLibraries($textGenerationLibraries);
         }
         $params['textGenerationLibraries'] = $this->aiSuiteContext->libraryService->prepareLibraries($textGenerationLibraries);
         $params['paidRequestsAvailable'] = $librariesAnswer->getResponseData()['paidRequestsAvailable'];

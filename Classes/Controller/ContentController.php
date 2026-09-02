@@ -32,6 +32,7 @@ use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
@@ -43,6 +44,7 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 #[AsController]
@@ -129,6 +131,7 @@ class ContentController extends AbstractBackendController
     {
         $params = $request->getQueryParams();
         $table = array_key_first($params['edit']);
+        $this->assertGenerationAllowed((string) $table);
         $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::CONTENT, 'createContentElement', ['text', 'image']);
         if ('Error' === $librariesAnswer->getType()) {
             throw new AiSuiteException(
@@ -159,6 +162,8 @@ class ContentController extends AbstractBackendController
         } else {
             $content['uidPid'] = $params['id'];
         }
+
+        $this->assertPageContentEditAccess((int) $content['pid']);
 
         $requestFields = $this->contentService->fetchRequestFields($request, $defVals, $content['CType'], $content['pid'], $table);
         $selectedTcaColumns = isset($params['selectedTcaColumns']) ? json_decode($params['selectedTcaColumns'], true) : $requestFields;
@@ -204,6 +209,8 @@ class ContentController extends AbstractBackendController
     {
         $parsedBody = (array) $request->getParsedBody();
         $content = json_decode($parsedBody['content'], true) ?? [];
+        $this->assertGenerationAllowed((string) ($request->getQueryParams()['table'] ?? 'tt_content'));
+        $this->assertPageContentEditAccess((int) ($content['pid'] ?? 0));
         $selectedTcaColumns = $parsedBody['selectedTcaColumns'] ?? [];
         $availableTcaColumns = json_decode($parsedBody['availableTcaColumns'], true) ?? [];
         $defVals = json_decode($parsedBody['defVals'], true) ?? [];
@@ -366,6 +373,8 @@ class ContentController extends AbstractBackendController
                 $contentElementIrreFields[$table] = $fields['foreignField'];
             }
         }
+        $this->assertGenerationAllowed((string) (array_key_first($selectedTcaColumns) ?? 'tt_content'));
+        $this->assertPageContentEditAccess((int) ($content['pid'] ?? 0));
         $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
 
         return new RedirectResponse($content['returnUrl']);
@@ -486,5 +495,34 @@ class ContentController extends AbstractBackendController
         );
 
         return $response;
+    }
+
+    // runs before any credits are spent
+    protected function assertGenerationAllowed(string $table): void
+    {
+        $flag = 'tx_news_domain_model_news' === $table ? 'enable_news_generation' : 'enable_content_element_generation';
+        if (!$this->aiSuiteContext->backendUserService->checkPermissions('tx_aisuite_features:'.$flag)) {
+            throw new AiSuiteException(
+                'Content/CreateContent',
+                'aiSuite.error.generationNotAllowed',
+                'aiSuite.error.default.title',
+            );
+        }
+    }
+
+    protected function assertPageContentEditAccess(int $pageId): void
+    {
+        if ($pageId <= 0) {
+            return;
+        }
+        $backendUser = $this->aiSuiteContext->backendUserService->getBackendUser();
+        $access = BackendUtility::readPageAccess($pageId, $backendUser?->getPagePermsClause(Permission::CONTENT_EDIT) ?? '1=0');
+        if (false === $access || [] === $access) {
+            throw new AiSuiteException(
+                'Content/CreateContent',
+                'aiSuite.error.noPageEditPermission',
+                'aiSuite.error.default.title',
+            );
+        }
     }
 }

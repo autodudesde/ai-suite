@@ -1,0 +1,122 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-search" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.headline"/>
+                        ({auditTypeLabel}) — {keyword}
+                    </label>
+                </div>
+                <div class="panel-body">
+
+                    <f:if condition="{cachedAt}">
+                        <div class="alert alert-info">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cachedHint"/>
+                            <f:format.date format="d.m.Y H:i">@{cachedAt}</f:format.date>
+                        </div>
+                    </f:if>
+
+                    <p class="text-body-secondary">{url}</p>
+
+                    <f:if condition="{noClusters}">
+                        <div class="alert alert-warning">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.noClusters"/>
+                        </div>
+                    </f:if>
+
+                    <f:if condition="{clusters}">
+                        <p>
+                            <span class="badge badge-danger">{summary.open} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span>
+                            <span class="badge badge-warning">{summary.partial} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span>
+                            <span class="badge badge-success">{summary.answered} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span>
+                        </p>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="col-sm-1"></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.subtopic"/></th>
+                                    <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.queries"/></th>
+                                    <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.volume"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.note"/></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <f:for each="{clusters}" as="cluster">
+                                    <tr>
+                                        <td>
+                                            <f:switch expression="{cluster.status}">
+                                                <f:case value="answered"><span class="badge badge-success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
+                                                <f:case value="partial"><span class="badge badge-warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
+                                                <f:defaultCase><span class="badge badge-danger"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
+                                            </f:switch>
+                                        </td>
+                                        <td>
+                                            <strong>{cluster.label}</strong>
+                                            <br/><span class="text-body-secondary">{cluster.exampleQueries}</span>
+                                        </td>
+                                        <td class="text-end">{cluster.keywordCount}</td>
+                                        <td class="text-end">
+                                            <f:if condition="{cluster.totalSearchVolume}">
+                                                <f:then>{cluster.totalSearchVolume}</f:then>
+                                                <f:else>—</f:else>
+                                            </f:if>
+                                        </td>
+                                        <td class="text-body-secondary">{cluster.note}</td>
+                                        <td class="text-end">
+                                            <f:if condition="{cluster.generatePrompt}">
+                                                <button type="button" class="btn btn-default btn-sm audit-generate-btn"
+                                                        data-page-id="{pageId}" data-audit-type="cluster" data-action="section" data-prompt="{cluster.generatePrompt}">
+                                                    <core:icon identifier="actions-rocket" size="small"/>
+                                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.generate"/>
+                                                </button>
+                                            </f:if>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                            </tbody>
+                        </table>
+                    </f:if>
+
+                    <f:if condition="{pageTreeUrl}">
+                        <div class="callout callout-info">
+                            <div class="callout-body">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.pagetreeHint"/>
+                                <br/>
+                                <form method="POST" action="{pageTreeUrl}" class="d-inline">
+                                    <input type="hidden" name="initialPrompt" value="{pageTreePrompt}" />
+                                    <f:if condition="{pageId}">
+                                        <input type="hidden" name="startPid" value="{pageId}" />
+                                    </f:if>
+                                    <button type="submit" class="btn btn-primary btn-sm mt-2">
+                                        <core:icon identifier="content-menu-pages" size="small"/>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cluster.pagetreeButton"/>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </f:if>
+
+                    <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit')}">
+                        <core:icon identifier="actions-arrow-left" size="small"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.newAudit"/>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</f:section>
+</html>

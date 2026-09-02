@@ -17,7 +17,9 @@ namespace AutoDudes\AiSuite\Command;
 use AutoDudes\AiSuite\Command\Trait\CliBackendBootstrapTrait;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
 use AutoDudes\AiSuite\Service\LibraryService;
+use AutoDudes\AiSuite\Service\SystemDomainResolver;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,6 +40,8 @@ class RetryTasksCommand extends Command
     public function __construct(
         protected readonly BackgroundTaskService $backgroundTaskService,
         protected readonly LibraryService $libraryService,
+        protected readonly SystemDomainResolver $systemDomainResolver,
+        protected readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
@@ -62,7 +66,7 @@ class RetryTasksCommand extends Command
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
     {
-        $this->initializeFakeRequest();
+        $this->initializeFakeRequest($this->systemDomainResolver->resolveBaseUrl());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -83,7 +87,14 @@ class RetryTasksCommand extends Command
             $config['model'] = $model;
         }
 
-        $result = $this->backgroundTaskService->retryFailedTasks($config);
+        try {
+            $result = $this->backgroundTaskService->retryFailedTasks($config);
+        } catch (\Throwable $e) {
+            $this->logger->error('Retry of failed tasks aborted', ['exception' => $e]);
+            $io->error(sprintf('Retry aborted with %s: %s', $e::class, $e->getMessage()));
+
+            return Command::FAILURE;
+        }
 
         if ($result['success']) {
             $io->success($result['message']);

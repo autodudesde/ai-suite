@@ -20,6 +20,11 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 class LibraryService implements SingletonInterface
 {
+    /**
+     * @var list<string>
+     */
+    private const VISION_MODEL_IDENTIFIERS = ['Vision', 'MittwaldMinistral14BVision'];
+
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly SendRequestService $sendRequestService,
@@ -27,7 +32,7 @@ class LibraryService implements SingletonInterface
     ) {}
 
     /**
-     * @param array<string, mixed> $libraries
+     * @param array<array-key, mixed> $libraries
      *
      * @return list<array<string, mixed>>
      */
@@ -69,7 +74,7 @@ class LibraryService implements SingletonInterface
      */
     public function filterVisionLibraries(array $libraries): array
     {
-        return array_filter($libraries, static fn (array $library): bool => 'Vision' === ($library['name'] ?? '') || 'MittwaldMinistral14BVision' === ($library['model_identifier'] ?? ''));
+        return array_filter($libraries, static fn (array $library): bool => self::isVisionLibrary($library));
     }
 
     /**
@@ -79,7 +84,15 @@ class LibraryService implements SingletonInterface
      */
     public function filterNonVisionLibraries(array $libraries): array
     {
-        return array_filter($libraries, static fn (array $library): bool => 'Vision' !== ($library['name'] ?? '') && 'MittwaldMinistral14BVision' !== ($library['model_identifier'] ?? ''));
+        return array_filter($libraries, static fn (array $library): bool => !self::isVisionLibrary($library));
+    }
+
+    /**
+     * @param array<string, mixed> $library
+     */
+    public static function isVisionLibrary(array $library): bool
+    {
+        return in_array((string) ($library['model_identifier'] ?? ''), self::VISION_MODEL_IDENTIFIERS, true);
     }
 
     /**

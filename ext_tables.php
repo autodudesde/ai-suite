@@ -85,6 +85,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMetadataGenerationDescription',
         ],
+        'enable_audit' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAudit',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableAuditDescription',
+        ],
         'enable_massaction_generation' => [
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableMassActionGeneration',
             'tx-aisuite-permissions',

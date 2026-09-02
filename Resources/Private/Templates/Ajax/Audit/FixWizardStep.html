@@ -1,0 +1,57 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
+
+    <div class="panel panel-default wizard-slide" id="auditFixWizardStep">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.stepHeader" />
+                ({position}/{total}) — <code>{label}</code>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <f:if condition="{fileReferenceUid}">
+                <div class="mb-3 d-flex align-items-center gap-2">
+                    <f:image src="{fileReferenceUid}" treatIdAsReference="1" maxWidth="120" />
+                </div>
+            </f:if>
+            <f:for each="{fields}" as="field">
+                <div class="form-group mb-3 audit-fix-field" data-field-name="{field.name}">
+                    <label class="control-label fw-bold mb-2">{field.title}</label>
+                    <f:if condition="{field.current}">
+                        <p class="text-body-secondary mb-1">
+                            <small><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.currentValue" />: {field.current}</small>
+                        </p>
+                    </f:if>
+                    <div class="suggestions metadata-suggestions d-flex flex-wrap flex-column">
+                        <f:for each="{field.suggestions}" as="suggestion" iteration="it">
+                            <label class="form-check d-flex align-items-center ce-metadata-selection" for="audit-fix-{field.name}-{it.cycle}">
+                                <input type="radio"
+                                       name="auditFix[{field.name}]"
+                                       value="{suggestion}"
+                                       class="form-check-input metadata-selection audit-fix-suggestion"
+                                       data-field-name="{field.name}"
+                                       id="audit-fix-{field.name}-{it.cycle}">
+                                <span class="form-check-label">{suggestion}</span>
+                            </label>
+                        </f:for>
+                    </div>
+                    <input type="text"
+                           class="form-control mt-2 audit-fix-value"
+                           data-field-name="{field.name}"
+                           placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.optimizeHint')}"
+                           value="" />
+                </div>
+            </f:for>
+            <div class="form-group d-flex gap-2">
+                <button type="button" class="btn btn-primary" id="aiSuiteAuditFixSaveBtn">
+                    <core:icon identifier="actions-check" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.save" />
+                </button>
+                <button type="button" class="btn btn-default" id="aiSuiteAuditFixSkipBtn">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.skip" />
+                </button>
+            </div>
+        </div>
+    </div>
+</html>

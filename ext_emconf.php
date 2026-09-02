@@ -15,6 +15,7 @@ $EM_CONF['ai_suite'] = [
             'ai_seo_helper' => '0.1.0-1.9.99'
         ],
         'suggests' => [
+        'dashboard' => '',
         ],
     ],
     'autoload' => [
@@ -25,5 +26,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '12.22.1',
+    'version' => '12.23.0',
 ];

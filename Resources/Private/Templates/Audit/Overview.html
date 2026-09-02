@@ -1,0 +1,222 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-search" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.headline"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p class="text-body-secondary">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.description"/>
+                    </p>
+                    <form method="POST" action="{f:be.uri(route: 'ai_suite_audit_run')}" name="audit" class="with-spinner">
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="aiSuiteAuditType">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type"/>
+                            </label>
+                            <select class="form-select" id="aiSuiteAuditType" name="auditType">
+                                <option value="seo" {f:if(condition: '{auditType} == \'seo\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.seo"/>
+                                </option>
+                                <option value="a11y" {f:if(condition: '{auditType} == \'a11y\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.a11y"/>
+                                </option>
+                                <option value="questions" {f:if(condition: '{auditType} == \'questions\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.questions"/>
+                                </option>
+                                <option value="gap" {f:if(condition: '{auditType} == \'gap\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.gap"/>
+                                </option>
+                                <option value="cluster" {f:if(condition: '{auditType} == \'cluster\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.cluster"/>
+                                </option>
+                                <option value="competitors" {f:if(condition: '{auditType} == \'competitors\'', then: 'selected="selected"')}>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.competitors"/>
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group mb-3 audit-page-selection" id="auditPageSelection">
+                            <label class="form-label" for="aiSuiteAuditPageTitle">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.pageChooser"/>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="aiSuiteAuditPageTitle" value="{selectedPageTitle}" readonly="readonly" placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.noPageSelected')}" />
+                                <button type="button" class="btn btn-default" id="selectPageBtn" data-browser-url="{pageBrowserUrl}">
+                                    <core:icon identifier="apps-pagetree-page-default" size="small"/>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.selectPage"/>
+                                </button>
+                            </div>
+                            <input type="hidden" name="pageId" id="aiSuiteAuditPageId" value="{selectedPageId}" />
+                        </div>
+                        <div class="form-group mb-3 audit-language-group" id="auditLanguageGroup" {f:if(condition: '{auditLanguages -> f:count()} > 1', else: 'style="display: none;"')}>
+                            <label class="form-label" for="aiSuiteAuditLanguage">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.language"/>
+                            </label>
+                            <select class="form-select" id="aiSuiteAuditLanguage" name="languageUid">
+                                <f:for each="{auditLanguages}" as="auditLanguage">
+                                    <option value="{auditLanguage.uid}" {f:if(condition: '{languageUid} == {auditLanguage.uid}', then: 'selected="selected"')}>{auditLanguage.title}</option>
+                                </f:for>
+                            </select>
+                            <div class="form-text">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.language.help"/>
+                            </div>
+                        </div>
+                        <div class="form-text mb-3" id="auditLastAudits">
+                            <f:if condition="{lastAudits.seo}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.seo"/>:
+                                    {lastAudits.seo.date}
+                                    — <a href="{lastAudits.seo.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                            <f:if condition="{lastAudits.a11y}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.a11y"/>:
+                                    {lastAudits.a11y.date}
+                                    — <a href="{lastAudits.a11y.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                            <f:if condition="{lastAudits.questions}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.questions"/>:
+                                    {lastAudits.questions.date}
+                                    — <a href="{lastAudits.questions.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                            <f:if condition="{lastAudits.gap}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.gap"/>:
+                                    {lastAudits.gap.date}
+                                    — <a href="{lastAudits.gap.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                            <f:if condition="{lastAudits.cluster}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.cluster"/>:
+                                    {lastAudits.cluster.date}
+                                    — <a href="{lastAudits.cluster.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                            <f:if condition="{lastAudits.competitors}">
+                                <div>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.competitors"/>:
+                                    {lastAudits.competitors.date}
+                                    — <a href="{lastAudits.competitors.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                                </div>
+                            </f:if>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="aiSuiteAuditExternalUrl">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.externalUrl"/>
+                            </label>
+                            <input class="form-control" type="url" id="aiSuiteAuditExternalUrl" name="externalUrl" value="{externalUrl}" placeholder="https://…" />
+                            <div class="form-text">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.externalUrl.help"/>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 audit-keyword-group">
+                            <label class="form-label" for="aiSuiteAuditKeyword">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.keyword"/>
+                            </label>
+                            <input class="form-control" type="text" id="aiSuiteAuditKeyword" name="keyword" value="{keyword}" maxlength="200" />
+                            <div class="form-text">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.keyword.help"/>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3 audit-market-group">
+                            <label class="form-label" for="aiSuiteAuditMarket">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.market"/>
+                            </label>
+                            <select class="form-select" id="aiSuiteAuditMarket" name="market">
+                                <f:for each="{markets}" as="marketOption">
+                                    <option value="{marketOption.value}" {f:if(condition: '{market} == {marketOption.value}', then: 'selected="selected"')}>{marketOption.label}</option>
+                                </f:for>
+                            </select>
+                            <div class="form-text">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.market.help"/>
+                            </div>
+                        </div>
+                        <f:if condition="{auditTextLibraries}">
+                            <div class="form-group mb-3 audit-model-group">
+                                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: auditTextLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+                                <div class="form-text">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.model.help"/>
+                                </div>
+                            </div>
+                        </f:if>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <core:icon identifier="actions-search" size="small"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.submit"/>
+                            </button>
+                            <p class="calculated-requests" id="auditCreditsHint">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.creditsHint.seo"/>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default" id="auditBatchPanel">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="apps-pagetree-category-expand-all" size="small"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.title"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p class="text-body-secondary"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.description"/></p>
+                    <div class="row g-2 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label" for="auditBatchType"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type"/></label>
+                            <select class="form-select" id="auditBatchType">
+                                <option value="seo"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.seo"/></option>
+                                <option value="a11y"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.type.a11y"/></option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label" for="auditBatchDepth"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.depth"/></label>
+                            <select class="form-select" id="auditBatchDepth">
+                                <option value="0"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.depth.0"/></option>
+                                <option value="1"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.depth.1"/></option>
+                                <option value="20" selected="selected"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.depth.all"/></option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-default" id="auditBatchPlanBtn">
+                                <core:icon identifier="actions-clipboard" size="small"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.plan"/>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-3" id="auditBatchSummary" style="display: none;"></div>
+                    <div class="mt-2" id="auditBatchActions" style="display: none;">
+                        <button type="button" class="btn btn-primary" id="auditBatchStartBtn"></button>
+                        <button type="button" class="btn btn-default" id="auditBatchStopBtn" style="display: none;"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.batch.stop"/></button>
+                    </div>
+                    <div class="mt-3" id="auditBatchProgress" style="display: none;">
+                        <div class="progress" style="height: 1.2rem;"><div class="progress-bar" id="auditBatchProgressBar" style="width: 0%;"></div></div>
+                        <div class="form-text" id="auditBatchStatus"></div>
+                        <ul class="mt-2 mb-0" id="auditBatchResults" style="list-style: none; padding-left: 0;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <f:render partial="Spinner" arguments="{messageKey: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.spinner'}" />
+
+</f:section>

@@ -50,8 +50,10 @@ trait AjaxResponseTrait
 
     protected function jsonError(Response $response, string $error, int $statusCode = 400): Response
     {
+        $response = $response->withStatus($statusCode);
         $response->getBody()->write((string) json_encode([
             'success' => false,
+            'status' => $statusCode,
             'error' => $error,
         ]));
 
@@ -69,12 +71,11 @@ trait AjaxResponseTrait
         $parsedBody = $request->getParsedBody();
         if (!is_array($parsedBody) || !array_key_exists($key, $parsedBody)) {
             $this->logger->error('Invalid request: missing key '.$key);
-            $response->getBody()->write((string) json_encode([
-                'success' => false,
-                'error' => $this->aiSuiteContext->localizationService->translate('aiSuite.error.invalidRequest'),
-            ]));
 
-            return $response;
+            return $this->jsonError(
+                $response,
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.invalidRequest'),
+            );
         }
 
         return $parsedBody[$key];

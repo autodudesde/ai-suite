@@ -22,8 +22,8 @@
                         <input type="hidden" name="paidRequestsAvailable" value="{paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
                         <f:render partial="Libs/SelectPromptTemplates" arguments="{promptTemplates: promptTemplates}" />
-                        <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: ''}" />
-                        <f:render partial="Libs/PagesSelect" arguments="{pagesSelect: pagesSelect, propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selected: selectedPid}" />
+                        <f:render partial="Libs/PromptField" arguments="{propertyName: 'plainPrompt', value: initialPrompt}" />
+                        <f:render partial="Libs/PagePicker" arguments="{propertyName: 'startStructureFromPid', label: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pageStructure.pageChooser', selectedPid: selectedPid, selectedPageTitle: selectedPageTitle, pageBrowserUrl: pageBrowserUrl, rootOption: pagePickerRootOption, rootLabel: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.pages.newRootPage'}" />
                         <div class="form-group language-selection mb-3">
                             <f:render partial="Libs/SelectLanguage" arguments="{sysLanguages: sysLanguages, selectName: 'sysLanguage', selected: ''}" />
                         </div>

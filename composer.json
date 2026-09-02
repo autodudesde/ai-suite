@@ -24,7 +24,7 @@
     "AutoDudes",
     "AI Suite"
   ],
-  "version": "12.22.1",
+  "version": "12.23.0",
   "support": {
     "issues": "https://github.com/autodudesde/ai-suite/issues"
   },
@@ -76,17 +76,18 @@
     "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^10.0 || ^11.0 || ^12.0",
     "typo3/cms-beuser": "^12.4",
+    "typo3/cms-dashboard": "^12.4",
     "typo3/cms-filemetadata": "^12.4",
     "typo3/cms-form": "^12.4",
     "typo3/cms-impexp": "^12.4",
     "typo3/cms-indexed-search": "^12.4",
     "typo3/cms-install": "^12.4",
     "typo3/cms-lowlevel": "^12.4",
+    "typo3/cms-scheduler": "^12.4",
     "typo3/cms-tstemplate": "^12.4",
     "typo3/cms-workspaces": "^12.4",
     "typo3/coding-standards": "^0.7",
-    "typo3/testing-framework": "^8.0 || ^9.0 || ^10.0",
-    "typo3/cms-scheduler": "^12.4"
+    "typo3/testing-framework": "^8.0 || ^9.0 || ^10.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

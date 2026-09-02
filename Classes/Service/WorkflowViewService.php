@@ -65,9 +65,7 @@ class WorkflowViewService implements SingletonInterface
         $seedWasDropped = !$this->hasTouchedDirectories($sessionData) && '' !== $seedBeforeResolution && [] === $directories;
 
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
-        $textGenerationLibraries = array_filter($textGenerationLibraries, function ($library) {
-            return 'Vision' === $library['name'] || 'MittwaldMinistral14BVision' === $library['model_identifier'];
-        });
+        $textGenerationLibraries = $this->libraryService->filterVisionLibraries($textGenerationLibraries);
 
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
 

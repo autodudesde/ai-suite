@@ -21,6 +21,9 @@ use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PagesRepository extends AbstractRepository
@@ -88,6 +91,13 @@ class PagesRepository extends AbstractRepository
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
         ;
+        if ('pages' === $mode && empty($workflowData['includeHidden'])) {
+            $queryBuilder->getRestrictions()
+                ->add(GeneralUtility::makeInstance(HiddenRestriction::class))
+                ->add(GeneralUtility::makeInstance(StartTimeRestriction::class))
+                ->add(GeneralUtility::makeInstance(EndTimeRestriction::class))
+            ;
+        }
         $this->addWorkspaceRestriction($queryBuilder);
         $fields = ['uid', 'title', 'slug'];
         if ('pages' === $mode) {
