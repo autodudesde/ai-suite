@@ -1,0 +1,282 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+      {namespace be=TYPO3\CMS\Backend\ViewHelpers}
+
+<f:layout name="Module"/>
+
+<f:section name="Content">
+
+    <div class="row">
+        <div class="col-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-search" />
+                        <span class="audit-score audit-score--{scoreRange}" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.score')}">{score}</span>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.headline"/>
+                        ({auditTypeLabel}) — {url}
+                    </label>
+                </div>
+                <div class="panel-body">
+
+                    <f:if condition="{languageUid}">
+                        <div class="alert alert-info">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.translationReadOnly"/>
+                        </div>
+                    </f:if>
+                    <f:if condition="{cachedAt}">
+                        <div class="alert alert-info">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cachedHint"/>
+                            <f:format.date format="d.m.Y H:i">@{cachedAt}</f:format.date>
+                        </div>
+                    </f:if>
+
+                    <f:if condition="{audit.reachable}">
+                        <f:else>
+                            <div class="alert alert-danger">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.unreachable"/>
+                            </div>
+                        </f:else>
+                    </f:if>
+
+                    <p>
+                        <span class="badge badge-danger">{audit.summary.errors} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.errors"/></span>
+                        <span class="badge badge-warning">{audit.summary.warnings} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.warnings"/></span>
+                        <span class="badge badge-info">{audit.summary.notices} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.notices"/></span>
+                    </p>
+
+                    <f:if condition="{audit.performance.scores}">
+                        <p>
+                            <strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.lighthouse"/>:</strong>
+                            <f:for each="{audit.performance.scores}" as="score" key="category">
+                                <span class="badge badge-secondary">{category}: {score -> f:format.number(decimals: 0)}</span>
+                            </f:for>
+                        </p>
+                    </f:if>
+
+                    <f:if condition="{keywordData}">
+                        <div class="callout callout-info">
+                            <h4 class="callout-title"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.market"/> „{keyword}"</h4>
+                            <div class="callout-body">
+                                <ul class="mb-0">
+                                    <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.searchVolume"/>: <strong>{keywordData.volume.searchVolume}</strong>/Monat</li>
+                                    <li>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.ownPosition"/>:
+                                        <f:if condition="{keywordData.serp.ownPosition}">
+                                            <f:then><strong>#{keywordData.serp.ownPosition}</strong></f:then>
+                                            <f:else><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.notInSerp"/></f:else>
+                                        </f:if>
+                                    </li>
+                                    <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.avgTitleLength"/>: {keywordData.insights.avgTitleLength}</li>
+                                    <f:if condition="{keywordData.difficultyDisplay}">
+                                        <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty"/>: <strong>{keywordData.difficultyDisplay}</strong></li>
+                                    </f:if>
+                                    <f:if condition="{keywordData.intent}">
+                                        <li>
+                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.intent"/>:
+                                            <span class="badge badge-secondary">{keywordData.intent.label}</span>
+                                            <f:for each="{keywordData.intent.secondary}" as="secondaryIntent">
+                                                <span class="badge badge-light">{secondaryIntent}</span>
+                                            </f:for>
+                                        </li>
+                                    </f:if>
+                                </ul>
+                            </div>
+                        </div>
+                    </f:if>
+
+                    <f:if condition="{keywordCandidates}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <label class="panel-title fw-bold">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.title"/>
+                                </label>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.keyword"/></th>
+                                            <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.volume"/></th>
+                                            <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.competition"/></th>
+                                            <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty"/></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <f:for each="{keywordCandidates}" as="candidate">
+                                            <tr>
+                                                <td><strong>{candidate.keyword}</strong></td>
+                                                <td class="text-end">
+                                                    <f:if condition="{candidate.searchVolume}">
+                                                        <f:then>{candidate.searchVolume}</f:then>
+                                                        <f:else>—</f:else>
+                                                    </f:if>
+                                                </td>
+                                                <td class="text-end">
+                                                    <f:if condition="{candidate.competition}">
+                                                        <f:then>{candidate.competition -> f:format.number(decimals: 2)}</f:then>
+                                                        <f:else>—</f:else>
+                                                    </f:if>
+                                                </td>
+                                                <td class="text-end">{candidate.difficultyDisplay}</td>
+                                                <td class="text-end">
+                                                    <form method="POST" action="{f:be.uri(route: 'ai_suite_audit_save_keyword')}" class="d-inline">
+                                                        <input type="hidden" name="pageId" value="{pageId}" />
+                                                        <input type="hidden" name="keyword" value="{candidate.keyword}" />
+                                                        <button type="submit" class="btn btn-default btn-sm">
+                                                            <core:icon identifier="actions-check" size="small"/>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.adopt"/>
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </f:for>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </f:if>
+
+                    <f:if condition="{showCandidatesButton}">
+                        <p>
+                            <button type="button" class="btn btn-default audit-candidates-btn"
+                                    data-page-id="{pageId}"
+                                    data-cached-url="{f:be.uri(route: 'ai_suite_audit_cached', parameters: {pageId: pageId, auditType: 'seo'})}">
+                                <core:icon identifier="actions-lightbulb-on" size="small"/>
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.button"/>
+                            </button>
+                        </p>
+                    </f:if>
+
+                    <f:if condition="{canSaveKeyword}">
+                        <div class="callout callout-warning">
+                            <div class="callout-body">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.saveKeyword.question"/>
+                                <form method="POST" action="{f:be.uri(route: 'ai_suite_audit_save_keyword')}" class="d-inline">
+                                    <input type="hidden" name="pageId" value="{pageId}" />
+                                    <input type="hidden" name="keyword" value="{keyword}" />
+                                    <button type="submit" class="btn btn-default btn-sm">
+                                        <core:icon identifier="actions-check" size="small"/>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.saveKeyword.button"/>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </f:if>
+
+                    <f:for each="{issueGroups}" as="group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <label class="panel-title">{group.label} ({group.issues -> f:count()})</label>
+                                <f:if condition="{group.fixableIssueIdsJson}">
+                                    <button type="button" class="btn btn-primary btn-sm float-end audit-fix-all-btn"
+                                            data-issue-ids="{group.fixableIssueIdsJson}"
+                                            data-page-id="{pageId}" data-audit-type="{auditType}">
+                                        <core:icon identifier="actions-rocket" size="small"/>
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.all"/>
+                                    </button>
+                                </f:if>
+                            </div>
+                            <div class="panel-body">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <f:for each="{group.issues}" as="issue">
+                                            <tr data-issue-id="{issue.id}">
+                                                <td class="col-sm-1"><span class="badge badge-{issue.severityBadge}">{issue.severity}</span></td>
+                                                <td class="col-sm-2"><code>{issue.id}</code><f:for each="{issue.tags}" as="tag"> <span class="badge badge-success">{tag}</span></f:for></td>
+                                                <td>{issue.message}<f:if condition="{issue.evidence}"><br/><small class="text-body-secondary">{issue.evidence}</small></f:if></td>
+                                                <td class="col-sm-2 text-end">
+                                                    <f:if condition="{issue.fixed}">
+                                                        <span class="badge badge-success audit-fixed-badge">
+                                                            <core:icon identifier="actions-check" size="small"/>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.fixed"/>
+                                                        </span>
+                                                    </f:if>
+                                                    <f:if condition="{issue.authorboxAction}">
+                                                        <button type="button" class="btn btn-default btn-sm audit-authorbox-btn"
+                                                                data-page-id="{pageId}">
+                                                            <core:icon identifier="actions-user" size="small"/>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.button"/>
+                                                        </button>
+                                                    </f:if>
+                                                    <f:if condition="{issue.aiFixable}">
+                                                        <button type="button" class="btn btn-default btn-sm audit-fix-btn"
+                                                                data-issue-id="{issue.id}"
+                                                                data-page-id="{pageId}" data-audit-type="{auditType}">
+                                                            <core:icon identifier="actions-rocket" size="small"/>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.single"/>
+                                                        </button>
+                                                    </f:if>
+                                                    <f:if condition="{issue.hasMoreInfo}">
+                                                        <button type="button" class="btn btn-link btn-sm audit-more-info-btn" data-issue-id="{issue.id}">
+                                                            <core:icon identifier="actions-info" size="small"/>
+                                                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.moreInfo"/>
+                                                        </button>
+                                                    </f:if>
+                                                </td>
+                                            </tr>
+                                            <f:if condition="{issue.hasMoreInfo}">
+                                                <tr class="audit-more-info" data-issue-id="{issue.id}" style="display: none;">
+                                                    <td colspan="4" class="text-body-secondary">
+                                                        <f:if condition="{issue.hint}">
+                                                            <p class="mb-2">{issue.hint}</p>
+                                                        </f:if>
+                                                        <f:if condition="{issue.docUrl}">
+                                                            <p class="mb-2">
+                                                                <a href="{issue.docUrl}" target="_blank" rel="noopener noreferrer">
+                                                                    <core:icon identifier="actions-window-open" size="small"/>
+                                                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.docLink"/>
+                                                                </a>
+                                                            </p>
+                                                        </f:if>
+                                                        <div class="audit-advice" data-issue-id="{issue.id}">
+                                                            <f:if condition="{issue.advice}">
+                                                                <p class="mb-1 fw-bold"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.advice.title"/></p>
+                                                                <ul class="mb-0">
+                                                                    <f:for each="{issue.advice}" as="tip"><li>{tip}</li></f:for>
+                                                                </ul>
+                                                            </f:if>
+                                                            <f:if condition="{issue.adviceable}">
+                                                                <button type="button" class="btn btn-default btn-sm audit-advice-btn"
+                                                                        data-issue-id="{issue.id}"
+                                                                        data-issue-message="{issue.message}"
+                                                                        data-evidence="{issue.evidence}"
+                                                                        data-page-id="{pageId}" data-audit-type="{auditType}">
+                                                                    <core:icon identifier="actions-lightbulb-on" size="small"/>
+                                                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.advice.button"/>
+                                                                </button>
+                                                            </f:if>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </f:if>
+                                        </f:for>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </f:for>
+
+                    <div id="auditFixRerunHint" class="alert alert-info" style="display: none;">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.rerunHint"/>
+                    </div>
+
+                    <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit')}">
+                        <core:icon identifier="actions-arrow-left" size="small"/>
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.newAudit"/>
+                    </a>
+                    <f:if condition="{pageId} > 0">
+                        <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit_export', parameters: {pageId: pageId, auditType: auditType})}">
+                            <core:icon identifier="actions-download" size="small"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.export.button"/>
+                        </a>
+                    </f:if>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</f:section>

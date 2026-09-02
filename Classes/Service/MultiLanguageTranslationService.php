@@ -162,7 +162,14 @@ class MultiLanguageTranslationService
 
                 $translationResults = $this->extractTranslationResults($answer->getResponseData());
                 if ([] !== $translationResults) {
-                    $this->translationService->applyContentElementAutoTranslation($sourceUid, $targetLanguageUid, $translationResults);
+                    $skipped = $this->translationService->applyContentElementAutoTranslation($sourceUid, $targetLanguageUid, $translationResults);
+                    if ([] !== $skipped) {
+                        $this->logger->warning('Auto translation could not be written for every record', [
+                            'sourceUid' => $sourceUid,
+                            'targetLanguageUid' => $targetLanguageUid,
+                            'skipped' => $skipped,
+                        ]);
+                    }
                     $translatedLanguages[] = strtoupper($targetIsoCode);
                 }
             } catch (\Throwable $e) {
@@ -296,12 +303,7 @@ class MultiLanguageTranslationService
      */
     protected function extractTranslationResults(array $responseData): array
     {
-        $translationResults = $responseData['translationResults'] ?? [];
-        if (is_string($translationResults)) {
-            $translationResults = json_decode($translationResults, true);
-        }
-
-        return is_array($translationResults) ? $translationResults : [];
+        return $this->translationService->extractTranslationResults($responseData);
     }
 
     /**

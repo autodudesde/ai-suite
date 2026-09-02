@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\PagePickerService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Doctrine\DBAL\Exception;
@@ -32,6 +33,7 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 #[AsController]
 class PagesController extends AbstractBackendController
@@ -104,13 +106,15 @@ class PagesController extends AbstractBackendController
 
                 return $this->view->renderResponse('Pages/PageStructure');
             }
+            $handoverBody = (array) $this->request->getParsedBody();
+            $selectedPid = max(0, (int) ($handoverBody['startPid'] ?? 0));
             $this->view->assignMultiple([
-                'pagesSelect' => $this->getPagesInWebMount(),
                 'textGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries($librariesAnswer->getResponseData()['textGenerationLibraries']),
                 'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
                 'promptTemplates' => $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates('pageTree'),
                 'sysLanguages' => $this->aiSuiteContext->siteService->getAvailableLanguages(),
-            ]);
+                'initialPrompt' => mb_substr(trim((string) ($handoverBody['initialPrompt'] ?? '')), 0, 4000),
+            ] + $this->pagePickerAssigns($selectedPid));
         } catch (\Throwable $e) {
             $this->view->assign('error', true);
             $this->logger->error($e->getMessage());
@@ -162,8 +166,7 @@ class PagesController extends AbstractBackendController
                 'aiResult' => $answer->getResponseData()['pagetreeResult'],
                 'prompt' => $parsedBody['plainPrompt'] ?? '',
                 'promptTemplates' => $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates('pageTree'),
-                'selectedPid' => $parsedBody['startStructureFromPid'] ?? 0,
-                'pagesSelect' => $this->getPagesInWebMount(),
+            ] + $this->pagePickerAssigns((int) ($parsedBody['startStructureFromPid'] ?? 0)) + [
                 'textGenerationLibraries' => $this->aiSuiteContext->libraryService->prepareLibraries(json_decode($parsedBody['textGenerationLibraries'], true), $textAi),
                 'paidRequestsAvailable' => $paidRequestsAvailable,
                 'sysLanguages' => $this->aiSuiteContext->siteService->getAvailableLanguages(),
@@ -213,17 +216,21 @@ class PagesController extends AbstractBackendController
     }
 
     /**
-     * @return array<int|string, mixed>
+     * @return array<string, mixed>
      */
-    private function getPagesInWebMount(): array
+    private function pagePickerAssigns(int $selectedPid): array
     {
-        $pagesSelect = [];
-        if ($this->aiSuiteContext->backendUserService->getBackendUser()?->isAdmin() ?? false) {
-            $pagesSelect = [
-                -1 => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pages.newRootPage'),
-            ];
+        $title = '';
+        if ($selectedPid > 0) {
+            $page = BackendUtility::getRecord('pages', $selectedPid, 'title');
+            $title = null === $page ? '' : sprintf('%s [%d]', (string) ($page['title'] ?? ''), $selectedPid);
         }
 
-        return $pagesSelect + $this->aiSuiteContext->backendUserService->fetchAccessablePages();
+        return [
+            'selectedPid' => 0 === $selectedPid ? '' : $selectedPid,
+            'selectedPageTitle' => $title,
+            'pageBrowserUrl' => GeneralUtility::makeInstance(PagePickerService::class)->buildBrowserUrl(max(0, $selectedPid)),
+            'pagePickerRootOption' => $this->aiSuiteContext->backendUserService->getBackendUser()?->isAdmin() ?? false,
+        ];
     }
 }

@@ -61,6 +61,7 @@ CREATE TABLE be_groups (
     aiSuiteApiKey text,
     openAiApiKey text,
     anthropicApiKey text,
+    aiModelHubApiKey text,
     googleTranslateApiKey text,
     deeplApiKey text,
     deeplApiMode tinyint(3) DEFAULT '0' NOT NULL,
@@ -81,4 +82,14 @@ CREATE TABLE tx_aisuite_domain_model_deepl (
     default_language_id int(11) DEFAULT 0,
     target_language_id int(11) DEFAULT 0,
     external tinyint(3) DEFAULT '0' NOT NULL
+);
+
+CREATE TABLE tx_aisuite_audit_result (
+    page_uid int(11) DEFAULT 0 NOT NULL,
+    language_uid int(11) DEFAULT 0 NOT NULL,
+    audit_type varchar(20) DEFAULT '' NOT NULL,
+    keyword varchar(255) DEFAULT '' NOT NULL,
+    run_ts int(11) DEFAULT 0 NOT NULL,
+    result longtext,
+    KEY page_type (page_uid, audit_type, language_uid)
 );

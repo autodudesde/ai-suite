@@ -247,6 +247,24 @@ Translate single records, whole pages, file metadata or list selections. Transla
 - **DeepL glossary sync** from the AI Suite glossary table (`updateDeeplGlossaries`).
 - Decorators over the core `LocalizationController` and `DatabaseRecordList` add the AI translation entry points. The whole translation surface can be switched off with `disableTranslationFunctionality`.
 
+**Translations are created hidden.** That is TYPO3, not AI Suite: `tt_content` carries
+`hideAtCopy` in the core TCA, so `DataHandler` hides every localized record whose source was
+visible. Editors have to publish them, or the installation switches it off with
+`TCEMAIN.disableHideAtCopy = 1` in page TSconfig. When a translated element looks missing, check
+its hidden flag before anything else.
+
+**Elements without translatable text are localized but not sent.** A content element whose header
+and bodytext are empty — a slider carrying only images, for instance — has nothing to translate and
+costs no credits, but it is still created in the target language so the page stays complete. With
+a site language configured as `fallbackType: fallback` a missing element is invisible in the
+frontend, which is why this matters.
+
+**Records that could not be written are reported.** If a translation comes back but its target
+record cannot be created — a table the page type does not allow, a missing permission — the run
+names those records instead of claiming success. The reason is in `var/log/typo3_*.log` under
+`No target record for translation` or `Failed to translate content element`, both with table and
+uid.
+
 ### Image generation
 
 Generate AI images (GPT Image, Midjourney, Flux) directly into FAL. The result is stored as a real `sys_file` in the configured `mediaStorageFolder`, ready to reference anywhere.

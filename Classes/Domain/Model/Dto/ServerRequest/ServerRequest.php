@@ -36,8 +36,10 @@ class ServerRequest
         protected readonly string $language = '',
         protected readonly array $models = [],
         protected readonly ?string $requestSystemDomain = null,
+        protected readonly string $requestSystemIp = '',
+        protected readonly string $requestSystemForwardIp = '',
     ) {
-        $this->endpoint = $this->extConf['aiSuiteServer'].'api/'.$endpoint;
+        $this->endpoint = ((string) ($this->extConf['aiSuiteServer'] ?? '')).'api/'.$endpoint;
     }
 
     /**
@@ -64,9 +66,9 @@ class ServerRequest
             'prompt' => $this->prompt,
             'language' => $this->language,
             'models' => json_encode($this->models),
-            'request_system_domain' => $this->requestSystemDomain ?? GeneralUtility::getIndpEnv('HTTP_HOST'),
-            'request_system_ip' => GeneralUtility::getIndpEnv('REMOTE_ADDR'),
-            'request_system_forward_ip' => GeneralUtility::getIndpEnv('HTTP_X_FORWARDED_FOR'),
+            'request_system_domain' => $this->requestSystemDomain ?? '',
+            'request_system_ip' => $this->requestSystemIp,
+            'request_system_forward_ip' => $this->requestSystemForwardIp,
             'typo3_version' => GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion(),
             'ext_version' => ExtensionManagementUtility::getExtensionVersion('ai_suite'),
         ];

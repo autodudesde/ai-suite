@@ -21,15 +21,6 @@ class LocalizationService implements SingletonInterface
     ];
 
     /**
-     * Translate a label key.
-     *
-     * - "someKey"             → locallang.xlf:someKey
-     * - "module:someKey"      → locallang_module.xlf:someKey
-     * - "tca:someKey"         → locallang_tca.xlf:someKey
-     * - "mcp:someKey"         → ai_suite_mcp/locallang_mcp.xlf:aiSuite.mcp.someKey
-     * - "LLL:EXT:..."         → used as-is
-     * - "core.db.foo:bar.baz" → TYPO3 short-form domain reference, passed through to sL
-     *
      * @param list<mixed> $arguments
      */
     public function translate(string $xlfKey, array $arguments = []): string

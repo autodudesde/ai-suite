@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use TYPO3\CMS\Backend\Module\ModuleProvider;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class AiSuiteModuleNavigationService implements SingletonInterface
@@ -27,6 +28,12 @@ class AiSuiteModuleNavigationService implements SingletonInterface
             'labelKey' => 'module:aiSuite.module.actionmenu.dashboard',
             'permission' => null,
             'icon' => 'actions-menu',
+        ],
+        [
+            'route' => 'web_aisuite.audit',
+            'labelKey' => 'module:aiSuite.module.actionmenu.audit',
+            'permission' => 'tx_aisuite_features:enable_audit',
+            'icon' => 'actions-search',
         ],
         [
             'route' => 'web_aisuite.workflow',
@@ -80,6 +87,7 @@ class AiSuiteModuleNavigationService implements SingletonInterface
 
     public function __construct(
         private readonly BackendUserService $backendUserService,
+        private readonly ModuleProvider $moduleProvider,
     ) {}
 
     /**
@@ -97,8 +105,29 @@ class AiSuiteModuleNavigationService implements SingletonInterface
     {
         return array_values(array_filter(
             self::ENTRIES,
-            fn (array $entry): bool => null === $entry['permission']
-                || $this->backendUserService->checkPermissions($entry['permission']),
+            fn (array $entry): bool => (null === $entry['permission']
+                || $this->backendUserService->checkPermissions($entry['permission']))
+                && $this->moduleAccessGranted($entry['route']),
         ));
+    }
+
+    private function moduleAccessGranted(string $moduleIdentifier): bool
+    {
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser) {
+            return false;
+        }
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+
+        try {
+            // accessGranted kennt nur das Modul, nicht seine Routen
+            $moduleName = explode('.', $moduleIdentifier)[0];
+
+            return $this->moduleProvider->accessGranted($moduleName, $backendUser);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }

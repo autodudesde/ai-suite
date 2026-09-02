@@ -456,6 +456,14 @@
                 <source>Shows the &quot;Generate with AI and auto-fill in background&quot; button in the workflow manager. Background tasks created this way are processed asynchronously by the scheduler-driven ai-suite:process-tasks command. Requires EXT:scheduler.</source>
                 <target>Zeigt den Button &quot;Mit KI generieren und im Hintergrund automatisch ausfüllen&quot; im Workflow-Manager. So erstellte Hintergrund-Aufgaben werden asynchron vom Scheduler-gesteuerten Befehl ai-suite:process-tasks verarbeitet. Erfordert EXT:scheduler.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAudit" approved="yes">
+                <source>Enable SEO and accessibility audits</source>
+                <target>SEO- und Barrierefreiheits-Audits aktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAuditDescription" approved="yes">
+                <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
+                <target>Erlaubt SEO- und WCAG-Barrierefreiheits-Audits für öffentliche Seiten-URLs über die AutoDudes-Audit-Infrastruktur (Seiten-URL und Inhalt verlassen die TYPO3-Instanz).</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

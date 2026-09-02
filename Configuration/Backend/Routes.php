@@ -6,6 +6,7 @@ use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\ContentController;
 use AutoDudes\AiSuite\Controller\FilelistController;
 use AutoDudes\AiSuite\Controller\GlobalInstructionController;
+use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\PagesController;
 use AutoDudes\AiSuite\Controller\PromptTemplateController;
 use AutoDudes\AiSuite\Controller\SettingsController;
@@ -34,6 +35,28 @@ return [
     'ai_suite_page_create_pagetree' => [
         'path' => '/aisuite/page/create/pagetree',
         'target' => PagesController::class.'::handleRequest',
+    ],
+    'ai_suite_audit' => [
+        'path' => '/aisuite/audit',
+        'target' => AuditController::class.'::handleRequest',
+    ],
+    'ai_suite_audit_run' => [
+        'path' => '/aisuite/audit/run',
+        'methods' => ['POST'],
+        'target' => AuditController::class.'::handleRequest',
+    ],
+    'ai_suite_audit_cached' => [
+        'path' => '/aisuite/audit/cached',
+        'target' => AuditController::class.'::handleRequest',
+    ],
+    'ai_suite_audit_save_keyword' => [
+        'path' => '/aisuite/audit/save-keyword',
+        'methods' => ['POST'],
+        'target' => AuditController::class.'::handleRequest',
+    ],
+    'ai_suite_audit_export' => [
+        'path' => '/aisuite/audit/export',
+        'target' => AuditController::class.'::handleRequest',
     ],
     'ai_suite_page_validate_pagetree' => [
         'path' => '/aisuite/page/validate/pagetree',

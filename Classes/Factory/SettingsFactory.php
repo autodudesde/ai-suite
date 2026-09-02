@@ -60,7 +60,7 @@ class SettingsFactory
     }
 
     /**
-     * @return array<string, array{type: string, category: string, default: string, label: string, options?: array<string, string>}>
+     * @return array<string, array{type: string, category: string, categoryLabel: string, subcategory: string, subcategoryLabel: string, default: string, label: string, options?: array<string, string>}>
      */
     public function parseExtConfTemplate(): array
     {
@@ -70,9 +70,18 @@ class SettingsFactory
             return [];
         }
 
-        $content = (string) file_get_contents($templateFile);
+        return $this->parseTemplate((string) file_get_contents($templateFile));
+    }
+
+    /**
+     * @return array<string, array{type: string, category: string, categoryLabel: string, subcategory: string, subcategoryLabel: string, default: string, label: string, options?: array<string, string>}>
+     */
+    public function parseTemplate(string $content): array
+    {
         $lines = explode("\n", $content);
         $definitions = [];
+        $categoryLabels = [];
+        $subcategoryLabels = [];
         $currentMeta = null;
 
         foreach ($lines as $line) {
@@ -84,6 +93,17 @@ class SettingsFactory
 
             if (str_starts_with($line, '#')) {
                 $commentContent = ltrim($line, '# ');
+                $declaration = $this->parseDeclarationLine($commentContent);
+                if (null !== $declaration) {
+                    [$scope, $key, $label] = $declaration;
+                    if ('customcategory' === $scope) {
+                        $categoryLabels[$key] = $label;
+                    } else {
+                        $subcategoryLabels[$key] = $label;
+                    }
+
+                    continue;
+                }
                 $currentMeta = $this->parseCommentLine($commentContent);
 
                 continue;
@@ -91,9 +111,14 @@ class SettingsFactory
 
             if (null !== $currentMeta && str_contains($line, '=')) {
                 [$key, $value] = array_map('trim', explode('=', $line, 2));
+                $category = $currentMeta['category'];
+                $subcategory = $currentMeta['subcategory'];
                 $definitions[$key] = [
                     'type' => $currentMeta['type'],
-                    'category' => $currentMeta['category'],
+                    'category' => $category,
+                    'categoryLabel' => $categoryLabels[$category] ?? $category,
+                    'subcategory' => $subcategory,
+                    'subcategoryLabel' => $subcategoryLabels[$subcategory] ?? $subcategory,
                     'default' => $value,
                     'label' => $currentMeta['label'],
                 ];
@@ -108,17 +133,40 @@ class SettingsFactory
     }
 
     /**
-     * @return array{category: string, type: string, label: string, options?: array<string, string>}
+     * @return null|array{0: string, 1: string, 2: string}
+     */
+    private function parseDeclarationLine(string $commentContent): ?array
+    {
+        $parts = explode('=', $commentContent, 3);
+        if (3 !== count($parts)) {
+            return null;
+        }
+        $scope = strtolower(trim($parts[0]));
+        if ('customcategory' !== $scope && 'customsubcategory' !== $scope) {
+            return null;
+        }
+        $key = strtolower(trim($parts[1]));
+        $label = trim($parts[2]);
+        if ('' === $key || '' === $label) {
+            return null;
+        }
+
+        return [$scope, $key, $label];
+    }
+
+    /**
+     * @return array{category: string, subcategory: string, type: string, label: string, options?: array<string, string>}
      */
     private function parseCommentLine(string $commentContent): array
     {
         $parts = array_map('trim', explode(';', $commentContent));
-        $meta = ['category' => '', 'type' => 'string', 'label' => ''];
+        $meta = ['category' => '', 'subcategory' => '', 'type' => 'string', 'label' => ''];
 
         foreach ($parts as $part) {
             if (str_starts_with($part, 'cat=')) {
-                $catValue = substr($part, 4);
-                $meta['category'] = explode('/', $catValue)[0];
+                $catValue = explode('/', strtolower(substr($part, 4)));
+                $meta['category'] = trim($catValue[0]);
+                $meta['subcategory'] = trim($catValue[1] ?? '');
             } elseif (str_starts_with($part, 'type=')) {
                 $typeValue = substr($part, 5);
                 $meta = array_merge($meta, $this->parseType($typeValue));

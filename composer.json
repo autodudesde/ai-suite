@@ -24,7 +24,7 @@
     "AutoDudes",
     "AI Suite"
   ],
-  "version": "14.4.1",
+  "version": "14.5.0",
   "support": {
     "issues": "https://github.com/autodudesde/ai-suite/issues"
   },
@@ -76,17 +76,18 @@
     "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^11.0 || ^12.0",
     "typo3/cms-beuser": "^14.3",
+    "typo3/cms-dashboard": "^14.3",
     "typo3/cms-filemetadata": "^14.3",
     "typo3/cms-form": "^14.3",
     "typo3/cms-impexp": "^14.3",
     "typo3/cms-indexed-search": "^14.3",
     "typo3/cms-install": "^14.3",
     "typo3/cms-lowlevel": "^14.3",
+    "typo3/cms-scheduler": "^14.3",
     "typo3/cms-tstemplate": "^14.3",
     "typo3/cms-workspaces": "^14.3",
     "typo3/coding-standards": "^0.8",
-    "typo3/testing-framework": "^9.0 || ^10.0",
-    "typo3/cms-scheduler": "^14.3"
+    "typo3/testing-framework": "^9.0 || ^10.0"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

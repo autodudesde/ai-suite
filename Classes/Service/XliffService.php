@@ -67,12 +67,11 @@ class XliffService implements SingletonInterface
 
         $file = $packagePath.'Resources/Private/Language/'.$filename;
 
-        try {
-            $fileData = file_get_contents($file);
-            if (false === $fileData) {
-                throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$file, $extKey]));
-            }
-        } catch (\Exception $e) {
+        if (!is_readable($file)) {
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$file, $extKey]));
+        }
+        $fileData = file_get_contents($file);
+        if (false === $fileData) {
             throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$file, $extKey]));
         }
         $xmlData = new \SimpleXMLElement($fileData);

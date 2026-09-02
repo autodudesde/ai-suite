@@ -133,6 +133,14 @@
                 <source>AI Suite server endpoint is currently not available.</source>
                 <target>AI Suite Server Endpunkt ist derzeit nicht verfügbar.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.httpStatus">
+                <source>The AI Suite Server answered with HTTP %s. See the AI Suite log for details.</source>
+                <target>Der AI Suite Server antwortete mit HTTP %s. Details stehen im AI-Suite-Log.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.payloadTooLarge">
+                <source>The request was too large for the AI Suite Server (HTTP 413). Reduce the number of pages processed per run.</source>
+                <target>Die Anfrage war zu groß für den AI Suite Server (HTTP 413). Bitte die Anzahl der pro Lauf verarbeiteten Seiten reduzieren.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.unauthorized">
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
                 <target>Ihr AI Suite API-Key fehlt oder ist ungültig. Bitte überprüfen Sie den Key in der Extension-Konfiguration. Einen Key erhalten Sie unter https://www.autodudes.de</target>
@@ -144,6 +152,34 @@
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
                 <target>Ihr AI Suite API-Key ist abgelaufen. Bitte erneuern Sie ihn unter https://www.autodudes.de</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.invalidRequest">
+                <source>The AI Suite server rejected the request because a value was missing or malformed. The details are in the message below.</source>
+                <target>Der AI-Suite-Server hat die Anfrage abgelehnt, weil ein Wert fehlte oder ungültig war. Die Einzelheiten stehen in der Meldung darunter.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.requestRateLimited">
+                <source>Too many requests in a short time. Please wait a moment and try again.</source>
+                <target>Zu viele Anfragen in kurzer Zeit. Bitte einen Moment warten und erneut versuchen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.gdprModelBlocked">
+                <source>GDPR mode is active, so this AI model may not be used. Pick a data-protection-compliant model.</source>
+                <target>Der DSGVO-Modus ist aktiv, dieses KI-Modell darf daher nicht verwendet werden. Bitte ein datenschutzkonformes Modell wählen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.targetLanguageNotSupported">
+                <source>The selected AI model does not support this target language.</source>
+                <target>Das gewählte KI-Modell unterstützt diese Zielsprache nicht.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.thirdPartyApi">
+                <source>The AI provider did not return a usable answer. Failed requests are not billed; please try again later.</source>
+                <target>Der KI-Anbieter hat keine verwertbare Antwort geliefert. Fehlgeschlagene Anfragen werden nicht berechnet; bitte später erneut versuchen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.webSearchUnavailable">
+                <source>Web research is not available for this installation under the current data-protection settings.</source>
+                <target>Die Web-Recherche steht für diese Installation unter den aktuellen Datenschutzeinstellungen nicht zur Verfügung.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.promptViolation">
+                <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
+                <target>Die Eingabe wurde von der Inhaltsrichtlinie des Anbieters abgelehnt. Bitte umformulieren.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
@@ -195,6 +231,14 @@
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
                 <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
+                <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
+                <target>Seiteninhalt konnte nicht geladen werden - die Vorschau-URL antwortete mit HTTP %s. Versteckte oder zeitgesteuerte Seiten lassen sich für diese Anfrage nicht rendern.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.unauthorized">
+                <source>Page content could not be loaded (HTTP %s). If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
+                <target>Seiteninhalt konnte nicht geladen werden (HTTP %s). Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
@@ -853,6 +897,21 @@
                 <target>Die Übersetzung ist bei einem oder mehreren Elementen fehlgeschlagen.</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.translation.nothingTranslated">
+                <source>The AI model did not return a usable translation. Nothing was written; the records remain in the source language.</source>
+                <target>Das KI-Modell hat keine verwertbare Übersetzung geliefert. Es wurde nichts geschrieben; die Datensätze bleiben in der Ausgangssprache.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.partiallyUntranslated">
+                <source>%s record(s) could not be translated by the AI model and were left in the source language: %s</source>
+                <target>%s Datensatz/Datensätze konnte(n) vom KI-Modell nicht übersetzt werden und bleibt/bleiben in der Ausgangssprache: %s</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.translation.elementsSkipped">
+                <source>%s record(s) could not be written to the target language and were left untranslated: %s</source>
+                <target>%s Datensatz/Datensätze konnte(n) nicht in die Zielsprache geschrieben werden und bleibt/bleiben unübersetzt: %s</target>
+            </trans-unit>
+
             <trans-unit id="aiSuite.autoTranslation.direct.title">
                 <source>Automatic translation</source>
                 <target>Automatische Übersetzung</target>
@@ -1318,6 +1377,14 @@
             <trans-unit id="aiSuite.form.label.description">
                 <source>Description</source>
                 <target>Beschreibung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.generationNotAllowed" approved="yes">
+                <source>You do not have permission to use AI content generation.</source>
+                <target>Sie haben keine Berechtigung, die KI-Inhaltsgenerierung zu nutzen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.noPageEditPermission" approved="yes">
+                <source>You do not have permission to edit content on the target page.</source>
+                <target>Sie haben keine Berechtigung, Inhalte auf der Zielseite zu bearbeiten.</target>
             </trans-unit>
         </body>
     </file>

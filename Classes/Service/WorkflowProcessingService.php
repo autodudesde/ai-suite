@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
+use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
@@ -105,43 +106,24 @@ class WorkflowProcessingService implements SingletonInterface
         $payload = [];
         $bulkPayload = [];
         $failedPages = [];
-        $customPrompt = trim((string) ($workflowData['customPrompt'] ?? ''));
 
         foreach ($pages as $pageUid => $pageSlug) {
             try {
-                $pageContent = $contentFetcher($pageUid, (int) $languageParts[1]);
-                $uuid = $this->uuidService->generateUuid();
+                $entry = $this->buildPageMetadataEntry($workflowData, (int) $pageUid, $languageParts, $contentFetcher, $handledByCli);
+            } catch (FetchedContentFailedException $e) {
+                $this->logger->warning('Skipping page '.$pageUid.', its content could not be fetched: '.$e->getMessage());
+                $failedPages[] = (int) $pageUid;
 
-                $bulkPayload[] = new BackgroundTask(
-                    'page',
-                    'metadata',
-                    $workflowData['parentUuid'],
-                    $uuid,
-                    $workflowData['column'],
-                    'pages',
-                    'uid',
-                    $pageUid,
-                    (int) $languageParts[1],
-                    '',
-                    handledByCli: $handledByCli,
-                    model: (string) ($workflowData['textAiModel'] ?? ''),
-                );
-
-                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageUid);
-                $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]);
-
-                $payload[] = [
-                    'field_label' => $workflowData['column'],
-                    'request_content' => $pageContent,
-                    'uuid' => $uuid,
-                    'global_instructions' => $globalInstructions,
-                    'override_predefined_prompt' => $globalInstructionsOverride,
-                    'custom_prompt' => $customPrompt,
-                ];
-            } catch (\Exception $e) {
+                continue;
+            } catch (\Throwable $e) {
                 $this->logger->error('Error while fetching page content for page '.$pageUid.': '.$e->getMessage());
-                $failedPages[] = $pageUid;
+                $failedPages[] = (int) $pageUid;
+
+                continue;
             }
+
+            $bulkPayload[] = $entry['task'];
+            $payload[] = $entry['item'];
         }
 
         return [
@@ -174,52 +156,33 @@ class WorkflowProcessingService implements SingletonInterface
 
         foreach ($pages as $pageUid => $pageData) {
             try {
-                $translatableContent = $this->translationService->collectPageTranslatableContent(
-                    $pageUid,
-                    $sourceLanguageUid,
+                $entry = $this->buildPageTranslationEntry(
+                    (int) $pageUid,
+                    $parentUuid,
                     $translationScope,
+                    $sourceLanguage,
+                    $targetLanguage,
+                    $sourceLanguageUid,
                     $targetLanguageUid,
                     $request,
+                    $handledByCli,
+                    $model,
                 );
-
-                if (empty($translatableContent)) {
-                    $failedPages[] = $pageUid;
-
-                    continue;
-                }
-
-                $uuid = $this->uuidService->generateUuid();
-
-                $bulkPayload[] = new BackgroundTask(
-                    'page-translation',
-                    'translation',
-                    $parentUuid,
-                    $uuid,
-                    $translationScope,
-                    'pages',
-                    'uid',
-                    $pageUid,
-                    $targetLanguageUid,
-                    '',
-                    handledByCli: $handledByCli,
-                    model: $model ?? '',
-                );
-
-                $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageUid);
-
-                $payload[] = [
-                    'source_page_uid' => $pageUid,
-                    'source_language' => $sourceLanguage,
-                    'target_language' => $targetLanguage,
-                    'translation_scope' => $translationScope,
-                    'translatable_content' => $translatableContent,
-                    'uuid' => $uuid,
-                    'global_instructions' => $globalInstructions,
-                ];
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Error while collecting translatable content for page '.$pageUid.': '.$e->getMessage());
-                $failedPages[] = $pageUid;
+                $failedPages[] = (int) $pageUid;
+
+                continue;
             }
+
+            if (null === $entry) {
+                $failedPages[] = (int) $pageUid;
+
+                continue;
+            }
+
+            $bulkPayload[] = $entry['task'];
+            $payload[] = $entry['item'];
         }
 
         return [
@@ -295,7 +258,7 @@ class WorkflowProcessingService implements SingletonInterface
                         'global_instructions' => $globalInstructions,
                         'override_predefined_prompt' => $globalInstructionsOverride,
                     ];
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $this->logger->error('Error while processing file '.$fileUid.' with sys file metadata uid '.$sysFileMetaUid.': '.$e->getMessage());
                     $failedFilesMetadata[] = $fileUid;
                 }
@@ -366,29 +329,30 @@ class WorkflowProcessingService implements SingletonInterface
                     $filename = $this->metadataService->getFilename($fileUid);
 
                     if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                        $answer = $requestService->sendDataRequest(
-                            'createMassAction',
-                            [
-                                'uuid' => $workflowData['parentUuid'],
-                                'payload' => $payload,
-                                'scope' => $scope,
-                                'type' => 'metadata',
-                            ],
-                            '',
+                        $errorMessage = $this->flushChunk(
+                            $payload,
+                            $bulkPayload,
+                            $fileSizeSumInBytes,
+                            (string) $workflowData['parentUuid'],
+                            $scope,
+                            'metadata',
                             $languageParts[0],
-                            [
-                                'text' => $workflowData['textAiModel'],
-                            ],
+                            'text',
+                            (string) $workflowData['textAiModel'],
+                            $requestService,
+                            $this->backgroundTaskRepository,
+                            [],
                             $requestSystemDomain,
                         );
 
-                        if ('Error' === $answer->getType()) {
-                            throw new \Exception($answer->getResponseData()['message']);
+                        if (null !== $errorMessage) {
+                            // Dropping the rejected chunk keeps it from being resent on every following file.
+                            $payload = [];
+                            $bulkPayload = [];
+                            $fileSizeSumInBytes = 0;
+
+                            throw new \Exception($errorMessage);
                         }
-                        $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
-                        $payload = [];
-                        $bulkPayload = [];
-                        $fileSizeSumInBytes = 0;
                     }
 
                     $uuid = $this->uuidService->generateUuid();
@@ -420,7 +384,7 @@ class WorkflowProcessingService implements SingletonInterface
                         'filename' => $filename,
                     ];
                     $fileSizeSumInBytes += $fileSize;
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     $this->logger->error('Error while fetching file content for file '.$fileUid.' with sys file metadata uid '.$sysFileMetaUid.': '.$e->getMessage());
                     $failedFilesMetadata[] = $fileUid;
                 }
@@ -481,6 +445,278 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
+     * @param array<string, mixed> $workflowData
+     * @param array<int, string>   $pages
+     * @param list<string>         $languageParts
+     *
+     * @return array{success: bool, failedPages: list<int>, taskCount: int, chunks: int, message: string}
+     */
+    public function dispatchPageMetadataInChunks(
+        array $workflowData,
+        array $pages,
+        array $languageParts,
+        callable $contentFetcher,
+        SendRequestService $requestService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        ?string $requestSystemDomain = null,
+        bool $handledByCli = true,
+        ?callable $progress = null,
+    ): array {
+        $payload = [];
+        $bulkPayload = [];
+        $failedPages = [];
+        $byteBudget = 0;
+        $dispatched = 0;
+        $chunks = 0;
+        $total = count($pages);
+        $maxBytes = $this->directiveService->getEffectiveMaxUploadSize();
+        $maxItems = $this->directiveService->getEffectiveMaxItemsPerRequest();
+
+        foreach ($pages as $pageUid => $pageSlug) {
+            try {
+                $entry = $this->buildPageMetadataEntry($workflowData, (int) $pageUid, $languageParts, $contentFetcher, $handledByCli);
+            } catch (FetchedContentFailedException $e) {
+                $this->logger->warning('Skipping page '.$pageUid.', its content could not be fetched: '.$e->getMessage());
+                $failedPages[] = (int) $pageUid;
+
+                continue;
+            } catch (\Throwable $e) {
+                $this->logger->error('Error while fetching page content for page '.$pageUid.': '.$e->getMessage());
+                $failedPages[] = (int) $pageUid;
+
+                continue;
+            }
+
+            $entrySize = $this->measureChunkItem($entry['item']);
+
+            if (count($payload) > 0 && (($byteBudget + $entrySize) >= $maxBytes || count($payload) >= $maxItems)) {
+                $itemsInChunk = count($payload);
+                $errorMessage = $this->flushChunk(
+                    $payload,
+                    $bulkPayload,
+                    $byteBudget,
+                    (string) $workflowData['parentUuid'],
+                    'page',
+                    'metadata',
+                    $languageParts[0],
+                    'text',
+                    (string) ($workflowData['textAiModel'] ?? ''),
+                    $requestService,
+                    $backgroundTaskRepository,
+                    [],
+                    $requestSystemDomain,
+                );
+
+                if (null !== $errorMessage) {
+                    return [
+                        'success' => false,
+                        'failedPages' => $failedPages,
+                        'taskCount' => $dispatched,
+                        'chunks' => $chunks,
+                        'message' => $errorMessage,
+                    ];
+                }
+
+                ++$chunks;
+                $dispatched += $itemsInChunk;
+                if (null !== $progress) {
+                    $progress($chunks, $dispatched, $total);
+                }
+            }
+
+            $payload[] = $entry['item'];
+            $bulkPayload[] = $entry['task'];
+            $byteBudget += $entrySize;
+        }
+
+        $itemsInChunk = count($payload);
+        $errorMessage = $this->flushChunk(
+            $payload,
+            $bulkPayload,
+            $byteBudget,
+            (string) $workflowData['parentUuid'],
+            'page',
+            'metadata',
+            $languageParts[0],
+            'text',
+            (string) ($workflowData['textAiModel'] ?? ''),
+            $requestService,
+            $backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'failedPages' => $failedPages,
+                'taskCount' => $dispatched,
+                'chunks' => $chunks,
+                'message' => $errorMessage,
+            ];
+        }
+
+        if ($itemsInChunk > 0) {
+            ++$chunks;
+            $dispatched += $itemsInChunk;
+            if (null !== $progress) {
+                $progress($chunks, $dispatched, $total);
+            }
+        }
+
+        return [
+            'success' => true,
+            'failedPages' => $failedPages,
+            'taskCount' => $dispatched,
+            'chunks' => $chunks,
+            'message' => sprintf('Successfully added %d new task(s).', $dispatched),
+        ];
+    }
+
+    /**
+     * @param array<int, mixed> $pages
+     *
+     * @return array{success: bool, failedPages: list<int>, taskCount: int, chunks: int, message: string}
+     */
+    public function dispatchPageTranslationInChunks(
+        array $pages,
+        string $parentUuid,
+        string $translationScope,
+        string $sourceLanguage,
+        string $targetLanguage,
+        int $sourceLanguageUid,
+        int $targetLanguageUid,
+        string $model,
+        SendRequestService $requestService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        ?string $requestSystemDomain = null,
+        bool $handledByCli = true,
+        ?callable $progress = null,
+    ): array {
+        $payload = [];
+        $bulkPayload = [];
+        $failedPages = [];
+        $byteBudget = 0;
+        $dispatched = 0;
+        $chunks = 0;
+        $total = count($pages);
+        $maxBytes = $this->directiveService->getEffectiveMaxUploadSize();
+        $maxItems = $this->directiveService->getEffectiveMaxItemsPerRequest();
+
+        foreach ($pages as $pageUid => $pageData) {
+            try {
+                $entry = $this->buildPageTranslationEntry(
+                    (int) $pageUid,
+                    $parentUuid,
+                    $translationScope,
+                    $sourceLanguage,
+                    $targetLanguage,
+                    $sourceLanguageUid,
+                    $targetLanguageUid,
+                    null,
+                    $handledByCli,
+                    $model,
+                );
+            } catch (\Throwable $e) {
+                $this->logger->error('Error while collecting translatable content for page '.$pageUid.': '.$e->getMessage());
+                $failedPages[] = (int) $pageUid;
+
+                continue;
+            }
+
+            if (null === $entry) {
+                $failedPages[] = (int) $pageUid;
+
+                continue;
+            }
+
+            $entrySize = $this->measureChunkItem($entry['item']);
+
+            if (count($payload) > 0 && (($byteBudget + $entrySize) >= $maxBytes || count($payload) >= $maxItems)) {
+                $itemsInChunk = count($payload);
+                $errorMessage = $this->flushChunk(
+                    $payload,
+                    $bulkPayload,
+                    $byteBudget,
+                    $parentUuid,
+                    'page-translation',
+                    'translation',
+                    '',
+                    'translate',
+                    $model,
+                    $requestService,
+                    $backgroundTaskRepository,
+                    [],
+                    $requestSystemDomain,
+                );
+
+                if (null !== $errorMessage) {
+                    return [
+                        'success' => false,
+                        'failedPages' => $failedPages,
+                        'taskCount' => $dispatched,
+                        'chunks' => $chunks,
+                        'message' => $errorMessage,
+                    ];
+                }
+
+                ++$chunks;
+                $dispatched += $itemsInChunk;
+                if (null !== $progress) {
+                    $progress($chunks, $dispatched, $total);
+                }
+            }
+
+            $payload[] = $entry['item'];
+            $bulkPayload[] = $entry['task'];
+            $byteBudget += $entrySize;
+        }
+
+        $itemsInChunk = count($payload);
+        $errorMessage = $this->flushChunk(
+            $payload,
+            $bulkPayload,
+            $byteBudget,
+            $parentUuid,
+            'page-translation',
+            'translation',
+            '',
+            'translate',
+            $model,
+            $requestService,
+            $backgroundTaskRepository,
+            [],
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return [
+                'success' => false,
+                'failedPages' => $failedPages,
+                'taskCount' => $dispatched,
+                'chunks' => $chunks,
+                'message' => $errorMessage,
+            ];
+        }
+
+        if ($itemsInChunk > 0) {
+            ++$chunks;
+            $dispatched += $itemsInChunk;
+            if (null !== $progress) {
+                $progress($chunks, $dispatched, $total);
+            }
+        }
+
+        return [
+            'success' => true,
+            'failedPages' => $failedPages,
+            'taskCount' => $dispatched,
+            'chunks' => $chunks,
+            'message' => sprintf('Successfully added %d new task(s).', $dispatched),
+        ];
+    }
+
+    /**
      * @param array<string, mixed>     $workflowData
      * @param array<int|string, mixed> $fileReferences
      * @param list<string>             $languageParts
@@ -516,29 +752,30 @@ class WorkflowProcessingService implements SingletonInterface
                 $fileSize = strlen($fileContent);
 
                 if (($fileSizeSumInBytes + $fileSize) >= $allowedFileSize && count($payload) > 0) {
-                    $answer = $requestService->sendDataRequest(
-                        'createMassAction',
-                        [
-                            'uuid' => $workflowData['parentUuid'],
-                            'payload' => $payload,
-                            'scope' => 'fileReference',
-                            'type' => 'metadata',
-                        ],
-                        '',
+                    $errorMessage = $this->flushChunk(
+                        $payload,
+                        $bulkPayload,
+                        $fileSizeSumInBytes,
+                        (string) $workflowData['parentUuid'],
+                        'fileReference',
+                        'metadata',
                         $languageParts[0],
-                        [
-                            'text' => $workflowData['textAiModel'],
-                        ],
+                        'text',
+                        (string) $workflowData['textAiModel'],
+                        $requestService,
+                        $this->backgroundTaskRepository,
+                        [],
                         $requestSystemDomain,
                     );
 
-                    if ('Error' === $answer->getType()) {
-                        throw new \Exception($answer->getResponseData()['message']);
+                    if (null !== $errorMessage) {
+                        // Dropping the rejected chunk keeps it from being resent on every following file.
+                        $payload = [];
+                        $bulkPayload = [];
+                        $fileSizeSumInBytes = 0;
+
+                        throw new \Exception($errorMessage);
                     }
-                    $this->backgroundTaskRepository->insertBackgroundTasks($bulkPayload);
-                    $payload = [];
-                    $bulkPayload = [];
-                    $fileSizeSumInBytes = 0;
                 }
 
                 $uuid = $this->uuidService->generateUuid();
@@ -569,7 +806,7 @@ class WorkflowProcessingService implements SingletonInterface
                     'filename' => $filename,
                 ];
                 $fileSizeSumInBytes += $fileSize;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->logger->error('Error while fetching file content for file with sys file reference uid '.$sysFileReferenceUid.': '.$e->getMessage());
                 $failedFileReferences[] = $sysFileReferenceUid;
             }
@@ -682,7 +919,7 @@ class WorkflowProcessingService implements SingletonInterface
      *
      * @return array<string, mixed>
      */
-    public function prepareAndExecutePagesMetadataWorkflow(array $config): array
+    public function prepareAndExecutePagesMetadataWorkflow(array $config, ?callable $progress = null): array
     {
         $pageId = (int) $config['startFromPid'];
         $this->reinforceLanguageFilter($config, $pageId);
@@ -725,46 +962,19 @@ class WorkflowProcessingService implements SingletonInterface
             'customPrompt' => $config['customPrompt'] ?? '',
         ];
 
-        $contentFetcher = $this->buildPageContentFetcher();
-        $result = $this->processPageMetadataGeneration(
+        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
+
+        return $this->dispatchPageMetadataInChunks(
             $workflowData,
             $pages,
             $languageParts,
-            $contentFetcher,
-            handledByCli: true,
-        );
-
-        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
-        $errorMessage = $this->sendWorkflowRequest(
-            $result['payload'],
-            $result['bulkPayload'],
-            $parentUuid,
-            'page',
-            'metadata',
-            $languageParts[0],
-            'text',
-            $config['model'],
+            $this->buildPageContentFetcher(),
             $this->sendRequestService,
             $this->backgroundTaskRepository,
-            [],
             $requestSystemDomain,
+            true,
+            $progress,
         );
-
-        if (null !== $errorMessage) {
-            return [
-                'success' => false,
-                'message' => $errorMessage,
-                'failedPages' => $result['failedPages'],
-            ];
-        }
-
-        $taskCount = count($result['bulkPayload']);
-
-        return [
-            'success' => true,
-            'failedPages' => $result['failedPages'],
-            'message' => sprintf('Successfully added %d new task(s).', $taskCount),
-        ];
     }
 
     /**
@@ -772,7 +982,7 @@ class WorkflowProcessingService implements SingletonInterface
      *
      * @return array<string, mixed>
      */
-    public function prepareAndExecutePageTranslationWorkflow(array $config): array
+    public function prepareAndExecutePageTranslationWorkflow(array $config, ?callable $progress = null): array
     {
         $pageId = (int) $config['startFromPid'];
         $this->reinforceTranslationLanguageFilters($config, $pageId);
@@ -816,12 +1026,15 @@ class WorkflowProcessingService implements SingletonInterface
         if (empty($pages)) {
             return [
                 'success' => true,
+                'failedPages' => [],
                 'message' => 'All entered tasks are pending or already done!',
             ];
         }
 
         $parentUuid = $this->uuidService->generateUuid();
-        $result = $this->processPageTranslation(
+        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
+
+        return $this->dispatchPageTranslationInChunks(
             $pages,
             $parentUuid,
             (string) $config['translationScope'],
@@ -829,42 +1042,13 @@ class WorkflowProcessingService implements SingletonInterface
             $targetLanguageParts[0],
             (int) $sourceLanguageParts[1],
             (int) $targetLanguageParts[1],
-            null,
-            handledByCli: true,
-            model: (string) ($config['model'] ?? ''),
-        );
-
-        $requestSystemDomain = $this->domainResolverService->getDomainByPageId($pageId);
-        $errorMessage = $this->sendWorkflowRequest(
-            $result['payload'],
-            $result['bulkPayload'],
-            $parentUuid,
-            'page-translation',
-            'translation',
-            '',
-            'translate',
-            $config['model'],
+            (string) ($config['model'] ?? ''),
             $this->sendRequestService,
             $this->backgroundTaskRepository,
-            [],
             $requestSystemDomain,
+            true,
+            $progress,
         );
-
-        if (null !== $errorMessage) {
-            return [
-                'success' => false,
-                'message' => $errorMessage,
-                'failedPages' => $result['failedPages'],
-            ];
-        }
-
-        $taskCount = count($result['bulkPayload']);
-
-        return [
-            'success' => true,
-            'failedPages' => $result['failedPages'],
-            'message' => sprintf('Successfully added %d new task(s).', $taskCount),
-        ];
     }
 
     /**
@@ -1258,6 +1442,168 @@ class WorkflowProcessingService implements SingletonInterface
             'failedFiles' => $result['failedFilesMetadata'],
             'message' => sprintf('Successfully added %d new task(s).', count($result['bulkPayload'])),
         ];
+    }
+
+    /**
+     * @param array<string, mixed> $workflowData
+     * @param list<string>         $languageParts
+     *
+     * @return array{task: BackgroundTask, item: array<string, mixed>}
+     *
+     * @throws FetchedContentFailedException
+     */
+    private function buildPageMetadataEntry(
+        array $workflowData,
+        int $pageUid,
+        array $languageParts,
+        callable $contentFetcher,
+        bool $handledByCli,
+    ): array {
+        $pageContent = $contentFetcher($pageUid, (int) $languageParts[1]);
+        $uuid = $this->uuidService->generateUuid();
+
+        $task = new BackgroundTask(
+            'page',
+            'metadata',
+            $workflowData['parentUuid'],
+            $uuid,
+            $workflowData['column'],
+            'pages',
+            'uid',
+            $pageUid,
+            (int) $languageParts[1],
+            '',
+            handledByCli: $handledByCli,
+            model: (string) ($workflowData['textAiModel'] ?? ''),
+        );
+
+        return [
+            'task' => $task,
+            'item' => [
+                'field_label' => $workflowData['column'],
+                'request_content' => $pageContent,
+                'uuid' => $uuid,
+                'global_instructions' => $this->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageUid),
+                'override_predefined_prompt' => $this->globalInstructionService->checkOverridePredefinedPrompt('pages', 'metadata', [$pageUid]),
+                'custom_prompt' => trim((string) ($workflowData['customPrompt'] ?? '')),
+            ],
+        ];
+    }
+
+    /**
+     * @return null|array{task: BackgroundTask, item: array<string, mixed>}
+     */
+    private function buildPageTranslationEntry(
+        int $pageUid,
+        string $parentUuid,
+        string $translationScope,
+        string $sourceLanguage,
+        string $targetLanguage,
+        int $sourceLanguageUid,
+        int $targetLanguageUid,
+        ?ServerRequestInterface $request,
+        bool $handledByCli,
+        ?string $model,
+    ): ?array {
+        $translatableContent = $this->translationService->collectPageTranslatableContent(
+            $pageUid,
+            $sourceLanguageUid,
+            $translationScope,
+            $targetLanguageUid,
+            $request,
+        );
+
+        if (empty($translatableContent)) {
+            return null;
+        }
+
+        $uuid = $this->uuidService->generateUuid();
+
+        $task = new BackgroundTask(
+            'page-translation',
+            'translation',
+            $parentUuid,
+            $uuid,
+            $translationScope,
+            'pages',
+            'uid',
+            $pageUid,
+            $targetLanguageUid,
+            '',
+            handledByCli: $handledByCli,
+            model: $model ?? '',
+        );
+
+        return [
+            'task' => $task,
+            'item' => [
+                'source_page_uid' => $pageUid,
+                'source_language' => $sourceLanguage,
+                'target_language' => $targetLanguage,
+                'translation_scope' => $translationScope,
+                'translatable_content' => $translatableContent,
+                'uuid' => $uuid,
+                'global_instructions' => $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageUid),
+            ],
+        ];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $payload
+     * @param list<BackgroundTask>       $bulkPayload
+     * @param array<string, mixed>       $extraParams
+     */
+    private function flushChunk(
+        array &$payload,
+        array &$bulkPayload,
+        int &$byteBudget,
+        string $parentUuid,
+        string $scope,
+        string $type,
+        string $languageCode,
+        string $modelKey,
+        string $model,
+        SendRequestService $requestService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        array $extraParams = [],
+        ?string $requestSystemDomain = null,
+    ): ?string {
+        if (0 === count($payload)) {
+            return null;
+        }
+
+        $errorMessage = $this->sendWorkflowRequest(
+            $payload,
+            $bulkPayload,
+            $parentUuid,
+            $scope,
+            $type,
+            $languageCode,
+            $modelKey,
+            $model,
+            $requestService,
+            $backgroundTaskRepository,
+            $extraParams,
+            $requestSystemDomain,
+        );
+
+        if (null !== $errorMessage) {
+            return $errorMessage;
+        }
+
+        $payload = [];
+        $bulkPayload = [];
+        $byteBudget = 0;
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function measureChunkItem(array $item): int
+    {
+        return strlen((string) json_encode($item));
     }
 
     /**

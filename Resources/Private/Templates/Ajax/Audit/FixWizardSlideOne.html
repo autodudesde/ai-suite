@@ -1,0 +1,47 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+
+    <f:format.htmlentitiesDecode><style>{inlineStyles}</style></f:format.htmlentitiesDecode>
+
+    <div class="panel panel-default wizard-slide" id="auditFixWizardSlideOne">
+        <div class="panel-heading">
+            <h3 class="panel-title fw-bold">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.slideOneHeader" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <p>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.queueInfo" arguments="{0: stepCount, 1: requestCount}" />
+            </p>
+            <f:if condition="{textGenerationLibraries}">
+                <f:render partial="Libs/SelectTextGenerationLibrary" arguments="{textGenerationLibraries: textGenerationLibraries, paidRequestsAvailable: paidRequestsAvailable}" />
+            </f:if>
+            <f:if condition="{visionGenerationLibraries}">
+                <div class="generation-library vision-generation-library library mt-2">
+                    <label class="control-label fw-bold mb-2">
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.visionLibrary" />
+                    </label>
+                    <f:if condition="{visionGenerationLibraries -> f:count()} > 0">
+                        <f:then>
+                            <div class="flex-row d-flex justify-content-between flex-wrap library-wrapper">
+                                <f:for each="{visionGenerationLibraries}" as="library">
+                                    <f:render partial="Libs/LibraryLabel" arguments="{library: library, paidRequestsAvailable: paidRequestsAvailable, type: 'vision'}" />
+                                </f:for>
+                            </div>
+                        </f:then>
+                        <f:else>
+                            <div class="alert alert-warning" role="alert">
+                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.noLibrariesAvailable"/>
+                            </div>
+                        </f:else>
+                    </f:if>
+                </div>
+            </f:if>
+            <div class="form-group">
+                <button type="button" class="btn btn-primary" id="aiSuiteAuditFixStartBtn" data-uuid="{uuid}">
+                    <core:icon identifier="actions-rocket" size="small" />
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.fix.wizard.startButton" />
+                </button>
+            </div>
+        </div>
+    </div>
+</html>

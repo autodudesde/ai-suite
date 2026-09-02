@@ -5,6 +5,7 @@ import Sortable from "@autodudes/ai-suite/helper/sortable.js";
 import PromptTemplate from "@autodudes/ai-suite/helper/prompt-template.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
 import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
+import PagePicker from "@autodudes/ai-suite/helper/page-picker.js";
 
 class Validation {
     constructor() {
@@ -15,6 +16,15 @@ class Validation {
         Generation.addFormSubmitEventListener('plainPrompt');
         PromptTemplate.loadPromptTemplates('plainPrompt');
         Generation.languageSelectionEventListener();
+        PagePicker.initAll((pageId) => {
+            Generation.checkLanguageSelection(document.querySelectorAll('.language-selection'));
+            GlobalInstructions.fetchGlobalInstructions({
+                context: 'pages',
+                scope: 'pageTree',
+                pageId: pageId > 0 ? pageId : 0,
+                useModal: true
+            });
+        });
         this.addGlobalInstructionEventListener().then();
         GlobalInstructions.initializeAllTooltips();
         LibrarySelection.initialize(
@@ -32,7 +42,7 @@ class Validation {
                 let sortableItems = Array.from(document.querySelectorAll('div[data-module-id="aiSuite"] .sortable-wrap > .nested-sortable > .list-group-item'));
                 let result = Sortable.findItemsInSortable(sortableItems);
                 document.querySelector('input[name="selectedPageTreeContent"]').value = JSON.stringify(result);
-                let selectedPage = document.querySelector('form.page-structure-create input.searchableInputProperty[name="startStructureFromPid"]').value;
+                let selectedPage = document.querySelector('form.page-structure-create input[name="startStructureFromPid"]').value;
                 if(selectedPage === '') {
                     Notification.warning(TYPO3.lang['aiSuite.module.modal.noPageSelectedTitle'], TYPO3.lang['aiSuite.module.notification.modal.noSelectedPageMessage'], 8);
                 } else {

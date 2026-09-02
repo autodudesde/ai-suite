@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller;
 
+use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -90,12 +91,11 @@ class SettingsController extends AbstractBackendController
 
         $definitions = $this->settingsFactory->parseExtConfTemplate();
         $extConf = $this->extensionConfiguration->get('ai_suite');
-        $settings = $this->settingsService->buildSettingsForView($definitions, $extConf);
-        $categories = array_unique(array_column($definitions, 'category'));
+        $settings = $this->decorateAuditModelSetting($this->settingsService->buildSettingsForView($definitions, $extConf));
 
         $this->view->assignMultiple([
             'settings' => $settings,
-            'categories' => $categories,
+            'categories' => $this->settingsService->buildCategoryTree($definitions, $settings),
             'currentAction' => 'settings',
         ]);
 
@@ -155,5 +155,45 @@ class SettingsController extends AbstractBackendController
         $this->flashMessageService->getMessageQueueByIdentifier('ai_suite.template.flashMessages')->enqueue($flashMessage);
 
         return $this->indexAction($request);
+    }
+
+    /**
+     * @param array<string, array<string, mixed>> $settings
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    protected function decorateAuditModelSetting(array $settings): array
+    {
+        if (!isset($settings['auditDefaultTextModel'])) {
+            return $settings;
+        }
+
+        try {
+            $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
+            if ('Error' === $librariesAnswer->getType()) {
+                return $settings;
+            }
+            $libraries = $this->aiSuiteContext->libraryService->prepareLibraries(array_values(array_filter(
+                $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [],
+                static fn (array $library): bool => !empty($library['model_identifier'])
+                    && !\in_array($library['model_identifier'], ['Vision', 'MittwaldMinistral14BVision'], true)
+            )));
+        } catch (\Throwable) {
+            return $settings;
+        }
+        if ([] === $libraries) {
+            return $settings;
+        }
+
+        $options = ['' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.settings.auditModel.perRun')];
+        foreach ($libraries as $library) {
+            $options[(string) $library['model_identifier']] = (string) ($library['name'] ?? $library['model_identifier']);
+        }
+
+        $settings['auditDefaultTextModel']['type'] = 'select';
+        $settings['auditDefaultTextModel']['options'] = $options;
+        $settings['auditDefaultTextModel']['currentValue'] = (string) ($settings['auditDefaultTextModel']['value'] ?? '');
+
+        return $settings;
     }
 }

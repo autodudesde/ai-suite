@@ -370,6 +370,9 @@ class TranslationService
                                 $datamap['pages'][$translatedPageUid][$field] = $translationData['pages'][$field];
                             }
                         }
+                        if (isset($datamap['pages'][$translatedPageUid])) {
+                            $datamap['pages'][$translatedPageUid] = $this->claimTranslatedFields('pages', $datamap['pages'][$translatedPageUid]);
+                        }
                     }
                 }
 
@@ -384,7 +387,7 @@ class TranslationService
                         foreach ($elements as $sourceUid => $fields) {
                             $translatedUid = $this->findOrCreateLocalization($table, (int) $sourceUid, $targetLanguageUid, $parentField);
                             if (null !== $translatedUid) {
-                                $datamap[$table][$translatedUid] = $fields;
+                                $datamap[$table][$translatedUid] = $this->claimTranslatedFields($table, $fields);
                             }
                         }
                     }
@@ -619,12 +622,22 @@ class TranslationService
 
         try {
             $taskAnswer = json_decode((string) ($task['answer'] ?? ''), true);
-            $translationData = is_array($taskAnswer) ? ($taskAnswer['body']['translationResults'] ?? []) : [];
+            $responseData = is_array($taskAnswer) && is_array($taskAnswer['body'] ?? null) ? $taskAnswer['body'] : [];
+            $translationData = $this->extractTranslationResults($responseData);
+            [$translationData, $untranslated] = $this->stripUntranslatedRecords($responseData, $translationData);
             if (empty($translationData)) {
-                throw new \RuntimeException('Invalid or empty translation result format');
+                throw new \RuntimeException([] === $untranslated
+                    ? 'Invalid or empty translation result format'
+                    : 'The model returned no usable translation for: '.implode(', ', $untranslated));
             }
-            $this->applyTranslationResult($task, $translationData);
+            $skipped = $this->applyTranslationResult($task, $translationData);
             $this->backgroundTaskRepository->deleteByUuid($uuid);
+            if ([] !== $untranslated) {
+                $this->addUntranslatedWarning($untranslated);
+            }
+            if ([] !== $skipped) {
+                $this->addSkippedWarning($skipped);
+            }
             $this->logger->info('Successfully processed translation task', ['uuid' => $uuid]);
 
             return true;
@@ -698,10 +711,110 @@ class TranslationService
 
     /**
      * @param array<string, mixed> $translationData
+     *
+     * @return list<string>
      */
-    public function applyContentElementAutoTranslation(int $sourceUid, int $targetLanguageUid, array $translationData): void
+    public function applyContentElementAutoTranslation(int $sourceUid, int $targetLanguageUid, array $translationData): array
     {
-        $this->applyContentElementTranslations($targetLanguageUid, $translationData);
+        return $this->applyContentElementTranslations($targetLanguageUid, $translationData);
+    }
+
+    /**
+     * @param list<string> $skipped
+     */
+    public function addSkippedWarning(array $skipped): void
+    {
+        $this->addTranslationWarning('aiSuite.translation.elementsSkipped', $skipped);
+    }
+
+    /**
+     * @param list<string> $untranslated
+     */
+    public function addUntranslatedWarning(array $untranslated): void
+    {
+        $this->addTranslationWarning('aiSuite.translation.partiallyUntranslated', $untranslated);
+    }
+
+    /**
+     * @param array<string, mixed> $fields
+     *
+     * @return array<string, mixed>
+     */
+    public function claimTranslatedFields(string $table, array $fields): array
+    {
+        $columnConfigs = $this->tcaCompatibilityService->getColumnConfigs($table);
+
+        $languageState = [];
+        foreach (array_keys($fields) as $field) {
+            $field = (string) $field;
+            if (true === ($columnConfigs[$field]['behaviour']['allowLanguageSynchronization'] ?? false)) {
+                $languageState[$field] = 'custom';
+            }
+        }
+
+        if ([] !== $languageState) {
+            $fields['l10n_state'] = $languageState;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param array<string, mixed> $responseData
+     *
+     * @return array<string, mixed>
+     */
+    public function extractTranslationResults(array $responseData): array
+    {
+        $translationResults = $responseData['translationResults'] ?? [];
+        if (is_string($translationResults)) {
+            $translationResults = json_decode($translationResults, true);
+        }
+
+        return is_array($translationResults) ? $translationResults : [];
+    }
+
+    /**
+     * @param array<string, mixed> $responseData
+     * @param array<string, mixed> $translationData
+     *
+     * @return array{0: array<string, mixed>, 1: list<string>}
+     */
+    public function stripUntranslatedRecords(array $responseData, array $translationData): array
+    {
+        $untranslated = $responseData['untranslated'] ?? [];
+        if (is_string($untranslated)) {
+            $untranslated = json_decode($untranslated, true);
+        }
+        if (!is_array($untranslated) || [] === $untranslated) {
+            return [$translationData, []];
+        }
+
+        $removed = [];
+        foreach ($untranslated as $entry) {
+            if (!is_string($entry) && !is_int($entry)) {
+                continue;
+            }
+            [$table, $uid] = array_pad(explode(':', (string) $entry, 2), 2, null);
+            if (!array_key_exists($table, $translationData)) {
+                continue;
+            }
+            if (null === $uid) {
+                unset($translationData[$table]);
+                $removed[] = $table;
+
+                continue;
+            }
+            if (is_array($translationData[$table]) && array_key_exists((int) $uid, $translationData[$table])) {
+                unset($translationData[$table][(int) $uid]);
+                $removed[] = $table.':'.$uid;
+                if ([] === $translationData[$table]) {
+                    unset($translationData[$table]);
+                }
+            }
+        }
+
+        return [$translationData, $removed];
     }
 
     public function findOrCreateLocalization(string $table, int $sourceUid, int $targetLanguageUid, ?string $parentField = null): ?int
@@ -1070,15 +1183,15 @@ class TranslationService
      * @param array<string, mixed> $task
      * @param array<string, mixed> $translationData
      *
+     * @return list<string>
+     *
      * @throws Exception
      * @throws \Exception
      */
-    protected function applyTranslationResult(array $task, array $translationData): void
+    protected function applyTranslationResult(array $task, array $translationData): array
     {
         if ('content-element-translation' === ($task['scope'] ?? '')) {
-            $this->applyContentElementAutoTranslation((int) $task['table_uid'], (int) $task['sys_language_uid'], $translationData);
-
-            return;
+            return $this->applyContentElementAutoTranslation((int) $task['table_uid'], (int) $task['sys_language_uid'], $translationData);
         }
 
         $pageUid = (int) $task['table_uid'];
@@ -1097,6 +1210,8 @@ class TranslationService
             throw new \Exception('Could not create or find page translation');
         }
 
+        $skipped = [];
+
         switch ($translationScope) {
             case 'metadata':
                 $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
@@ -1105,12 +1220,14 @@ class TranslationService
                 break;
 
             case 'content':
-                $this->applyContentElementTranslations($targetLanguageUid, $translationData);
+                $skipped = $this->ensurePageContentLocalized($pageUid, $targetLanguageUid);
+                $skipped = array_merge($skipped, $this->applyContentElementTranslations($targetLanguageUid, $translationData));
 
                 break;
 
             case 'all':
-                $this->applyCompletePageTranslation($translatedPageUid, $targetLanguageUid, $translationData);
+                $skipped = $this->ensurePageContentLocalized($pageUid, $targetLanguageUid);
+                $skipped = array_merge($skipped, $this->applyCompletePageTranslation($translatedPageUid, $targetLanguageUid, $translationData));
                 $this->updatePageSlug($translatedPageUid);
 
                 break;
@@ -1119,6 +1236,8 @@ class TranslationService
                 throw new \Exception('Unknown translation scope: '.$translationScope);
         }
         BackendUtility::setUpdateSignal('updatePageTree', $pageUid);
+
+        return array_values(array_unique($skipped));
     }
 
     /**
@@ -1136,17 +1255,21 @@ class TranslationService
         }
 
         if (!empty($datamap)) {
+            $datamap['pages'][$translatedPageUid] = $this->claimTranslatedFields('pages', $datamap['pages'][$translatedPageUid]);
             $this->executeDataHandler($datamap, []);
         }
     }
 
     /**
      * @param array<string, mixed> $translationData
+     *
+     * @return list<string>
      */
-    protected function applyContentElementTranslations(int $targetLanguageUid, array $translationData): void
+    protected function applyContentElementTranslations(int $targetLanguageUid, array $translationData): array
     {
         $datamap = [];
         $alreadyTranslatedUids = [];
+        $skipped = [];
 
         $sortedTranslationData = [];
         if (isset($translationData['tt_content'])) {
@@ -1158,40 +1281,100 @@ class TranslationService
         $this->ensureParentContentElementsLocalized($sortedTranslationData, $targetLanguageUid);
 
         foreach ($sortedTranslationData as $table => $elements) {
-            foreach ($elements as $sourceUid => $element) {
+            if (!is_array($elements)) {
+                continue;
+            }
+            foreach ($elements as $rawSourceUid => $element) {
+                $sourceUid = (int) $rawSourceUid;
+
                 try {
-                    $languageParentField = 'tt_content' === $table ? 'l18n_parent' : 'l10n_parent';
+                    if (isset($alreadyTranslatedUids[$table][$sourceUid])) {
+                        $datamap[$table][$alreadyTranslatedUids[$table][$sourceUid]] = $this->claimTranslatedFields($table, (array) $element);
+
+                        continue;
+                    }
+
+                    $languageParentField = $this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table)
+                        ?? ('tt_content' === $table ? 'l18n_parent' : 'l10n_parent');
                     $existingTranslation = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $languageParentField);
-                    if ($existingTranslation) {
-                        if (!array_key_exists($table, $datamap)) {
-                            $datamap[$table] = [];
-                        }
-                        $datamap[$table][$existingTranslation['uid']] = $sortedTranslationData[$table][$sourceUid];
-                        $alreadyTranslatedUids[$table][$sourceUid] = $existingTranslation['uid'];
-                    } else {
-                        if (array_key_exists($table, $alreadyTranslatedUids) && array_key_exists($sourceUid, $alreadyTranslatedUids[$table])) {
+                    if (null !== $existingTranslation) {
+                        $datamap[$table][(int) $existingTranslation['uid']] = $this->claimTranslatedFields($table, (array) $element);
+                        $alreadyTranslatedUids[$table][$sourceUid] = (int) $existingTranslation['uid'];
+
+                        continue;
+                    }
+
+                    $translatedUidMapping = $this->executeLocalizationCommand($table, $sourceUid, $targetLanguageUid);
+                    foreach ($translatedUidMapping as $mappedTable => $uidMapping) {
+                        if (!is_array($uidMapping)) {
                             continue;
                         }
-                        $tranlatedUidMapping = $this->executeLocalizationCommand($table, $sourceUid, $targetLanguageUid);
-                        foreach ($tranlatedUidMapping as $table => $uidMapping) {
-                            if (!array_key_exists($table, $datamap)) {
-                                $datamap[$table] = [];
-                            }
-                            foreach ($uidMapping as $srcUid => $destUid) {
-                                if (isset($sortedTranslationData[$table][$srcUid])) {
-                                    $datamap[$table][$destUid] = $sortedTranslationData[$table][$srcUid];
-                                }
+                        foreach ($uidMapping as $rawSrcUid => $rawDestUid) {
+                            $srcUid = (int) $rawSrcUid;
+                            $destUid = (int) $rawDestUid;
+                            $alreadyTranslatedUids[$mappedTable][$srcUid] = $destUid;
+                            if (isset($sortedTranslationData[$mappedTable][$srcUid])) {
+                                $datamap[$mappedTable][$destUid] = $this->claimTranslatedFields($mappedTable, (array) $sortedTranslationData[$mappedTable][$srcUid]);
                             }
                         }
                     }
+
+                    // A successful localization can still produce no target record
+                    if (!isset($alreadyTranslatedUids[$table][$sourceUid])) {
+                        $skipped[] = $table.':'.$sourceUid;
+                        $this->logger->warning('No target record for translation', [
+                            'table' => $table,
+                            'sourceUid' => $sourceUid,
+                            'targetLanguageUid' => $targetLanguageUid,
+                        ]);
+                    }
                 } catch (\Throwable $e) {
-                    $this->logger->warning('Failed to translate content element', ['error' => $e->getMessage()]);
+                    $skipped[] = $table.':'.$sourceUid;
+                    $this->logger->warning('Failed to translate content element', [
+                        'table' => $table,
+                        'sourceUid' => $sourceUid,
+                        'targetLanguageUid' => $targetLanguageUid,
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
         }
         if (count($datamap) > 0) {
             $this->executeDataHandler($datamap, []);
         }
+
+        return $skipped;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function ensurePageContentLocalized(int $pageUid, int $targetLanguageUid): array
+    {
+        $skipped = [];
+        $parentField = $this->tcaCompatibilityService->getTranslationOriginPointerFieldName('tt_content') ?? 'l18n_parent';
+
+        foreach ($this->translationRepository->getElementsOnPage($pageUid, 0) as $element) {
+            $sourceUid = (int) ($element['uid'] ?? 0);
+            if ($sourceUid <= 0) {
+                continue;
+            }
+
+            try {
+                if (null === $this->findOrCreateLocalization('tt_content', $sourceUid, $targetLanguageUid, $parentField)) {
+                    $skipped[] = 'tt_content:'.$sourceUid;
+                }
+            } catch (\Throwable $e) {
+                $skipped[] = 'tt_content:'.$sourceUid;
+                $this->logger->warning('Failed to localize content element', [
+                    'sourceUid' => $sourceUid,
+                    'targetLanguageUid' => $targetLanguageUid,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $skipped;
     }
 
     /**
@@ -1273,17 +1456,18 @@ class TranslationService
     /**
      * @param array<string, mixed> $translationData
      *
+     * @return list<string>
+     *
      * @throws \Exception
      */
-    protected function applyCompletePageTranslation(int $translatedPageUid, int $targetLanguageUid, array $translationData): void
+    protected function applyCompletePageTranslation(int $translatedPageUid, int $targetLanguageUid, array $translationData): array
     {
         if (isset($translationData['pages'])) {
             $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
         }
         unset($translationData['pages']);
-        if (!empty($translationData)) {
-            $this->applyContentElementTranslations($targetLanguageUid, $translationData);
-        }
+
+        return empty($translationData) ? [] : $this->applyContentElementTranslations($targetLanguageUid, $translationData);
     }
 
     protected function buildResultMessage(int $processedCount, int $errorCount): string
@@ -1621,6 +1805,27 @@ class TranslationService
         }
 
         return ('group' === $conf['type']) || (('select' === $conf['type'] || 'category' === $conf['type']) && !empty($conf['foreign_table']));
+    }
+
+    /**
+     * @param list<string> $records
+     */
+    private function addTranslationWarning(string $xlfKey, array $records): void
+    {
+        $flashMessage = GeneralUtility::makeInstance(
+            FlashMessage::class,
+            $this->localizationService->translate($xlfKey, [
+                (string) count($records),
+                implode(', ', $records),
+            ]),
+            '',
+            ContextualFeedbackSeverity::WARNING,
+            true
+        );
+        $this->flashMessageService
+            ->getMessageQueueByIdentifier('core.template.flashMessages')
+            ->addMessage($flashMessage)
+        ;
     }
 
     /**

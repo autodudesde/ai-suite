@@ -372,6 +372,12 @@
             <trans-unit id="aiSuite.permissions.enableStatisticsDescription">
                 <source>Allow backend users of this group to open the AI Suite "Statistics" view with usage charts (requests per month, by model, and add-on charts such as ChEddi chat usage).</source>
             </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAudit">
+                <source>Enable SEO and accessibility audits</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAuditDescription">
+                <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

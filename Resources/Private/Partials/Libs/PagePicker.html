@@ -1,0 +1,31 @@
+<html data-namespace-typo3-fluid="true" xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
+<!--
+    Gemeinsamer Seiten-Picker (wie im Audit-Modul): readonly-Titel + Element-
+    Browser-Button + Hidden-Feld. Arguments: propertyName, label (LLL-Key),
+    selectedPid, selectedPageTitle, pageBrowserUrl, rootOption (Admin:
+    „als neue Root-Seite" -> Wert -1), rootLabel (LLL-Key).
+-->
+<div class="form-group mb-3 ai-suite-page-picker">
+    <label class="form-label fw-bold">
+        {f:translate(key: label)}
+    </label>
+    <div class="input-group">
+        <input type="text" class="form-control ai-suite-page-picker-title" readonly="readonly"
+               value="{selectedPageTitle}"
+               placeholder="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.noPageSelected')}" />
+        <button type="button" class="btn btn-default ai-suite-page-picker-btn" data-browser-url="{pageBrowserUrl}">
+            <core:icon identifier="apps-pagetree-page-default" size="small"/>
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.selectPage"/>
+        </button>
+    </div>
+    <input type="hidden" name="{propertyName}" class="ai-suite-page-picker-value" value="{selectedPid}" />
+    <f:if condition="{rootOption}">
+        <div class="form-check mt-2">
+            <input type="checkbox" class="form-check-input ai-suite-page-picker-root" id="pagePickerRoot-{propertyName}" />
+            <label class="form-check-label" for="pagePickerRoot-{propertyName}">
+                {f:translate(key: rootLabel)}
+            </label>
+        </div>
+    </f:if>
+</div>
+</html>
