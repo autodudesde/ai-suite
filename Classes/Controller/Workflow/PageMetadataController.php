@@ -16,6 +16,7 @@ namespace AutoDudes\AiSuite\Controller\Workflow;
 
 use AutoDudes\AiSuite\Controller\AbstractBackendController;
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
@@ -225,7 +226,20 @@ class PageMetadataController extends AbstractBackendController
                     $workflowData['column'] => $pageMetadataFieldValue,
                 ];
             }
-            $this->executeDataHandler($datamap);
+            // Named here rather than left to `refineModel()`: the generation happened in an earlier
+            // request, so nothing fills the model into this window.
+            $this->aiSuiteContext->provenanceCapture->begin(
+                ProvenanceContext::generated(
+                    ProvenanceContext::FEATURE_METADATA,
+                    (string) ($workflowData['textAiModel'] ?? ''),
+                )
+            );
+
+            try {
+                $this->executeDataHandler($datamap);
+            } finally {
+                $this->aiSuiteContext->provenanceCapture->end();
+            }
 
             return $this->jsonSuccess($response);
         } catch (\Throwable $e) {

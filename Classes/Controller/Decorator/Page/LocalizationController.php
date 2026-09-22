@@ -288,18 +288,46 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
         $dataHandler->start([], $cmd);
         $dataHandler->process_cmdmap();
 
-        if (!empty($dataHandler->errorLog)) {
+        $unprocessedRecords = $this->findUnprocessedRecords($cmd, $dataHandler);
+        if ([] !== $unprocessedRecords) {
             $this->logger?->error('Content element localization failed', [
                 'pageId' => $pageId,
                 'srcLanguageId' => $srcLanguageId,
                 'destLanguageId' => $destLanguageId,
+                'unprocessedRecords' => $unprocessedRecords,
                 'errors' => $dataHandler->errorLog,
             ]);
             $this->addFlashMessage(
                 $this->localizationService->translate('aiSuite.translation.contentElementLocalizationFailed'),
                 ContextualFeedbackSeverity::ERROR
             );
+        } elseif ([] !== $dataHandler->errorLog) {
+            $this->logger?->warning('DataHandler reported problems while localizing', [
+                'pageId' => $pageId,
+                'srcLanguageId' => $srcLanguageId,
+                'destLanguageId' => $destLanguageId,
+                'errors' => $dataHandler->errorLog,
+            ]);
         }
+    }
+
+    /**
+     * @param array<string, array<int|string, mixed>> $cmd
+     *
+     * @return array<string, list<int|string>>
+     */
+    protected function findUnprocessedRecords(array $cmd, DataHandler $dataHandler): array
+    {
+        $unprocessedRecords = [];
+        foreach (['pages', 'tt_content'] as $table) {
+            foreach (array_keys($cmd[$table] ?? []) as $uid) {
+                if (!isset($dataHandler->copyMappingArray_merged[$table][$uid])) {
+                    $unprocessedRecords[$table][] = $uid;
+                }
+            }
+        }
+
+        return $unprocessedRecords;
     }
 
     protected function isWholePageTranslationAction(string $action): bool

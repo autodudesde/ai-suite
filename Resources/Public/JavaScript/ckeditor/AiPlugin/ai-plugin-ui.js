@@ -4,6 +4,7 @@ import ModalView from '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin-view.js';
 import General from '@autodudes/ai-suite/helper/general.js';
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Icons from '@typo3/backend/icons.js';
+import Provenance from '@autodudes/ai-suite/helper/provenance.js';
 
 export default class AiPluginUI extends Plugin {
     static get requires() {
@@ -124,6 +125,7 @@ export default class AiPluginUI extends Plugin {
                     const viewFragment = this.editor.data.processor.toView( res.output );
                     const modelFragment = this.editor.data.toModel( viewFragment );
                     this.editor.model.insertContent(modelFragment);
+                    Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', textModel);
                 } );
                 modalView.element.querySelector('.ck-dialog-inputs').style.display = 'flex';
                 modalView.spinner.set( { isVisible: false } );

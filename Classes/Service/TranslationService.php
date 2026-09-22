@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\TranslationRepository;
@@ -73,6 +74,7 @@ class TranslationService
         protected readonly LocalizationService $localizationService,
         protected readonly BackendUserService $backendUserService,
         protected readonly WorkspaceContextService $workspaceContextService,
+        protected readonly ProvenanceCaptureService $provenanceCapture,
     ) {}
 
     /**
@@ -270,6 +272,10 @@ class TranslationService
     }
 
     /**
+     * @param array<string, string> $skipped
+     *
+     * @param-out array<string, string> $skipped
+     *
      * @return array<string, array<int, array<string, mixed>>>
      */
     public function collectTranslatableFieldsWithMapping(
@@ -278,6 +284,7 @@ class TranslationService
         int $targetLanguageUid,
         string $translationScope,
         ?ServerRequestInterface $request = null,
+        array &$skipped = [],
     ): array {
         $translateFields = [];
 
@@ -295,28 +302,103 @@ class TranslationService
             $contentElements = $this->translationRepository->getElementsOnPage($pageUid, $sourceLanguageUid);
             foreach ($contentElements as $contentElement) {
                 $sourceUid = (int) $contentElement['uid'];
-                $translatedUid = $this->findOrCreateLocalization('tt_content', $sourceUid, $targetLanguageUid, 'l18n_parent');
-                if (null === $translatedUid) {
+
+                try {
+                    $elementFields = $this->collectRecordTreeTranslatableFields(
+                        'tt_content',
+                        $sourceUid,
+                        $targetLanguageUid,
+                        $request,
+                        $skipped,
+                    );
+                } catch (\Throwable $e) {
+                    $skipped['tt_content:'.$sourceUid] = $e->getMessage();
+                    $this->logger->warning('Skipped a content element while collecting the translatable fields of a page', [
+                        'pageUid' => $pageUid,
+                        'sourceUid' => $sourceUid,
+                        'error' => $e->getMessage(),
+                    ]);
+
                     continue;
                 }
 
-                $fields = $this->fetchTranslationFields(
-                    $request,
-                    ['sys_language_uid' => $targetLanguageUid],
-                    $sourceUid,
-                    'tt_content',
-                );
-                $fields = array_filter($fields, static function ($field) {
-                    return !\is_array($field) || isset($field['data']);
-                });
-                if (!empty($fields)) {
-                    $translateFields['tt_content'][$translatedUid] = $fields;
+                foreach ($elementFields as $childTable => $records) {
+                    foreach ($records as $translatedUid => $fields) {
+                        $translateFields[$childTable][$translatedUid] = $fields;
+                    }
                 }
             }
         }
 
         if (empty($translateFields)) {
             throw new \RuntimeException('No translatable content found for the specified scope and page.');
+        }
+
+        return $translateFields;
+    }
+
+    /**
+     * @param array<string, string> $skipped
+     *
+     * @param-out array<string, string> $skipped
+     *
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    public function collectRecordTreeTranslatableFields(
+        string $table,
+        int $uid,
+        int $targetLanguageUid,
+        ?ServerRequestInterface $request = null,
+        array &$skipped = [],
+    ): array {
+        $translatedUid = $this->findOrCreateLocalization($table, $uid, $targetLanguageUid);
+        if (null === $translatedUid) {
+            $skipped[$table.':'.$uid] = 'no translation record could be created for it';
+
+            return [];
+        }
+
+        $this->synchronizeChildren($table, $uid, $targetLanguageUid);
+
+        $translateFields = [];
+        foreach ($this->collectContentElementSourceUids($table, $uid) as $childTable => $sourceUids) {
+            foreach ($sourceUids as $sourceUid) {
+                $isParent = $childTable === $table && $sourceUid === $uid;
+
+                try {
+                    $childTranslatedUid = $isParent
+                        ? $translatedUid
+                        : $this->findOrCreateLocalization($childTable, $sourceUid, $targetLanguageUid);
+                    if (null === $childTranslatedUid) {
+                        $skipped[$childTable.':'.$sourceUid] = 'no translation record could be created for it';
+
+                        continue;
+                    }
+
+                    $fields = $this->fetchTranslationFields(
+                        $request,
+                        ['sys_language_uid' => $targetLanguageUid],
+                        $sourceUid,
+                        $childTable,
+                    );
+                } catch (\Throwable $e) {
+                    $skipped[$childTable.':'.$sourceUid] = $e->getMessage();
+                    $this->logger->warning('Skipped a record while collecting a translatable record tree', [
+                        'table' => $childTable,
+                        'sourceUid' => $sourceUid,
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    continue;
+                }
+
+                $fields = array_filter($fields, static function ($field) {
+                    return !\is_array($field) || isset($field['data']);
+                });
+                if (!empty($fields)) {
+                    $translateFields[$childTable][$childTranslatedUid] = $fields;
+                }
+            }
         }
 
         return $translateFields;
@@ -630,7 +712,16 @@ class TranslationService
                     ? 'Invalid or empty translation result format'
                     : 'The model returned no usable translation for: '.implode(', ', $untranslated));
             }
-            $skipped = $this->applyTranslationResult($task, $translationData);
+            $this->provenanceCapture->begin(ProvenanceContext::translated(
+                ProvenanceContext::FEATURE_TRANSLATION,
+                (string) ($task['model'] ?? ''),
+            ));
+
+            try {
+                $skipped = $this->applyTranslationResult($task, $translationData);
+            } finally {
+                $this->provenanceCapture->end();
+            }
             $this->backgroundTaskRepository->deleteByUuid($uuid);
             if ([] !== $untranslated) {
                 $this->addUntranslatedWarning($untranslated);
@@ -675,12 +766,12 @@ class TranslationService
                     }
                 }
             }
-            $translatedUid = (int) ($copyMappingArray['tt_content'][$sourceUid] ?? 0);
+            $translatedUid = 0;
         } else {
             $sourceTree = $this->collectContentElementSourceUids('tt_content', $sourceUid);
             $childHadTranslation = null === $changedFields ? [] : $this->snapshotExistingChildTranslations($sourceTree, $sourceUid, $targetLanguageUid);
 
-            $this->synchronizeContentElementChildren($sourceUid, $targetLanguageUid);
+            $this->synchronizeChildren('tt_content', $sourceUid, $targetLanguageUid);
 
             foreach ($sourceTree as $table => $uids) {
                 foreach ($uids as $relatedSourceUid) {
@@ -702,7 +793,7 @@ class TranslationService
 
         $sourceRecord = BackendUtility::getRecord('tt_content', $sourceUid, 'hidden');
         $sourceHidden = 1 === (int) ($sourceRecord['hidden'] ?? 0);
-        if (($wasNew || $sourceHidden) && $translatedUid > 0 && null !== BackendUtility::getRecord('tt_content', $translatedUid, 'uid')) {
+        if ($sourceHidden && $translatedUid > 0 && null !== BackendUtility::getRecord('tt_content', $translatedUid, 'uid')) {
             $this->executeDataHandler(['tt_content' => [$translatedUid => ['hidden' => 1]]], []);
         }
 
@@ -828,9 +919,15 @@ class TranslationService
             return (int) $existing['uid'];
         }
 
-        $dh = GeneralUtility::makeInstance(DataHandler::class);
-        $dh->start([], [$table => [$sourceUid => ['localize' => $targetLanguageUid]]]);
-        $dh->process_cmdmap();
+        $this->provenanceCapture->begin(ProvenanceContext::translated());
+
+        try {
+            $dh = GeneralUtility::makeInstance(DataHandler::class);
+            $dh->start([], [$table => [$sourceUid => ['localize' => $targetLanguageUid]]]);
+            $dh->process_cmdmap();
+        } finally {
+            $this->provenanceCapture->end();
+        }
 
         $translatedUid = $dh->copyMappingArray_merged[$table][$sourceUid] ?? null;
 
@@ -886,12 +983,12 @@ class TranslationService
         return $snapshot;
     }
 
-    protected function synchronizeContentElementChildren(int $sourceUid, int $targetLanguageUid): void
+    protected function synchronizeChildren(string $table, int $sourceUid, int $targetLanguageUid): void
     {
-        foreach ($this->getLocalizableRelationFields('tt_content') as $field) {
+        foreach ($this->getLocalizableRelationFields($table) as $field) {
             try {
                 $cmdmap = [
-                    'tt_content' => [
+                    $table => [
                         $sourceUid => [
                             'inlineLocalizeSynchronize' => [
                                 'field' => $field,
@@ -901,18 +998,26 @@ class TranslationService
                         ],
                     ],
                 ];
-                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                $dataHandler->start([], $cmdmap);
-                $dataHandler->process_cmdmap();
+                $this->provenanceCapture->begin(ProvenanceContext::translated());
+
+                try {
+                    $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                    $dataHandler->start([], $cmdmap);
+                    $dataHandler->process_cmdmap();
+                } finally {
+                    $this->provenanceCapture->end();
+                }
                 if (!empty($dataHandler->errorLog)) {
-                    $this->logger->warning('Failed to synchronize content element children', [
+                    $this->logger->warning('Failed to synchronize child records', [
+                        'table' => $table,
                         'sourceUid' => $sourceUid,
                         'field' => $field,
                         'errors' => $dataHandler->errorLog,
                     ]);
                 }
             } catch (\Throwable $e) {
-                $this->logger->warning('Failed to synchronize content element children', [
+                $this->logger->warning('Failed to synchronize child records', [
+                    'table' => $table,
                     'sourceUid' => $sourceUid,
                     'field' => $field,
                     'error' => $e->getMessage(),
@@ -988,20 +1093,43 @@ class TranslationService
         }
 
         if ('tt_content' === $table) {
-            $cType = $formData['databaseRow']['CType'][0] ?? '';
-            if (!empty($cType) && isset($types[$cType]['showitem'])) {
-                $itemList = $types[$cType]['showitem'];
-                $allFields = GeneralUtility::trimExplode(',', $itemList, true);
-                $this->iterateOverFieldsArray($allFields, $translateFields, $formData, $table);
+            $typeValue = $this->resolveContentTypeValue($formData);
+            $itemList = (string) ($types[$typeValue]['showitem'] ?? '');
+            if ('' === $itemList) {
+                $this->logger->warning('Content type has no showitem configuration, no field is translatable', [
+                    'cType' => $typeValue,
+                ]);
+
+                return;
             }
-        } else {
-            foreach ($types as $typeConfig) {
-                if (!empty($typeConfig['showitem'])) {
-                    $typeFields = GeneralUtility::trimExplode(',', $typeConfig['showitem'], true);
-                    $this->iterateOverFieldsArray($typeFields, $translateFields, $formData, $table);
-                }
+
+            $allFields = GeneralUtility::trimExplode(',', $itemList, true);
+            $this->iterateOverFieldsArray($allFields, $translateFields, $formData, $table);
+
+            return;
+        }
+
+        foreach ($types as $typeConfig) {
+            if (!empty($typeConfig['showitem'])) {
+                $typeFields = GeneralUtility::trimExplode(',', $typeConfig['showitem'], true);
+                $this->iterateOverFieldsArray($typeFields, $translateFields, $formData, $table);
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $formData
+     */
+    protected function resolveContentTypeValue(array $formData): string
+    {
+        $recordTypeValue = (string) ($formData['recordTypeValue'] ?? '');
+        if ('' !== $recordTypeValue) {
+            return $recordTypeValue;
+        }
+
+        $cType = $formData['databaseRow']['CType'] ?? '';
+
+        return is_array($cType) ? (string) ($cType[0] ?? '') : (string) $cType;
     }
 
     /**
@@ -1499,10 +1627,16 @@ class TranslationService
      */
     protected function executeDataHandler(array $datamap, array $cmdmap): void
     {
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start($datamap, $cmdmap);
-        $dataHandler->process_datamap();
-        $dataHandler->process_cmdmap();
+        $this->provenanceCapture->begin(ProvenanceContext::translated());
+
+        try {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start($datamap, $cmdmap);
+            $dataHandler->process_datamap();
+            $dataHandler->process_cmdmap();
+        } finally {
+            $this->provenanceCapture->end();
+        }
 
         if (!empty($dataHandler->errorLog)) {
             throw new \Exception('DataHandler error: '.implode(', ', $dataHandler->errorLog));
@@ -1525,8 +1659,14 @@ class TranslationService
             ],
         ];
 
-        $dataHandler->start([], $cmd);
-        $dataHandler->process_cmdmap();
+        $this->provenanceCapture->begin(ProvenanceContext::translated());
+
+        try {
+            $dataHandler->start([], $cmd);
+            $dataHandler->process_cmdmap();
+        } finally {
+            $this->provenanceCapture->end();
+        }
 
         if (!empty($dataHandler->errorLog)) {
             throw new \Exception("Error creating {$table} translation: ".implode(', ', $dataHandler->errorLog));

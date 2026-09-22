@@ -53,7 +53,7 @@
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope"/>
                         </th>
                         <th scope="col">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope"/>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.cTypeScopeColumn"/>
                         </th>
                         <th scope="col">
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.language"/>
@@ -86,11 +86,11 @@
                                     {template.name}
                                 </be:link.editRecord>
                             </td>
-                            <td>
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope{template.scope -> f:format.case(mode: 'capital')}"/>
+                            <td data-test-scope="{template.scope}">
+                                {template.scopeLabel}
                             </td>
-                            <td>
-                                {template.type}
+                            <td data-test-type="{template.type}">
+                                {template.typeLabel}
                             </td>
                             <td>
                                 <f:if condition="{template.flag} != ''">

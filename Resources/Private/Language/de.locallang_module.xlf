@@ -105,6 +105,42 @@
                 <source>Open</source>
                 <target>Öffnen</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.title">
+                <source>Audit</source>
+                <target>Audit</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.description">
+                <source>Check pages for SEO, accessibility, open questions and content gaps, and apply the suggested fixes.</source>
+                <target>Seiten auf SEO, Barrierefreiheit, offene Fragen und Inhaltslücken prüfen und die Vorschläge übernehmen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.title">
+                <source>AI content</source>
+                <target>KI-Inhalte</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.description">
+                <source>What on this installation was written by AI, split into pages, files and records, and where a human has taken responsibility for it.</source>
+                <target>Was auf dieser Installation von einer KI geschrieben wurde, getrennt nach Seiten, Dateien und Datensätzen, und wofür ein Mensch die Verantwortung übernommen hat.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.title">
+                <source>Statistics</source>
+                <target>Statistiken</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.description">
+                <source>How many requests this installation made, which models answered them and how that developed over time.</source>
+                <target>Wie viele Anfragen diese Installation gestellt hat, welche Modelle sie beantwortet haben und wie sich das über die Zeit entwickelt hat.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.linklabel">
+                <source>Open</source>
+                <target>Öffnen</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.description">
                 <source>Monitor and manage your background tasks, e.g. the processing of metadata generation for pages and images or of translations.</source>
                 <target>Überwache und verwalte deine Hintergrund-Aufgaben, z. B. die Verarbeitung der Metadaten-Generierung für Seiten und Bilder oder von Übersetzungen.</target>
@@ -233,10 +269,6 @@
                 <source>File Management</source>
                 <target>Dateiverwaltung</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.context">
-                <source>Context</source>
-                <target>Kontext</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.description">
                 <source>Change the general outcome of your requests using Global Instructions</source>
                 <target>Mit dieser Aktion kannst du der Schnittstelle allgemeine und globale Anweisungen geben.</target>
@@ -245,10 +277,6 @@
                 <source>Extend previous</source>
                 <target>Erweiterung der vorherigen Anweisungen</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.globalInstructions">
-                <source>Global instructions</source>
-                <target>Globale Anweisungen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel">
                 <source>Global Instructions</source>
                 <target>Globale Anweisungen</target>
@@ -256,10 +284,6 @@
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.linklabel">
                 <source>Manage</source>
                 <target>Verwalten</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
-                <source>Metatdata</source>
-                <target>Metadaten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.selection">
                 <source>Selected pages/directories</source>
@@ -300,6 +324,10 @@
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope">
                 <source>ContentElements / metadata fields (leave empty for all)</source>
                 <target>ContentElements / Metadatenfelder (für alle leer lassen)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScopeColumn">
+                <source>Content elements / Metadata fields</source>
+                <target>Inhaltselemente / Metadatenfelder</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
                 <source>Custom prompt templates</source>
@@ -779,6 +807,26 @@
                 <source>Abort</source>
                 <target>Abbrechen</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.modal.error">
+                <source>Error</source>
+                <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.fluxSlideOne">
+                <source>Generated image suggestions</source>
+                <target>Generierte Bildvorschläge</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.modelSelection">
+                <source>Select model</source>
+                <target>Modell auswählen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.recordLocalization">
+                <source>Translate record</source>
+                <target>Datensatz übersetzen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.unknownTargetFolder">
+                <source>The folder for the generated image could not be found. Please open the folder in the file list and try again.</source>
+                <target>Der Ordner für das erzeugte Bild wurde nicht gefunden. Bitte öffne den Ordner in der Dateiliste und versuche es erneut.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.continue">
                 <source>Do you want to continue?</source>
                 <target>Möchtest du fortfahren?</target>
@@ -833,7 +881,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataError">
                 <source>Unable to generate metadata suggestions. If HTTP basic auth is active, please activate it within the extension settings and enter the credentials there.</source>
-                <target>Es können keine Metadatenvorschläge generiert werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
+                <target>Es können keine Metadatenvorschläge generiert werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktiviere diese bitte in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.metaDataGeneration">
                 <source>Generated metadata suggestions</source>
@@ -869,7 +917,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noImageSelectedMessage">
                 <source>Please select your favorite image</source>
-                <target>Bitte wählen deinen Bild-Favoriten aus</target>
+                <target>Bitte wähle deinen Bild-Favoriten aus.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noImageSelectedTitle">
                 <source>No image selected</source>
@@ -1138,8 +1186,8 @@
                 <target>Schaltflächen ausblenden/einblenden</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.manageLicense">
-                <source>Manage license</source>
-                <target>Lizenz verwalten</target>
+                <source>License</source>
+                <target>Lizenz</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.foundPagesForTranslation">
                 <source>Found pages for translation</source>
@@ -1234,8 +1282,8 @@
                 <target>Keine durchsuchbare Liste angegeben.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.openDocumentation">
-                <source>Open documentation</source>
-                <target>Dokumentation öffnen</target>
+                <source>Documentation</source>
+                <target>Dokumentation</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.quickStart">
                 <source>Quick Start</source>
@@ -1529,34 +1577,6 @@
                 <source>No records available.</source>
                 <target>Keine Datensätze verfügbar.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scope">
-                <source>Scope</source>
-                <target>Gültigkeitsbereich</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement">
-                <source>ContentElements</source>
-                <target>Inhaltselemente</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent">
-                <source>RTE Content Editing</source>
-                <target>RTE-Inhaltsbearbeitung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral">
-                <source>General available</source>
-                <target>Allgemein verfügbar</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard">
-                <source>Image generation</source>
-                <target>Bildgenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord">
-                <source>News</source>
-                <target>Nachricht</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopePageTree">
-                <source>Page tree generation</source>
-                <target>Seitenbaumgenerierung</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowFilelistTranslation.description">
                 <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
                 <target>Übersetze Datei-Metadaten (Titel, Alternativtext) mithilfe von KI-Übersetzungsdiensten von einer Quellsprache in eine Zielsprache.</target>
@@ -1757,6 +1777,54 @@
                 <source>Global Settings</source>
                 <target>Globale Einstellungen</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.statistics" approved="yes">
+                <source>Statistics</source>
+                <target>Statistiken</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.header" approved="yes">
+                <source>Usage Statistics</source>
+                <target>Nutzungsstatistik</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.intro" approved="yes">
+                <source>Your AI Suite usage for the selected month.</source>
+                <target>Deine Nutzung der AI Suite im ausgewählten Monat.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.month.label" approved="yes">
+                <source>Month</source>
+                <target>Monat</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requests" approved="yes">
+                <source>Requests</source>
+                <target>Anfragen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsMonthly" approved="yes">
+                <source>Requests (last 3 months)</source>
+                <target>Anfragen (letzte 3 Monate)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsDaily" approved="yes">
+                <source>Requests per day</source>
+                <target>Anfragen pro Tag</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.requestsByModel" approved="yes">
+                <source>Requests by model</source>
+                <target>Anfragen nach Modell</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noData" approved="yes">
+                <source>No usage data available yet.</source>
+                <target>Noch keine Nutzungsdaten vorhanden.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noAccess.title" approved="yes">
+                <source>No access</source>
+                <target>Kein Zugriff</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.noAccess.message" approved="yes">
+                <source>You are not allowed to view the AI Suite statistics.</source>
+                <target>Du darfst die Statistiken der AI Suite nicht einsehen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.statistics.fetchError.title" approved="yes">
+                <source>Could not load statistics</source>
+                <target>Statistiken konnten nicht geladen werden</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.settings.header">
                 <source>Global Settings</source>
                 <target>Globale Einstellungen</target>
@@ -1816,10 +1884,6 @@
             <trans-unit id="aiSuite.module.settings.field.translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
                 <target>FlexForm-Felder übersetzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.updateDeeplGlossaries">
-                <source>Update DeepL glossaries</source>
-                <target>DeepL-Glossare aktualisieren</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.easyLanguageLibrary">
                 <source>Easy Language Library</source>
@@ -1881,6 +1945,10 @@
                 <source>AI Model Hub API Key</source>
                 <target>AI Model Hub API-Schlüssel</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.mittwaldAiModelHubApiKey">
+                <source>Mittwald AI Model Hub API Key</source>
+                <target>Mittwald AI Model Hub API-Schlüssel</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
                 <source>Enable Basic Authentication</source>
                 <target>Basis-Authentifizierung aktivieren</target>
@@ -1917,10 +1985,6 @@
                 <source>Accessibility</source>
                 <target>Barrierefreiheit</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.url" approved="yes">
-                <source>Page URL</source>
-                <target>Seiten-URL</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.audit.keyword" approved="yes">
                 <source>Focus keyword (optional)</source>
                 <target>Fokus-Keyword (optional)</target>
@@ -1934,32 +1998,32 @@
                 <target>Audit starten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner" approved="yes">
-                <source>Running the audit — please wait.</source>
-                <target>Audit läuft — bitte warten.</target>
+                <source>Running the audit, please wait.</source>
+                <target>Audit läuft, bitte warten.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.seo" approved="yes">
-                <source>Running the SEO &amp; performance audit — Lighthouse data can take up to a minute.</source>
-                <target>SEO- &amp; Performance-Audit läuft — Lighthouse-Daten können bis zu einer Minute dauern.</target>
+                <source>Running the SEO &amp; performance audit. Lighthouse data can take up to a minute.</source>
+                <target>SEO- &amp; Performance-Audit läuft. Lighthouse-Daten können bis zu einer Minute dauern.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.a11y" approved="yes">
-                <source>Running the accessibility scan — this usually takes a few seconds.</source>
-                <target>Accessibility-Scan läuft — dauert in der Regel nur wenige Sekunden.</target>
+                <source>Running the accessibility scan. This usually takes a few seconds.</source>
+                <target>Accessibility-Scan läuft. Das dauert in der Regel nur wenige Sekunden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.questions" approved="yes">
-                <source>Analysing question coverage — fetching search questions and rating them against the page content.</source>
-                <target>Fragen-Abdeckung wird analysiert — Suchfragen werden geholt und gegen den Seiteninhalt bewertet.</target>
+                <source>Analysing question coverage: fetching search questions and rating them against the page content.</source>
+                <target>Fragen-Abdeckung wird analysiert: Suchfragen werden geholt und gegen den Seiteninhalt bewertet.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.gap" approved="yes">
-                <source>Analysing the content gap — fetching ranking data and rating it against the page content.</source>
-                <target>Content-Gap wird analysiert — Ranking-Daten werden geholt und gegen den Seiteninhalt bewertet.</target>
+                <source>Analysing the content gap: fetching ranking data and rating it against the page content.</source>
+                <target>Content-Gap wird analysiert: Ranking-Daten werden geholt und gegen den Seiteninhalt bewertet.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.cluster" approved="yes">
-                <source>Building topic clusters — fetching market data and rating the coverage against the page content.</source>
-                <target>Themencluster werden aufgebaut — Marktdaten werden geholt und die Abdeckung gegen den Seiteninhalt bewertet.</target>
+                <source>Building topic clusters: fetching market data and rating the coverage against the page content.</source>
+                <target>Themencluster werden aufgebaut: Marktdaten werden geholt und die Abdeckung gegen den Seiteninhalt bewertet.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.competitors" approved="yes">
-                <source>Analysing competitors — fetching market data and rating the keyword gap against the page content.</source>
-                <target>Wettbewerber werden analysiert — Marktdaten werden geholt und der Keyword-Gap gegen den Seiteninhalt bewertet.</target>
+                <source>Analysing competitors: fetching market data and rating the keyword gap against the page content.</source>
+                <target>Wettbewerber werden analysiert: Marktdaten werden geholt und der Keyword-Gap gegen den Seiteninhalt bewertet.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.invalidUrl.title" approved="yes">
                 <source>Invalid URL</source>
@@ -1974,8 +2038,8 @@
                 <target>Audit-Ergebnis</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.unreachable" approved="yes">
-                <source>The page is not publicly reachable — the audit could not run. Only public URLs can be audited.</source>
-                <target>Die Seite ist nicht öffentlich erreichbar — das Audit konnte nicht laufen. Es können nur öffentliche URLs geprüft werden.</target>
+                <source>The page is not publicly reachable, so the audit could not run. Only public URLs can be audited.</source>
+                <target>Die Seite ist nicht öffentlich erreichbar, deshalb konnte das Audit nicht laufen. Es können nur öffentliche URLs geprüft werden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.errors" approved="yes">
                 <source>errors</source>
@@ -1992,6 +2056,22 @@
             <trans-unit id="aiSuite.module.audit.result.lighthouse" approved="yes">
                 <source>Lighthouse scores</source>
                 <target>Lighthouse-Scores</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.performance" approved="yes">
+                <source>Performance</source>
+                <target>Performance</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.accessibility" approved="yes">
+                <source>Accessibility</source>
+                <target>Barrierefreiheit</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.best-practices" approved="yes">
+                <source>Best practices</source>
+                <target>Best Practices</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.seo" approved="yes">
+                <source>SEO</source>
+                <target>SEO</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.market" approved="yes">
                 <source>Market view for</source>
@@ -2022,8 +2102,8 @@
                 <target>Mit AI Suite lösbar (One-Click)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fixability.ai-assist" approved="yes">
-                <source>AI explains — editor fixes</source>
-                <target>KI erklärt — Redakteur setzt um</target>
+                <source>AI explains, editor fixes</source>
+                <target>KI erklärt, Redakteur setzt um</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fixability.dev-handoff" approved="yes">
                 <source>Hand over to your developer or agency</source>
@@ -2032,6 +2112,18 @@
             <trans-unit id="aiSuite.module.audit.fixability.manual" approved="yes">
                 <source>Information only</source>
                 <target>Nur zur Information</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.error" approved="yes">
+                <source>Error</source>
+                <target>Fehler</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.warning" approved="yes">
+                <source>Warning</source>
+                <target>Warnung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.notice" approved="yes">
+                <source>Notice</source>
+                <target>Hinweis</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.pageChooser" approved="yes">
                 <source>Page to audit</source>
@@ -2042,8 +2134,8 @@
                 <target>Externe URL (optional)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.externalUrl.help" approved="yes">
-                <source>Overrides the page selection — audits any public URL instead (no caching, no one-click actions).</source>
-                <target>Überschreibt die Seitenwahl — prüft stattdessen eine beliebige öffentliche URL (ohne Cache und One-Click-Aktionen).</target>
+                <source>Overrides the page selection and audits any public URL instead (no caching, no one-click actions).</source>
+                <target>Überschreibt die Seitenwahl und prüft stattdessen eine beliebige öffentliche URL (ohne Cache und One-Click-Aktionen).</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.lastAudit.seo" approved="yes">
                 <source>Last SEO audit</source>
@@ -2053,9 +2145,9 @@
                 <source>Last accessibility audit</source>
                 <target>Letztes Barrierefreiheits-Audit</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.lastAudit.view" approved="yes">
-                <source>view</source>
-                <target>ansehen</target>
+            <trans-unit id="aiSuite.module.audit.lastAudits.title" approved="yes">
+                <source>Existing audits for this page</source>
+                <target>Vorhandene Audits dieser Seite</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cachedHint" approved="yes">
                 <source>Cached result from</source>
@@ -2066,16 +2158,8 @@
                 <target>Kein gespeichertes Audit</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.noCachedResult.message" approved="yes">
-                <source>There is no stored audit result for this page yet — run a new audit.</source>
-                <target>Für diese Seite gibt es noch kein gespeichertes Audit-Ergebnis — bitte ein neues Audit starten.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.audit.action.metadata" approved="yes">
-                <source>Generate metadata with AI Suite</source>
-                <target>Metadaten mit AI Suite generieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.audit.action.altTexts" approved="yes">
-                <source>Generate image alt texts</source>
-                <target>Bild-Alternativtexte generieren</target>
+                <source>There is no stored audit result for this page yet. Run a new audit.</source>
+                <target>Für diese Seite gibt es noch kein gespeichertes Audit-Ergebnis. Starte ein neues Audit.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.saveKeyword.question" approved="yes">
                 <source>Save this focus keyword to the page properties (keywords field)?</source>
@@ -2123,7 +2207,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.rerunHint" approved="yes">
                 <source>Changes saved. Re-run the audit to verify the fixes.</source>
-                <target>Änderungen gespeichert. Führen Sie das Audit erneut aus, um die Fixes zu verifizieren.</target>
+                <target>Änderungen gespeichert. Führe das Audit erneut aus, um die Fixes zu verifizieren.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.field.seo_title" approved="yes">
                 <source>SEO title (search result title)</source>
@@ -2162,8 +2246,8 @@
                 <target>KI-Modell auswählen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.wizard.queueInfo" approved="yes">
-                <source>%1$s steps — about %2$s AI requests will be made.</source>
-                <target>%1$s Schritte — es werden ca. %2$s KI-Anfragen ausgeführt.</target>
+                <source>%1$s steps, about %2$s AI requests will be made.</source>
+                <target>%1$s Schritte, es werden ca. %2$s KI-Anfragen ausgeführt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.wizard.visionLibrary" approved="yes">
                 <source>Vision model (image alt texts)</source>
@@ -2277,6 +2361,10 @@
                 <source>Competition</source>
                 <target>Wettbewerb</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.competition.help" approved="yes">
+                <source>How contested the keyword is among advertisers in paid search, from 0 (hardly any ads) to 1 (fiercely contested). It says nothing about the organic ranking.</source>
+                <target>Wie stark das Keyword im bezahlten Umfeld umkämpft ist, also bei Anzeigen, von 0 (kaum Anzeigen) bis 1 (stark umkämpft). Über das organische Ranking sagt der Wert nichts.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.candidates.adopt" approved="yes">
                 <source>Adopt as focus keyword</source>
                 <target>Als Focus-Keyword übernehmen</target>
@@ -2310,12 +2398,12 @@
                 <target>Einschätzung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.answered" approved="yes">
-                <source>answered</source>
-                <target>beantwortet</target>
+                <source>covered</source>
+                <target>abgedeckt</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.partial" approved="yes">
-                <source>partially answered</source>
-                <target>teilweise beantwortet</target>
+                <source>partially covered</source>
+                <target>teilweise offen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.open" approved="yes">
                 <source>open</source>
@@ -2326,8 +2414,8 @@
                 <target>Google-Frage</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.serpUnavailable" approved="yes">
-                <source>Live search questions were unavailable — this list is AI-derived from the page content only.</source>
-                <target>Live-Suchfragen waren nicht verfügbar — diese Liste ist ausschließlich KI-basiert aus dem Seiteninhalt abgeleitet.</target>
+                <source>Live search questions were unavailable. This list is AI-derived from the page content only.</source>
+                <target>Live-Suchfragen waren nicht verfügbar. Diese Liste ist ausschließlich KI-basiert aus dem Seiteninhalt abgeleitet.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.generateHint" approved="yes">
                 <source>Open and partially answered questions can be turned into content on this page.</source>
@@ -2342,8 +2430,8 @@
                 <target>Beantworte die folgenden Nutzerfragen auf dieser Seite. Verwende jede Frage als Überschrift mit einer prägnanten, hilfreichen Antwort darunter (2-4 Sätze), die wichtigste Information zuerst:</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.answers.hint" approved="yes">
-                <source>This page is outside this TYPO3 installation — the answers can be generated as text to copy into the target system.</source>
-                <target>Diese Seite liegt außerhalb dieser TYPO3-Installation — die Antworten können als Text generiert und ins Zielsystem kopiert werden.</target>
+                <source>This page is outside this TYPO3 installation. The answers can be generated as text to copy into the target system.</source>
+                <target>Diese Seite liegt außerhalb dieser TYPO3-Installation. Die Antworten können als Text generiert und ins Zielsystem kopiert werden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.answers.button" approved="yes">
                 <source>Generate answers as copyable text (1 credit)</source>
@@ -2430,8 +2518,8 @@
                 <target>Ranking-Daten der Domain</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.noCandidates" approved="yes">
-                <source>No underperforming rankings found — this page converts its visibility well.</source>
-                <target>Keine schwach performenden Rankings gefunden — diese Seite verwertet ihre Sichtbarkeit gut.</target>
+                <source>No underperforming rankings found. This page converts its visibility well.</source>
+                <target>Keine schwach performenden Rankings gefunden. Diese Seite verwertet ihre Sichtbarkeit gut.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.generateHint" approved="yes">
                 <source>Open and partially covered keywords can be turned into new topic sections on this page.</source>
@@ -2466,8 +2554,8 @@
                 <target>Die Themencluster-Analyse braucht ein Fokus-Keyword, um das Thema darum herum zu erkunden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.noClusters" approved="yes">
-                <source>No cluster data found for this keyword — try a broader focus keyword.</source>
-                <target>Keine Cluster-Daten zu diesem Keyword gefunden — versuche ein breiteres Fokus-Keyword.</target>
+                <source>No cluster data found for this keyword. Try a broader focus keyword.</source>
+                <target>Keine Cluster-Daten zu diesem Keyword gefunden. Versuche ein breiteres Fokus-Keyword.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.subtopic" approved="yes">
                 <source>Subtopic</source>
@@ -2486,8 +2574,8 @@
                 <target>Schreibe einen neuen Themenabschnitt für diese Seite, der das folgende Unterthema und die Suchanfragen dahinter abdeckt. Ein klarer Abschnitt: Überschrift plus 2-4 hilfreiche Absätze, die wichtigste Information zuerst:</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.pagetreeHint" approved="yes">
-                <source>Uncovered subtopics can also become their own subpages. The button opens the page tree generator with a prefilled proposal — you review and confirm every page before anything is created.</source>
-                <target>Nicht abgedeckte Unterthemen können auch eigene Unterseiten werden. Der Button öffnet den Seitenbaum-Generator mit einem vorbefüllten Vorschlag — du prüfst und bestätigst jede Seite, bevor etwas angelegt wird.</target>
+                <source>Uncovered subtopics can also become their own subpages. The button opens the page tree generator with a prefilled proposal. You review and confirm every page before anything is created.</source>
+                <target>Nicht abgedeckte Unterthemen können auch eigene Unterseiten werden. Der Button öffnet den Seitenbaum-Generator mit einem vorbefüllten Vorschlag. Du prüfst und bestätigst jede Seite, bevor etwas angelegt wird.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.pagetreeButton" approved="yes">
                 <source>Propose as page tree</source>
@@ -2535,11 +2623,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.competitors.noDomainData" approved="yes">
                 <source>No ranking data exists for this page's domain yet - it may be new or not indexed. The competitor analysis needs existing rankings to determine competitors; start with the SEO audit and indexable content.</source>
-                <target>Für die Domain dieser Seite gibt es noch keine Ranking-Daten — sie ist vermutlich neu oder nicht indexiert. Die Wettbewerber-Analyse braucht vorhandene Rankings, um Wettbewerber zu bestimmen; starte mit dem SEO-Audit und indexierbaren Inhalten.</target>
+                <target>Für die Domain dieser Seite gibt es noch keine Ranking-Daten, sie ist vermutlich neu oder nicht indexiert. Die Wettbewerber-Analyse braucht vorhandene Rankings, um Wettbewerber zu bestimmen; starte mit dem SEO-Audit und indexierbaren Inhalten.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.competitors.noCandidates" approved="yes">
-                <source>No keyword gap found against your closest competitor — your page covers this market well.</source>
-                <target>Kein Keyword-Gap gegenüber dem nächsten Wettbewerber gefunden — deine Seite deckt diesen Markt gut ab.</target>
+                <source>No keyword gap found against your closest competitor. Your page covers this market well.</source>
+                <target>Kein Keyword-Gap gegenüber dem nächsten Wettbewerber gefunden. Deine Seite deckt diesen Markt gut ab.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.competitors.generatePrompt" approved="yes">
                 <source>Write a new topic section for this page covering the following keyword a competitor already ranks for. One clear section: heading plus 2-4 helpful paragraphs, most important information first:</source>
@@ -2552,6 +2640,10 @@
             <trans-unit id="aiSuite.module.audit.difficulty" approved="yes">
                 <source>Difficulty</source>
                 <target>Schwierigkeit</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.difficulty.help" approved="yes">
+                <source>How hard it is to reach the organic top 10 for this keyword, from 0 (easy) to 100 (very hard).</source>
+                <target>Wie schwer der Sprung in die organischen Top 10 für dieses Keyword ist, von 0 (leicht) bis 100 (sehr schwer).</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.market" approved="yes">
                 <source>Search market</source>
@@ -2567,7 +2659,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.model.help" approved="yes">
                 <source>A default model for audits can be configured in the extension settings ("Default AI model for audit analyses") - with it, this selection step is skipped.</source>
-                <target>In den Extension-Einstellungen kann ein Standard-Modell für Audits hinterlegt werden („Default AI model for audit analyses“) — damit entfällt dieser Auswahlschritt.</target>
+                <target>In den Extension-Einstellungen kann ein Standard-Modell für Audits hinterlegt werden („Standard-KI-Modell für Audit-Analysen“). Damit entfällt dieser Auswahlschritt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.language" approved="yes">
                 <source>Language</source>
@@ -2581,9 +2673,13 @@
                 <source>Audit score (0-100, calculated from the findings)</source>
                 <target>Audit-Score (0–100, aus den Funden berechnet)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.workspaceNotice" approved="yes">
+                <source>The audit fetches the page from the outside and therefore always evaluates the published live version, not your workspace draft.</source>
+                <target>Der Audit ruft die Seite von außen ab und bewertet deshalb immer die veröffentlichte Live-Fassung, nicht Ihren Entwurf im Workspace.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.translationReadOnly" approved="yes">
                 <source>This is a translated page's audit - fix and generation actions run on the default language.</source>
-                <target>Dies ist der Audit einer Übersetzung — Fix- und Generier-Aktionen laufen auf der Standardsprache.</target>
+                <target>Dies ist der Audit einer Übersetzung. Fix- und Generier-Aktionen laufen auf der Standardsprache.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.tile.title" approved="yes">
                 <source>AI Suite Audit</source>
@@ -2597,9 +2693,9 @@
                 <source>No audit yet for this page.</source>
                 <target>Für diese Seite gibt es noch kein Audit.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.tile.run" approved="yes">
-                <source>Open audit</source>
-                <target>Audit öffnen</target>
+            <trans-unit id="aiSuite.module.audit.tile.newAudit" approved="yes">
+                <source>Start new audit</source>
+                <target>Neues Audit starten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.title" approved="yes">
                 <source>Audit a whole page tree</source>
@@ -2666,8 +2762,8 @@
                 <target>Prüfe {current}/{total}: {title}</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.exhausted" approved="yes">
-                <source>{done} of {total} pages audited — credits exhausted. Everything finished is saved; resume to audit the rest.</source>
-                <target>{done} von {total} Seiten geprüft — Guthaben aufgebraucht. Alles Fertige ist gespeichert; mit Fortsetzen prüfst du den Rest.</target>
+                <source>{done} of {total} pages audited, credits exhausted. Everything finished is saved; resume to audit the rest.</source>
+                <target>{done} von {total} Seiten geprüft, Guthaben aufgebraucht. Alles Fertige ist gespeichert; mit Fortsetzen prüfst du den Rest.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.stopped" approved="yes">
                 <source>{done} of {total} pages audited.</source>
@@ -2682,8 +2778,8 @@
                 <target>Verteilung: {high} grün, {medium} orange, {low} rot.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.done" approved="yes">
-                <source>Done — all {total} pages audited.</source>
-                <target>Fertig — alle {total} Seiten geprüft.</target>
+                <source>Done: all {total} pages audited.</source>
+                <target>Fertig: alle {total} Seiten geprüft.</target>
             </trans-unit>
             <trans-unit id="widgets.group.aiSuite" approved="yes">
                 <source>AI Suite</source>
@@ -2715,11 +2811,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.noDomainData" approved="yes">
                 <source>No ranking data exists for this domain yet - it may be new or not indexed. The content gap analysis needs existing rankings; start with the SEO audit and indexable content.</source>
-                <target>Für diese Domain gibt es noch keine Ranking-Daten — sie ist vermutlich neu oder nicht indexiert. Die Content-Gap-Analyse braucht vorhandene Rankings; starte mit dem SEO-Audit und indexierbaren Inhalten.</target>
+                <target>Für diese Domain gibt es noch keine Ranking-Daten, sie ist vermutlich neu oder nicht indexiert. Die Content-Gap-Analyse braucht vorhandene Rankings; starte mit dem SEO-Audit und indexierbaren Inhalten.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.pageNotRanking" approved="yes">
                 <source>The domain ranks, but this page has no rankings of its own yet - so there is nothing to convert. The questions or topic cluster analysis helps building ranking content.</source>
-                <target>Die Domain rankt, aber diese Seite hat selbst noch keine Rankings — es gibt also nichts zu heben. Für neue rankende Inhalte helfen die W-Fragen- oder Themencluster-Analyse.</target>
+                <target>Die Domain rankt, aber diese Seite hat selbst noch keine Rankings, es gibt also nichts zu heben. Für neue rankende Inhalte helfen die W-Fragen- oder Themencluster-Analyse.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.button" approved="yes">
                 <source>Generate author box (AI)</source>
@@ -2730,8 +2826,8 @@
                 <target>Autorenbox</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.factsHeader" approved="yes">
-                <source>Author facts — the AI only phrases, it invents nothing</source>
-                <target>Autor-Fakten — die KI formuliert nur, sie erfindet nichts</target>
+                <source>Author facts: the AI only phrases, it invents nothing</source>
+                <target>Autor-Fakten: die KI formuliert nur, sie erfindet nichts</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.noInvent" approved="yes">
                 <source>The AI will write a short bio text exclusively from the facts you enter here. It will not invent qualifications or experience.</source>
@@ -2771,11 +2867,279 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.promptIntro" approved="yes">
                 <source>Write a short author box (2-3 sentences) for this page. Use ONLY the following facts - do not invent qualifications, experience or achievements. Relate the author's competence to the page's topic. Use the name as the heading:</source>
-                <target>Schreibe eine kurze Autorenbox (2-3 Sätze) für diese Seite. Nutze AUSSCHLIESSLICH die folgenden Fakten — erfinde keine Qualifikationen, Erfahrungen oder Erfolge. Stelle den Bezug der Kompetenz zum Seitenthema her. Verwende den Namen als Überschrift:</target>
+                <target>Schreibe eine kurze Autorenbox (2-3 Sätze) für diese Seite. Nutze AUSSCHLIESSLICH die folgenden Fakten und erfinde keine Qualifikationen, Erfahrungen oder Erfolge. Stelle den Bezug der Kompetenz zum Seitenthema her. Verwende den Namen als Überschrift:</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.creditsHint" approved="yes">
                 <source>One audit costs 3 credits.</source>
                 <target>Ein Audit kostet 3 Credits.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.generated" approved="yes">
+                <source>AI-generated</source>
+                <target>KI-generiert</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.assisted" approved="yes">
+                <source>AI-assisted</source>
+                <target>KI-unterstützt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.translated" approved="yes">
+                <source>AI-translated</source>
+                <target>KI-übersetzt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.viaClient" approved="yes">
+                <source>Written through %s.</source>
+                <target>Geschrieben über %s.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.unknownModel" approved="yes">
+                <source>unknown model</source>
+                <target>unbekanntes Modell</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.information.field" resname="aiSuite.provenance.information.field">
+                <source>This text was written by an AI feature.</source>
+                <target>Dieser Text wurde von einer KI-Funktion geschrieben.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.description" approved="yes">
+                <source>Model: %s, created: %s, function: %s</source>
+                <target>Modell: %s, erzeugt: %s, Funktion: %s</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.about" approved="yes">
+                <source>About</source>
+                <target>Über</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.title" approved="yes">
+                <source>Provider (Art. 50 EU AI Act)</source>
+                <target>Anbieter (Art. 50 EU AI Act)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.intro" approved="yes">
+                <source>This AI system is placed on the market by:</source>
+                <target>Dieses KI-System wird in Verkehr gebracht von:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.phone" approved="yes">
+                <source>Phone:</source>
+                <target>Telefon:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.website" resname="aiSuite.about.provider.website">
+                <source>Website</source>
+                <target>Website</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.imprint" approved="yes">
+                <source>Imprint</source>
+                <target>Impressum</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.privacy" approved="yes">
+                <source>Privacy policy</source>
+                <target>Datenschutz</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.documentation" approved="yes">
+                <source>Documentation</source>
+                <target>Dokumentation</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.feature" approved="yes">
+                <source>Function</source>
+                <target>Funktion</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.content" approved="yes">
+                <source>Content creation</source>
+                <target>Inhaltserzeugung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.metadata" approved="yes">
+                <source>Metadata</source>
+                <target>Metadaten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.translation" approved="yes">
+                <source>Translation</source>
+                <target>Übersetzung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.image" approved="yes">
+                <source>Image generation</source>
+                <target>Bilderzeugung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.pagetree" approved="yes">
+                <source>Page tree generation</source>
+                <target>Seitenbaum-Erzeugung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.mcp" approved="yes">
+                <source>MCP server</source>
+                <target>MCP-Server</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.chat" approved="yes">
+                <source>Editor chat</source>
+                <target>Redaktions-Chat</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.title" approved="yes">
+                <source>Who carries which obligation</source>
+                <target>Wen welche Pflicht trifft</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.provider" approved="yes">
+                <source>AutoDudes is the provider: Art. 50(2) requires the outputs of this system to be marked in a machine-readable way. That obligation is ours.</source>
+                <target>AutoDudes ist Anbieter: Art. 50(2) verlangt, die Ausgaben dieses Systems maschinenlesbar zu markieren. Diese Pflicht liegt bei uns.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.deployer" approved="yes">
+                <source>Whoever runs this website is the deployer: Art. 50(4) requires a visible disclosure for deepfakes and for AI-generated text published to inform the public on matters of public interest. Whether it applies to a given piece of content depends on the content and on the editorial control exercised over it.</source>
+                <target>Wer diese Website betreibt, ist Betreiber: Art. 50(4) verlangt eine sichtbare Offenlegung bei Deepfakes und bei KI-Texten, die die Öffentlichkeit über Angelegenheiten von öffentlichem Interesse informieren. Ob das für einen konkreten Inhalt gilt, hängt vom Inhalt und von der redaktionellen Kontrolle darüber ab.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.trackingOn" approved="yes">
+                <source>This installation records what its AI features write.</source>
+                <target>Diese Installation zeichnet auf, was ihre KI-Funktionen schreiben.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.trackingOff" approved="yes">
+                <source>Recording of AI-written records is switched off in this installation.</source>
+                <target>Die Aufzeichnung KI-geschriebener Datensätze ist in dieser Installation abgeschaltet.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.translationsDisclosed" approved="yes">
+                <source>AI translations are disclosed as such as well.</source>
+                <target>KI-Übersetzungen werden ebenfalls als solche ausgewiesen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.provenance" approved="yes">
+                <source>AI content</source>
+                <target>KI-Inhalte</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.title" approved="yes">
+                <source>AI-written content on this installation</source>
+                <target>KI-geschriebene Inhalte dieser Installation</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.intro" approved="yes">
+                <source>Every record an AI feature wrote, newest first. Marking a text as reviewed records that a human checked it and takes editorial responsibility. That is the exception Art. 50(4) provides for text. It does not apply to images, audio or video.</source>
+                <target>Jeder Datensatz, den eine KI-Funktion geschrieben hat, neueste zuerst. „Als geprüft markieren" hält fest, dass ein Mensch den Text geprüft hat und ihn redaktionell verantwortet. Das ist die Ausnahme, die Art. 50(4) für Text vorsieht. Für Bilder, Audio und Video gilt sie nicht.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allModes" approved="yes">
+                <source>All kinds</source>
+                <target>Alle Arten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allReviewStates" approved="yes">
+                <source>Reviewed and unreviewed</source>
+                <target>Geprüft und ungeprüft</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.reviewed" approved="yes">
+                <source>reviewed</source>
+                <target>geprüft</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.notReviewed" approved="yes">
+                <source>not reviewed</source>
+                <target>nicht geprüft</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.applyFilter" resname="aiSuite.provenance.overview.applyFilter">
+                <source>Apply filter</source>
+                <target>Filter anwenden</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.reviewRecorded" approved="yes">
+                <source>%s entries were marked as reviewed.</source>
+                <target>%s Einträge wurden als geprüft markiert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.editedSince" approved="yes">
+                <source>edited since</source>
+                <target>seitdem bearbeitet</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.record" approved="yes">
+                <source>Record</source>
+                <target>Datensatz</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.mode" approved="yes">
+                <source>Kind</source>
+                <target>Art</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.written" approved="yes">
+                <source>Written</source>
+                <target>Geschrieben</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noAccess.title" resname="aiSuite.provenance.overview.noAccess.title">
+                <source>No access</source>
+                <target>Kein Zugriff</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noAccess.message" resname="aiSuite.provenance.overview.noAccess.message">
+                <source>Your backend group is not allowed to see the list of AI-written content.</source>
+                <target>Deine Backend-Gruppe darf die Liste der KI-geschriebenen Inhalte nicht sehen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noGroup" resname="aiSuite.provenance.overview.noGroup">
+                <source>Without a place in the site</source>
+                <target>Ohne Zuordnung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.markSelected" resname="aiSuite.provenance.overview.markSelected">
+                <source>Mark selection as reviewed</source>
+                <target>Auswahl als geprüft markieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.selectAll" resname="aiSuite.provenance.overview.selectAll">
+                <source>Select all</source>
+                <target>Alle auswählen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allFeatures" resname="aiSuite.provenance.overview.allFeatures">
+                <source>All functions</source>
+                <target>Alle Funktionen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.cleanup" resname="aiSuite.provenance.overview.cleanup">
+                <source>Remove %s entries of deleted records</source>
+                <target>%s Einträge gelöschter Datensätze entfernen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.cleanupDone" resname="aiSuite.provenance.overview.cleanupDone">
+                <source>%s entries of deleted records were removed.</source>
+                <target>%s Einträge gelöschter Datensätze wurden entfernt.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.confirmReview" resname="aiSuite.provenance.overview.confirmReview">
+                <source>This records that a human checked these texts and takes editorial responsibility for them.</source>
+                <target>Damit wird festgehalten, dass ein Mensch diese Texte geprüft hat und redaktionell verantwortet.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.pages" resname="aiSuite.provenance.overview.area.pages">
+                <source>Pages</source>
+                <target>Seiten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.files" resname="aiSuite.provenance.overview.area.files">
+                <source>Files &amp; media</source>
+                <target>Dateien &amp; Medien</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.records" resname="aiSuite.provenance.overview.area.records">
+                <source>Records</source>
+                <target>Datensätze</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.context.pages" resname="aiSuite.provenance.overview.context.pages">
+                <source>On page</source>
+                <target>Auf Seite</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.context.files" resname="aiSuite.provenance.overview.context.files">
+                <source>Used on</source>
+                <target>Benutzt auf</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allTables" resname="aiSuite.provenance.overview.allTables">
+                <source>All tables</source>
+                <target>Alle Tabellen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.emptyArea" resname="aiSuite.provenance.overview.emptyArea">
+                <source>Nothing in this area. Another tab or a different filter may hold what you are looking for.</source>
+                <target>In diesem Bereich liegt nichts. Ein anderer Reiter oder ein anderer Filter hat vielleicht, was du suchst.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.range" resname="aiSuite.provenance.overview.range">
+                <source>Entries %s-%s of %s</source>
+                <target>Einträge %s-%s von %s</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.pagination" resname="aiSuite.provenance.overview.pagination">
+                <source>Pagination</source>
+                <target>Seitennavigation</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.pageIndicator" resname="aiSuite.provenance.overview.pageIndicator">
+                <source>Page %s of %s</source>
+                <target>Seite %s von %s</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.firstPage" resname="aiSuite.provenance.overview.firstPage">
+                <source>First page</source>
+                <target>Erste Seite</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.previousPage" resname="aiSuite.provenance.overview.previousPage">
+                <source>Previous page</source>
+                <target>Vorherige Seite</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.nextPage" resname="aiSuite.provenance.overview.nextPage">
+                <source>Next page</source>
+                <target>Nächste Seite</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.lastPage" resname="aiSuite.provenance.overview.lastPage">
+                <source>Last page</source>
+                <target>Letzte Seite</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.empty" approved="yes">
+                <source>Nothing has been written by an AI feature yet.</source>
+                <target>Bisher hat keine KI-Funktion etwas geschrieben.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.recordGone" approved="yes">
+                <source>record deleted</source>
+                <target>Datensatz gelöscht</target>
             </trans-unit>
         </body>
     </file>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
@@ -34,6 +35,7 @@ class BackgroundTaskService implements SingletonInterface
         protected readonly SiteService $siteService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
+        protected readonly ProvenanceCaptureService $provenanceCapture,
     ) {}
 
     /**
@@ -78,10 +80,7 @@ class BackgroundTaskService implements SingletonInterface
             if ($counter[$foundBackgroundTask['column']] < 50) {
                 $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
             }
-            $uuidStatus[$foundBackgroundTask['uuid']] = [
-                'uuid' => $foundBackgroundTask['uuid'],
-                'status' => $foundBackgroundTask['status'] ?? 'pending',
-            ];
+            $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             ++$counter[$foundBackgroundTask['column']];
         }
 
@@ -116,10 +115,7 @@ class BackgroundTaskService implements SingletonInterface
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
-                $uuidStatus[$foundBackgroundTask['uuid']] = [
-                    'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status'] ?? 'pending',
-                ];
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
             }
         }
@@ -150,10 +146,7 @@ class BackgroundTaskService implements SingletonInterface
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
-                $uuidStatus[$foundBackgroundTask['uuid']] = [
-                    'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status'] ?? 'pending',
-                ];
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
             }
         }
@@ -181,10 +174,7 @@ class BackgroundTaskService implements SingletonInterface
                 if ($counter[$foundBackgroundTask['column']] < 50) {
                     $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
                 }
-                $uuidStatus[$foundBackgroundTask['uuid']] = [
-                    'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status'] ?? 'pending',
-                ];
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
             }
         }
@@ -340,6 +330,50 @@ class BackgroundTaskService implements SingletonInterface
         $this->collectFileMetadataTranslationBackgroundTasks($uuidStatus, true);
 
         return $uuidStatus;
+    }
+
+    public function syncPendingTranslationTasksForPage(int $pageUid): void
+    {
+        if ($pageUid <= 0) {
+            return;
+        }
+
+        try {
+            $pendingTasks = array_merge(
+                $this->backgroundTaskRepository->findTranslationTasksForPage($pageUid, 'pending'),
+                $this->backgroundTaskRepository->findContentElementTranslationTasksForPage($pageUid, 'pending'),
+            );
+            if ([] === $pendingTasks) {
+                return;
+            }
+
+            $uuidStatus = [];
+            foreach ($pendingTasks as $task) {
+                $uuidStatus[(string) $task['uuid']] = $this->statusSyncEntry($task);
+            }
+
+            $answer = $this->sendRequestService->sendDataRequest('massActionStatus', [
+                'uuidStatus' => $uuidStatus,
+            ]);
+            if ('Error' === $answer->getType()) {
+                $this->logger->warning('Translation task status sync failed', [
+                    'pageUid' => $pageUid,
+                    'message' => $answer->getResponseData()['message'] ?? '',
+                ]);
+
+                return;
+            }
+
+            $statusData = $answer->getResponseData()['statusData'] ?? [];
+            if (is_array($statusData) && [] !== $statusData) {
+                $this->backgroundTaskRepository->updateStatus($statusData);
+            }
+        } catch (\Throwable $e) {
+            $this->logger->error('Translation task status sync failed', [
+                'pageUid' => $pageUid,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -679,10 +713,7 @@ class BackgroundTaskService implements SingletonInterface
 
             $foundBackgroundTasksPageTranslation = $this->backgroundTaskRepository->findAllPageTranslationBackgroundTasks();
             foreach ($foundBackgroundTasksPageTranslation as $foundBackgroundTask) {
-                $uuidStatus[$foundBackgroundTask['uuid']] = [
-                    'uuid' => $foundBackgroundTask['uuid'],
-                    'status' => $foundBackgroundTask['status'],
-                ];
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
 
             $this->collectContentElementTranslationBackgroundTasks($uuidStatus);
@@ -794,7 +825,7 @@ class BackgroundTaskService implements SingletonInterface
             if ($structuredResult) {
                 $uuidStatus['pages'][$foundBackgroundTask['table_uid']] = $taskData;
             } else {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
         }
     }
@@ -818,7 +849,7 @@ class BackgroundTaskService implements SingletonInterface
             if ($structuredResult) {
                 $uuidStatus['fileReferences'][$foundBackgroundTask['table_uid']] = $taskData;
             } else {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
         }
     }
@@ -842,9 +873,27 @@ class BackgroundTaskService implements SingletonInterface
             if ($structuredResult) {
                 $this->mergeTranslationStatus($uuidStatus, (int) $foundBackgroundTask['table_uid'], $taskData);
             } else {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $task
+     *
+     * @return array{uuid: string, status: string}
+     */
+    private function statusSyncEntry(array $task): array
+    {
+        $status = (string) ($task['status'] ?? 'pending');
+        if ('finished' === $status && '' === (string) ($task['answer'] ?? '')) {
+            $status = '';
+        }
+
+        return [
+            'uuid' => (string) $task['uuid'],
+            'status' => $status,
+        ];
     }
 
     /**
@@ -876,7 +925,7 @@ class BackgroundTaskService implements SingletonInterface
             ];
 
             if (!$structuredResult) {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
 
                 continue;
             }
@@ -912,7 +961,7 @@ class BackgroundTaskService implements SingletonInterface
             if ($structuredResult) {
                 $uuidStatus['fileMetadataTranslation'][$foundBackgroundTask['table_uid']] = $taskData;
             } else {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
         }
     }
@@ -936,7 +985,7 @@ class BackgroundTaskService implements SingletonInterface
             if ($structuredResult) {
                 $uuidStatus['fileMetadata'][$foundBackgroundTask['table_uid']] = $taskData;
             } else {
-                $uuidStatus[$foundBackgroundTask['uuid']] = $taskData;
+                $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             }
         }
     }
@@ -967,12 +1016,25 @@ class BackgroundTaskService implements SingletonInterface
                 throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
             }
 
-            if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
-                $this->handleFileMetadataTranslationSave($backgroundTask, $data);
-            } elseif ('NEW' === $backgroundTask['mode']) {
-                $this->handleNewMetadataRecordSave($backgroundTask, $data);
-            } else {
-                $this->handleExistingMetadataRecordSave($backgroundTask, $data);
+            // The answer was fetched in an earlier request, so `refineModel()` has nothing to fill
+            // in here — the task row is what remembers which model produced it.
+            $taskModel = (string) ($backgroundTask['model'] ?? '');
+            $this->provenanceCapture->begin(
+                'translation' === $backgroundTask['type']
+                    ? ProvenanceContext::translated(ProvenanceContext::FEATURE_METADATA, $taskModel)
+                    : ProvenanceContext::generated(ProvenanceContext::FEATURE_METADATA, $taskModel)
+            );
+
+            try {
+                if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
+                    $this->handleFileMetadataTranslationSave($backgroundTask, $data);
+                } elseif ('NEW' === $backgroundTask['mode']) {
+                    $this->handleNewMetadataRecordSave($backgroundTask, $data);
+                } else {
+                    $this->handleExistingMetadataRecordSave($backgroundTask, $data);
+                }
+            } finally {
+                $this->provenanceCapture->end();
             }
 
             $answer = $this->sendRequestService->sendDataRequest(

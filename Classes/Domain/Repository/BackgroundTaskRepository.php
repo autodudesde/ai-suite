@@ -556,16 +556,16 @@ class BackgroundTaskRepository
     }
 
     /**
-     * @return list<int>
+     * @return list<array{uuid: string, sys_language_uid: int, changed_fields: null|list<string>}>
      *
      * @throws Exception
      */
-    public function findUnappliedContentElementTranslationLanguageUids(int $sourceUid): array
+    public function findUnappliedContentElementTranslationTasks(int $sourceUid): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
 
         $rows = $queryBuilder
-            ->select('sys_language_uid')
+            ->select('uuid', 'sys_language_uid', 'changed_fields')
             ->from($this->table)
             ->where(
                 $queryBuilder->expr()->eq('scope', $queryBuilder->createNamedParameter('content-element-translation')),
@@ -577,7 +577,15 @@ class BackgroundTaskRepository
             ->fetchAllAssociative()
         ;
 
-        return array_map(static fn (array $row): int => (int) $row['sys_language_uid'], $rows);
+        return array_map(static function (array $row): array {
+            $changedFields = json_decode((string) ($row['changed_fields'] ?? ''), true);
+
+            return [
+                'uuid' => (string) $row['uuid'],
+                'sys_language_uid' => (int) $row['sys_language_uid'],
+                'changed_fields' => is_array($changedFields) ? array_values(array_map('strval', $changedFields)) : null,
+            ];
+        }, $rows);
     }
 
     /**

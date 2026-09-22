@@ -1,0 +1,26 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+<div class="aisuite-audit-actions">
+    <f:if condition="{pageId} > 0">
+        <f:then>
+            <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit', parameters: {id: pageId})}">
+                <core:icon identifier="actions-arrow-left" size="small"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.newAudit"/>
+            </a>
+            <f:if condition="{exportable}">
+                <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit_export', parameters: {pageId: pageId, auditType: auditType, languageUid: languageUid})}">
+                    <core:icon identifier="actions-download" size="small"/>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.export.button"/>
+                </a>
+            </f:if>
+        </f:then>
+        <f:else>
+            <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit')}">
+                <core:icon identifier="actions-arrow-left" size="small"/>
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.newAudit"/>
+            </a>
+        </f:else>
+    </f:if>
+</div>
+</html>

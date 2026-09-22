@@ -1,0 +1,32 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+      {namespace core=TYPO3\CMS\Core\ViewHelpers}
+<div class="panel-heading">
+    <div class="aisuite-audit-result-header">
+        <f:if condition="{scoreRange}">
+            <f:then>
+                <f:variable name="scoreTitle"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.score"/></f:variable>
+                <f:render partial="Audit/ScoreCircle" arguments="{score: score, range: scoreRange, size: 'lg', title: scoreTitle}"/>
+            </f:then>
+            <f:else>
+                <core:icon identifier="actions-search" size="medium"/>
+            </f:else>
+        </f:if>
+        <div class="aisuite-audit-result-header__text">
+            <h2 class="aisuite-audit-result-header__title"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.headline"/> ({typeLabel})</h2>
+            <f:if condition="{subject}">
+                <span class="aisuite-audit-result-header__subject" title="{subject}">{subject}</span>
+            </f:if>
+            <f:if condition="{url} && {url} != {subject}">
+                <span class="aisuite-audit-result-header__url" title="{url}">{url}</span>
+            </f:if>
+            <f:if condition="{cachedAt}">
+                <span class="aisuite-audit-result-header__cached">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cachedHint"/>
+                    <f:format.date format="d.m.Y H:i">@{cachedAt}</f:format.date>
+                </span>
+            </f:if>
+        </div>
+    </div>
+</div>
+</html>

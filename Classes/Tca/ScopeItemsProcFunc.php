@@ -14,8 +14,14 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Tca;
 
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
+
 class ScopeItemsProcFunc
 {
+    public function __construct(
+        protected readonly GlobalInstructionService $globalInstructionService,
+    ) {}
+
     /**
      * @param array<string, mixed> $config
      */
@@ -23,23 +29,6 @@ class ScopeItemsProcFunc
     {
         $context = $config['row']['context'][0] ?? 'pages';
 
-        if ('files' === $context) {
-            $config['items'] = [
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.general', 'value' => 'general'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.imageWizard', 'value' => 'imageWizard'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.files.metadata', 'value' => 'metadata'],
-            ];
-        } else {
-            $config['items'] = [
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.general', 'value' => 'general'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.pageTree', 'value' => 'pageTree'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.imageWizard', 'value' => 'imageWizard'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.contentElement', 'value' => 'contentElement'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.newsRecord', 'value' => 'newsRecord'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.editContent', 'value' => 'editContent'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.metadata', 'value' => 'metadata'],
-                ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.pages.translation', 'value' => 'translation'],
-            ];
-        }
+        $config['items'] = $this->globalInstructionService->getScopeItems((string) $context);
     }
 }

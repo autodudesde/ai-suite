@@ -6,6 +6,7 @@ import Severity from "@typo3/backend/severity.js";
 import Modal from '@typo3/backend/modal.js';
 import Notification from "@typo3/backend/notification.js";
 import Icons from '@typo3/backend/icons.js';
+import Provenance from '@autodudes/ai-suite/helper/provenance.js';
 
 export default class AiEasyLanguagePluginUi extends Plugin {
     static get requires() {
@@ -113,6 +114,7 @@ export default class AiEasyLanguagePluginUi extends Plugin {
                     const viewFragment = this.editor.data.processor.toView( res.output );
                     const modelFragment = this.editor.data.toModel( viewFragment );
                     this.editor.model.insertContent(modelFragment);
+                    Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', postData.textModel);
                 }
             } );
             Notification.success(TYPO3.lang['aiSuite.easyLanguagePlugin.success']);

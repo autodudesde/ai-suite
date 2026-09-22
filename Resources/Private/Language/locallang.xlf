@@ -367,6 +367,9 @@
                 <source>Duplicate detected</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.globalInstructions.tooltip">
+                <source>Show the global instructions that apply to this prompt</source>
+            </trans-unit>
             <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
                 <source>Global instructions</source>
             </trans-unit>
@@ -723,12 +726,12 @@
                 <source>The content element was automatically translated into the following languages: %s</source>
             </trans-unit>
 
-            <trans-unit id="aiSuite.autoTranslation.direct.startTitle">
-                <source>Automatic translation</source>
+            <trans-unit id="aiSuite.autoTranslation.direct.saveHintTitle">
+                <source>Saving may take a moment</source>
             </trans-unit>
 
-            <trans-unit id="aiSuite.autoTranslation.direct.startMessage">
-                <source>The content element is being translated into the available target languages…</source>
+            <trans-unit id="aiSuite.autoTranslation.direct.saveHintMessage">
+                <source>Automatic translation on save is active for this content element.</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.autoTranslation.missingModelPermission.title">
@@ -745,6 +748,70 @@
 
             <trans-unit id="aiSuite.autoTranslation.bulkLimit.message">
                 <source>Automatic translation was skipped because this save changed %s content elements, which exceeds the configured limit of %s. Please translate the elements individually or via the bulk translation tools.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingFeaturePermission.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingFeaturePermission.message">
+                <source>Automatic translation was skipped: you do not have permission to use automatic translation. Please contact your administrator.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.freeModeSkipped.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.freeModeSkipped.message">
+                <source>The content element was not translated into %s because its translation there is maintained in free mode and not connected to the original. Please update it manually.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.pageNotTranslated.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.pageNotTranslated.message">
+                <source>The content element was not translated into %s because the page has no translation in that language yet.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.workspaceSkipped.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.workspaceSkipped.message">
+                <source>Automatic translation does not run inside a workspace. Translate the content element after publishing or use the translation wizard.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.noTranslatableFields.title">
+                <source>Automatic translation skipped</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.noTranslatableFields.message">
+                <source>No translatable fields were found for this content element: %s. Its content type may store its text in fields the translation does not read.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.requestFailed.title">
+                <source>Automatic translation failed</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.requestFailed.message">
+                <source>The content element could not be translated: %s</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.emptyResult.title">
+                <source>Automatic translation incomplete</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.emptyResult.message">
+                <source>The translation service returned no usable result for: %s. Please try again or translate the element manually.</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.queued.title">
+                <source>Automatic translation started</source>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.queued.message">
+                <source>The content element is being translated in the background into: %s. The translation is applied once it is ready and this page is opened in the page module.</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.translation.noTranslatableFields">

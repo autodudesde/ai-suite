@@ -80,7 +80,13 @@ class AiSuiteController extends AbstractBackendController
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
         $this->initialize($request);
-        $this->aiSuiteContext->sessionService->handleRedirectBySessionRoute();
+        $this->aiSuiteContext->sessionService->handleRedirectBySessionRoute([
+            'ai_suite_workflow_pages_prepare',
+            'ai_suite_workflow_filereferences_prepare',
+            'ai_suite_workflow_pages_translation_prepare',
+            'ai_suite_global_instructions',
+            'ai_suite_prompt_manage_customprompttemplates',
+        ]);
 
         return $this->dashboardAction();
     }
@@ -128,7 +134,15 @@ class AiSuiteController extends AbstractBackendController
                     'managePromptTemplates' => $backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button'),
                     'createPagetree' => $backendUserService->checkPermissions('tx_aisuite_features:enable_pages_generation'),
                     'agencySection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_agency'),
+                    // The same three flags the button bar checks, so a card never offers a module
+                    // the navigation refuses to show.
+                    'auditSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_audit'),
+                    'statisticsSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_statistics'),
+                    'provenanceSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_provenance_overview'),
                 ],
+                // Built here rather than in the template: the backend URI ViewHelpers differ between
+                // the majors this extension has to run on.
+                'aboutUri' => (string) $this->uriBuilder->buildUriFromRoute('web_aisuite.about'),
             ]);
             BackendUtility::setUpdateSignal('updateTopbar');
         } catch (\Throwable $e) {

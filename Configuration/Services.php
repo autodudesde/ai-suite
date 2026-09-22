@@ -19,15 +19,19 @@ use AutoDudes\AiSuite\Controller\CliOverviewController;
 use AutoDudes\AiSuite\Controller\Decorator\Page\LocalizationController;
 use AutoDudes\AiSuite\Controller\Decorator\RecordList\DatabaseRecordList;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
-use AutoDudes\AiSuite\EventListener\LoadCreditsToolbarListener;
 use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
+use AutoDudes\AiSuite\Hooks\ProvenanceHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
+use AutoDudes\AiSuite\Preview\ProvenancePreviewRenderer;
 use AutoDudes\AiSuite\Providers\PagesContextMenuProvider;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
+use AutoDudes\AiSuite\Service\ProvenanceCaptureService;
+use AutoDudes\AiSuite\Service\ProvenanceService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
+use AutoDudes\AiSuite\Tca\ScopeItemsProcFunc;
 use AutoDudes\AiSuite\Widgets\Provider\AuditScoreDistributionDataProvider;
 use B13\Container\Service\RecordLocalizeSummaryModifier;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -35,8 +39,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
 use Symfony\Component\Filesystem\Filesystem;
-use TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent;
-use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
@@ -70,6 +72,10 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public()
     ;
 
+    $services->set(ScopeItemsProcFunc::class)
+        ->public()
+    ;
+
     $containerBuilder->addCompilerPass(new class implements CompilerPassInterface {
         public function process(ContainerBuilder $container): void
         {
@@ -77,7 +83,7 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
                 $extConfig = GeneralUtility::makeInstance(ExtensionConfiguration::class)
                     ->get('ai_suite')
                 ;
-                $disableTranslationFunctionality = array_key_exists('disableTranslationFunctionality', $extConfig) && !empty($extConfig['disableTranslationFunctionality']) && true === $extConfig['disableTranslationFunctionality'];
+                $disableTranslationFunctionality = (bool) ($extConfig['disableTranslationFunctionality'] ?? false);
             } catch (Throwable $e) {
                 $disableTranslationFunctionality = false;
             }
@@ -109,6 +115,18 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->set(AutoTranslationHook::class)
         ->public()
     ;
+    $services->set(ProvenanceHook::class)
+        ->public()
+    ;
+    $services->set(ProvenanceService::class)
+        ->public()
+    ;
+    $services->set(ProvenanceCaptureService::class)
+        ->public()
+    ;
+    $services->set(ProvenancePreviewRenderer::class)
+        ->public()
+    ;
 
     $services->set(MetadataService::class)
         ->public()
@@ -138,15 +156,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         ->public()
     ;
 
-    $services->set(LoadCreditsToolbarListener::class)
-        ->tag('event.listener', [
-            'identifier' => 'ai-suite/credits-toolbar',
-            'event' => AfterBackendPageRenderEvent::class,
-        ])
-    ;
-
-    // Dashboard-Widget NUR registrieren, wenn typo3/cms-dashboard installiert
-    // ist — in Kundenprojekten ohne Dashboard: stiller Skip, kein Log-Eintrag.
     if (interface_exists(ChartDataProviderInterface::class)) {
         $services->set(AuditScoreDistributionDataProvider::class);
         $services->set('dashboard.widget.aiSuiteAuditScores')

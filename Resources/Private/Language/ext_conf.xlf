@@ -18,6 +18,9 @@
             <trans-unit id="category.general" resname="category.general">
                 <source>General</source>
             </trans-unit>
+            <trans-unit id="category.aiAct" resname="category.aiAct">
+                <source>EU AI Act</source>
+            </trans-unit>
             <trans-unit id="subcategory.license" resname="subcategory.license">
                 <source>License</source>
             </trans-unit>
@@ -55,7 +58,10 @@
                 <source>Background tasks</source>
             </trans-unit>
             <trans-unit id="subcategory.audit" resname="subcategory.audit">
-                <source>Accessibility audit</source>
+                <source>Audits</source>
+            </trans-unit>
+            <trans-unit id="subcategory.provenance" resname="subcategory.provenance">
+                <source>Marking of AI-written content</source>
             </trans-unit>
             <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
                 <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
@@ -71,9 +77,6 @@
             </trans-unit>
             <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
-            </trans-unit>
-            <trans-unit id="updateDeeplGlossaries" resname="updateDeeplGlossaries">
-                <source>Update DeepL glossaries</source>
             </trans-unit>
             <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
                 <source>Use the following library for "Einfache Sprache" translations</source>
@@ -123,6 +126,9 @@
             <trans-unit id="aiModelHubApiKey" resname="aiModelHubApiKey">
                 <source>Enter your AI Model Hub API key (IONOS, also used for Flux)</source>
             </trans-unit>
+            <trans-unit id="mittwaldAiModelHubApiKey" resname="mittwaldAiModelHubApiKey">
+                <source>Enter your Mittwald AI Model Hub API key (Mittwald models)</source>
+            </trans-unit>
             <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
                 <source>Enable Basic Authentication</source>
             </trans-unit>
@@ -152,6 +158,15 @@
             </trans-unit>
             <trans-unit id="forceGdpa" resname="forceGdpa">
                 <source>Only load GDPR-compliant libraries (restricts available AI models to libraries marked as GDPR-compliant on the AI Suite server)</source>
+            </trans-unit>
+            <trans-unit id="provenanceTracking" resname="provenanceTracking">
+                <source>Record which records were written by an AI feature (EU AI Act Art. 50(2) evidence, and the basis for the badges in the backend)</source>
+            </trans-unit>
+            <trans-unit id="provenanceDiscloseTranslations" resname="provenanceDiscloseTranslations">
+                <source>Disclose AI translations as AI-generated as well (recorded either way; a faithful translation arguably preserves the semantics and is exempt)</source>
+            </trans-unit>
+            <trans-unit id="provenanceShowLabels" resname="provenanceShowLabels">
+                <source>Show the AI marking in the backend (badge in the page module, notice in the file metadata). Off keeps recording and the machine-readable image marking, it only stops labelling what editors see.</source>
             </trans-unit>
             <trans-unit id="maxTasks" resname="maxTasks">
                 <source>Maximum number of CLI background tasks processed per scheduler run (default 50)</source>

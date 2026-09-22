@@ -1,5 +1,7 @@
 <?php
 
+use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
+
 /*
  *
  * This file is part of the "ai_suite_server" Extension for TYPO3 CMS.
@@ -136,7 +138,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
                 'items' => [],
-                'itemsProcFunc' => AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc::class.'->getTypeItems',
+                'itemsProcFunc' => PromptTemplateTypeItemsProcFunc::class.'->getTypeItems',
                 'size' => 3,
                 'eval' => 'trim',
                 'default' => '',

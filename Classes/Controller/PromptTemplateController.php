@@ -17,7 +17,10 @@ namespace AutoDudes\AiSuite\Controller;
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
 use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
+use AutoDudes\AiSuite\Service\TcaSelectLabelService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -46,6 +49,9 @@ class PromptTemplateController extends AbstractBackendController
         AiSuiteContext $aiSuiteContext,
         protected readonly CustomPromptTemplateRepository $customPromptTemplateRepository,
         protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
+        protected readonly TcaSelectLabelService $tcaSelectLabelService,
+        protected readonly PromptTemplateScopeService $promptTemplateScopeService,
         protected readonly LoggerInterface $logger,
     ) {
         parent::__construct(
@@ -112,7 +118,14 @@ class PromptTemplateController extends AbstractBackendController
             $parsedBody = (array) $this->request->getParsedBody();
             $search = $parsedBody['search'] ?? '';
             $customPromptTemplates = $this->customPromptTemplateRepository->findByAllowedMounts($allowedMounts, $search);
+            $scopeItems = $this->tcaCompatibilityService->getFieldItems('tx_aisuite_domain_model_custom_prompt_template', 'scope');
             foreach ($customPromptTemplates as $key => $customPromptTemplate) {
+                $scope = (string) ($customPromptTemplate['scope'] ?? '');
+                $customPromptTemplates[$key]['scopeLabel'] = $this->tcaSelectLabelService->label($scopeItems, $scope);
+                $customPromptTemplates[$key]['typeLabel'] = $this->tcaSelectLabelService->labelList(
+                    $this->promptTemplateScopeService->getTypeItems($scope),
+                    (string) ($customPromptTemplate['type'] ?? '')
+                );
                 if ($sites instanceof NullSite) {
                     $customPromptTemplates[$key]['flag'] = '';
                 } else {

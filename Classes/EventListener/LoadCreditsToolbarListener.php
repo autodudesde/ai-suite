@@ -16,8 +16,13 @@ namespace AutoDudes\AiSuite\EventListener;
 
 use AutoDudes\AiSuite\Service\BackendUserService;
 use TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent;
+use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Page\PageRenderer;
 
+#[AsEventListener(
+    identifier: 'tx-ai-suite/credits-toolbar',
+    event: AfterBackendPageRenderEvent::class,
+)]
 final class LoadCreditsToolbarListener
 {
     public function __construct(

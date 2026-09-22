@@ -9,6 +9,9 @@
             <trans-unit id="aiSuite.beGroups.field.aiModelHubApiKey">
                 <source>Group specific AI Model Hub API key (IONOS, also used for Flux)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.mittwaldAiModelHubApiKey">
+                <source>Group specific Mittwald AI Model Hub API key</source>
+            </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
                 <source>Group specific Anthropic/Claude API key</source>
             </trans-unit>
@@ -311,7 +314,7 @@
                 <source>Metadata (Files)</source>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
-                <source>ContentElementsw</source>
+                <source>ContentElements</source>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.editContent">
                 <source>RTE Content Editing</source>
@@ -377,6 +380,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAuditDescription">
                 <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableProvenanceOverview" resname="aiSuite.permissions.enableProvenanceOverview">
+                <source>AI content overview</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableProvenanceOverviewDescription" resname="aiSuite.permissions.enableProvenanceOverviewDescription">
+                <source>Access to the list of records written by an AI feature, including the option to mark a text as editorially reviewed.</source>
             </trans-unit>
         </body>
     </file>

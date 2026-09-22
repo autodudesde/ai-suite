@@ -69,6 +69,7 @@ class SendRequestService
         protected readonly LoggerInterface $logger,
         protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
         protected readonly SystemDomainResolver $systemDomainResolver,
+        protected readonly ProvenanceCaptureService $provenanceCapture,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
@@ -76,7 +77,7 @@ class SendRequestService
     public function sendRequest(ServerRequest $serverRequest): ClientAnswer
     {
         if (empty($this->extConf['aiSuiteApiKey'])) {
-            $this->logger->info('AI Suite request skipped: no API key configured');
+            $this->logger->warning('AI Suite request skipped: no API key configured');
 
             return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.apiKeyMissing.message'), 'missingApiKey');
         }
@@ -211,6 +212,10 @@ class SendRequestService
         );
         if ('Error' === $answer->getType()) {
             return $answer;
+        }
+        $provenance = $answer->getResponseData()['provenance'] ?? null;
+        if (is_array($provenance)) {
+            $this->provenanceCapture->refineModel((string) ($provenance['model'] ?? ''));
         }
         if (array_key_exists('free_requests', $answer->getResponseData())
             && array_key_exists('paid_requests', $answer->getResponseData())

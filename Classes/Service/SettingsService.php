@@ -28,6 +28,7 @@ class SettingsService implements SingletonInterface
         'deeplApiKey',
         'midjourneyApiKey',
         'aiModelHubApiKey',
+        'mittwaldAiModelHubApiKey',
         'staanApiKey',
         'basicAuth.pass',
     ];
