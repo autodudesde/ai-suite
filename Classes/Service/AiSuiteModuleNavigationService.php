@@ -83,6 +83,12 @@ class AiSuiteModuleNavigationService implements SingletonInterface
             'permission' => 'tx_aisuite_features:enable_statistics',
             'icon' => 'content-widget-chart-bar',
         ],
+        [
+            'route' => 'web_aisuite.provenance',
+            'labelKey' => 'module:aiSuite.module.actionmenu.provenance',
+            'permission' => 'tx_aisuite_features:enable_provenance_overview',
+            'icon' => 'actions-list-alternative',
+        ],
     ];
 
     public function __construct(

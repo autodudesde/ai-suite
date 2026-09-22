@@ -1,0 +1,71 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+    <div class="row">
+        <div class="col-12 col-xl-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-info" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.title"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.intro"/></p>
+                    <address class="mb-3">
+                        <strong>{provider.name}</strong><br />
+                        {provider.street}<br />
+                        {provider.city}<br />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.phone"/>
+                        {provider.phone}<br />
+                        <a href="mailto:{provider.email}">{provider.email}</a>
+                    </address>
+                    <div class="btn-group gap-3 flex-wrap" role="group">
+                        <a href="{provider.website}" target="_blank" rel="noopener" class="btn btn-default">
+                            <core:icon identifier="actions-link" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.website"/>
+                        </a>
+                        <a href="{provider.imprint}" target="_blank" rel="noopener" class="btn btn-default">
+                            <core:icon identifier="actions-document-view" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.imprint"/>
+                        </a>
+                        <a href="{provider.privacy}" target="_blank" rel="noopener" class="btn btn-default">
+                            <core:icon identifier="actions-lock" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.privacy"/>
+                        </a>
+                        <a href="{provider.documentation}" target="_blank" rel="noopener" class="btn btn-default">
+                            <core:icon identifier="actions-book" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.provider.documentation"/>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <label class="panel-title fw-bold">
+                        <core:icon identifier="actions-check" />
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.title"/>
+                    </label>
+                </div>
+                <div class="panel-body">
+                    <p><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.provider"/></p>
+                    <p><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.deployer"/></p>
+                    <p class="mb-0">
+                        <f:if condition="{provenanceTracking}">
+                            <f:then><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.trackingOn"/></f:then>
+                            <f:else><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.trackingOff"/></f:else>
+                        </f:if>
+                        <f:if condition="{disclosesTranslations}">
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.about.roles.translationsDisclosed"/>
+                        </f:if>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</f:section>
+</html>

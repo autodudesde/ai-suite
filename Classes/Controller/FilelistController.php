@@ -70,9 +70,11 @@ final class FilelistController extends AbstractBackendController
 
         switch ($identifier) {
             case 'ai_suite_workflow_filelist_files_prepare':
+            case 'files_aisuite.files_prepare':
                 return $this->indexAction();
 
             case 'ai_suite_workflow_filelist_files_translate_prepare':
+            case 'files_aisuite.files_translate_prepare':
                 return $this->translateIndexAction();
 
             default:

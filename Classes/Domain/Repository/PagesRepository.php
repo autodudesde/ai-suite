@@ -24,7 +24,9 @@ use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\EndTimeRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\StartTimeRestriction;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\StringUtility;
 
 class PagesRepository extends AbstractRepository
 {
@@ -69,13 +71,35 @@ class PagesRepository extends AbstractRepository
         ;
     }
 
+    /**
+     * Through the DataHandler, not a raw insert.
+     *
+     * The raw insert bypassed the TCA defaults, the slug generation and the permission check — and
+     * the provenance hook with them, so a generated page tree was the one AI feature the register
+     * could never see. Only the editorial fields are handed over; permissions, timestamps and the
+     * slug are the DataHandler's to set.
+     *
+     * @return string the uid of the new page, empty when the DataHandler refused it
+     */
     public function addPage(Pages $page): string
     {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $queryBuilder->insert($this->table)->values($page->toDatabase());
-        $queryBuilder->executeStatement();
+        $fields = array_intersect_key($page->toDatabase(), array_flip([
+            'pid',
+            'title',
+            'doktype',
+            'hidden',
+            'nav_hide',
+            'seo_title',
+            'description',
+            'is_siteroot',
+        ]));
 
-        return $queryBuilder->getConnection()->lastInsertId();
+        $placeholder = StringUtility::getUniqueId('NEW');
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start(['pages' => [$placeholder => $fields]], []);
+        $dataHandler->process_datamap();
+
+        return (string) ($dataHandler->substNEWwithIDs[$placeholder] ?? '');
     }
 
     /**
@@ -547,7 +571,7 @@ class PagesRepository extends AbstractRepository
         $queryBuilder->getRestrictions()->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
         ;
-        $this->addWorkspaceRestriction($queryBuilder);
+        $this->addWorkspaceRestriction($queryBuilder, true);
         $searchTerm = '%'.$queryBuilder->escapeLikeWildcards($query).'%';
 
         $likes = array_map(

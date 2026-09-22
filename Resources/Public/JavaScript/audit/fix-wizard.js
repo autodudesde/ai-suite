@@ -8,6 +8,7 @@ import LibrarySelection from "@autodudes/ai-suite/helper/library-selection.js";
 class FixWizard {
     constructor() {
         this.addEventListeners();
+        this.addGroupToggleListeners();
         this.addMoreInfoListeners();
         this.addAdviceListeners();
         this.addCandidatesListeners();
@@ -52,7 +53,6 @@ class FixWizard {
                     button.textContent = TYPO3.lang['aiSuite.module.audit.candidates.button'];
                     return;
                 }
-                // the cached view renders the candidates table server-side
                 window.location.href = button.dataset.cachedUrl;
             });
         });
@@ -150,7 +150,6 @@ class FixWizard {
                     return;
                 }
                 if (modal.querySelector('#authorboxSaveAuthor').checked) {
-                    // expliziter Opt-in: Name zusaetzlich als Seiten-Autor speichern
                     await Ajax.sendAjaxRequest('aisuite_audit_authorbox_save_author', { pageId: pageId, name: facts.name });
                 }
                 MultiStepWizard.unlockNextStep().trigger('click');
@@ -228,9 +227,23 @@ class FixWizard {
         document.querySelectorAll('.audit-more-info-btn').forEach(function (button) {
             button.addEventListener('click', function (ev) {
                 ev.preventDefault();
-                const row = document.querySelector('tr.audit-more-info[data-issue-id="' + CSS.escape(button.dataset.issueId) + '"]');
-                if (row !== null) {
-                    row.style.display = row.style.display === 'none' ? '' : 'none';
+                const details = document.getElementById(button.getAttribute('aria-controls') || '');
+                if (details !== null) {
+                    details.hidden = !details.hidden;
+                    button.setAttribute('aria-expanded', details.hidden ? 'false' : 'true');
+                }
+            });
+        });
+    }
+
+    addGroupToggleListeners() {
+        document.querySelectorAll('.aisuite-audit-group-toggle').forEach(function (button) {
+            button.addEventListener('click', function (ev) {
+                ev.preventDefault();
+                const body = document.getElementById(button.getAttribute('aria-controls') || '');
+                if (body !== null) {
+                    body.hidden = !body.hidden;
+                    button.setAttribute('aria-expanded', body.hidden ? 'false' : 'true');
                 }
             });
         });
@@ -254,7 +267,7 @@ class FixWizard {
                     button.textContent = TYPO3.lang['aiSuite.module.audit.fix.advice.button'];
                     return;
                 }
-                const container = button.closest('.audit-advice');
+                const container = button.closest('.aisuite-audit-finding').querySelector('.audit-advice');
                 const title = document.createElement('p');
                 title.className = 'mb-1 fw-bold';
                 title.textContent = TYPO3.lang['aiSuite.module.audit.fix.advice.title'];
@@ -393,6 +406,7 @@ class FixWizard {
                 uid: item.uid,
                 pageId: state.pageId,
                 auditType: state.auditType,
+                textAiModel: state.textAiModel,
                 values: JSON.stringify(values),
                 markFixedIssueIds: JSON.stringify(self.lastOfIssueIds(state, state.index)),
             });
@@ -416,7 +430,6 @@ class FixWizard {
         });
     }
 
-    // an issue counts as fixed once its last queue item was saved
     lastOfIssueIds(state, index) {
         const issueIds = state.queue[index].issueIds || [];
         return issueIds.filter(function (issueId) {
@@ -457,22 +470,23 @@ class FixWizard {
             return;
         }
         issueIds.forEach(function (issueId) {
-            document.querySelectorAll('tr[data-issue-id]').forEach(function (row) {
-                if (row.dataset.issueId !== issueId) {
+            document.querySelectorAll('.aisuite-audit-finding[data-issue-id]').forEach(function (finding) {
+                if (finding.dataset.issueId !== issueId) {
                     return;
                 }
-                row.querySelector('.audit-fix-btn')?.remove();
-                if (row.querySelector('.audit-fixed-badge') === null) {
+                finding.querySelector('.audit-fix-btn')?.remove();
+                const actions = finding.querySelector('.aisuite-audit-finding__actions');
+                if (actions !== null && finding.querySelector('.audit-fixed-badge') === null) {
                     const badge = document.createElement('span');
                     badge.className = 'badge badge-success audit-fixed-badge';
                     badge.textContent = TYPO3.lang['aiSuite.module.audit.fix.fixed'];
-                    row.lastElementChild.append(badge);
+                    actions.prepend(badge);
                 }
             });
         });
         const hint = document.querySelector('#auditFixRerunHint');
         if (hint !== null) {
-            hint.style.display = '';
+            hint.hidden = false;
         }
     }
 }

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:ai_suite/Resources/Private/Language/ext_conf.xlf" date="2026-09-14T12:00:00Z" product-name="ai_suite">
+        <header/>
+        <body>
+            <trans-unit id="category.license" resname="category.license">
+                <source>License &amp; server</source>
+                <target>Lizenz &amp; Server</target>
+            </trans-unit>
+            <trans-unit id="category.keys" resname="category.keys">
+                <source>Own API keys</source>
+                <target>Eigene API-Schlüssel</target>
+            </trans-unit>
+            <trans-unit id="category.translation" resname="category.translation">
+                <source>Translation</source>
+                <target>Übersetzung</target>
+            </trans-unit>
+            <trans-unit id="category.metadata" resname="category.metadata">
+                <source>Metadata</source>
+                <target>Metadaten</target>
+            </trans-unit>
+            <trans-unit id="category.general" resname="category.general">
+                <source>General</source>
+                <target>Allgemein</target>
+            </trans-unit>
+            <trans-unit id="category.aiAct" resname="category.aiAct">
+                <source>EU AI Act</source>
+                <target>EU AI Act</target>
+            </trans-unit>
+            <trans-unit id="subcategory.license" resname="subcategory.license">
+                <source>License</source>
+                <target>Lizenz</target>
+            </trans-unit>
+            <trans-unit id="subcategory.basicAuth" resname="subcategory.basicAuth">
+                <source>HTTP basic auth</source>
+                <target>HTTP-Basic-Auth</target>
+            </trans-unit>
+            <trans-unit id="subcategory.keysText" resname="subcategory.keysText">
+                <source>Text models</source>
+                <target>Textmodelle</target>
+            </trans-unit>
+            <trans-unit id="subcategory.keysTranslation" resname="subcategory.keysTranslation">
+                <source>Translation services</source>
+                <target>Übersetzungsdienste</target>
+            </trans-unit>
+            <trans-unit id="subcategory.keysImage" resname="subcategory.keysImage">
+                <source>Image models</source>
+                <target>Bildmodelle</target>
+            </trans-unit>
+            <trans-unit id="subcategory.translation" resname="subcategory.translation">
+                <source>Translation</source>
+                <target>Übersetzung</target>
+            </trans-unit>
+            <trans-unit id="subcategory.autoTranslation" resname="subcategory.autoTranslation">
+                <source>Automatic translation on save</source>
+                <target>Automatische Übersetzung beim Speichern</target>
+            </trans-unit>
+            <trans-unit id="subcategory.metadata" resname="subcategory.metadata">
+                <source>Metadata generation</source>
+                <target>Metadatengenerierung</target>
+            </trans-unit>
+            <trans-unit id="subcategory.metadataUpload" resname="subcategory.metadataUpload">
+                <source>Automatic generation on file upload</source>
+                <target>Automatische Generierung beim Datei-Upload</target>
+            </trans-unit>
+            <trans-unit id="subcategory.mediaStorage" resname="subcategory.mediaStorage">
+                <source>Media storage</source>
+                <target>Medienablage</target>
+            </trans-unit>
+            <trans-unit id="subcategory.dataProtection" resname="subcategory.dataProtection">
+                <source>Data protection</source>
+                <target>Datenschutz</target>
+            </trans-unit>
+            <trans-unit id="subcategory.backgroundTasks" resname="subcategory.backgroundTasks">
+                <source>Background tasks</source>
+                <target>Hintergrundaufgaben</target>
+            </trans-unit>
+            <trans-unit id="subcategory.audit" resname="subcategory.audit">
+                <source>Audits</source>
+                <target>Audits</target>
+            </trans-unit>
+            <trans-unit id="subcategory.provenance" resname="subcategory.provenance">
+                <source>Marking of AI-written content</source>
+                <target>Kennzeichnung KI-geschriebener Inhalte</target>
+            </trans-unit>
+            <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
+                <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
+                <target>AI Suite Lizenzschlüssel: Trage deinen generierten API-Schlüssel ein oder erzeuge unter https://www.autodudes.de/ einen neuen</target>
+            </trans-unit>
+            <trans-unit id="aiSuiteServer" resname="aiSuiteServer">
+                <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
+                <target>AI Suite Server: Trage die URL ein, unter der der AI Suite Server erreichbar ist (Standard: https://api.autodudes.de/)</target>
+            </trans-unit>
+            <trans-unit id="aiSuiteSystemDomain" resname="aiSuiteSystemDomain">
+                <source>System domain: Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available. Leave empty to auto-detect it from the site configuration.</source>
+                <target>System-Domain: Domain, für die diese Installation lizenziert ist. Wird für CLI- und Cron-Läufe gebraucht, in denen kein HTTP-Host verfügbar ist. Leer lassen, um sie automatisch aus der Site-Konfiguration zu ermitteln.</target>
+            </trans-unit>
+            <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
+                <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
+                <target>Bild- und Mediendateien in diesem Ordner ablegen (z. B. ai-images/subfolder oder ein kombinierter Bezeichner wie 1:/user_upload/ai-images). Existiert der Ordner nicht, wird er angelegt.</target>
+            </trans-unit>
+            <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
+                <source>Translate FlexForm fields</source>
+                <target>FlexForm-Felder übersetzen</target>
+            </trans-unit>
+            <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
+                <source>Use the following library for "Einfache Sprache" translations</source>
+                <target>Folgende Bibliothek für Übersetzungen in „Einfache Sprache“ verwenden</target>
+            </trans-unit>
+            <trans-unit id="disableTranslationFunctionality" resname="disableTranslationFunctionality">
+                <source>Disable whole translation functionality (USE WITH CAUTION!)</source>
+                <target>Gesamte Übersetzungsfunktion deaktivieren (MIT VORSICHT VERWENDEN!)</target>
+            </trans-unit>
+            <trans-unit id="enableAutoTranslateOnSave" resname="enableAutoTranslateOnSave">
+                <source>Automatically translate content elements into all site languages on save</source>
+                <target>Inhaltselemente beim Speichern automatisch in alle Sprachen der Site übersetzen</target>
+            </trans-unit>
+            <trans-unit id="autoTranslateMode" resname="autoTranslateMode">
+                <source>Processing mode for automatic translation: "Page module" applies finished translations when opening the page module (status shown in page tree), "CLI scheduler" needs the ai-suite:process-tasks command running, "Directly on save" translates synchronously (blocks save, only for few languages)</source>
+                <target>Verarbeitungsmodus für die automatische Übersetzung: „Page module“ übernimmt fertige Übersetzungen beim Öffnen des Seitenmoduls (Status im Seitenbaum), „CLI scheduler“ setzt den laufenden Befehl ai-suite:process-tasks voraus, „Directly on save“ übersetzt synchron (blockiert das Speichern, nur für wenige Sprachen)</target>
+            </trans-unit>
+            <trans-unit id="autoTranslateModel" resname="autoTranslateModel">
+                <source>Model used for automatic translation on save</source>
+                <target>Modell für die automatische Übersetzung beim Speichern</target>
+            </trans-unit>
+            <trans-unit id="autoTranslateMaxElementsPerSave" resname="autoTranslateMaxElementsPerSave">
+                <source>Safety cap: maximum number of content elements a single save may auto-translate. If a save changes more elements (e.g. bulk edit), automatic translation is skipped for that save and the editor is notified. 0 = no limit. Default 15</source>
+                <target>Sicherheitsgrenze: maximale Anzahl an Inhaltselementen, die ein einzelner Speichervorgang automatisch übersetzen darf. Ändert ein Speichervorgang mehr Elemente (z. B. bei einer Massenbearbeitung), wird die automatische Übersetzung für diesen Vorgang übersprungen und die Redaktion benachrichtigt. 0 = keine Grenze. Standard 15</target>
+            </trans-unit>
+            <trans-unit id="metadataSuggestionCount" resname="metadataSuggestionCount">
+                <source>Amount of metadata suggestions to be displayed (default 5)</source>
+                <target>Anzahl der angezeigten Metadaten-Vorschläge (Standard 5)</target>
+            </trans-unit>
+            <trans-unit id="openAiApiKey" resname="openAiApiKey">
+                <source>Enter your OpenAI API key</source>
+                <target>Trage deinen OpenAI-API-Schlüssel ein</target>
+            </trans-unit>
+            <trans-unit id="anthropicApiKey" resname="anthropicApiKey">
+                <source>Enter your Anthropic API key</source>
+                <target>Trage deinen Anthropic-API-Schlüssel ein</target>
+            </trans-unit>
+            <trans-unit id="staanApiKey" resname="staanApiKey">
+                <source>Enter your Staan API key. Only needed on a plan that runs on your own provider keys, and only for web research under GDPR mode.</source>
+                <target>Trage deinen Staan-API-Schlüssel ein. Nur nötig bei einem Tarif, der mit deinen eigenen Anbieter-Schlüsseln läuft, und nur für die Web-Recherche im DSGVO-Modus.</target>
+            </trans-unit>
+            <trans-unit id="googleTranslateApiKey" resname="googleTranslateApiKey">
+                <source>Enter your GoogleTranslate API key</source>
+                <target>Trage deinen Google-Translate-API-Schlüssel ein</target>
+            </trans-unit>
+            <trans-unit id="deeplApiKey" resname="deeplApiKey">
+                <source>Enter your DeepL API key</source>
+                <target>Trage deinen DeepL-API-Schlüssel ein</target>
+            </trans-unit>
+            <trans-unit id="deeplApiMode" resname="deeplApiMode">
+                <source>Free version of DeepL API</source>
+                <target>Kostenlose Version der DeepL-API</target>
+            </trans-unit>
+            <trans-unit id="midjourneyApiKey" resname="midjourneyApiKey">
+                <source>Enter your Midjourney API key</source>
+                <target>Trage deinen Midjourney-API-Schlüssel ein</target>
+            </trans-unit>
+            <trans-unit id="midjourneyId" resname="midjourneyId">
+                <source>Enter your Midjourney ID</source>
+                <target>Trage deine Midjourney-ID ein</target>
+            </trans-unit>
+            <trans-unit id="aiModelHubApiKey" resname="aiModelHubApiKey">
+                <source>Enter your AI Model Hub API key (IONOS, also used for Flux)</source>
+                <target>Trage deinen AI Model Hub API-Schlüssel ein (IONOS, auch für Flux)</target>
+            </trans-unit>
+            <trans-unit id="mittwaldAiModelHubApiKey" resname="mittwaldAiModelHubApiKey">
+                <source>Enter your Mittwald AI Model Hub API key (Mittwald models)</source>
+                <target>Trage deinen Mittwald AI Model Hub API-Schlüssel ein (Mittwald-Modelle)</target>
+            </trans-unit>
+            <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
+                <source>Enable Basic Authentication</source>
+                <target>Basic Authentication aktivieren</target>
+            </trans-unit>
+            <trans-unit id="basicAuthUser" resname="basicAuthUser">
+                <source>Username</source>
+                <target>Benutzername</target>
+            </trans-unit>
+            <trans-unit id="basicAuthPass" resname="basicAuthPass">
+                <source>Password</source>
+                <target>Passwort</target>
+            </trans-unit>
+            <trans-unit id="metadataAutogenerateTitle" resname="metadataAutogenerateTitle">
+                <source>Generate image titles automatically on file upload</source>
+                <target>Bildtitel beim Datei-Upload automatisch generieren</target>
+            </trans-unit>
+            <trans-unit id="metadataAutogenerateAlternative" resname="metadataAutogenerateAlternative">
+                <source>Generate alternative text automatically on file upload</source>
+                <target>Alternativtext beim Datei-Upload automatisch generieren</target>
+            </trans-unit>
+            <trans-unit id="metadataAutogenerateModel" resname="metadataAutogenerateModel">
+                <source>Use the following library for autogenerated metadata generation on file upload (default "Vision")</source>
+                <target>Folgende Bibliothek für die automatische Metadatengenerierung beim Datei-Upload verwenden (Standard „Vision“)</target>
+            </trans-unit>
+            <trans-unit id="metadataAutogenerateApproach" resname="metadataAutogenerateApproach">
+                <source>How to handle autogenerated file metadata? (default "Add generated suggestions to TaskEngine")</source>
+                <target>Wie sollen automatisch generierte Datei-Metadaten behandelt werden? (Standard „Add generated suggestions to TaskEngine“)</target>
+            </trans-unit>
+            <trans-unit id="metadataAutogeneratePrompt" resname="metadataAutogeneratePrompt">
+                <source>Own prompt for autogenerated file metadata on upload. Replaces the predefined instruction, leave empty to keep it.</source>
+                <target>Eigener Prompt für automatisch generierte Datei-Metadaten beim Upload. Ersetzt die vordefinierte Anweisung, leer lassen, um sie beizubehalten.</target>
+            </trans-unit>
+            <trans-unit id="minPlausiblePageContentLength" resname="minPlausiblePageContentLength">
+                <source>Minimum number of characters of fetched page content required before it is sent to the AI for metadata generation (default 100)</source>
+                <target>Mindestanzahl an Zeichen des abgerufenen Seiteninhalts, bevor er zur Metadatengenerierung an die KI gesendet wird (Standard 100)</target>
+            </trans-unit>
+            <trans-unit id="forceGdpa" resname="forceGdpa">
+                <source>Only load GDPR-compliant libraries (restricts available AI models to libraries marked as GDPR-compliant on the AI Suite server)</source>
+                <target>Nur DSGVO-konforme Bibliotheken laden (beschränkt die verfügbaren KI-Modelle auf Bibliotheken, die auf dem AI Suite Server als DSGVO-konform gekennzeichnet sind)</target>
+            </trans-unit>
+            <trans-unit id="provenanceTracking" resname="provenanceTracking">
+                <source>Record which records were written by an AI feature (EU AI Act Art. 50(2) evidence, and the basis for the badges in the backend)</source>
+                <target>Festhalten, welche Datensätze von einer KI-Funktion geschrieben wurden (Nachweis nach EU AI Act Art. 50(2) und Grundlage für die Badges im Backend)</target>
+            </trans-unit>
+            <trans-unit id="provenanceDiscloseTranslations" resname="provenanceDiscloseTranslations">
+                <source>Disclose AI translations as AI-generated as well (recorded either way; a faithful translation arguably preserves the semantics and is exempt)</source>
+                <target>KI-Übersetzungen ebenfalls als KI-generiert kennzeichnen (erfasst werden sie in jedem Fall; eine getreue Übersetzung erhält wohl die Bedeutung und ist dann ausgenommen)</target>
+            </trans-unit>
+            <trans-unit id="provenanceShowLabels" resname="provenanceShowLabels">
+                <source>Show the AI marking in the backend (badge in the page module, notice in the file metadata). Off keeps recording and the machine-readable image marking, it only stops labelling what editors see.</source>
+                <target>KI-Kennzeichnung im Backend anzeigen (Badge im Seitenmodul, Hinweis in den Datei-Metadaten). Ausgeschaltet bleiben die Erfassung und die maschinenlesbare Bildkennzeichnung erhalten, nur die sichtbare Kennzeichnung für die Redaktion entfällt.</target>
+            </trans-unit>
+            <trans-unit id="maxTasks" resname="maxTasks">
+                <source>Maximum number of CLI background tasks processed per scheduler run (default 50)</source>
+                <target>Maximale Anzahl an CLI-Hintergrundaufgaben pro Scheduler-Lauf (Standard 50)</target>
+            </trans-unit>
+            <trans-unit id="auditWcagStandard" resname="auditWcagStandard">
+                <source>WCAG conformance level for accessibility audits (HTML_CodeSniffer runner; the axe runner checks its own rule set). Default: WCAG 2 Level AA</source>
+                <target>WCAG-Konformitätsstufe für Barrierefreiheits-Audits (HTML_CodeSniffer-Runner; der axe-Runner prüft seinen eigenen Regelsatz). Standard: WCAG 2 Level AA</target>
+            </trans-unit>
+            <trans-unit id="auditDefaultTextModel" resname="auditDefaultTextModel">
+                <source>Default AI model for audit analyses (model identifier, e.g. "Anthropic"). If set, the model selection on the audit form is skipped; leave empty to let editors choose per run.</source>
+                <target>Standard-KI-Modell für Audit-Analysen (Modellbezeichner, z. B. „Anthropic“). Ist es gesetzt, entfällt die Modellauswahl im Audit-Formular; leer lassen, damit die Redaktion pro Lauf wählt.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

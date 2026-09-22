@@ -53,10 +53,10 @@ class AbstractRepository
         return $this->selectQuery('uid', $uid);
     }
 
-    protected function addWorkspaceRestriction(QueryBuilder $queryBuilder): void
+    protected function addWorkspaceRestriction(QueryBuilder $queryBuilder, bool $includeAllVersionedRecords = false): void
     {
         $queryBuilder->getRestrictions()->add(
-            GeneralUtility::makeInstance(WorkspaceRestriction::class, $this->workspaceContextService->getWorkspaceId()),
+            GeneralUtility::makeInstance(WorkspaceRestriction::class, $this->workspaceContextService->getWorkspaceId(), $includeAllVersionedRecords),
         );
     }
 

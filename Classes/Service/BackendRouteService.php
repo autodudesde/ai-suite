@@ -24,4 +24,18 @@ class BackendRouteService implements SingletonInterface
     {
         return $this->typo3Version->getMajorVersion() >= 14 ? 'records' : 'web_list';
     }
+
+    /**
+     * @return array<string, int|list<int>>
+     */
+    public function getPageModuleLanguageParams(int $languageUid): array
+    {
+        if ($languageUid <= 0) {
+            return [];
+        }
+
+        return $this->typo3Version->getMajorVersion() >= 14
+            ? ['viewMode' => 1, 'languages' => [$languageUid]]
+            : ['function' => 1, 'language' => $languageUid];
+    }
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Localization\Handler;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
+use AutoDudes\AiSuite\Service\ProvenanceCaptureService;
 use AutoDudes\AiSuite\Service\SiteService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Localization\Finisher\ReloadLocalizationFinisher;
@@ -220,9 +222,22 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
      */
     protected function executeCommandMap(array $cmd): array
     {
-        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $dataHandler->start([], $cmd);
-        $dataHandler->process_cmdmap();
+        // The localization commands create the translated records themselves, so they belong in the
+        // same window as the field values the wizard writes afterwards.
+        // The handler's identifier is the model — it is the same string the permission check uses.
+        $capture = GeneralUtility::makeInstance(ProvenanceCaptureService::class);
+        $capture->begin(ProvenanceContext::translated(
+            ProvenanceContext::FEATURE_TRANSLATION,
+            $this->getModelPermissionKey(),
+        ));
+
+        try {
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], $cmd);
+            $dataHandler->process_cmdmap();
+        } finally {
+            $capture->end();
+        }
 
         return array_values(array_map(static fn ($message): string => (string) $message, $dataHandler->errorLog));
     }

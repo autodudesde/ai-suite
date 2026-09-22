@@ -1,11 +1,10 @@
 import Notification from '@typo3/backend/notification.js';
 import MultiStepWizard from '@autodudes/ai-suite/helper/multi-step-wizard-patch.js';
-import SaveHandling from '@autodudes/ai-suite/helper/image/save-handling.js';
+import Provenance from '@autodudes/ai-suite/helper/provenance.js';
 
 class Metadata {
     addSelectionEventListeners(modal, data, slide) {
         this.backToPreviousSlideButton(modal, data);
-        SaveHandling.selectionHandler(modal, 'label.ce-metadata-selection');
         this.saveGeneratedMetadataButton(modal, data);
     }
 
@@ -25,22 +24,24 @@ class Metadata {
                 Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.suggestions.missingSelectionInfo'], 5);
             } else {
                 let data = MultiStepWizard.setup.settings['postData'];
-                self.insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion);
+                self.insertSelectedSuggestions(data['table'], data['id'], data['fieldName'], selectedSuggestion, data['textAiModel']);
                 modal.find('input.use-for-selection:checked').each(function(index, item) {
-                    self.insertSelectedSuggestions(data['table'], data['id'], item.value, selectedSuggestion);
+                    self.insertSelectedSuggestions(data['table'], data['id'], item.value, selectedSuggestion, data['textAiModel']);
                 });
                 MultiStepWizard.dismiss();
             }
         });
     }
 
-    insertSelectedSuggestions(model, modelId, fieldName, selectedSuggestion) {
-        if (document.querySelector('input[data-formengine-input-name="data[' + model + '][' + modelId + '][' + fieldName + ']"]')) {
-            document.querySelector('input[data-formengine-input-name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
-            document.querySelector('input[name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
+    insertSelectedSuggestions(table, uid, fieldName, selectedSuggestion, aiModel) {
+        Provenance.recordAssisted(table, uid, fieldName, 'metadata', aiModel);
+
+        if (document.querySelector('input[data-formengine-input-name="data[' + table + '][' + uid + '][' + fieldName + ']"]')) {
+            document.querySelector('input[data-formengine-input-name="data[' + table + '][' + uid + '][' + fieldName + ']"]').value = selectedSuggestion.val();
+            document.querySelector('input[name="data[' + table + '][' + uid + '][' + fieldName + ']"]').value = selectedSuggestion.val();
         } else {
-            document.querySelector('textarea[data-formengine-input-name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
-            document.querySelector('textarea[name="data[' + model + '][' + modelId + '][' + fieldName + ']"]').value = selectedSuggestion.val();
+            document.querySelector('textarea[data-formengine-input-name="data[' + table + '][' + uid + '][' + fieldName + ']"]').value = selectedSuggestion.val();
+            document.querySelector('textarea[name="data[' + table + '][' + uid + '][' + fieldName + ']"]').value = selectedSuggestion.val();
         }
     }
 }

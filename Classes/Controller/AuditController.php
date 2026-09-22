@@ -15,16 +15,20 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\AuditResultRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
+use AutoDudes\AiSuite\Service\AuditModelService;
 use AutoDudes\AiSuite\Service\ContentTargetService;
+use AutoDudes\AiSuite\Service\CsvExportService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use AutoDudes\AiSuite\Utility\AuditScoreUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -61,6 +65,9 @@ class AuditController extends AbstractBackendController
 
     private const RESULT_MAX_AGE_SECONDS = 14 * 86400;
     private const FIXABILITY_ORDER = ['one-click', 'ai-assist', 'dev-handoff', 'manual'];
+    private const SEVERITIES = ['error', 'warning', 'notice'];
+    private const SCORED_AUDIT_TYPES = ['seo', 'a11y'];
+    private const LIGHTHOUSE_CATEGORIES = ['performance', 'accessibility', 'best-practices', 'seo'];
 
     private const FIX_METADATA_FIELDS = [
         'title-missing' => ['seo_title' => 'PageTitle'],
@@ -93,7 +100,10 @@ class AuditController extends AbstractBackendController
         protected readonly SysFileReferenceRepository $sysFileReferenceRepository,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly AuditModelService $auditModelService,
         protected readonly LoggerInterface $logger,
+        protected readonly CsvExportService $csvExportService,
+        protected readonly WorkspaceContextService $workspaceContextService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -110,6 +120,7 @@ class AuditController extends AbstractBackendController
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
         $this->initialize($request);
+        $this->view->assign('auditWorkspaceNotice', $this->workspaceContextService->getWorkspaceId() > 0);
         $this->auditResults->deleteOlderThan(self::RESULT_MAX_AGE_SECONDS);
         $identifier = $request->getAttribute('route')->getOption('_identifier');
 
@@ -129,6 +140,7 @@ class AuditController extends AbstractBackendController
     {
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/audit/audit.js');
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/audit/batch-audit.js');
+        $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/audit.css');
         $selectedPageId = (int) ($prefill['pageId'] ?? $this->aiSuiteContext->sessionService->getWebPageId());
 
         $keyword = (string) ($prefill['keyword'] ?? '');
@@ -151,8 +163,7 @@ class AuditController extends AbstractBackendController
             'markets' => $this->collectMarkets(),
         ]);
 
-        // Modell-Auswahl nur, wenn kein Standard-Audit-Modell konfiguriert ist
-        if ('' === $this->configuredAuditModel()) {
+        if ('' === $this->auditModelService->configuredModel()) {
             $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
             if ('Error' !== $librariesAnswer->getType()) {
                 $this->view->assign('paidRequestsAvailable', $librariesAnswer->getResponseData()['paidRequestsAvailable'] ?? false);
@@ -373,7 +384,6 @@ class AuditController extends AbstractBackendController
         }
     }
 
-    // writes the confirmed values only on this explicit editor action, never automatically
     public function fixApplyAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
@@ -401,7 +411,18 @@ class AuditController extends AbstractBackendController
         }
 
         try {
-            $this->executeDataHandler([$table => [$uid => $datamap]]);
+            $this->aiSuiteContext->provenanceCapture->begin(
+                ProvenanceContext::generated(
+                    ProvenanceContext::FEATURE_METADATA,
+                    (string) ($params['textAiModel'] ?? ''),
+                )
+            );
+
+            try {
+                $this->executeDataHandler([$table => [$uid => $datamap]]);
+            } finally {
+                $this->aiSuiteContext->provenanceCapture->end();
+            }
         } catch (\Throwable $e) {
             return $this->logError($e->getMessage(), $response, 500);
         }
@@ -446,17 +467,8 @@ class AuditController extends AbstractBackendController
             if ('Error' === $librariesAnswer->getType()) {
                 return $this->jsonError($response, strip_tags((string) $librariesAnswer->getMessage()));
             }
-            $libraries = $this->aiSuiteContext->libraryService->prepareLibraries(array_values(array_filter(
-                $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [],
-                static fn (array $library): bool => !LibraryService::isVisionLibrary($library)
-            )));
-            $model = $this->configuredAuditModel();
-            foreach ('' === $model ? $libraries : [] as $library) {
-                $model = (string) ($library['model_identifier'] ?? '');
-                if ($library['checked'] ?? false) {
-                    break;
-                }
-            }
+            $textLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [];
+            $model = $this->auditModelService->textModelFrom(\is_array($textLibraries) ? $textLibraries : []);
             if ('' === $model) {
                 return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.noLibrariesAvailable'));
             }
@@ -527,17 +539,8 @@ class AuditController extends AbstractBackendController
             if ('Error' === $librariesAnswer->getType()) {
                 return $this->jsonError($response, strip_tags((string) $librariesAnswer->getMessage()));
             }
-            $libraries = $this->aiSuiteContext->libraryService->prepareLibraries(array_values(array_filter(
-                $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [],
-                static fn (array $library): bool => !LibraryService::isVisionLibrary($library)
-            )));
-            $model = $this->configuredAuditModel();
-            foreach ('' === $model ? $libraries : [] as $library) {
-                $model = (string) ($library['model_identifier'] ?? '');
-                if ($library['checked'] ?? false) {
-                    break;
-                }
-            }
+            $textLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [];
+            $model = $this->auditModelService->textModelFrom(\is_array($textLibraries) ? $textLibraries : []);
             if ('' === $model) {
                 return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.noLibrariesAvailable'));
             }
@@ -599,7 +602,7 @@ class AuditController extends AbstractBackendController
         }
 
         try {
-            $page = BackendUtility::getRecord('pages', $pageId, 'author');
+            $page = BackendUtility::getRecordWSOL('pages', $pageId, 'author');
             $prefillName = trim((string) ($page['author'] ?? ''));
             if ('' === $prefillName) {
                 $prefillName = trim((string) ($this->aiSuiteContext->backendUserService->getBackendUser()?->user['realName'] ?? ''));
@@ -618,7 +621,6 @@ class AuditController extends AbstractBackendController
         }
     }
 
-    // writes pages.author only on this explicit editor opt-in, never automatically
     public function authorboxSaveAuthorAction(ServerRequestInterface $request): ResponseInterface
     {
         $response = new Response();
@@ -644,7 +646,10 @@ class AuditController extends AbstractBackendController
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
         $depth = max(0, min(20, (int) ($params['depth'] ?? 0)));
-        $auditType = \array_key_exists($params['auditType'] ?? '', self::AUDIT_BATCH_PRICES) ? (string) $params['auditType'] : 'seo';
+        $auditType = (string) ($params['auditType'] ?? 'seo');
+        if (!\array_key_exists($auditType, self::AUDIT_BATCH_PRICES)) {
+            return $this->jsonError($response, sprintf('Batch audits support %s, not "%s".', implode(', ', array_keys(self::AUDIT_BATCH_PRICES)), $auditType));
+        }
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
         }
@@ -675,7 +680,10 @@ class AuditController extends AbstractBackendController
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
         $languageUid = max(0, (int) ($params['languageUid'] ?? 0));
-        $auditType = \array_key_exists($params['auditType'] ?? '', self::AUDIT_BATCH_PRICES) ? (string) $params['auditType'] : 'seo';
+        $auditType = (string) ($params['auditType'] ?? 'seo');
+        if (!\array_key_exists($auditType, self::AUDIT_BATCH_PRICES)) {
+            return $this->jsonError($response, sprintf('Batch audits support %s, not "%s".', implode(', ', array_keys(self::AUDIT_BATCH_PRICES)), $auditType));
+        }
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
         }
@@ -709,6 +717,7 @@ class AuditController extends AbstractBackendController
                 'ok' => true,
                 'score' => $score,
                 'range' => AuditScoreUtility::range($score),
+                'viewUrl' => (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit_cached', ['pageId' => $pageId, 'auditType' => $auditType, 'languageUid' => $languageUid]),
             ]);
         } catch (\Throwable $e) {
             return $this->logError($e->getMessage(), $response, 503);
@@ -758,7 +767,7 @@ class AuditController extends AbstractBackendController
         }
 
         try {
-            $model = $this->auditTextModel();
+            $model = $this->auditModelService->defaultTextModel();
             if ('' === $model) {
                 return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.noLibrariesAvailable'));
             }
@@ -799,8 +808,9 @@ class AuditController extends AbstractBackendController
         $queryParams = $this->request->getQueryParams();
         $pageId = (int) ($queryParams['pageId'] ?? 0);
         $auditType = \in_array($queryParams['auditType'] ?? '', self::AUDIT_TYPES, true) ? (string) $queryParams['auditType'] : 'seo';
+        $languageUid = max(0, (int) ($queryParams['languageUid'] ?? 0));
 
-        $cached = $pageId > 0 ? $this->auditResults->findLatest($pageId, $auditType) : null;
+        $cached = $pageId > 0 ? $this->auditResults->findLatest($pageId, $auditType, $languageUid) : null;
         if (null === $cached) {
             $this->view->addFlashMessage(
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.audit.noCachedResult.message'),
@@ -811,40 +821,13 @@ class AuditController extends AbstractBackendController
             return $this->overviewAction(['pageId' => $pageId]);
         }
 
-        $rows = [['severity', 'id', 'category', 'fixability', 'message', 'evidence', 'hint', 'docUrl', 'tags']];
-        $issues = $cached['result']['audit']['issues'] ?? [];
-        foreach (\is_array($issues) ? $issues : [] as $issue) {
-            if (!\is_array($issue)) {
-                continue;
-            }
-            $rows[] = [
-                (string) ($issue['severity'] ?? ''),
-                (string) ($issue['id'] ?? ''),
-                (string) ($issue['category'] ?? ''),
-                (string) ($issue['fixability'] ?? ''),
-                (string) ($issue['message'] ?? ''),
-                (string) ($issue['evidence'] ?? ''),
-                (string) ($issue['hint'] ?? ''),
-                (string) ($issue['docUrl'] ?? ''),
-                implode(',', \is_array($issue['tags'] ?? null) ? $issue['tags'] : []),
-            ];
-        }
-        // BOM + Semikolon: direkt in (deutschem) Excel öffenbar
-        $csv = "\xEF\xBB\xBF".implode("\r\n", array_map(
-            static fn (array $row): string => implode(';', array_map(
-                static fn (string $value): string => '"'.str_replace('"', '""', $value).'"',
-                $row
-            )),
-            $rows
-        ))."\r\n";
+        $audit = \is_array($cached['result']['audit'] ?? null) ? $cached['result']['audit'] : [];
+        $rows = 'a11y' === $auditType ? $this->accessibilityExportRows($audit) : $this->seoExportRows($audit);
 
-        $response = new Response();
-        $response->getBody()->write($csv);
-
-        return $response
-            ->withHeader('Content-Type', 'text/csv; charset=utf-8')
-            ->withHeader('Content-Disposition', sprintf('attachment; filename="audit-%s-page-%d.csv"', $auditType, $pageId))
-        ;
+        return $this->csvExportService->download(
+            $rows,
+            sprintf('audit-%s-page-%d-lang-%d.csv', $auditType, $pageId, $languageUid),
+        );
     }
 
     public function runAction(): ResponseInterface
@@ -858,7 +841,7 @@ class AuditController extends AbstractBackendController
         $market = $this->resolveMarket($parsedBody, $pageId);
         $model = trim((string) ($parsedBody['libraries']['textGenerationLibrary'] ?? ''));
         if ('' === $model) {
-            $model = $this->auditTextModel();
+            $model = $this->auditModelService->defaultTextModel();
         }
         $prefill = ['auditType' => $auditType, 'pageId' => $pageId, 'externalUrl' => $externalUrl, 'keyword' => $keyword, 'market' => $market, 'languageUid' => $languageUid];
 
@@ -979,7 +962,6 @@ class AuditController extends AbstractBackendController
         return $this->renderResult($auditType, (string) ($body['url'] ?? ''), $cached['keyword'], $body, $pageId, $cached['runTs'], $languageUid);
     }
 
-    // writes pages.keywords only on this explicit editor action, never automatically
     public function saveKeywordAction(): ResponseInterface
     {
         $parsedBody = (array) $this->request->getParsedBody();
@@ -1021,6 +1003,61 @@ class AuditController extends AbstractBackendController
     }
 
     /**
+     * @param array<mixed> $audit
+     *
+     * @return list<list<string>>
+     */
+    private function seoExportRows(array $audit): array
+    {
+        $rows = [['severity', 'id', 'category', 'fixability', 'message', 'evidence', 'hint', 'docUrl', 'tags']];
+        $issues = $audit['issues'] ?? [];
+        foreach (\is_array($issues) ? $issues : [] as $issue) {
+            if (!\is_array($issue)) {
+                continue;
+            }
+            $rows[] = [
+                (string) ($issue['severity'] ?? ''),
+                (string) ($issue['id'] ?? ''),
+                (string) ($issue['category'] ?? ''),
+                (string) ($issue['fixability'] ?? ''),
+                (string) ($issue['message'] ?? ''),
+                (string) ($issue['evidence'] ?? ''),
+                (string) ($issue['hint'] ?? ''),
+                (string) ($issue['docUrl'] ?? ''),
+                implode(',', \is_array($issue['tags'] ?? null) ? $issue['tags'] : []),
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param array<mixed> $audit
+     *
+     * @return list<list<string>>
+     */
+    private function accessibilityExportRows(array $audit): array
+    {
+        $rows = [['count', 'code', 'impact', 'fixability', 'message', 'sampleSelector']];
+        $issues = \is_array($audit['a11y'] ?? null) ? ($audit['a11y']['topIssues'] ?? []) : [];
+        foreach (\is_array($issues) ? $issues : [] as $issue) {
+            if (!\is_array($issue)) {
+                continue;
+            }
+            $rows[] = [
+                (string) ($issue['count'] ?? ''),
+                (string) ($issue['code'] ?? ''),
+                (string) ($issue['impact'] ?? $issue['type'] ?? ''),
+                (string) ($issue['fixability'] ?? ''),
+                (string) ($issue['message'] ?? ''),
+                (string) ($issue['sampleSelector'] ?? ''),
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
      * @param list<int> $ids
      *
      * @return list<array{uid: int, title: string}>
@@ -1029,7 +1066,7 @@ class AuditController extends AbstractBackendController
     {
         $pages = [];
         foreach ($ids as $id) {
-            $page = BackendUtility::getRecord('pages', (int) $id, 'uid, title, doktype, hidden');
+            $page = BackendUtility::getRecordWSOL('pages', (int) $id, 'uid,title,doktype,hidden');
             if (null === $page || 1 !== (int) $page['doktype'] || 1 === (int) $page['hidden']) {
                 continue;
             }
@@ -1292,7 +1329,6 @@ class AuditController extends AbstractBackendController
     {
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/audit/fix-wizard.js');
         $competitors = \is_array($body['competitors'] ?? null) ? $body['competitors'] : [];
-        // Ohne ermittelbaren Wettbewerber darf NIE "covers this market well" stehen
         $domainUnknown = (bool) ($body['domainUnknown'] ?? false) || ([] === $competitors && [] === ($body['gaps'] ?? []));
         $gaps = [];
         foreach (\is_array($body['gaps'] ?? null) ? $body['gaps'] : [] as $gap) {
@@ -1307,7 +1343,6 @@ class AuditController extends AbstractBackendController
         }
         $gaps = $this->withDifficultyDisplay($gaps);
 
-        // Seitenbaum nur als VORSCHLAG über den bestehenden Consent-Flow
         $pageTreeUrl = '';
         $uncovered = array_values(array_filter($gaps, static fn (array $gap): bool => 'answered' !== ($gap['status'] ?? '')));
         if ([] !== $uncovered) {
@@ -1315,7 +1350,6 @@ class AuditController extends AbstractBackendController
                 ."\n- ".implode("\n- ", array_column($uncovered, 'keyword'));
 
             try {
-                // Prompt per POST durchreichen, nicht als GET-Query
                 $pageTreeUrl = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_page_create_pagetree');
             } catch (\Throwable) {
                 // Modul nicht verfügbar -> kein Vorschlags-Link
@@ -1408,7 +1442,6 @@ class AuditController extends AbstractBackendController
             $clusters[] = $cluster;
         }
 
-        // Seitenbaum nur als VORSCHLAG über den bestehenden Consent-Flow
         $pageTreeUrl = '';
         $uncovered = array_values(array_filter($clusters, static fn (array $cluster): bool => 'answered' !== ($cluster['status'] ?? '')));
         if ([] !== $uncovered) {
@@ -1419,7 +1452,6 @@ class AuditController extends AbstractBackendController
                 ));
 
             try {
-                // Prompt per POST durchreichen, nicht als GET-Query
                 $pageTreeUrl = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_page_create_pagetree');
             } catch (\Throwable) {
                 // Modul nicht verfügbar -> kein Vorschlags-Link
@@ -1458,27 +1490,6 @@ class AuditController extends AbstractBackendController
         return $rows;
     }
 
-    private function firstTextModel(): string
-    {
-        $librariesAnswer = $this->requestService->sendLibrariesRequest(GenerationLibraryEnumeration::METADATA, 'createMetadata', ['text']);
-        if ('Error' === $librariesAnswer->getType()) {
-            return '';
-        }
-        $libraries = $this->aiSuiteContext->libraryService->prepareLibraries(array_values(array_filter(
-            $librariesAnswer->getResponseData()['textGenerationLibraries'] ?? [],
-            static fn (array $library): bool => !LibraryService::isVisionLibrary($library)
-        )));
-        $model = '';
-        foreach ($libraries as $library) {
-            $model = (string) ($library['model_identifier'] ?? '');
-            if ($library['checked'] ?? false) {
-                break;
-            }
-        }
-
-        return $model;
-    }
-
     /**
      * @return list<array<string, mixed>>
      */
@@ -1505,7 +1516,7 @@ class AuditController extends AbstractBackendController
 
     private function pageFieldValue(int $pageId, string $fieldName): string
     {
-        $page = BackendUtility::getRecord('pages', $pageId, $fieldName);
+        $page = BackendUtility::getRecordWSOL('pages', $pageId, $fieldName);
 
         return trim((string) ($page[$fieldName] ?? ''));
     }
@@ -1513,7 +1524,6 @@ class AuditController extends AbstractBackendController
     private function buildPageBrowserUrl(int $selectedPageId): string
     {
         if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() >= 14) {
-            // no bparams here: it would win over these parameters and force useEvents=false
             $parameters = [
                 'mode' => 'db',
                 'fieldReference' => self::PAGE_BROWSER_FIELD_REFERENCE,
@@ -1541,7 +1551,7 @@ class AuditController extends AbstractBackendController
         if ($pageId <= 0) {
             return '';
         }
-        $page = BackendUtility::getRecord('pages', $pageId, 'title');
+        $page = BackendUtility::getRecordWSOL('pages', $pageId, 'title');
 
         return null === $page ? '' : sprintf('%s [%d]', (string) ($page['title'] ?? ''), $pageId);
     }
@@ -1551,6 +1561,7 @@ class AuditController extends AbstractBackendController
      */
     private function renderResult(string $auditType, string $url, string $keyword, array $body, int $pageId, ?int $cachedAt = null, int $languageUid = 0): ResponseInterface
     {
+        $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/audit.css');
         if ('questions' === $auditType) {
             return $this->renderQuestionsResult($url, $keyword, $body, $pageId, $cachedAt, $languageUid);
         }
@@ -1564,12 +1575,13 @@ class AuditController extends AbstractBackendController
             return $this->renderCompetitorResult($url, $body, $pageId, $cachedAt, $languageUid);
         }
         $audit = \is_array($body['audit'] ?? null) ? $body['audit'] : [];
-        // Ein-Klick-Aktionen schreiben nur in die Standardsprache
         $actionPageId = 0 === $languageUid ? $pageId : 0;
         $currentKeywords = $actionPageId > 0 ? $this->pageKeyword($actionPageId) : '';
         $fixedIssues = \is_array($body['fixedIssues'] ?? null) ? $body['fixedIssues'] : [];
         $adviceByIssue = \is_array($body['adviceByIssue'] ?? null) ? $body['adviceByIssue'] : [];
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/audit/fix-wizard.js');
+        $summary = \is_array($audit['summary'] ?? null) ? $audit['summary'] : [];
+        $score = AuditScoreUtility::fromSummary($summary);
 
         $keywordCandidates = $this->withDifficultyDisplay(\is_array($body['keywordCandidates'] ?? null) ? $body['keywordCandidates'] : []);
         $keywordData = \is_array($body['keyword'] ?? null) ? $body['keyword'] : null;
@@ -1587,14 +1599,47 @@ class AuditController extends AbstractBackendController
             'languageUid' => $languageUid,
             'cachedAt' => $cachedAt,
             'audit' => $audit,
-            'score' => AuditScoreUtility::fromSummary(\is_array($audit['summary'] ?? null) ? $audit['summary'] : []),
-            'scoreRange' => AuditScoreUtility::range(AuditScoreUtility::fromSummary(\is_array($audit['summary'] ?? null) ? $audit['summary'] : [])),
+            'score' => $score,
+            'scoreRange' => AuditScoreUtility::range($score),
+            'summaryCounts' => [
+                'errors' => max(0, (int) ($summary['errors'] ?? 0)),
+                'warnings' => max(0, (int) ($summary['warnings'] ?? 0)),
+                'notices' => max(0, (int) ($summary['notices'] ?? 0)),
+            ],
+            'lighthouseScores' => $this->lighthouseScores($audit),
             'issueGroups' => $this->groupIssuesByFixability($audit['issues'] ?? [], $actionPageId, $fixedIssues, $adviceByIssue),
             'keywordData' => $keywordData,
             'canSaveKeyword' => 'seo' === $auditType && $actionPageId > 0 && '' !== $keyword && $keyword !== $currentKeywords,
         ]);
 
         return $this->view->renderResponse('Audit/Result');
+    }
+
+    /**
+     * @param array<string, mixed> $audit
+     *
+     * @return list<array{label: string, score: int, range: string}>
+     */
+    private function lighthouseScores(array $audit): array
+    {
+        $performance = \is_array($audit['performance'] ?? null) ? $audit['performance'] : [];
+        $scores = \is_array($performance['scores'] ?? null) ? $performance['scores'] : [];
+        $result = [];
+        foreach ($scores as $category => $value) {
+            if (!is_numeric($value)) {
+                continue;
+            }
+            $score = max(0, min(100, (int) round((float) $value)));
+            $result[] = [
+                'label' => \in_array($category, self::LIGHTHOUSE_CATEGORIES, true)
+                    ? $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.audit.result.lighthouse.'.$category)
+                    : (string) $category,
+                'score' => $score,
+                'range' => AuditScoreUtility::range($score),
+            ];
+        }
+
+        return $result;
     }
 
     /**
@@ -1613,11 +1658,8 @@ class AuditController extends AbstractBackendController
                 continue;
             }
             $level = \in_array($issue['fixability'] ?? '', self::FIXABILITY_ORDER, true) ? $issue['fixability'] : 'manual';
-            $issue['severityBadge'] = match ($issue['severity'] ?? '') {
-                'error' => 'danger',
-                'warning' => 'warning',
-                default => 'info',
-            };
+            $issue['severityKey'] = \in_array($issue['severity'] ?? '', self::SEVERITIES, true) ? $issue['severity'] : 'notice';
+            $issue['severityLabel'] = $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.audit.severity.'.$issue['severityKey']);
             $issueId = (string) ($issue['id'] ?? '');
             $issue['fixed'] = \in_array($issueId, $fixedIssues, true);
             $issue['aiFixable'] = $pageId > 0 && !$issue['fixed'] && $this->isAiFixable($issueId);
@@ -1627,10 +1669,8 @@ class AuditController extends AbstractBackendController
             $issue['authorboxAction'] = 'eeat-author-missing' === $issueId && $pageId > 0 && !$issue['fixed'];
             $issue['advice'] = \is_array($adviceByIssue[$issueId] ?? null) ? $adviceByIssue[$issueId] : [];
             $issue['adviceable'] = $pageId > 0 && 'ai-assist' === $level && [] === $issue['advice'];
-            $issue['hasMoreInfo'] = '' !== (string) ($issue['hint'] ?? '')
-                || '' !== (string) ($issue['docUrl'] ?? '')
-                || [] !== $issue['advice']
-                || $issue['adviceable'];
+            $issue['hasMoreInfo'] = '' !== (string) ($issue['hint'] ?? '') || '' !== (string) ($issue['docUrl'] ?? '');
+            $issue['hasActions'] = $issue['aiFixable'] || $issue['authorboxAction'] || $issue['adviceable'] || $issue['fixed'] || $issue['hasMoreInfo'];
             $grouped[$level][] = $issue;
         }
 
@@ -1661,7 +1701,7 @@ class AuditController extends AbstractBackendController
     }
 
     /**
-     * @return array<string, array{runTs: int, date: string, keyword: string, viewUrl: string}>
+     * @return array<string, array{runTs: int, date: string, keyword: string, viewUrl: string, label: string, score: null|int, range: string}>
      */
     private function lastAudits(int $pageId, int $languageUid = 0): array
     {
@@ -1671,14 +1711,23 @@ class AuditController extends AbstractBackendController
         $result = [];
         foreach (self::AUDIT_TYPES as $type) {
             $cached = $this->auditResults->findLatest($pageId, $type, $languageUid);
-            if (null !== $cached) {
-                $result[$type] = [
-                    'runTs' => $cached['runTs'],
-                    'date' => date('d.m.Y H:i', $cached['runTs']),
-                    'keyword' => $cached['keyword'],
-                    'viewUrl' => (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit_cached', ['pageId' => $pageId, 'auditType' => $type, 'languageUid' => $languageUid]),
-                ];
+            if (null === $cached) {
+                continue;
             }
+            $score = null;
+            if (\in_array($type, self::SCORED_AUDIT_TYPES, true)) {
+                $audit = \is_array($cached['result']['audit'] ?? null) ? $cached['result']['audit'] : [];
+                $score = AuditScoreUtility::fromSummary(\is_array($audit['summary'] ?? null) ? $audit['summary'] : []);
+            }
+            $result[$type] = [
+                'runTs' => $cached['runTs'],
+                'date' => date('d.m.Y H:i', $cached['runTs']),
+                'keyword' => $cached['keyword'],
+                'viewUrl' => (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit_cached', ['pageId' => $pageId, 'auditType' => $type, 'languageUid' => $languageUid]),
+                'label' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.audit.lastAudit.'.$type),
+                'score' => $score,
+                'range' => null === $score ? '' : AuditScoreUtility::range($score),
+            ];
         }
 
         return $result;
@@ -1713,7 +1762,7 @@ class AuditController extends AbstractBackendController
 
     private function pageKeyword(int $pageId): string
     {
-        $page = BackendUtility::getRecord('pages', $pageId, 'keywords');
+        $page = BackendUtility::getRecordWSOL('pages', $pageId, 'keywords');
 
         return trim((string) ($page['keywords'] ?? ''));
     }
@@ -1809,22 +1858,6 @@ class AuditController extends AbstractBackendController
         usort($markets, static fn (array $a, array $b): int => strcasecmp($a['label'], $b['label']));
 
         return $markets;
-    }
-
-    private function configuredAuditModel(): string
-    {
-        try {
-            return trim((string) ($this->extensionConfiguration->get('ai_suite')['auditDefaultTextModel'] ?? ''));
-        } catch (\Throwable) {
-            return '';
-        }
-    }
-
-    private function auditTextModel(): string
-    {
-        $configured = $this->configuredAuditModel();
-
-        return '' !== $configured ? $configured : $this->firstTextModel();
     }
 
     private function wcagStandard(): string

@@ -45,7 +45,7 @@
 
             <trans-unit id="aiSuite.easyLanguagePlugin.noLibraryFound">
                 <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
-                <target>Kein Model verfügbar. Bitte wählen eines in den Erweiterungseinstellungen aus oder wende dich an deinen Administrator, um das ausgewählte Modell überprüfen zu lassen.</target>
+                <target>Kein Model verfügbar. Bitte wähle eines in den Erweiterungseinstellungen aus oder wende dich an deinen Administrator, um das ausgewählte Modell überprüfen zu lassen.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.easyLanguagePlugin.pleaseWait">
@@ -143,15 +143,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.unauthorized">
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
-                <target>Ihr AI Suite API-Key fehlt oder ist ungültig. Bitte überprüfen Sie den Key in der Extension-Konfiguration. Einen Key erhalten Sie unter https://www.autodudes.de</target>
+                <target>Dein AI Suite API-Key fehlt oder ist ungültig. Bitte prüfe den Key in der Extension-Konfiguration. Einen Key erhältst du unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.forbidden">
                 <source>Your AI Suite API key is valid but does not have permission for this action. Please check your plan or contact support.</source>
-                <target>Ihr AI Suite API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfen Sie Ihren Tarif oder kontaktieren Sie den Support.</target>
+                <target>Dein AI Suite API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfe deinen Tarif oder kontaktiere den Support.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
-                <target>Ihr AI Suite API-Key ist abgelaufen. Bitte erneuern Sie ihn unter https://www.autodudes.de</target>
+                <target>Dein AI Suite API-Key ist abgelaufen. Bitte erneuere ihn unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.invalidRequest">
                 <source>The AI Suite server rejected the request because a value was missing or malformed. The details are in the message below.</source>
@@ -183,15 +183,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
-                <target>Ihr AI Suite API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte laden Sie Ihre Anfragen unter https://www.autodudes.de auf.</target>
+                <target>Dein AI Suite API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte lade deine Anfragen unter https://www.autodudes.de auf.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestLimitReached">
                 <source>Your AI Suite API key has reached its request limit. Please get further requests at https://www.autodudes.de</source>
-                <target>Ihr AI Suite API-Key hat sein Anfrage-Limit erreicht. Bitte beziehen Sie weitere Anfragen unter https://www.autodudes.de</target>
+                <target>Dein AI Suite API-Key hat sein Anfrage-Limit erreicht. Bitte beziehe weitere Anfragen unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.missingAiModelApiKey">
                 <source>A required AI model API key is missing. Please check your "Bring Your Own Keys" settings in the extension configuration.</source>
-                <target>Ein benötigter API-Key für ein AI-Modell fehlt. Bitte prüfen Sie Ihre „Bring Your Own Keys"-Einstellungen in der Extension-Konfiguration.</target>
+                <target>Ein benötigter API-Key für ein AI-Modell fehlt. Bitte prüfe deine „Bring Your Own Keys"-Einstellungen in der Extension-Konfiguration.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.unexpected">
                 <source>Unexpected AI Suite server endpoint error</source>
@@ -203,7 +203,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.apiKeyMissing.message">
                 <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
-                <target>Es ist kein AI Suite API-Key konfiguriert. Bitte hinterlegen Sie Ihren Key in der Extension-Konfiguration. Falls Sie noch keinen Key haben, erhalten Sie einen unter https://www.autodudes.de</target>
+                <target>Es ist kein AI Suite API-Key konfiguriert. Bitte hinterlege deinen Key in der Extension-Konfiguration. Falls du noch keinen Key hast, erhältst du einen unter https://www.autodudes.de</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.error.localization.recordNotFound">
@@ -212,7 +212,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.news.missingDetailPlugin">
                 <source>Metadata could not be generated: no news detail plugin page is available to render this news article. Please create or select a page that contains a news detail plugin.</source>
-                <target>Metadaten konnten nicht generiert werden: Es ist keine Seite mit einem News-Detail-Plugin verfügbar, um diesen News-Artikel darzustellen. Bitte legen Sie eine Seite mit einem News-Detail-Plugin an oder wählen Sie eine solche aus.</target>
+                <target>Metadaten konnten nicht generiert werden: Es ist keine Seite mit einem News-Detail-Plugin verfügbar, um diesen News-Artikel darzustellen. Bitte lege eine Seite mit einem News-Detail-Plugin an oder wähle eine solche aus.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.site.notFound">
                 <source>No site found for language id %s and page uid %s</source>
@@ -220,7 +220,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.site.notFoundForPage">
                 <source>No site configuration found for page uid %s. Please check the site configuration of this page tree.</source>
-                <target>Für die Seiten-UID %s wurde keine Site-Konfiguration gefunden. Bitte prüfen Sie die Site-Konfiguration dieses Seitenbaums.</target>
+                <target>Für die Seiten-UID %s wurde keine Site-Konfiguration gefunden. Bitte prüfe die Site-Konfiguration dieses Seitenbaums.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.error_no_credits_table">
@@ -230,7 +230,7 @@
 
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
-                <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
+                <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktiviere diese bitte in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
                 <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
@@ -238,11 +238,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.unauthorized">
                 <source>Page content could not be loaded (HTTP %s). If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
-                <target>Seiteninhalt konnte nicht geladen werden (HTTP %s). Wenn die HTTP-Basisauthentifizierung aktiv ist, aktivieren Sie diese bitte in den Erweiterungseinstellungen und geben Sie dort die Zugangsdaten ein.</target>
+                <target>Seiteninhalt konnte nicht geladen werden (HTTP %s). Wenn die HTTP-Basisauthentifizierung aktiv ist, aktiviere diese bitte in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
-                <target>Der abgerufene Seiteninhalt scheint ungültig zu sein oder ist eine Fehlerseite (zu kurz oder kein HTML-Body). Die Seite wird im Frontend möglicherweise nicht korrekt ausgegeben. Bitte prüfen Sie die Frontend-Ausgabe dieser Seite.</target>
+                <target>Der abgerufene Seiteninhalt scheint ungültig zu sein oder ist eine Fehlerseite (zu kurz oder kein HTML-Body). Die Seite wird im Frontend möglicherweise nicht korrekt ausgegeben. Bitte prüfe die Frontend-Ausgabe dieser Seite.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.filelist.invalidFolder.title">
@@ -257,7 +257,7 @@
 
             <trans-unit id="aiSuite.metadata.noSuggestionsGenerated">
                 <source>No suggestions could be generated. The page may render too little readable content in the frontend (e.g. a custom page type whose template does not output the page content). Please check the frontend output of this page.</source>
-                <target>Es konnten keine Vorschläge generiert werden. Möglicherweise gibt die Seite im Frontend zu wenig lesbaren Inhalt aus (z. B. ein eigener Seitentyp, dessen Template den Seiteninhalt nicht ausgibt). Bitte prüfen Sie die Frontend-Ausgabe dieser Seite.</target>
+                <target>Es konnten keine Vorschläge generiert werden. Möglicherweise gibt die Seite im Frontend zu wenig lesbaren Inhalt aus (z. B. ein eigener Seitentyp, dessen Template den Seiteninhalt nicht ausgibt). Bitte prüfe die Frontend-Ausgabe dieser Seite.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.file.unsupportedImageFormat">
@@ -467,6 +467,10 @@
                 <target>Duplikat erkannt</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.globalInstructions.tooltip">
+                <source>Show the global instructions that apply to this prompt</source>
+                <target>Die globalen Anweisungen anzeigen, die für diesen Prompt gelten</target>
+            </trans-unit>
             <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
                 <source>Global instructions</source>
                 <target>Globale Anweisungen</target>
@@ -494,7 +498,7 @@
 
             <trans-unit id="aiSuite.js.error.failedToStartTranslation">
                 <source>Failed to start whole page translation. Please check the console for details.</source>
-                <target>Fehler beim Starten der Ganzseitenübersetzung. Bitte prüfen Sie die Konsole für Details.</target>
+                <target>Fehler beim Starten der Ganzseitenübersetzung. Bitte prüfe die Konsole für Details.</target>
             </trans-unit>
             <trans-unit id="aiSuite.nav.more">
                 <source>More</source>
@@ -506,7 +510,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.js.error.imageGeneration">
                 <source>Image generation failed. Please try again or check the logs for details.</source>
-                <target>Bildgenerierung fehlgeschlagen. Bitte versuchen Sie es erneut oder prüfen Sie die Logs für Details.</target>
+                <target>Bildgenerierung fehlgeschlagen. Bitte versuche es erneut oder prüfe die Logs für Details.</target>
             </trans-unit>
             <trans-unit id="aiSuite.js.error.invalidPageId">
                 <source>Invalid page ID.</source>
@@ -518,7 +522,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.js.error.metadataGeneration">
                 <source>Metadata generation failed. Please try again or check the logs for details.</source>
-                <target>Metadaten-Generierung fehlgeschlagen. Bitte versuchen Sie es erneut oder prüfen Sie die Logs für Details.</target>
+                <target>Metadaten-Generierung fehlgeschlagen. Bitte versuche es erneut oder prüfe die Logs für Details.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.loading.translationSummary">
@@ -922,14 +926,14 @@
                 <target>Das Inhaltselement wurde automatisch in folgende Sprachen übersetzt: %s</target>
             </trans-unit>
 
-            <trans-unit id="aiSuite.autoTranslation.direct.startTitle">
-                <source>Automatic translation</source>
-                <target>Automatische Übersetzung</target>
+            <trans-unit id="aiSuite.autoTranslation.direct.saveHintTitle">
+                <source>Saving may take a moment</source>
+                <target>Speichern kann einen Moment dauern</target>
             </trans-unit>
 
-            <trans-unit id="aiSuite.autoTranslation.direct.startMessage">
-                <source>The content element is being translated into the available target languages…</source>
-                <target>Das Inhaltselement wird in die verfügbaren Zielsprachen übersetzt…</target>
+            <trans-unit id="aiSuite.autoTranslation.direct.saveHintMessage">
+                <source>Automatic translation on save is active for this content element.</source>
+                <target>Für dieses Inhaltselement ist die automatische Übersetzung beim Speichern aktiv.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.autoTranslation.missingModelPermission.title">
@@ -939,7 +943,7 @@
 
             <trans-unit id="aiSuite.autoTranslation.missingModelPermission.message">
                 <source>Automatic translation was skipped: you do not have permission to use the configured translation model (%s). Please contact your administrator.</source>
-                <target>Die automatische Übersetzung wurde übersprungen: Ihnen fehlt die Berechtigung für das konfigurierte Übersetzungsmodell (%s). Bitte wenden Sie sich an Ihren Administrator.</target>
+                <target>Die automatische Übersetzung wurde übersprungen: dir fehlt die Berechtigung für das konfigurierte Übersetzungsmodell (%s). Bitte wende dich an deinen Administrator.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.autoTranslation.bulkLimit.title">
@@ -949,7 +953,87 @@
 
             <trans-unit id="aiSuite.autoTranslation.bulkLimit.message">
                 <source>Automatic translation was skipped because this save changed %s content elements, which exceeds the configured limit of %s. Please translate the elements individually or via the bulk translation tools.</source>
-                <target>Die automatische Übersetzung wurde übersprungen, weil dieser Speichervorgang %s Inhaltselemente geändert hat und damit das konfigurierte Limit von %s überschreitet. Bitte übersetzen Sie die Elemente einzeln oder über die Massen-Übersetzungsfunktionen.</target>
+                <target>Die automatische Übersetzung wurde übersprungen, weil dieser Speichervorgang %s Inhaltselemente geändert hat und damit das konfigurierte Limit von %s überschreitet. Bitte übersetze die Elemente einzeln oder über die Massen-Übersetzungsfunktionen.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingFeaturePermission.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.missingFeaturePermission.message">
+                <source>Automatic translation was skipped: you do not have permission to use automatic translation. Please contact your administrator.</source>
+                <target>Die automatische Übersetzung wurde übersprungen: dir fehlt die Berechtigung für die automatische Übersetzung. Bitte wende dich an deinen Administrator.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.freeModeSkipped.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.freeModeSkipped.message">
+                <source>The content element was not translated into %s because its translation there is maintained in free mode and not connected to the original. Please update it manually.</source>
+                <target>Das Inhaltselement wurde nicht nach %s übersetzt, weil seine Übersetzung dort im freien Modus gepflegt wird und nicht mit dem Original verbunden ist. Bitte passe sie manuell an.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.pageNotTranslated.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.pageNotTranslated.message">
+                <source>The content element was not translated into %s because the page has no translation in that language yet.</source>
+                <target>Das Inhaltselement wurde nicht nach %s übersetzt, weil die Seite in dieser Sprache noch keine Übersetzung hat.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.workspaceSkipped.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.workspaceSkipped.message">
+                <source>Automatic translation does not run inside a workspace. Translate the content element after publishing or use the translation wizard.</source>
+                <target>Innerhalb eines Workspaces läuft keine automatische Übersetzung. Übersetze das Inhaltselement nach dem Veröffentlichen oder nutze den Übersetzungsassistenten.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.noTranslatableFields.title">
+                <source>Automatic translation skipped</source>
+                <target>Automatische Übersetzung übersprungen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.noTranslatableFields.message">
+                <source>No translatable fields were found for this content element: %s. Its content type may store its text in fields the translation does not read.</source>
+                <target>Für dieses Inhaltselement wurden keine übersetzbaren Felder gefunden: %s. Möglicherweise speichert der Inhaltstyp seine Texte in Feldern, welche die Übersetzung nicht ausliest.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.requestFailed.title">
+                <source>Automatic translation failed</source>
+                <target>Automatische Übersetzung fehlgeschlagen</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.requestFailed.message">
+                <source>The content element could not be translated: %s</source>
+                <target>Das Inhaltselement konnte nicht übersetzt werden: %s</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.emptyResult.title">
+                <source>Automatic translation incomplete</source>
+                <target>Automatische Übersetzung unvollständig</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.emptyResult.message">
+                <source>The translation service returned no usable result for: %s. Please try again or translate the element manually.</source>
+                <target>Der Übersetzungsdienst hat kein verwertbares Ergebnis geliefert für: %s. Bitte versuche es erneut oder übersetze das Element manuell.</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.queued.title">
+                <source>Automatic translation started</source>
+                <target>Automatische Übersetzung gestartet</target>
+            </trans-unit>
+
+            <trans-unit id="aiSuite.autoTranslation.queued.message">
+                <source>The content element is being translated in the background into: %s. The translation is applied once it is ready and this page is opened in the page module.</source>
+                <target>Das Inhaltselement wird im Hintergrund übersetzt nach: %s. Die Übersetzung wird übernommen, sobald sie fertig ist und diese Seite im Seitenmodul geöffnet wird.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.translation.noTranslatableFields">
@@ -1380,11 +1464,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.generationNotAllowed" approved="yes">
                 <source>You do not have permission to use AI content generation.</source>
-                <target>Sie haben keine Berechtigung, die KI-Inhaltsgenerierung zu nutzen.</target>
+                <target>Du hast keine Berechtigung, die KI-Inhaltsgenerierung zu nutzen.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.noPageEditPermission" approved="yes">
                 <source>You do not have permission to edit content on the target page.</source>
-                <target>Sie haben keine Berechtigung, Inhalte auf der Zielseite zu bearbeiten.</target>
+                <target>Du hast keine Berechtigung, Inhalte auf der Zielseite zu bearbeiten.</target>
             </trans-unit>
         </body>
     </file>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Core\Configuration\FlexForm\FlexFormTools;
 use TYPO3\CMS\Core\DataHandling\TableColumnType;
 use TYPO3\CMS\Core\Information\Typo3Version;
@@ -169,6 +170,20 @@ class TcaCompatibilityService implements SingletonInterface
 
     /**
      * @return list<string>
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getLabelAltFields(string $table): array
+    {
+        $raw = null !== $this->tcaSchemaFactory
+            ? ($this->tcaSchemaFactory->get($table)->getRawConfiguration()['label_alt'] ?? '')
+            : ($GLOBALS['TCA'][$table]['ctrl']['label_alt'] ?? '');
+
+        return GeneralUtility::trimExplode(',', (string) $raw, true);
+    }
+
+    /**
+     * @return list<string>
      */
     public function getHousekeepingFields(): array
     {
@@ -212,6 +227,30 @@ class TcaCompatibilityService implements SingletonInterface
     /**
      * @throws UndefinedSchemaException
      */
+    public function ignoresWebMountRestriction(string $table): bool
+    {
+        $raw = null !== $this->tcaSchemaFactory
+            ? ($this->tcaSchemaFactory->get($table)->getRawConfiguration()['security'] ?? [])
+            : ($GLOBALS['TCA'][$table]['ctrl']['security'] ?? []);
+
+        return true === (\is_array($raw) ? ($raw['ignoreWebMountRestriction'] ?? false) : false);
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
+    public function canExistOnPages(string $table): bool
+    {
+        $rootLevel = null !== $this->tcaSchemaFactory
+            ? ($this->tcaSchemaFactory->get($table)->getRawConfiguration()['rootLevel'] ?? 0)
+            : ($GLOBALS['TCA'][$table]['ctrl']['rootLevel'] ?? 0);
+
+        return 1 !== (int) $rootLevel;
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
     public function isRootLevel(string $table): bool
     {
         $rootLevel = null !== $this->tcaSchemaFactory
@@ -245,6 +284,26 @@ class TcaCompatibilityService implements SingletonInterface
         }
 
         return 'uid';
+    }
+
+    /**
+     * `GridColumnItem::getRecord()` hands back an array below v14 and a `RecordInterface` from v14 on,
+     * where `getRow()` is the array accessor. One badge renderer for all three majors needs this.
+     */
+    public function resolveGridItemUid(GridColumnItem $item): int
+    {
+        if (method_exists($item, 'getRow')) {
+            return (int) ($item->getRow()['uid'] ?? 0);
+        }
+
+        /** @var array<string, mixed>|object $record */
+        $record = $item->getRecord();
+
+        if (is_array($record)) {
+            return (int) ($record['uid'] ?? 0);
+        }
+
+        return method_exists($record, 'getUid') ? (int) $record->getUid() : 0;
     }
 
     /**

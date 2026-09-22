@@ -1,6 +1,7 @@
 import Generation from "@autodudes/ai-suite/helper/generation.js";
 import General from "@autodudes/ai-suite/helper/general.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
+import AuditResultLink from "@autodudes/ai-suite/audit/result-link.js";
 import Modal from "@typo3/backend/modal.js";
 import { MessageUtility } from "@typo3/backend/utility/message-utility.js";
 
@@ -185,21 +186,19 @@ class Audit {
             return;
         }
         hints.replaceChildren();
-        const audits = output.audits || {};
-        for (const type of ['seo', 'a11y', 'questions', 'gap', 'cluster', 'competitors']) {
-            if (!audits[type]) {
-                continue;
-            }
-            const line = document.createElement('div');
-            const label = document.createTextNode(
-                TYPO3.lang['aiSuite.module.audit.lastAudit.' + type] + ': ' + audits[type].date + ' — '
-            );
-            const link = document.createElement('a');
-            link.href = audits[type].viewUrl;
-            link.textContent = TYPO3.lang['aiSuite.module.audit.lastAudit.view'];
-            line.append(label, link);
-            hints.append(line);
+        const audits = Object.values(output.audits || {});
+        if (audits.length === 0) {
+            return;
         }
+        const title = document.createElement('div');
+        title.className = 'form-label';
+        title.textContent = TYPO3.lang['aiSuite.module.audit.lastAudits.title'];
+        const list = document.createElement('div');
+        list.className = 'aisuite-audit-link-list';
+        for (const entry of audits) {
+            list.append(AuditResultLink.link(entry));
+        }
+        hints.append(title, list);
     }
 }
 

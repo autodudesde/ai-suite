@@ -81,7 +81,7 @@ class BackendUserService implements SingletonInterface
     /**
      * @return list<int>
      */
-    public function getSearchableWebmounts(int $id, int $depth = 99): array
+    public function getSearchableWebmounts(int $id, int $depth = 99, int $workspaceId = 0): array
     {
         $backendUser = $this->getBackendUser();
         if (null === $backendUser) {
@@ -97,8 +97,11 @@ class BackendUserService implements SingletonInterface
         $permsClause = $backendUser->getPagePermsClause(Permission::PAGE_SHOW);
 
         $idList = $mountPoints;
-        $this->pageTreeRepository->setAdditionalWhereClause($permsClause);
-        $pages = $this->pageTreeRepository->getFlattenedPages($mountPoints, $depth);
+        $pageTreeRepository = $workspaceId > 0
+            ? GeneralUtility::makeInstance(PageTreeRepository::class, $workspaceId)
+            : $this->pageTreeRepository;
+        $pageTreeRepository->setAdditionalWhereClause($permsClause);
+        $pages = $pageTreeRepository->getFlattenedPages($mountPoints, $depth);
         foreach ($pages as $page) {
             $idList[] = (int) $page['uid'];
         }
@@ -289,6 +292,50 @@ class BackendUserService implements SingletonInterface
         }
 
         return $folder;
+    }
+
+    /**
+     * Whether this user may edit the record at all.
+     *
+     * Needed wherever a request names its own table and uid — a form field reporting that its
+     * suggestion was accepted, for instance. Without it the endpoint speaks for every record in the
+     * installation, and a register that anyone can write into proves nothing.
+     */
+    public function canEditRecord(string $table, int $uid): bool
+    {
+        $beUser = $this->getBackendUser();
+        if (null === $beUser || '' === $table || $uid <= 0) {
+            return false;
+        }
+
+        if ($beUser->isAdmin()) {
+            return true;
+        }
+
+        if (!$beUser->check('tables_modify', $table)) {
+            return false;
+        }
+
+        $row = BackendUtility::getRecord($table, $uid);
+        if (null === $row || !$beUser->recordEditAccessInternals($table, $row)) {
+            return false;
+        }
+
+        if ('sys_file_metadata' === $table) {
+            return $this->canEditFileMetadata((int) ($row['file'] ?? 0));
+        }
+
+        if ('sys_file_reference' === $table) {
+            return $this->canEditFileReferenceMetadata((int) ($row['uid_local'] ?? 0));
+        }
+
+        if ('pages' === $table) {
+            return $beUser->doesUserHaveAccess($row, Permission::PAGE_EDIT);
+        }
+
+        $page = BackendUtility::getRecord('pages', (int) ($row['pid'] ?? 0));
+
+        return null !== $page && $beUser->doesUserHaveAccess($page, Permission::CONTENT_EDIT);
     }
 
     public function canEditFileMetadata(int $fileUid): bool

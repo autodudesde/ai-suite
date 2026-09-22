@@ -115,8 +115,13 @@ class AutoTranslationHook implements SingletonInterface
         $queue = $this->autoTranslateQueue;
         $this->autoTranslateQueue = [];
 
-        // Never auto-translate inside a workspace
         if ($this->workspaceContextService->getWorkspaceId() > 0) {
+            $this->logger->notice('Auto translation skipped: saved inside a workspace', [
+                'changedElements' => count($queue),
+            ]);
+            $this->multiLanguageTranslationService->addNotice(MultiLanguageTranslationService::NOTICE_WORKSPACE_SKIPPED);
+            $this->multiLanguageTranslationService->flushNotices();
+
             return;
         }
 
@@ -149,6 +154,8 @@ class AutoTranslationHook implements SingletonInterface
                 ]);
             }
         }
+
+        $this->multiLanguageTranslationService->flushNotices();
     }
 
     /**
@@ -182,11 +189,11 @@ class AutoTranslationHook implements SingletonInterface
         try {
             $extConf = $this->extensionConfiguration->get('ai_suite');
 
-            return is_array($extConf)
-                && array_key_exists('translateFlexFormFields', $extConf)
-                && (bool) $extConf['translateFlexFormFields'];
+            return !is_array($extConf)
+                || !array_key_exists('translateFlexFormFields', $extConf)
+                || (bool) $extConf['translateFlexFormFields'];
         } catch (\Throwable $e) {
-            return false;
+            return true;
         }
     }
 

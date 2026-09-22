@@ -53,6 +53,7 @@ CREATE TABLE tx_aisuite_domain_model_backgroundtask (
     mode varchar(20) DEFAULT '',
     model varchar(50) DEFAULT '',
     handled_by_cli tinyint(3) DEFAULT '0' NOT NULL,
+    changed_fields text,
 
     PRIMARY KEY (uuid, type)
 );
@@ -62,6 +63,7 @@ CREATE TABLE be_groups (
     openAiApiKey text,
     anthropicApiKey text,
     aiModelHubApiKey text,
+    mittwaldAiModelHubApiKey text,
     googleTranslateApiKey text,
     deeplApiKey text,
     deeplApiMode tinyint(3) DEFAULT '0' NOT NULL,
@@ -92,4 +94,25 @@ CREATE TABLE tx_aisuite_audit_result (
     run_ts int(11) DEFAULT 0 NOT NULL,
     result longtext,
     KEY page_type (page_uid, audit_type, language_uid)
+);
+
+CREATE TABLE tx_aisuite_domain_model_provenance (
+    tablename varchar(255) DEFAULT '' NOT NULL,
+    record_uid int(11) DEFAULT 0 NOT NULL,
+    workspace int(11) DEFAULT 0 NOT NULL,
+    mode varchar(20) DEFAULT '' NOT NULL,
+    model varchar(255) DEFAULT '' NOT NULL,
+    client varchar(100) DEFAULT '' NOT NULL,
+    feature varchar(50) DEFAULT '' NOT NULL,
+    be_user int(11) DEFAULT 0 NOT NULL,
+    crdate int(11) DEFAULT 0 NOT NULL,
+    source_hash text,
+    source_fields text,
+    reviewed_by int(11) DEFAULT 0 NOT NULL,
+    reviewed_at int(11) DEFAULT 0 NOT NULL,
+    edited_by int(11) DEFAULT 0 NOT NULL,
+    edited_at int(11) DEFAULT 0 NOT NULL,
+    KEY record (tablename, record_uid),
+    KEY overview (workspace, feature, mode),
+    KEY sorting (crdate)
 );

@@ -63,7 +63,7 @@ class ModifyPageLayoutContentEventListener
         }
 
         try {
-            $scores = [];
+            $results = '';
             foreach (['seo', 'a11y'] as $type) {
                 $cached = $this->auditResults->findLatest($pageId, $type);
                 if (null === $cached) {
@@ -71,47 +71,39 @@ class ModifyPageLayoutContentEventListener
                 }
                 $summary = $cached['result']['audit']['summary'] ?? [];
                 $score = AuditScoreUtility::fromSummary(\is_array($summary) ? $summary : []);
-                $scores[] = [
-                    'label' => $this->localizationService->translate('module:aiSuite.module.audit.type.'.$type),
-                    'score' => $score,
-                    'range' => AuditScoreUtility::range($score),
-                    'date' => date('d.m.Y', $cached['runTs']),
-                    'viewUrl' => (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit_cached', ['pageId' => $pageId, 'auditType' => $type, 'languageUid' => 0]),
-                ];
+                $results .= sprintf(
+                    '<a class="aisuite-audit-tile__result" href="%s" title="%s">'
+                    .'<span class="aisuite-audit-score aisuite-audit-tile__score aisuite-audit-score--%s">%d</span>'
+                    .'<span>%s<br/><small class="aisuite-audit-tile__date">%s</small></span>'
+                    .'</a>',
+                    htmlspecialchars((string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit_cached', ['pageId' => $pageId, 'auditType' => $type, 'languageUid' => 0])),
+                    htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.view')),
+                    AuditScoreUtility::range($score),
+                    $score,
+                    htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.type.'.$type)),
+                    htmlspecialchars(date('d.m.Y', $cached['runTs'])),
+                );
             }
-            $moduleUrl = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit');
+            $newAuditUrl = (string) $this->uriBuilder->buildUriFromRoute('ai_suite_audit', ['id' => $pageId]);
         } catch (\Throwable) {
             return '';
         }
 
-        $colors = ['high' => '#1e8e3e', 'medium' => '#b06000', 'low' => '#c5221f'];
-        $badges = '';
-        foreach ($scores as $entry) {
-            $badges .= sprintf(
-                '<a href="%s" style="display: inline-flex; align-items: center; gap: 0.45em; margin-right: 1.2em; text-decoration: none; color: inherit;" title="%s">'
-                .'<span style="display: inline-flex; align-items: center; justify-content: center; width: 2.3em; height: 2.3em; border-radius: 50%%; border: 3px solid %s; color: %s; font-weight: 700;">%d</span>'
-                .'<span>%s<br/><small style="opacity: 0.7;">%s</small></span></a>',
-                htmlspecialchars($entry['viewUrl']),
-                htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.view')),
-                $colors[$entry['range']],
-                $colors[$entry['range']],
-                $entry['score'],
-                htmlspecialchars($entry['label']),
-                htmlspecialchars($entry['date']),
-            );
-        }
-        if ('' === $badges) {
-            $badges = '<span style="opacity: 0.7;">'.htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.noAudit')).'</span>';
+        if ('' === $results) {
+            $results = '<span class="aisuite-audit-tile__empty">'.htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.noAudit')).'</span>';
         }
 
+        $this->pageRenderer->addCssFile('EXT:ai_suite/Resources/Public/Css/audit.css');
+
         return sprintf(
-            '<div class="callout callout-info" style="margin-bottom: 1rem;"><div class="callout-body" style="display: flex; align-items: center; flex-wrap: wrap; gap: 0.75em;">'
-            .'<strong>%s</strong>%s<a class="btn btn-default btn-sm" href="%s">%s</a>'
+            '<div class="callout callout-info aisuite-audit-tile"><div class="callout-body aisuite-audit-tile__body">'
+            .'<strong>%s</strong>%s'
+            .'<a class="btn btn-primary btn-sm aisuite-audit-tile__new" href="%s">%s</a>'
             .'</div></div>',
             htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.title')),
-            $badges,
-            htmlspecialchars($moduleUrl),
-            htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.run')),
+            $results,
+            htmlspecialchars($newAuditUrl),
+            htmlspecialchars($this->localizationService->translate('module:aiSuite.module.audit.tile.newAudit')),
         );
     }
 }

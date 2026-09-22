@@ -2,13 +2,14 @@
 
 use AutoDudes\AiSuite\Controller\AgencyController;
 use AutoDudes\AiSuite\Controller\AiSuiteController;
+use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\ContentController;
 use AutoDudes\AiSuite\Controller\FilelistController;
 use AutoDudes\AiSuite\Controller\GlobalInstructionController;
-use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\PagesController;
 use AutoDudes\AiSuite\Controller\PromptTemplateController;
+use AutoDudes\AiSuite\Controller\ProvenanceOverviewController;
 use AutoDudes\AiSuite\Controller\SettingsController;
 use AutoDudes\AiSuite\Controller\Workflow\WorkflowManagerController;
 
@@ -183,6 +184,17 @@ return [
         'path' => '/aisuite/settings/save',
         'methods' => ['POST'],
         'target' => SettingsController::class.'::handleRequest',
+    ],
+    // Provenance overview
+    'ai_suite_provenance_review' => [
+        'path' => '/aisuite/provenance/review',
+        'methods' => ['POST'],
+        'target' => ProvenanceOverviewController::class.'::handleRequest',
+    ],
+    'ai_suite_provenance_cleanup' => [
+        'path' => '/aisuite/provenance/cleanup',
+        'methods' => ['POST'],
+        'target' => ProvenanceOverviewController::class.'::handleRequest',
     ],
     // Filelist routes
     'ai_suite_filelist' => [

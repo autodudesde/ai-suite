@@ -7,6 +7,7 @@ namespace AutoDudes\AiSuite\Service;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
+use TYPO3\CMS\Backend\Routing\Route;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Http\RedirectResponse;
@@ -39,6 +40,13 @@ class SessionService implements SingletonInterface
         'ai_suite_workflow_filelist_files_translate_prepare' => 'ai_suite_workflow_filelist_files_translate_prepare',
         'ai_suite_global_instructions' => 'ai_suite_global_instructions',
         'ai_suite_prompt_manage_customprompttemplates' => 'ai_suite_prompt_manage_customprompttemplates',
+        'files_aisuite.files_prepare' => 'ai_suite_workflow_filelist_files_prepare',
+        'files_aisuite.files_translate_prepare' => 'ai_suite_workflow_filelist_files_translate_prepare',
+    ];
+
+    private const MODULE_ROUTE_FOR_STORED_VIEW = [
+        self::ROUTE_FILELIST_METADATA => 'files_aisuite.files_prepare',
+        self::ROUTE_FILELIST_TRANSLATION => 'files_aisuite.files_translate_prepare',
     ];
 
     private const CONTEXT_PRESERVE_ROUTES = [
@@ -75,7 +83,7 @@ class SessionService implements SingletonInterface
         /** @var array<string, mixed> $postParams */
         $postParams = $request->getParsedBody() ?? [];
 
-        $this->storeContextForRoute($sessionData, $route, $postParams);
+        $this->storeContextForRoute($sessionData, $route, $postParams, $this->isModuleRequest($request));
 
         $this->backendUserService->getBackendUser()?->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
     }
@@ -244,7 +252,10 @@ class SessionService implements SingletonInterface
                 } else {
                     $id = $this->getWebPageId();
                 }
-                $uri = $this->uriBuilder->buildUriFromRoute($lastRoute, ['id' => $id]);
+                $uri = $this->uriBuilder->buildUriFromRoute(
+                    self::MODULE_ROUTE_FOR_STORED_VIEW[$lastRoute] ?? $lastRoute,
+                    ['id' => $id]
+                );
                 $response = new RedirectResponse((string) $uri);
 
                 throw new PropagateResponseException($response, 303);
@@ -256,9 +267,11 @@ class SessionService implements SingletonInterface
      * @param array<string, mixed> $postParams
      * @param array<string, mixed> $sessionData
      */
-    protected function storeContextForRoute(array &$sessionData, string $route, array $postParams): void
+    protected function storeContextForRoute(array &$sessionData, string $route, array $postParams, bool $isModuleRequest = false): void
     {
-        $sessionData['ai_suite_context'] = in_array($route, self::CONTEXT_PRESERVE_ROUTES, true) ? $sessionData['ai_suite_context'] : 'default';
+        if ($isModuleRequest && !in_array($route, self::CONTEXT_PRESERVE_ROUTES, true)) {
+            $sessionData['ai_suite_context'] = 'default';
+        }
 
         if (array_key_exists($route, self::AI_SUITE_ROUTES)) {
             $sessionData['ai_suite_context'] = self::AI_SUITE_ROUTES[$route];
@@ -270,6 +283,13 @@ class SessionService implements SingletonInterface
                 );
             }
         }
+    }
+
+    private function isModuleRequest(ServerRequestInterface $request): bool
+    {
+        $route = $request->getAttribute('route');
+
+        return $route instanceof Route && null !== $route->getOption('module');
     }
 
     private function resetFilelistFolderId(): void

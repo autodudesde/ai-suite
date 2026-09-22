@@ -48,6 +48,18 @@ class SiteService implements SingletonInterface
         $this->localizationService = $localizationService ?? GeneralUtility::makeInstance(LocalizationService::class);
     }
 
+    public function getMainSiteDefaultLanguageCode(): string
+    {
+        $mainSite = null;
+        foreach ($this->siteFinder->getAllSites() as $site) {
+            if (null === $mainSite || $site->getRootPageId() < $mainSite->getRootPageId()) {
+                $mainSite = $site;
+            }
+        }
+
+        return $mainSite?->getDefaultLanguage()->getLocale()->getLanguageCode() ?? '';
+    }
+
     /**
      * @return array<string, mixed>
      */

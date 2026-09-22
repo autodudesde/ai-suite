@@ -12,11 +12,36 @@ use TYPO3\CMS\Core\Utility\RootlineUtility;
 
 class GlobalInstructionService implements SingletonInterface
 {
+    protected const SCOPE_LABEL_PREFIX = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.';
+
+    /** @var array<string, list<string>> */
+    protected const SCOPE_VALUES = [
+        'files' => ['general', 'imageWizard', 'metadata'],
+        'pages' => ['general', 'pageTree', 'imageWizard', 'contentElement', 'newsRecord', 'editContent', 'metadata', 'translation'],
+    ];
+
     public function __construct(
         protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
         protected readonly BackendUserService $backendUserService,
         protected readonly LoggerInterface $logger,
     ) {}
+
+    /**
+     * @return list<array{label: string, value: string}>
+     */
+    public function getScopeItems(string $context): array
+    {
+        $context = 'files' === $context ? 'files' : 'pages';
+        $items = [];
+        foreach (self::SCOPE_VALUES[$context] as $value) {
+            $items[] = [
+                'label' => self::SCOPE_LABEL_PREFIX.$context.'.'.$value,
+                'value' => $value,
+            ];
+        }
+
+        return $items;
+    }
 
     public function buildGlobalInstruction(string $context, string $scope, ?int $pageId = null, ?string $directoryPath = null): string
     {

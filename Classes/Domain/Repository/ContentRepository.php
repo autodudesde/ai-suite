@@ -75,7 +75,7 @@ class ContentRepository extends AbstractRepository
         $this->addWorkspaceRestriction($qb);
 
         return $qb
-            ->select('uid', 'pid', 'colPos', 'CType', 'header', 'bodytext', 'hidden', 'sorting', 'image', 'assets', 'media', 'sys_language_uid', 't3ver_oid', 't3ver_wsid', 't3ver_state')
+            ->select('uid', 'pid', 'colPos', 'CType', 'header', 'subheader', 'bodytext', 'hidden', 'sorting', 'image', 'assets', 'media', 'sys_language_uid', 't3ver_oid', 't3ver_wsid', 't3ver_state')
             ->from($this->table)
             ->where(
                 $qb->expr()->eq('pid', $qb->createNamedParameter($pageId, Connection::PARAM_INT)),
@@ -137,6 +137,39 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
+     * @return array<string, list<int>>
+     */
+    public function getReferencedFilesByField(int $contentUid): array
+    {
+        $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
+        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $rows = $qb
+            ->select('uid_local', 'fieldname')
+            ->from('sys_file_reference')
+            ->where(
+                $qb->expr()->eq('uid_foreign', $qb->createNamedParameter($contentUid, Connection::PARAM_INT)),
+                $qb->expr()->eq('tablenames', $qb->createNamedParameter('tt_content')),
+            )
+            ->orderBy('sorting_foreign', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+
+        $byField = [];
+        foreach ($rows as $row) {
+            $field = (string) ($row['fieldname'] ?? '');
+            $uid = (int) ($row['uid_local'] ?? 0);
+            if ('' === $field || 0 === $uid || in_array($uid, $byField[$field] ?? [], true)) {
+                continue;
+            }
+            $byField[$field][] = $uid;
+        }
+
+        return $byField;
+    }
+
+    /**
      * @return list<int>
      */
     public function getReferencedFileUids(int $contentUid): array
@@ -173,7 +206,7 @@ class ContentRepository extends AbstractRepository
 
         $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
         $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-        $this->addWorkspaceRestriction($qb);
+        $this->addWorkspaceRestriction($qb, true);
         $searchTerm = '%'.$qb->escapeLikeWildcards($query).'%';
 
         $fields = array_values($searchFields ?? []);

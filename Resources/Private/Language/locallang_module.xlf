@@ -66,6 +66,33 @@
             <trans-unit id="aiSuite.module.dashboard.card.agencySection.title">
                 <source>Agencies</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.title">
+                <source>Audit</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.description">
+                <source>Check pages for SEO, accessibility, open questions and content gaps, and apply the suggested fixes.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.auditSection.linklabel">
+                <source>Open</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.title">
+                <source>AI content</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.description">
+                <source>What on this installation was written by AI, split into pages, files and records, and where a human has taken responsibility for it.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.provenanceSection.linklabel">
+                <source>Open</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.title">
+                <source>Statistics</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.description">
+                <source>How many requests this installation made, which models answered them and how that developed over time.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.statisticsSection.linklabel">
+                <source>Open</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.backgroundTaskSection.description">
                 <source>Monitor and manage your background tasks, e.g. the processing of metadata generation for pages and images or of translations.</source>
             </trans-unit>
@@ -174,26 +201,17 @@
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.title">
                 <source>Settings</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.context">
-                <source>Context</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.description">
                 <source>Change the general outcome of your requests using Global Instructions</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.extendPreviousInstructions">
                 <source>Extend previous</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.globalInstructions">
-                <source>Global instructions</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.globalInstructionsLabel">
                 <source>Global Instructions</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.linklabel">
                 <source>Manage</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeMetadata">
-                <source>Metatdata</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.selection">
                 <source>Selected pages/directories</source>
@@ -224,6 +242,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScope">
                 <source>ContentElements / metadata fields (leave empty for all)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.cTypeScopeColumn">
+                <source>Content elements / Metadata fields</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.managePromptTemplates.customPromptTemplatesLabel">
                 <source>Custom prompt templates</source>
@@ -594,6 +615,21 @@
             <trans-unit id="aiSuite.module.modal.abort">
                 <source>Abort</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.modal.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.fluxSlideOne">
+                <source>Generated image suggestions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.modelSelection">
+                <source>Select model</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.recordLocalization">
+                <source>Translate record</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.modal.unknownTargetFolder">
+                <source>The folder for the generated image could not be found. Please open the folder in the file list and try again.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.modal.continue">
                 <source>Do you want to continue?</source>
             </trans-unit>
@@ -867,7 +903,7 @@
                 <source>Hide / show buttons</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.manageLicense">
-                <source>Manage license</source>
+                <source>License</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.foundPagesForTranslation">
                 <source>Found pages for translation</source>
@@ -939,7 +975,7 @@
                 <source>No searchableList given.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.openDocumentation">
-                <source>Open documentation</source>
+                <source>Documentation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.quickStart">
                 <source>Quick Start</source>
@@ -1159,27 +1195,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.noRecordsFound">
                 <source>No records available.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scope">
-                <source>Scope</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeContentElement">
-                <source>ContentElements</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeEditContent">
-                <source>RTE Content Editing</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeGeneral">
-                <source>General available</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeImageWizard">
-                <source>Image generation</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopeNewsRecord">
-                <source>News</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.dashboard.card.manageGlobalInstructions.scopePageTree">
-                <source>Page tree generation</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowFilelistTranslation.description">
                 <source>Translate file metadata (title, alternative text) from a source language to a target language using AI translation services.</source>
@@ -1415,9 +1430,6 @@
             <trans-unit id="aiSuite.module.settings.field.translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.updateDeeplGlossaries">
-                <source>Update DeepL glossaries</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.easyLanguageLibrary">
                 <source>Easy Language Library</source>
             </trans-unit>
@@ -1463,6 +1475,9 @@
             <trans-unit id="aiSuite.module.settings.field.aiModelHubApiKey">
                 <source>AI Model Hub API Key</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.settings.field.mittwaldAiModelHubApiKey">
+                <source>Mittwald AI Model Hub API Key</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
                 <source>Enable Basic Authentication</source>
             </trans-unit>
@@ -1490,9 +1505,6 @@
             <trans-unit id="aiSuite.module.audit.type.a11y">
                 <source>Accessibility</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.url">
-                <source>Page URL</source>
-            </trans-unit>
             <trans-unit id="aiSuite.module.audit.keyword">
                 <source>Focus keyword (optional)</source>
             </trans-unit>
@@ -1503,25 +1515,25 @@
                 <source>Run audit</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner">
-                <source>Running the audit — please wait.</source>
+                <source>Running the audit, please wait.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.seo">
-                <source>Running the SEO &amp; performance audit — Lighthouse data can take up to a minute.</source>
+                <source>Running the SEO &amp; performance audit. Lighthouse data can take up to a minute.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.a11y">
-                <source>Running the accessibility scan — this usually takes a few seconds.</source>
+                <source>Running the accessibility scan. This usually takes a few seconds.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.questions">
-                <source>Analysing question coverage — fetching search questions and rating them against the page content.</source>
+                <source>Analysing question coverage: fetching search questions and rating them against the page content.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.gap">
-                <source>Analysing the content gap — fetching ranking data and rating it against the page content.</source>
+                <source>Analysing the content gap: fetching ranking data and rating it against the page content.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.cluster">
-                <source>Building topic clusters — fetching market data and rating the coverage against the page content.</source>
+                <source>Building topic clusters: fetching market data and rating the coverage against the page content.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.spinner.competitors">
-                <source>Analysing competitors — fetching market data and rating the keyword gap against the page content.</source>
+                <source>Analysing competitors: fetching market data and rating the keyword gap against the page content.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.invalidUrl.title">
                 <source>Invalid URL</source>
@@ -1533,7 +1545,7 @@
                 <source>Audit result</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.unreachable">
-                <source>The page is not publicly reachable — the audit could not run. Only public URLs can be audited.</source>
+                <source>The page is not publicly reachable, so the audit could not run. Only public URLs can be audited.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.errors">
                 <source>errors</source>
@@ -1546,6 +1558,18 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.lighthouse">
                 <source>Lighthouse scores</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.performance">
+                <source>Performance</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.accessibility">
+                <source>Accessibility</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.best-practices">
+                <source>Best practices</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.lighthouse.seo">
+                <source>SEO</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.market">
                 <source>Market view for</source>
@@ -1569,13 +1593,22 @@
                 <source>Fixable with AI Suite (one click)</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fixability.ai-assist">
-                <source>AI explains — editor fixes</source>
+                <source>AI explains, editor fixes</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fixability.dev-handoff">
                 <source>Hand over to your developer or agency</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fixability.manual">
                 <source>Information only</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.warning">
+                <source>Warning</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.severity.notice">
+                <source>Notice</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.pageChooser">
                 <source>Page to audit</source>
@@ -1584,7 +1617,7 @@
                 <source>External URL (optional)</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.externalUrl.help">
-                <source>Overrides the page selection — audits any public URL instead (no caching, no one-click actions).</source>
+                <source>Overrides the page selection and audits any public URL instead (no caching, no one-click actions).</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.lastAudit.seo">
                 <source>Last SEO audit</source>
@@ -1592,8 +1625,8 @@
             <trans-unit id="aiSuite.module.audit.lastAudit.a11y">
                 <source>Last accessibility audit</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.lastAudit.view">
-                <source>view</source>
+            <trans-unit id="aiSuite.module.audit.lastAudits.title">
+                <source>Existing audits for this page</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cachedHint">
                 <source>Cached result from</source>
@@ -1602,13 +1635,7 @@
                 <source>No cached audit</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.noCachedResult.message">
-                <source>There is no stored audit result for this page yet — run a new audit.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.audit.action.metadata">
-                <source>Generate metadata with AI Suite</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.audit.action.altTexts">
-                <source>Generate image alt texts</source>
+                <source>There is no stored audit result for this page yet. Run a new audit.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.saveKeyword.question">
                 <source>Save this focus keyword to the page properties (keywords field)?</source>
@@ -1674,7 +1701,7 @@
                 <source>Select AI model</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.wizard.queueInfo">
-                <source>%1$s steps — about %2$s AI requests will be made.</source>
+                <source>%1$s steps, about %2$s AI requests will be made.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.fix.wizard.visionLibrary">
                 <source>Vision model (image alt texts)</source>
@@ -1760,6 +1787,9 @@
             <trans-unit id="aiSuite.module.audit.candidates.competition">
                 <source>Competition</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.candidates.competition.help">
+                <source>How contested the keyword is among advertisers in paid search, from 0 (hardly any ads) to 1 (fiercely contested). It says nothing about the organic ranking.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.candidates.adopt">
                 <source>Adopt as focus keyword</source>
             </trans-unit>
@@ -1785,10 +1815,10 @@
                 <source>Assessment</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.answered">
-                <source>answered</source>
+                <source>covered</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.partial">
-                <source>partially answered</source>
+                <source>partially covered</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.open">
                 <source>open</source>
@@ -1797,7 +1827,7 @@
                 <source>Google question</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.serpUnavailable">
-                <source>Live search questions were unavailable — this list is AI-derived from the page content only.</source>
+                <source>Live search questions were unavailable. This list is AI-derived from the page content only.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.questions.generateHint">
                 <source>Open and partially answered questions can be turned into content on this page.</source>
@@ -1809,7 +1839,7 @@
                 <source>Answer the following user questions on this page. Use each question as a heading with a concise, helpful answer below it (2-4 sentences), most important information first:</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.answers.hint">
-                <source>This page is outside this TYPO3 installation — the answers can be generated as text to copy into the target system.</source>
+                <source>This page is outside this TYPO3 installation. The answers can be generated as text to copy into the target system.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.answers.button">
                 <source>Generate answers as copyable text (1 credit)</source>
@@ -1875,7 +1905,7 @@
                 <source>Ranking data for domain</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.noCandidates">
-                <source>No underperforming rankings found — this page converts its visibility well.</source>
+                <source>No underperforming rankings found. This page converts its visibility well.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.generateHint">
                 <source>Open and partially covered keywords can be turned into new topic sections on this page.</source>
@@ -1902,7 +1932,7 @@
                 <source>The topic cluster analysis needs a focus keyword to explore the topic around it.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.noClusters">
-                <source>No cluster data found for this keyword — try a broader focus keyword.</source>
+                <source>No cluster data found for this keyword. Try a broader focus keyword.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.subtopic">
                 <source>Subtopic</source>
@@ -1917,7 +1947,7 @@
                 <source>Write a new topic section for this page covering the following subtopic and the search queries behind it. One clear section: heading plus 2-4 helpful paragraphs, most important information first:</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.pagetreeHint">
-                <source>Uncovered subtopics can also become their own subpages. The button opens the page tree generator with a prefilled proposal — you review and confirm every page before anything is created.</source>
+                <source>Uncovered subtopics can also become their own subpages. The button opens the page tree generator with a prefilled proposal. You review and confirm every page before anything is created.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.cluster.pagetreeButton">
                 <source>Propose as page tree</source>
@@ -1956,7 +1986,7 @@
                 <source>No ranking data exists for this page's domain yet - it may be new or not indexed. The competitor analysis needs existing rankings to determine competitors; start with the SEO audit and indexable content.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.competitors.noCandidates">
-                <source>No keyword gap found against your closest competitor — your page covers this market well.</source>
+                <source>No keyword gap found against your closest competitor. Your page covers this market well.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.competitors.generatePrompt">
                 <source>Write a new topic section for this page covering the following keyword a competitor already ranks for. One clear section: heading plus 2-4 helpful paragraphs, most important information first:</source>
@@ -1966,6 +1996,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.difficulty">
                 <source>Difficulty</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.audit.difficulty.help">
+                <source>How hard it is to reach the organic top 10 for this keyword, from 0 (easy) to 100 (very hard).</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.market">
                 <source>Search market</source>
@@ -1988,6 +2021,9 @@
             <trans-unit id="aiSuite.module.audit.score">
                 <source>Audit score (0-100, calculated from the findings)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.workspaceNotice">
+                <source>The audit fetches the page from the outside and therefore always evaluates the published live version, not your workspace draft.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.translationReadOnly">
                 <source>This is a translated page's audit - fix and generation actions run on the default language.</source>
             </trans-unit>
@@ -2000,8 +2036,8 @@
             <trans-unit id="aiSuite.module.audit.tile.noAudit">
                 <source>No audit yet for this page.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.audit.tile.run">
-                <source>Open audit</source>
+            <trans-unit id="aiSuite.module.audit.tile.newAudit">
+                <source>Start new audit</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.title">
                 <source>Audit a whole page tree</source>
@@ -2052,7 +2088,7 @@
                 <source>Auditing {current}/{total}: {title}</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.exhausted">
-                <source>{done} of {total} pages audited — credits exhausted. Everything finished is saved; resume to audit the rest.</source>
+                <source>{done} of {total} pages audited, credits exhausted. Everything finished is saved; resume to audit the rest.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.stopped">
                 <source>{done} of {total} pages audited.</source>
@@ -2064,7 +2100,7 @@
                 <source>Distribution: {high} green, {medium} orange, {low} red.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.done">
-                <source>Done — all {total} pages audited.</source>
+                <source>Done: all {total} pages audited.</source>
             </trans-unit>
             <trans-unit id="widgets.group.aiSuite">
                 <source>AI Suite</source>
@@ -2100,7 +2136,7 @@
                 <source>Author box</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.factsHeader">
-                <source>Author facts — the AI only phrases, it invents nothing</source>
+                <source>Author facts: the AI only phrases, it invents nothing</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.authorbox.noInvent">
                 <source>The AI will write a short bio text exclusively from the facts you enter here. It will not invent qualifications or experience.</source>
@@ -2134,6 +2170,207 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.creditsHint">
                 <source>One audit costs 3 credits.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.generated" resname="aiSuite.provenance.badge.generated">
+                <source>AI-generated</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.assisted" resname="aiSuite.provenance.badge.assisted">
+                <source>AI-assisted</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.translated" resname="aiSuite.provenance.badge.translated">
+                <source>AI-translated</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.viaClient" resname="aiSuite.provenance.badge.viaClient">
+                <source>Written through %s.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.unknownModel" resname="aiSuite.provenance.badge.unknownModel">
+                <source>unknown model</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.information.field" resname="aiSuite.provenance.information.field">
+                <source>This text was written by an AI feature.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.badge.description" resname="aiSuite.provenance.badge.description">
+                <source>Model: %s, created: %s, function: %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.about" resname="aiSuite.module.actionmenu.about">
+                <source>About</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.title" resname="aiSuite.about.provider.title">
+                <source>Provider (Art. 50 EU AI Act)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.intro" resname="aiSuite.about.provider.intro">
+                <source>This AI system is placed on the market by:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.phone" resname="aiSuite.about.provider.phone">
+                <source>Phone:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.website" resname="aiSuite.about.provider.website">
+                <source>Website</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.imprint" resname="aiSuite.about.provider.imprint">
+                <source>Imprint</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.privacy" resname="aiSuite.about.provider.privacy">
+                <source>Privacy policy</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.provider.documentation" resname="aiSuite.about.provider.documentation">
+                <source>Documentation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.feature" resname="aiSuite.provenance.overview.feature">
+                <source>Function</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.content" resname="aiSuite.provenance.feature.content">
+                <source>Content creation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.metadata" resname="aiSuite.provenance.feature.metadata">
+                <source>Metadata</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.translation" resname="aiSuite.provenance.feature.translation">
+                <source>Translation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.image" resname="aiSuite.provenance.feature.image">
+                <source>Image generation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.pagetree" resname="aiSuite.provenance.feature.pagetree">
+                <source>Page tree generation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.mcp" resname="aiSuite.provenance.feature.mcp">
+                <source>MCP server</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.feature.chat" resname="aiSuite.provenance.feature.chat">
+                <source>Editor chat</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.title" resname="aiSuite.about.roles.title">
+                <source>Who carries which obligation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.provider" resname="aiSuite.about.roles.provider">
+                <source>AutoDudes is the provider: Art. 50(2) requires the outputs of this system to be marked in a machine-readable way. That obligation is ours.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.deployer" resname="aiSuite.about.roles.deployer">
+                <source>Whoever runs this website is the deployer: Art. 50(4) requires a visible disclosure for deepfakes and for AI-generated text published to inform the public on matters of public interest. Whether it applies to a given piece of content depends on the content and on the editorial control exercised over it.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.trackingOn" resname="aiSuite.about.roles.trackingOn">
+                <source>This installation records what its AI features write.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.trackingOff" resname="aiSuite.about.roles.trackingOff">
+                <source>Recording of AI-written records is switched off in this installation.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.about.roles.translationsDisclosed" resname="aiSuite.about.roles.translationsDisclosed">
+                <source>AI translations are disclosed as such as well.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.actionmenu.provenance" resname="aiSuite.module.actionmenu.provenance">
+                <source>AI content</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.title" resname="aiSuite.provenance.overview.title">
+                <source>AI-written content on this installation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.intro" resname="aiSuite.provenance.overview.intro">
+                <source>Every record an AI feature wrote, newest first. Marking a text as reviewed records that a human checked it and takes editorial responsibility. That is the exception Art. 50(4) provides for text. It does not apply to images, audio or video.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allModes" resname="aiSuite.provenance.overview.allModes">
+                <source>All kinds</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allReviewStates" resname="aiSuite.provenance.overview.allReviewStates">
+                <source>Reviewed and unreviewed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.reviewed" resname="aiSuite.provenance.overview.reviewed">
+                <source>reviewed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.notReviewed" resname="aiSuite.provenance.overview.notReviewed">
+                <source>not reviewed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.applyFilter" resname="aiSuite.provenance.overview.applyFilter">
+                <source>Apply filter</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.reviewRecorded" resname="aiSuite.provenance.overview.reviewRecorded">
+                <source>%s entries were marked as reviewed.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.editedSince" resname="aiSuite.provenance.overview.editedSince">
+                <source>edited since</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.record" resname="aiSuite.provenance.overview.record">
+                <source>Record</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.mode" resname="aiSuite.provenance.overview.mode">
+                <source>Kind</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.written" resname="aiSuite.provenance.overview.written">
+                <source>Written</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noAccess.title" resname="aiSuite.provenance.overview.noAccess.title">
+                <source>No access</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noAccess.message" resname="aiSuite.provenance.overview.noAccess.message">
+                <source>Your backend group is not allowed to see the list of AI-written content.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.noGroup" resname="aiSuite.provenance.overview.noGroup">
+                <source>Without a place in the site</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.markSelected" resname="aiSuite.provenance.overview.markSelected">
+                <source>Mark selection as reviewed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.selectAll" resname="aiSuite.provenance.overview.selectAll">
+                <source>Select all</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allFeatures" resname="aiSuite.provenance.overview.allFeatures">
+                <source>All functions</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.cleanup" resname="aiSuite.provenance.overview.cleanup">
+                <source>Remove %s entries of deleted records</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.cleanupDone" resname="aiSuite.provenance.overview.cleanupDone">
+                <source>%s entries of deleted records were removed.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.confirmReview" resname="aiSuite.provenance.overview.confirmReview">
+                <source>This records that a human checked these texts and takes editorial responsibility for them.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.pages" resname="aiSuite.provenance.overview.area.pages">
+                <source>Pages</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.files" resname="aiSuite.provenance.overview.area.files">
+                <source>Files &amp; media</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.area.records" resname="aiSuite.provenance.overview.area.records">
+                <source>Records</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.context.pages" resname="aiSuite.provenance.overview.context.pages">
+                <source>On page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.context.files" resname="aiSuite.provenance.overview.context.files">
+                <source>Used on</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.allTables" resname="aiSuite.provenance.overview.allTables">
+                <source>All tables</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.emptyArea" resname="aiSuite.provenance.overview.emptyArea">
+                <source>Nothing in this area. Another tab or a different filter may hold what you are looking for.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.range" resname="aiSuite.provenance.overview.range">
+                <source>Entries %s-%s of %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.pagination" resname="aiSuite.provenance.overview.pagination">
+                <source>Pagination</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.pageIndicator" resname="aiSuite.provenance.overview.pageIndicator">
+                <source>Page %s of %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.firstPage" resname="aiSuite.provenance.overview.firstPage">
+                <source>First page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.previousPage" resname="aiSuite.provenance.overview.previousPage">
+                <source>Previous page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.nextPage" resname="aiSuite.provenance.overview.nextPage">
+                <source>Next page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.lastPage" resname="aiSuite.provenance.overview.lastPage">
+                <source>Last page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.empty" resname="aiSuite.provenance.overview.empty">
+                <source>Nothing has been written by an AI feature yet.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.provenance.overview.recordGone" resname="aiSuite.provenance.overview.recordGone">
+                <source>record deleted</source>
             </trans-unit>
         </body>
     </file>

@@ -10,23 +10,9 @@
     <div class="row">
         <div class="col-12">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <label class="panel-title fw-bold">
-                        <core:icon identifier="actions-search" />
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.headline"/>
-                        ({auditTypeLabel}) — {keyword}
-                    </label>
-                </div>
+                <f:render partial="Audit/ResultHeader" arguments="{typeLabel: auditTypeLabel, subject: keyword, url: url, cachedAt: cachedAt}"/>
                 <div class="panel-body">
-
-                    <f:if condition="{cachedAt}">
-                        <div class="alert alert-info">
-                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.cachedHint"/>
-                            <f:format.date format="d.m.Y H:i">@{cachedAt}</f:format.date>
-                        </div>
-                    </f:if>
-
-                    <p class="text-body-secondary">{url}</p>
+                    <f:render partial="Audit/WorkspaceNotice" arguments="{show: auditWorkspaceNotice}"/>
 
                     <f:if condition="{noClusters}">
                         <div class="alert alert-warning">
@@ -36,9 +22,9 @@
 
                     <f:if condition="{clusters}">
                         <p>
-                            <span class="badge badge-danger">{summary.open} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span>
-                            <span class="badge badge-warning">{summary.partial} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span>
-                            <span class="badge badge-success">{summary.answered} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span>
+                            <span class="aisuite-audit-pill aisuite-audit-pill--error">{summary.open} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span>
+                            <span class="aisuite-audit-pill aisuite-audit-pill--warning">{summary.partial} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span>
+                            <span class="aisuite-audit-pill aisuite-audit-pill--success">{summary.answered} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span>
                         </p>
 
                         <table class="table table-striped">
@@ -57,9 +43,9 @@
                                     <tr>
                                         <td>
                                             <f:switch expression="{cluster.status}">
-                                                <f:case value="answered"><span class="badge badge-success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
-                                                <f:case value="partial"><span class="badge badge-warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
-                                                <f:defaultCase><span class="badge badge-danger"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
+                                                <f:case value="answered"><span class="aisuite-audit-pill aisuite-audit-pill--success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
+                                                <f:case value="partial"><span class="aisuite-audit-pill aisuite-audit-pill--warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
+                                                <f:defaultCase><span class="aisuite-audit-pill aisuite-audit-pill--error"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
                                             </f:switch>
                                         </td>
                                         <td>
@@ -108,10 +94,7 @@
                         </div>
                     </f:if>
 
-                    <a class="btn btn-default" href="{f:be.uri(route: 'ai_suite_audit')}">
-                        <core:icon identifier="actions-arrow-left" size="small"/>
-                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.newAudit"/>
-                    </a>
+                    <f:render partial="Audit/ResultActions" arguments="{pageId: pageId}"/>
 
                 </div>
             </div>

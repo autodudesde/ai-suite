@@ -11,6 +11,10 @@
                 <source>Group specific AI Model Hub API key (IONOS, also used for Flux)</source>
                 <target>Gruppenspezifischer AI Model Hub API-Schlüssel (IONOS, auch für Flux)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.beGroups.field.mittwaldAiModelHubApiKey">
+                <source>Group specific Mittwald AI Model Hub API key</source>
+                <target>Gruppenspezifischer Mittwald AI Model Hub API-Schlüssel</target>
+            </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
                 <source>Group specific Anthropic/Claude API key</source>
                 <target>Gruppenspezifischer Anthropic/Claude API-Schlüssel</target>
@@ -380,7 +384,7 @@
                 <target>Metadaten (Dateien)</target>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
-                <source>ContentElementsw</source>
+                <source>ContentElements</source>
                 <target>Inhaltselemente</target>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.editContent">
@@ -463,6 +467,30 @@
             <trans-unit id="aiSuite.permissions.enableAuditDescription" approved="yes">
                 <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
                 <target>Erlaubt SEO- und WCAG-Barrierefreiheits-Audits für öffentliche Seiten-URLs über die AutoDudes-Audit-Infrastruktur (Seiten-URL und Inhalt verlassen die TYPO3-Instanz).</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAutoTranslation" approved="yes">
+                <source>Enable automatic translation of content elements on save</source>
+                <target>Automatische Übersetzung von Inhaltselementen beim Speichern aktivieren</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableAutoTranslationDescription" approved="yes">
+                <source>Allow automatic translation of content elements into all site languages when they are saved in the source language</source>
+                <target>Erlaubt, Inhaltselemente beim Speichern in der Ausgangssprache automatisch in alle Sprachen der Website zu übersetzen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableStatistics" approved="yes">
+                <source>Show usage statistics view</source>
+                <target>Statistik-Ansicht anzeigen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableStatisticsDescription" approved="yes">
+                <source>Allow backend users of this group to open the AI Suite "Statistics" view with usage charts (requests per month, by model, and add-on charts such as ChEddi chat usage).</source>
+                <target>Erlaubt Backend-Benutzern dieser Gruppe, die AI-Suite-Ansicht „Statistiken“ mit Nutzungsdiagrammen zu öffnen (Anfragen pro Monat, nach Modell und Diagramme von Erweiterungen wie der ChEddi-Chat-Nutzung).</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableProvenanceOverview" approved="yes">
+                <source>AI content overview</source>
+                <target>Übersicht der KI-Inhalte</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.permissions.enableProvenanceOverviewDescription" approved="yes">
+                <source>Access to the list of records written by an AI feature, including the option to mark a text as editorially reviewed.</source>
+                <target>Zugriff auf die Liste der Datensätze, die eine KI-Funktion geschrieben hat, einschließlich der Möglichkeit, einen Text als redaktionell geprüft zu markieren.</target>
             </trans-unit>
         </body>
     </file>

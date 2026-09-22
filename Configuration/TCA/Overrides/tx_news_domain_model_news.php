@@ -6,4 +6,8 @@ if (ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['description']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiNewsMetaDescription';
 
     $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['alternative_title']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiNewsAlternativeTitle';
+
+    foreach (['description', 'alternative_title'] as $aiSuiteProvenanceField) {
+        $GLOBALS['TCA']['tx_news_domain_model_news']['columns'][$aiSuiteProvenanceField]['config']['fieldInformation']['tx_aisuite_provenance']['renderType'] = 'aiProvenanceInformation';
+    }
 }

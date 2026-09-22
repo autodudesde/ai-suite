@@ -7,6 +7,7 @@ namespace AutoDudes\AiSuite\EventListener;
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use AutoDudes\AiSuite\Service\BackendRouteService;
 use AutoDudes\AiSuite\Service\BackendUserService;
+use AutoDudes\AiSuite\Service\BackgroundTaskService;
 use AutoDudes\AiSuite\Service\IconService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\SiteService;
@@ -48,6 +49,7 @@ class ModifyButtonBarEventListener
         protected readonly FlashMessageService $flashMessageService,
         protected readonly BackendRouteService $backendRouteService,
         protected readonly Typo3Version $typo3Version,
+        protected readonly BackgroundTaskService $backgroundTaskService,
     ) {
         $this->extConf = $this->extensionConfiguration->get('ai_suite');
     }
@@ -162,6 +164,7 @@ class ModifyButtonBarEventListener
         if ($request->getUri()->getPath() === $entryPoint.$this->backendRouteService->getRecordListPath()
             || $request->getUri()->getPath() === $entryPoint.'/module/web/layout') {
             $pageUid = $request->getQueryParams()['id'] ?? 0;
+            $this->backgroundTaskService->syncPendingTranslationTasksForPage((int) $pageUid);
             $result = $this->translationService->processFinishedTranslationTasksForPage((int) $pageUid);
 
             if ($result['processedCount'] > 0) {

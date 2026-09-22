@@ -19,7 +19,7 @@ final class ModelTypeEnumeration
     public const TEXT = 'CHATGPT,Vision';
     public const IMAGE = 'GPTImage,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
-    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45,ClaudeSonnet5';
+    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45,ClaudeSonnet5,ClaudeOpus5';
 
     public const CHATGPT = 'openAiApiKey';
     public const ANTHROPIC = 'anthropicApiKey';
@@ -40,4 +40,5 @@ final class ModelTypeEnumeration
     public const IONOSQWEN35 = 'aiModelHubApiKey';
     public const CLAUDEHAIKU45 = 'anthropicApiKey';
     public const CLAUDESONNET5 = 'anthropicApiKey';
+    public const CLAUDEOPUS5 = 'anthropicApiKey';
 }

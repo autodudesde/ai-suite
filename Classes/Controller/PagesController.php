@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Controller;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
@@ -172,6 +173,9 @@ class PagesController extends AbstractBackendController
                 'sysLanguages' => $this->aiSuiteContext->siteService->getAvailableLanguages(),
                 'selectedSysLanguage' => $langIsoCode,
                 'globalInstructions' => $globalInstructions,
+                // Carried into the create step as a hidden field: the tree is generated in this
+                // request and written in the next, so the model has to travel with the result.
+                'textAiModel' => $textAi,
             ]);
             $this->view->addFlashMessage(
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.fetchingDataSuccessful.message'),
@@ -196,7 +200,18 @@ class PagesController extends AbstractBackendController
             $createParsedBody = (array) $this->request->getParsedBody();
             $selectedPageTreeContent = $createParsedBody['selectedPageTreeContent'] ?? '';
             $startStructureFromPid = $createParsedBody['startStructureFromPid'] ?? 0;
-            $this->pageStructureFactory->createFromArray(json_decode($selectedPageTreeContent, true), (int) $startStructureFromPid);
+            $this->aiSuiteContext->provenanceCapture->begin(
+                ProvenanceContext::generated(
+                    ProvenanceContext::FEATURE_PAGETREE,
+                    (string) ($createParsedBody['textAiModel'] ?? ''),
+                )
+            );
+
+            try {
+                $this->pageStructureFactory->createFromArray(json_decode($selectedPageTreeContent, true), (int) $startStructureFromPid);
+            } finally {
+                $this->aiSuiteContext->provenanceCapture->end();
+            }
             BackendUtility::setUpdateSignal('updatePageTree');
             $this->view->addFlashMessage(
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.pagetreeGenerationSuccessful.message'),

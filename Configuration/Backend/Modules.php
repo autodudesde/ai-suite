@@ -1,5 +1,6 @@
 <?php
 
+use AutoDudes\AiSuite\Controller\AboutController;
 use AutoDudes\AiSuite\Controller\AgencyController;
 use AutoDudes\AiSuite\Controller\AiSuiteController;
 use AutoDudes\AiSuite\Controller\AuditController;
@@ -9,6 +10,7 @@ use AutoDudes\AiSuite\Controller\FilelistController;
 use AutoDudes\AiSuite\Controller\GlobalInstructionController;
 use AutoDudes\AiSuite\Controller\PagesController;
 use AutoDudes\AiSuite\Controller\PromptTemplateController;
+use AutoDudes\AiSuite\Controller\ProvenanceOverviewController;
 use AutoDudes\AiSuite\Controller\SettingsController;
 use AutoDudes\AiSuite\Controller\StatisticsController;
 use AutoDudes\AiSuite\Controller\Workflow\WorkflowManagerController;
@@ -63,6 +65,14 @@ return [
                 'path' => '/statistics',
                 'target' => StatisticsController::class.'::handleRequest',
             ],
+            'provenance' => [
+                'path' => '/provenance',
+                'target' => ProvenanceOverviewController::class.'::handleRequest',
+            ],
+            'about' => [
+                'path' => '/about',
+                'target' => AboutController::class.'::handleRequest',
+            ],
         ],
     ],
     'files_aisuite' => [
@@ -75,6 +85,14 @@ return [
         'labels' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_mod.xlf',
         'routes' => [
             '_default' => [
+                'target' => FilelistController::class.'::handleRequest',
+            ],
+            'files_prepare' => [
+                'path' => '/files-prepare',
+                'target' => FilelistController::class.'::handleRequest',
+            ],
+            'files_translate_prepare' => [
+                'path' => '/files-translate-prepare',
                 'target' => FilelistController::class.'::handleRequest',
             ],
         ],

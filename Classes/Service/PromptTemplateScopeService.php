@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Tca\PromptTemplateTypeItemsProcFunc;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
@@ -38,7 +39,51 @@ class PromptTemplateScopeService implements SingletonInterface
 
     public function __construct(
         protected readonly LocalizationService $localizationService,
+        protected readonly TcaCompatibilityService $tcaCompatibilityService,
     ) {}
+
+    /**
+     * @return list<array{label: string, value: string}>
+     */
+    public function getTypeItems(string $scope): array
+    {
+        return self::SCOPE_METADATA === $scope
+            ? $this->getMetadataTypeItems()
+            : $this->getContentTypeItems();
+    }
+
+    /**
+     * @return list<array{label: string, value: string}>
+     */
+    public function getContentTypeItems(): array
+    {
+        $cTypes = [];
+        foreach ($this->tcaCompatibilityService->getFieldItems('tt_content', 'CType') as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            if (array_key_exists('label', $item) && array_key_exists('value', $item) && array_key_exists('group', $item)) {
+                $label = (string) $item['label'];
+                $value = (string) $item['value'];
+                $group = (string) $item['group'];
+            } elseif (array_key_exists('0', $item) && array_key_exists('1', $item) && array_key_exists('3', $item)) {
+                $label = (string) $item['0'];
+                $value = (string) $item['1'];
+                $group = (string) $item['3'];
+            } else {
+                continue;
+            }
+            if (in_array($group, PromptTemplateTypeItemsProcFunc::EXCLUDE_TAB_LIST, true)
+                || in_array($value, PromptTemplateTypeItemsProcFunc::EXCLUDE_CTYPE_LIST, true)
+                || '--div--' === $value
+            ) {
+                continue;
+            }
+            $cTypes[] = ['label' => $label, 'value' => $value];
+        }
+
+        return $cTypes;
+    }
 
     public function buildMetadataType(string $table, string $fieldName): string
     {

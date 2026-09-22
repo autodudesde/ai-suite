@@ -42,8 +42,8 @@
                     </label>
                 </div>
                 <div class="panel-body">
-                    <div class="btn-group gap-3" role="group">
-                        <f:link.external uri="https://www.autodudes.de/documentation/ai-suite/en/introduction" target="_blank" class="btn btn-primary">
+                    <div class="btn-group gap-3 flex-wrap" role="group">
+                        <f:link.external uri="https://www.autodudes.de/en/documentation/ai-suite/introduction" target="_blank" class="btn btn-primary">
                             <core:icon identifier="actions-document-view" />
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.openDocumentation"/>
                         </f:link.external>
@@ -51,6 +51,10 @@
                             <core:icon identifier="actions-key" />
                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.manageLicense"/>
                         </f:link.external>
+                        <a href="{aboutUri}" class="btn btn-primary">
+                            <core:icon identifier="actions-info" />
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.actionmenu.about"/>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -124,6 +128,39 @@
                     icon: 'actions-rocket',
                     cardname: 'agencySection',
                     route: 'ai_suite_agencies',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
+
+        <f:if condition="{cardPermissions.auditSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-search',
+                    cardname: 'auditSection',
+                    route: 'web_aisuite.audit',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
+
+        <f:if condition="{cardPermissions.provenanceSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'actions-list-alternative',
+                    cardname: 'provenanceSection',
+                    route: 'web_aisuite.provenance',
+                    status: 'active'
+                }" />
+            </div>
+        </f:if>
+
+        <f:if condition="{cardPermissions.statisticsSection}">
+            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+                <f:render partial="DashboardCards/DynamicCard" arguments="{
+                    icon: 'content-widget-chart-bar',
+                    cardname: 'statisticsSection',
+                    route: 'web_aisuite.statistics',
                     status: 'active'
                 }" />
             </div>

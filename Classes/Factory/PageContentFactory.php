@@ -15,12 +15,10 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Factory;
 
 use AutoDudes\AiSuite\Exception\AiSuiteException;
+use AutoDudes\AiSuite\Service\AiImageStoreService;
 use AutoDudes\AiSuite\Service\BackendUserService;
-use AutoDudes\AiSuite\Service\FileNameSanitizerService;
 use AutoDudes\AiSuite\Service\TcaCompatibilityService;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
@@ -36,7 +34,7 @@ class PageContentFactory
 
     public function __construct(
         protected readonly StorageRepository $storageRepository,
-        protected readonly Filesystem $filesystem,
+        protected readonly AiImageStoreService $aiImageStore,
         protected readonly LinkService $linkService,
         protected readonly SettingsFactory $settingsFactory,
         protected readonly BackendUserService $backendUserService,
@@ -59,7 +57,8 @@ class PageContentFactory
         array $content,
         array $contentElementTextData,
         array $contentElementImageData,
-        array $contentElementIrreFields
+        array $contentElementIrreFields,
+        string $imageModel = ''
     ): void {
         $data = [];
         $newStrings = [];
@@ -127,7 +126,7 @@ class PageContentFactory
         foreach ($contentElementImageData as $table => $fieldsArray) {
             foreach ($fieldsArray as $key => $fields) {
                 foreach ($fields as $fieldName => $fieldData) {
-                    $newFileUid = $this->addImage($fieldData['newImageUrl'], $fieldData['imageTitle'] ?? '', $content['regenerateReturnUrl'] ?? '');
+                    $newFileUid = $this->addImage($fieldData['newImageUrl'], $fieldData['imageTitle'] ?? '', $content['regenerateReturnUrl'] ?? '', $imageModel);
                     $newString = $this->newStringPlaceholder($table.'_sys_file_refrence', $key);
                     $data['sys_file_reference'][$newString] = [
                         'table_local' => 'sys_file',
@@ -167,11 +166,8 @@ class PageContentFactory
      * @throws AiSuiteException
      * @throws InsufficientFolderReadPermissionsException
      */
-    public function addImage(string $imageUrl, string $imageTitle, string $regenerateReturnUrl = ''): int
+    public function addImage(string $imageUrl, string $imageTitle, string $regenerateReturnUrl = '', string $model = ''): int
     {
-        $fileExtension = !empty(pathinfo($imageUrl, PATHINFO_EXTENSION)) ? pathinfo($imageUrl, PATHINFO_EXTENSION) : 'png';
-        $title = empty($imageTitle) ? 'ai-generated-image-'.time() : $imageTitle;
-
         $mediaFolderSetting = !empty($this->extConf['mediaStorageFolder']) ? $this->extConf['mediaStorageFolder'] : 'ai-images';
 
         if (preg_match('/^\d+:/', $mediaFolderSetting)) {
@@ -195,40 +191,7 @@ class PageContentFactory
             }
         }
 
-        $destinationPath = Environment::getPublicPath().$aiImagesFolder->getPublicUrl();
-
-        $title = FileNameSanitizerService::sanitize($title);
-        $targetFile = $this->filesystem->exists($destinationPath.$title.'.'.$fileExtension) ? $title.'-'.time().'.'.$fileExtension : $title.'.'.$fileExtension;
-
-        $tempBase = GeneralUtility::tempnam('ai_image_');
-        $this->filesystem->copy($imageUrl, $tempBase);
-
-        if (!file_exists($tempBase) || 0 === filesize($tempBase)) {
-            @unlink($tempBase);
-
-            throw new \RuntimeException(sprintf('Failed to download image from %s', $imageUrl));
-        }
-
-        $detectedMime = mime_content_type($tempBase);
-        $realExtension = match ($detectedMime) {
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/gif' => 'gif',
-            'image/webp' => 'webp',
-            default => $fileExtension,
-        };
-
-        if ($realExtension !== $fileExtension) {
-            $targetFile = str_replace('.'.$fileExtension, '.'.$realExtension, $targetFile);
-        }
-
-        $tempFile = $tempBase.'.'.$realExtension;
-        rename($tempBase, $tempFile);
-
-        $storage = $aiImagesFolder->getStorage();
-        $newFile = $storage->addFile($tempFile, $aiImagesFolder, $targetFile);
-
-        return $newFile->getUid();
+        return $this->aiImageStore->store($imageUrl, $imageTitle, $aiImagesFolder, $model)->getUid();
     }
 
     /**
