@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
@@ -329,6 +330,9 @@ class ContentController extends AbstractBackendController
             'contentElementData' => $contentElementData,
             'selectedTcaColumns' => $requestFields,
             'initialImageAi' => $imageAi,
+            // Generation and saving are two separate requests, so the answer envelope naming the
+            // model is gone by the time the register row is written. The wizard carries it along.
+            'generationModels' => $models,
             'uuid' => $this->uuidService->generateUuid(),
         ]);
         $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/content/validation.js');
@@ -375,7 +379,26 @@ class ContentController extends AbstractBackendController
         }
         $this->assertGenerationAllowed((string) (array_key_first($selectedTcaColumns) ?? 'tt_content'));
         $this->assertPageContentEditAccess((int) ($content['pid'] ?? 0));
-        $this->pageContentFactory->createContentElementData($content, $contentElementTextData, $contentElementImageData, $contentElementIrreFields);
+        $generationModels = json_decode((string) ($parsedBody['generationModels'] ?? ''), true);
+        $generationModels = is_array($generationModels) ? $generationModels : [];
+        $this->aiSuiteContext->provenanceCapture->begin(
+            ProvenanceContext::generated(
+                ProvenanceContext::FEATURE_CONTENT,
+                (string) ($generationModels['text'] ?? ''),
+            )
+        );
+
+        try {
+            $this->pageContentFactory->createContentElementData(
+                $content,
+                $contentElementTextData,
+                $contentElementImageData,
+                $contentElementIrreFields,
+                (string) ($generationModels['image'] ?? ''),
+            );
+        } finally {
+            $this->aiSuiteContext->provenanceCapture->end();
+        }
 
         return new RedirectResponse($content['returnUrl']);
     }

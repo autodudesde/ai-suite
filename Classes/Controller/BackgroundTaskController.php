@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
@@ -167,12 +168,25 @@ class BackgroundTaskController extends AbstractBackendController
                 throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
             }
 
-            if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
-                $this->backgroundTaskService->handleFileMetadataTranslationSave($backgroundTask, $data);
-            } elseif ('NEW' === $backgroundTask['mode']) {
-                $this->backgroundTaskService->handleNewMetadataRecordSave($backgroundTask, $data);
-            } else {
-                $this->backgroundTaskService->handleExistingMetadataRecordSave($backgroundTask, $data);
+            // The model is on the task row, and it has to come from there: the answer that named it
+            // belongs to the request that queued the task, long gone by the time an editor saves.
+            $model = (string) ($backgroundTask['model'] ?? '');
+            $this->aiSuiteContext->provenanceCapture->begin(
+                'translation' === $backgroundTask['type']
+                    ? ProvenanceContext::translated(ProvenanceContext::FEATURE_METADATA, $model)
+                    : ProvenanceContext::generated(ProvenanceContext::FEATURE_METADATA, $model)
+            );
+
+            try {
+                if ('translation' === $backgroundTask['type'] && 'sys_file_metadata' === $backgroundTask['table_name']) {
+                    $this->backgroundTaskService->handleFileMetadataTranslationSave($backgroundTask, $data);
+                } elseif ('NEW' === $backgroundTask['mode']) {
+                    $this->backgroundTaskService->handleNewMetadataRecordSave($backgroundTask, $data);
+                } else {
+                    $this->backgroundTaskService->handleExistingMetadataRecordSave($backgroundTask, $data);
+                }
+            } finally {
+                $this->aiSuiteContext->provenanceCapture->end();
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',

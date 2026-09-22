@@ -125,6 +125,11 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = 
             'tx-aisuite-permissions',
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableCliWorkflowExecutionDescription',
         ],
+        'enable_provenance_overview' => [
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableProvenanceOverview',
+            'tx-aisuite-permissions',
+            'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableProvenanceOverviewDescription',
+        ],
         'enable_statistics' => [
             'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.enableStatistics',
             'tx-aisuite-permissions',

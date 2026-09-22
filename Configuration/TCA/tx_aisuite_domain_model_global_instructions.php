@@ -1,5 +1,7 @@
 <?php
 
+use AutoDudes\AiSuite\Tca\ScopeItemsProcFunc;
+
 /*
  *
  * This file is part of the "ai_suite" Extension for TYPO3 CMS.
@@ -130,7 +132,7 @@ return [
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
-                'itemsProcFunc' => 'AutoDudes\AiSuite\Tca\ScopeItemsProcFunc->getScopeItems',
+                'itemsProcFunc' => ScopeItemsProcFunc::class.'->getScopeItems',
                 'default' => 'general',
                 'size' => 1,
                 'eval' => 'trim',

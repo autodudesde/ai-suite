@@ -30,6 +30,7 @@
                         <form method="POST" action="{f:be.uri(route: 'ai_suite_content_save', parameters: '{id: content.pid}')}" name="requestContent" enctype="multipart/form-data">
                             <input type="hidden" name="content" value="{content -> f:format.json()}" />
                             <input type="hidden" name="selectedTcaColumns" value="{selectedTcaColumns -> f:format.json()}" />
+                            <input type="hidden" name="generationModels" value="{generationModels -> f:format.json()}" />
                             <f:render partial="PageContent/DynamicFormFields" arguments="{_all}" />
 
                             <div class="form-group">

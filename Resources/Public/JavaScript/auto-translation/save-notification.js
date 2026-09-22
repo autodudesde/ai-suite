@@ -1,14 +1,13 @@
 import DocumentService from "@typo3/core/document-service.js";
 import Notification from "@typo3/backend/notification.js";
 
-/**
- * Shows an info notification right when a content element is saved while automatic
- * "direct" translation on save is active — the translation itself runs synchronously
- * server-side, so this gives the editor immediate feedback that it has started.
- *
- * The module is only loaded by the backend for tt_content source-language edit forms
- * when the feature is enabled and the processing mode is "direct".
- */
+const SAVE_CONTROLS = [
+    'button[name^="_save"]',
+    'a[data-name^="_save"]',
+    'button[name="CMD"][value^="save"]',
+    'a[data-name="CMD"][data-value^="save"]',
+].join(',');
+
 class AutoTranslationSaveNotification {
     constructor() {
         this.notified = false;
@@ -22,17 +21,28 @@ class AutoTranslationSaveNotification {
                 return;
             }
             form.addEventListener('submit', () => {
-                if (this.notified) {
-                    return;
-                }
-                this.notified = true;
-                Notification.info(
-                    TYPO3.lang['aiSuite.autoTranslation.direct.startTitle'],
-                    TYPO3.lang['aiSuite.autoTranslation.direct.startMessage'],
-                    8
-                );
+                this.notify();
             });
+            // TYPO3 12 saves via jQuery trigger('submit'), which fires no native event
+            document.addEventListener('click', (event) => {
+                const target = event.target instanceof Element ? event.target : null;
+                if (target !== null && target.closest(SAVE_CONTROLS) !== null) {
+                    this.notify();
+                }
+            }, true);
         });
+    }
+
+    notify() {
+        if (this.notified) {
+            return;
+        }
+        this.notified = true;
+        Notification.info(
+            TYPO3.lang['aiSuite.autoTranslation.direct.saveHintTitle'],
+            TYPO3.lang['aiSuite.autoTranslation.direct.saveHintMessage'],
+            5
+        );
     }
 }
 

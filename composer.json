@@ -24,7 +24,7 @@
     "AutoDudes",
     "AI Suite"
   ],
-  "version": "12.23.0",
+  "version": "12.24.0",
   "support": {
     "issues": "https://github.com/autodudesde/ai-suite/issues"
   },
@@ -38,6 +38,7 @@
   },
   "suggest": {
     "b13/container": "*",
+    "typo3/cms-dashboard": "^12.4",
     "typo3/cms-scheduler": "^12.4"
   },
   "conflict": {

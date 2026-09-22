@@ -13,9 +13,10 @@ class SaveHandling {
         });
     }
     selectionHandler(modal, selector) {
-        modal.find('.modal-body').find(selector).on("click", function(ev){
-            let selectionGroup = ev.target.getAttribute('data-selection-group');
-            let selectionId = ev.target.getAttribute('data-selection-id');
+        modal.find('.modal-body').find(selector).on('change', function() {
+            let selectionGroup = this.getAttribute('data-selection-group');
+            let selectionId = this.id;
+            this.checked = true;
             modal.find('.modal-body').find('input[data-selection-group="'+selectionGroup+'"]').each(function(index, inputField) {
                 if(inputField.id !== selectionId) {
                     inputField.checked = false;
@@ -27,13 +28,14 @@ class SaveHandling {
         let self = this;
         let aiSuiteSaveGeneratedImageButton = modal.find('.modal-body').find('button#aiSuiteSaveGeneratedImageBtn');
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
-            let selectedImageRadioBtn = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][newImageUrl]"]:checked');
+            let selectedImageRadioBtn = modal.find('.modal-body').find('input.image-selection:checked');
             if(selectedImageRadioBtn.length > 0) {
-                let imageTitle = self.getSelectedImageTitle(modal, data);
+                let imageTitle = self.getSelectedImageTitle(modal);
                 let imageUrl = selectedImageRadioBtn.data('url');
                 let postData = {
                     imageUrl: imageUrl,
-                    imageTitle: imageTitle
+                    imageTitle: imageTitle,
+                    imageAiModel: data.imageAiModel ?? ''
                 };
                 slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 705));
                 modal.find('.spinner-wrapper').css('overflow', 'hidden');
@@ -70,7 +72,7 @@ class SaveHandling {
         aiSuiteSaveGeneratedImageButton.on('click', async function() {
             let selectedImageRadioBtn = modal.find('.modal-body').find('input.image-selection:checked');
             if(selectedImageRadioBtn.length > 0) {
-                let imageTitle = self.getSelectedImageTitle(modal, data, true);
+                let imageTitle = self.getSelectedImageTitle(modal);
                 let imageName = General.sanitizeFileName(imageTitle);
                 let imageUrl = selectedImageRadioBtn.data('url');
                 slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.module.modal.imageSavingProcess'], 705));
@@ -85,10 +87,18 @@ class SaveHandling {
                     const fileExtension = imageUrl.split('.').pop();
                     imageName += '.' + fileExtension;
                 }
+                if(!General.isUsable(data.targetFolder)) {
+                    Notification.error(TYPO3.lang['aiSuite.module.modal.error'], TYPO3.lang['aiSuite.module.modal.unknownTargetFolder'], 8);
+                    MultiStepWizard.dismiss();
+                    return;
+                }
+
                 let postData = {
                     'fileName': imageName,
                     'fileTarget': data.targetFolder
                 };
+                // The core action this asks dereferences the folder without a check, so a target it
+                // cannot resolve answers with an exception page rather than with a result.
                 let existFileRes = await Ajax.sendAjaxRequest('file_exists', postData, true);
                 if(General.isUsable(existFileRes) && General.isUsable(existFileRes.id)) {
                     const fileExtension = imageName.split('.').pop();
@@ -101,7 +111,8 @@ class SaveHandling {
                     'fileName': imageName,
                     'fileTitle': imageTitle,
                     'fileTarget': data.targetFolder,
-                    'fileUrl': imageUrl
+                    'fileUrl': imageUrl,
+                    'imageAiModel': data.imageAiModel ?? ''
                 };
 
                 let processFileRes = await Ajax.sendAjaxRequest('aisuite_file_process', postData, true);
@@ -121,13 +132,9 @@ class SaveHandling {
             }
         });
     }
-    getSelectedImageTitle(modal, data, fromFileList = false) {
-        let selectedImageTitleRadioBtn = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitle]"]:checked');
-        let selectedImageTitleInputFreeText = modal.find('.modal-body').find('input[name="fileData[contentElementData]['+ data.table +']['+ data.position +']['+ data.fieldName +'][imageTitleFreeText]"]').val();
-        if(fromFileList) {
-            selectedImageTitleRadioBtn = modal.find('.modal-body').find('input.image-title-selection:checked');
-            selectedImageTitleInputFreeText = modal.find('.modal-body').find('input.image-title-free-text-input').val();
-        }
+    getSelectedImageTitle(modal) {
+        let selectedImageTitleRadioBtn = modal.find('.modal-body').find('input.image-title-selection:checked');
+        let selectedImageTitleInputFreeText = modal.find('.modal-body').find('input.image-title-free-text-input').val();
         let imageTitle = '';
         if(selectedImageTitleRadioBtn.length > 0) {
             imageTitle = selectedImageTitleRadioBtn.data('image-title') ?? '';

@@ -12,8 +12,7 @@ class Midjourney {
 
     addSelectionEventListeners(modal, data, slide, filelistScope, self) {
         self.backToSlideOneButton(modal, data);
-        SaveHandling.selectionHandler(modal, 'img.ce-image-selection');
-        SaveHandling.selectionHandler(modal, 'label.ce-image-title-selection');
+        SaveHandling.selectionHandler(modal, 'input.image-selection');
         if(filelistScope) {
             SaveHandling.saveGeneratedImageFileListButton(modal, data, slide);
         } else {

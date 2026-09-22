@@ -12,6 +12,7 @@ use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\MathUtility;
 
 class AiSeoOpenGraphDescription extends AbstractNode
 {
@@ -21,6 +22,10 @@ class AiSeoOpenGraphDescription extends AbstractNode
     public function render(): array
     {
         if (!GeneralUtility::makeInstance(BackendUserService::class)->checkPermissions('tx_aisuite_features:enable_metadata_generation')) {
+            return [];
+        }
+
+        if (!MathUtility::canBeInterpretedAsInteger($this->data['databaseRow']['uid'] ?? null)) {
             return [];
         }
 

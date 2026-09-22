@@ -16,12 +16,15 @@ use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsAlternativeTitle;
 use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle;
+use AutoDudes\AiSuite\FormEngine\FieldInformation\AiProvenanceInformation;
 use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
 use AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook;
 use AutoDudes\AiSuite\Hooks\GlobalInstructionHook;
+use AutoDudes\AiSuite\Hooks\ProvenanceHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
 use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -111,6 +114,12 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410691] = [
     'class' => AiSysFileDescription::class,
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1756800001] = [
+    'nodeName' => 'aiProvenanceInformation',
+    'priority' => 30,
+    'class' => AiProvenanceInformation::class,
+];
+
 if (ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410684] = [
         'nodeName' => 'aiNewsMetaDescription',
@@ -127,6 +136,11 @@ if (ExtensionManagementUtility::isLoaded('news')) {
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite']
     = GlobalInstructionHook::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['ai_suite_provenance']
+    = ProvenanceHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass']['ai_suite_provenance']
+    = ProvenanceHook::class;
 
 try {
     $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('ai_suite');
@@ -155,4 +169,8 @@ try {
         );
     }
 } catch (Throwable $e) {
+    GeneralUtility::makeInstance(LogManager::class)
+        ->getLogger(__FILE__)
+        ->warning('AI Suite translation hooks were not registered', ['error' => $e->getMessage()])
+    ;
 }

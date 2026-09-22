@@ -4,16 +4,21 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Form\FormDataCompiler;
 use TYPO3\CMS\Backend\Form\FormDataGroup\TcaDatabaseRecord;
 use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\WorkspaceAspect;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Exception;
@@ -69,6 +74,9 @@ class MetadataService
         protected readonly GlobalInstructionService $globalInstructionService,
         protected readonly UuidService $uuidService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly ProvenanceCaptureService $provenanceCapture,
+        protected readonly WorkspaceContextService $workspaceContextService,
+        protected readonly Context $context,
         protected readonly LoggerInterface $logger,
     ) {}
 
@@ -267,12 +275,11 @@ class MetadataService
             $additionalGetVars .= '&'.$key.'='.$value;
         }
 
-        $previewUriBuilder = PreviewUriBuilder::create($pageId);
-        $previewUri = $previewUriBuilder
-            ->withLanguage($previewLanguage)
-            ->withAdditionalQueryParameters($additionalGetVars)
-            ->buildUri()
-        ;
+        $previewUri = $this->buildLivePreviewUri(
+            PreviewUriBuilder::create($pageId)
+                ->withLanguage($previewLanguage)
+                ->withAdditionalQueryParameters($additionalGetVars),
+        );
 
         if (null === $previewUri) {
             if (array_key_exists('tx_news_pi1[news]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[action]', $additionalQueryParameters) && array_key_exists('tx_news_pi1[controller]', $additionalQueryParameters)) {
@@ -282,7 +289,12 @@ class MetadataService
             throw new UnableToLinkToPageException($this->localizationService->translate('aiSuite.unableToLinkToPage', [$pageId, $languageUid]));
         }
 
-        return $this->siteService->buildAbsoluteUri($previewUri);
+        $absoluteUri = $this->siteService->buildAbsoluteUri($previewUri);
+        if ($this->pointsToBackend((string) $previewUri) || $this->pointsToBackend($absoluteUri)) {
+            throw new UnableToLinkToPageException($this->localizationService->translate('aiSuite.unableToLinkToPage', [$pageId, $languageUid]));
+        }
+
+        return $absoluteUri;
     }
 
     /**
@@ -374,9 +386,7 @@ class MetadataService
 
             $textAiModel = $extConf['metadataAutogenerateModel'] ?? '';
 
-            $availableSourceLanguages = $this->siteService->getAvailableLanguages(true, 0, true);
-            $firstLanguageKey = array_key_first($availableSourceLanguages);
-            $languageParts = explode('__', (string) $firstLanguageKey);
+            $languageCode = $this->siteService->getMainSiteDefaultLanguageCode();
 
             $datamap = [
                 'sys_file_metadata' => [
@@ -399,7 +409,7 @@ class MetadataService
                             'custom_prompt' => trim((string) ($extConf['metadataAutogeneratePrompt'] ?? '')),
                         ],
                         '',
-                        $languageParts[0],
+                        $languageCode,
                         [
                             'text' => $textAiModel,
                         ]
@@ -434,9 +444,19 @@ class MetadataService
             }
 
             if (!empty($datamap['sys_file_metadata'][$fileMetadataUid])) {
-                $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                $dataHandler->start($datamap, []);
-                $dataHandler->process_datamap();
+                // Named here rather than left to `refineModel()`: this window opens around the save,
+                // long after the request whose answer would have carried the model.
+                $this->provenanceCapture->begin(
+                    ProvenanceContext::generated(ProvenanceContext::FEATURE_METADATA, (string) $textAiModel)
+                );
+
+                try {
+                    $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                    $dataHandler->start($datamap, []);
+                    $dataHandler->process_datamap();
+                } finally {
+                    $this->provenanceCapture->end();
+                }
 
                 if (count($dataHandler->errorLog) > 0) {
                     $this->logger->error('Error saving metadata for file '.$file->getUid().': '.implode(', ', $dataHandler->errorLog));
@@ -549,6 +569,34 @@ class MetadataService
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
+    }
+
+    private function createLiveContext(): Context
+    {
+        $liveContext = clone $this->context;
+        $liveContext->setAspect('workspace', new WorkspaceAspect(0));
+
+        return $liveContext;
+    }
+
+    private function buildLivePreviewUri(PreviewUriBuilder $previewUriBuilder): ?UriInterface
+    {
+        $build = fn (): ?UriInterface => $previewUriBuilder->buildUri(null, $this->createLiveContext());
+        $backendUser = $GLOBALS['BE_USER'] ?? null;
+
+        if (!$backendUser instanceof BackendUserAuthentication) {
+            return $build();
+        }
+
+        return $this->workspaceContextService->withWorkspace($backendUser, 0, $build);
+    }
+
+    private function pointsToBackend(string $url): bool
+    {
+        $path = '/'.ltrim((string) parse_url($url, PHP_URL_PATH), '/');
+        $entryPoint = rtrim((string) ($GLOBALS['TYPO3_CONF_VARS']['BE']['entryPoint'] ?? '/typo3'), '/');
+
+        return '' !== $entryPoint && ($path === $entryPoint || str_starts_with($path, $entryPoint.'/'));
     }
 
     /**

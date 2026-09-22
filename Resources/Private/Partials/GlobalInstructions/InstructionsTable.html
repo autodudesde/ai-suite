@@ -14,9 +14,6 @@
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.name"/>
                 </th>
                 <th scope="col">
-                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.context"/>
-                </th>
-                <th scope="col">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.managePromptTemplates.scope"/>
                 </th>
                 <th scope="col">
@@ -61,12 +58,8 @@
                             {instruction.name}
                         </be:link.editRecord>
                     </td>
-                    <td data-test-context="{instruction.context}">
-                        {instruction.context -> f:format.case(mode: 'capital')}
-                    </td>
-                    <td data-test-scope="{instruction.scope}">
-                        <f:translate
-                            key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.manageGlobalInstructions.scope{instruction.scope -> f:format.case(mode: 'capital')}"/>
+                    <td data-test-context="{instruction.context}" data-test-scope="{instruction.scope}">
+                        {instruction.scopeLabel}
                     </td>
                     <td data-test-selected-pages-directories="1">
                         <f:if condition="{instruction.context} == 'pages'">

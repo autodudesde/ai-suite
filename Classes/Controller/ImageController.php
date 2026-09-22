@@ -18,6 +18,7 @@ use AutoDudes\AiSuite\Controller\Trait\AjaxResponseTrait;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
+use AutoDudes\AiSuite\Service\AiImageStoreService;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
@@ -26,11 +27,9 @@ use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
@@ -38,7 +37,6 @@ use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
-use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 
@@ -58,7 +56,7 @@ class ImageController extends AbstractBackendController
         AiSuiteContext $aiSuiteContext,
         protected readonly PageContentFactory $pageContentFactory,
         protected readonly ResourceFactory $fileFactory,
-        protected readonly Filesystem $filesystem,
+        protected readonly AiImageStoreService $aiImageStore,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly UuidService $uuidService,
         protected readonly LoggerInterface $logger,
@@ -271,11 +269,12 @@ class ImageController extends AbstractBackendController
         $parsedBody = (array) $request->getParsedBody();
         $imageUrl = $parsedBody['imageUrl'];
         $imageTitle = array_key_exists('imageTitle', $parsedBody) ? $parsedBody['imageTitle'] : '';
+        $imageModel = (string) ($parsedBody['imageAiModel'] ?? '');
 
         $response = new Response();
 
         try {
-            $newSysFileUid = $this->pageContentFactory->addImage($imageUrl, $imageTitle);
+            $newSysFileUid = $this->pageContentFactory->addImage($imageUrl, $imageTitle, '', $imageModel);
 
             $response->getBody()->write(
                 (string) json_encode(
@@ -301,26 +300,52 @@ class ImageController extends AbstractBackendController
     {
         try {
             $parsedBody = (array) $request->getParsedBody();
-            $fileTarget = $parsedBody['fileTarget'];
-            $fileTargetObject = $this->fileFactory->retrieveFileOrFolderObject($fileTarget);
-            assert($fileTargetObject instanceof Folder);
+            $fileTarget = (string) ($parsedBody['fileTarget'] ?? '');
 
-            $destinationPath = Environment::getPublicPath().$fileTargetObject->getPublicUrl();
+            // An `assert()` stood here. It threw an AssertionError, which is an Error and not an
+            // Exception, so the catch below never saw it and the editor got the backend's exception
+            // page instead of a message. The target is a request value: it can be missing, name a
+            // folder that was deleted, or name a file where a folder was meant — and a deleted one
+            // throws here rather than answering with null, so all three end up in one place.
+            $fileTargetObject = null;
+            if ('' !== $fileTarget) {
+                try {
+                    $fileTargetObject = $this->fileFactory->retrieveFileOrFolderObject($fileTarget);
+                } catch (\Throwable $e) {
+                    $this->logger->warning('The folder for the generated image could not be resolved', [
+                        'fileTarget' => $fileTarget,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
 
-            $this->filesystem->copy(
-                $parsedBody['fileUrl'],
-                $destinationPath.$parsedBody['fileName']
+            if (!$fileTargetObject instanceof Folder) {
+                $this->logger->error('The generated image has no folder to be stored in', [
+                    'fileTarget' => $fileTarget,
+                ]);
+
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => $this->aiSuiteContext->localizationService->translate(
+                        'module:aiSuite.module.modal.unknownTargetFolder',
+                    ),
+                ], 400);
+            }
+
+            $this->aiImageStore->store(
+                (string) ($parsedBody['fileUrl'] ?? ''),
+                (string) ($parsedBody['fileTitle'] ?? ''),
+                $fileTargetObject,
+                (string) ($parsedBody['imageAiModel'] ?? ''),
+                (string) ($parsedBody['fileName'] ?? ''),
             );
 
-            /** @var File $newFile */
-            $newFile = $fileTargetObject->getFile($parsedBody['fileName']);
-            $newFile->getMetaData()->offsetSet('title', $parsedBody['fileTitle']);
-            $newFile->getMetaData()->offsetSet('alternative', $parsedBody['fileTitle']);
-            $newFile->getMetaData()->save();
-
             return new JsonResponse(['success' => true]);
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+        } catch (\Throwable $e) {
+            $this->logger->error('Could not store the generated image', [
+                'fileTarget' => (string) (((array) $request->getParsedBody())['fileTarget'] ?? ''),
+                'error' => $e->getMessage(),
+            ]);
 
             return new JsonResponse(['success' => false, 'error' => $e->getMessage()], 500);
         }

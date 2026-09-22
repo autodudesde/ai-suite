@@ -17,6 +17,7 @@
                     </label>
                 </div>
                 <div class="panel-body">
+                    <f:render partial="Audit/WorkspaceNotice" arguments="{show: auditWorkspaceNotice}"/>
                     <p class="text-body-secondary">
                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.description"/>
                     </p>
@@ -72,47 +73,21 @@
                                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.language.help"/>
                             </div>
                         </div>
-                        <div class="form-text mb-3" id="auditLastAudits">
-                            <f:if condition="{lastAudits.seo}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.seo"/>:
-                                    {lastAudits.seo.date}
-                                    — <a href="{lastAudits.seo.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
-                                </div>
-                            </f:if>
-                            <f:if condition="{lastAudits.a11y}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.a11y"/>:
-                                    {lastAudits.a11y.date}
-                                    — <a href="{lastAudits.a11y.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
-                                </div>
-                            </f:if>
-                            <f:if condition="{lastAudits.questions}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.questions"/>:
-                                    {lastAudits.questions.date}
-                                    — <a href="{lastAudits.questions.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
-                                </div>
-                            </f:if>
-                            <f:if condition="{lastAudits.gap}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.gap"/>:
-                                    {lastAudits.gap.date}
-                                    — <a href="{lastAudits.gap.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
-                                </div>
-                            </f:if>
-                            <f:if condition="{lastAudits.cluster}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.cluster"/>:
-                                    {lastAudits.cluster.date}
-                                    — <a href="{lastAudits.cluster.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
-                                </div>
-                            </f:if>
-                            <f:if condition="{lastAudits.competitors}">
-                                <div>
-                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.competitors"/>:
-                                    {lastAudits.competitors.date}
-                                    — <a href="{lastAudits.competitors.viewUrl}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudit.view"/></a>
+                        <div class="mb-3" id="auditLastAudits">
+                            <f:if condition="{lastAudits}">
+                                <div class="form-label"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.lastAudits.title"/></div>
+                                <div class="aisuite-audit-link-list">
+                                    <f:for each="{lastAudits}" as="lastAudit">
+                                        <a class="btn btn-default aisuite-audit-link-btn" href="{lastAudit.viewUrl}">
+                                            <f:if condition="{lastAudit.range}">
+                                                <f:render partial="Audit/ScoreCircle" arguments="{score: lastAudit.score, range: lastAudit.range, size: 'sm'}"/>
+                                            </f:if>
+                                            <span class="aisuite-audit-link-btn__text">
+                                                <span class="aisuite-audit-link-btn__label">{lastAudit.label}</span>
+                                                <small class="aisuite-audit-link-btn__date">{lastAudit.date}</small>
+                                            </span>
+                                        </a>
+                                    </f:for>
                                 </div>
                             </f:if>
                         </div>
@@ -211,7 +186,7 @@
                     <div class="mt-3" id="auditBatchProgress" style="display: none;">
                         <div class="progress" style="height: 1.2rem;"><div class="progress-bar" id="auditBatchProgressBar" style="width: 0%;"></div></div>
                         <div class="form-text" id="auditBatchStatus"></div>
-                        <ul class="mt-2 mb-0" id="auditBatchResults" style="list-style: none; padding-left: 0;"></ul>
+                        <ul class="mt-2 aisuite-audit-link-list" id="auditBatchResults"></ul>
                     </div>
                 </div>
             </div>

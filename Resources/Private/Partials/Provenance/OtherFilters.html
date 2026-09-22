@@ -1,0 +1,9 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+<f:comment>The tabs the editor is not looking at: without these a submit would reset them.</f:comment>
+<f:for each="{otherFilters}" as="values" key="otherArea">
+    <f:for each="{values}" as="value" key="name">
+        <input type="hidden" name="filters[{otherArea}][{name}]" value="{value}" />
+    </f:for>
+</f:for>
+</html>

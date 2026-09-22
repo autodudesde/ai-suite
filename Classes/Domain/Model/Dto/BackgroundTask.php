@@ -9,6 +9,9 @@ use TYPO3\CMS\Core\Database\Connection;
 
 class BackgroundTask
 {
+    /**
+     * @param null|list<string> $changedFields
+     */
     public function __construct(
         protected string $scope,
         protected string $type,
@@ -25,6 +28,7 @@ class BackgroundTask
         protected int $crdate = 0, // time() is not allowed here
         protected bool $handledByCli = false,
         protected string $model = '',
+        protected ?array $changedFields = null,
     ) {
         if (0 === $this->crdate) {
             $this->crdate = time();
@@ -52,6 +56,7 @@ class BackgroundTask
             'mode',
             'handled_by_cli',
             'model',
+            'changed_fields',
         ];
     }
 
@@ -76,6 +81,7 @@ class BackgroundTask
             Connection::PARAM_STR, // mode
             Connection::PARAM_INT, // handled_by_cli
             Connection::PARAM_STR, // model
+            Connection::PARAM_STR, // changed_fields
         ];
     }
 
@@ -100,6 +106,7 @@ class BackgroundTask
             $this->mode,
             $this->handledByCli ? 1 : 0,
             $this->model,
+            null === $this->changedFields ? '' : (string) json_encode(array_values($this->changedFields)),
         ];
     }
 }

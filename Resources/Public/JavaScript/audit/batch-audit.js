@@ -1,12 +1,7 @@
 import General from "@autodudes/ai-suite/helper/general.js";
 import Ajax from "@autodudes/ai-suite/helper/ajax.js";
+import AuditResultLink from "@autodudes/ai-suite/audit/result-link.js";
 
-/**
- * Seitenbaum-Audit: Kostenvoranschlag VOR dem ersten Credit, dann sequenziell
- * Seite für Seite. Läuft das Guthaben mittendrin leer, stoppt der Batch vor
- * der nächsten Seite — alles Fertige bleibt gecacht, „Fortsetzen" macht nur
- * mit den restlichen Seiten weiter.
- */
 class BatchAudit {
     constructor() {
         this.pages = [];
@@ -144,12 +139,13 @@ class BatchAudit {
     }
 
     appendResult(page, output) {
-        const colors = { high: '#1e8e3e', medium: '#b06000', low: '#c5221f' };
         const item = document.createElement('li');
-        const badge = document.createElement('span');
-        badge.textContent = String(output.score);
-        badge.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:2em;height:2em;margin-right:0.5em;border-radius:50%;border:2px solid ' + (colors[output.range] || '#999') + ';color:' + (colors[output.range] || '#999') + ';font-weight:700;';
-        item.append(badge, document.createTextNode(page.title + ' [' + page.uid + ']'));
+        item.append(AuditResultLink.link({
+            viewUrl: output.viewUrl,
+            score: output.score,
+            range: output.range,
+            label: page.title + ' [' + page.uid + ']',
+        }));
         this.el('auditBatchResults').append(item);
     }
 }

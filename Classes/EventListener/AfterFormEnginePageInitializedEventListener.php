@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\EventListener;
 
+use AutoDudes\AiSuite\Service\BackendUserService;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Controller\Event\AfterFormEnginePageInitializedEvent;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -15,6 +16,7 @@ class AfterFormEnginePageInitializedEventListener
     public function __construct(
         protected readonly PageRenderer $pageRenderer,
         protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly BackendUserService $backendUserService,
     ) {}
 
     public function __invoke(AfterFormEnginePageInitializedEvent $event): void
@@ -38,6 +40,14 @@ class AfterFormEnginePageInitializedEventListener
         if (!is_array($extConf)
             || empty($extConf['enableAutoTranslateOnSave'])
             || 'direct' !== ($extConf['autoTranslateMode'] ?? '')
+        ) {
+            return false;
+        }
+
+        $model = (string) ($extConf['autoTranslateModel'] ?? 'ChatGPT');
+        if (!$this->backendUserService->checkPermissions('tx_aisuite_features:enable_auto_translation')
+            || '' === $model
+            || !$this->backendUserService->checkPermissions('tx_aisuite_models:'.$model)
         ) {
             return false;
         }

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Hooks;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\MetadataService;
+use AutoDudes\AiSuite\Service\ProvenanceCaptureService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use Doctrine\DBAL\Exception;
@@ -203,7 +205,7 @@ class TranslationHook
                 ->addMessage($flashMessage)
             ;
         } else {
-            $this->writeTranslationResults($answer->getResponseData(), $dataHandler);
+            $this->writeTranslationResults($answer->getResponseData(), $dataHandler, (string) $translateAi);
         }
     }
 
@@ -306,7 +308,7 @@ class TranslationHook
                 ->addMessage($flashMessage)
             ;
         } else {
-            if ($this->writeTranslationResults($answer->getResponseData(), $dataHandler)) {
+            if ($this->writeTranslationResults($answer->getResponseData(), $dataHandler, (string) $translateAi)) {
                 $pageUid = (int) array_key_first($allTranslateFields['pages'] ?? []);
                 if ($pageUid > 0) {
                     $this->translationService->updatePageSlug($pageUid);
@@ -349,7 +351,7 @@ class TranslationHook
     /**
      * @param array<string, mixed> $responseData
      */
-    private function writeTranslationResults(array $responseData, DataHandler $dataHandler): bool
+    private function writeTranslationResults(array $responseData, DataHandler $dataHandler, string $model): bool
     {
         $translationResults = $this->translationService->extractTranslationResults($responseData);
         [$translationResults, $untranslated] = $this->translationService->stripUntranslatedRecords($responseData, $translationResults);
@@ -371,9 +373,20 @@ class TranslationHook
             }
         }
 
-        $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $localDataHandler->start($translationResults, [], $dataHandler->BE_USER);
-        $localDataHandler->process_datamap();
+        // The same window the module and CLI paths open. Without it the localization wizard — the
+        // entry point editors actually use — would produce translations the register never sees,
+        // while identical output from the other paths is marked.
+        $capture = GeneralUtility::makeInstance(ProvenanceCaptureService::class);
+        $capture->begin(ProvenanceContext::translated(ProvenanceContext::FEATURE_TRANSLATION, $model));
+
+        try {
+            $localDataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $localDataHandler->start($translationResults, [], $dataHandler->BE_USER);
+            $localDataHandler->process_datamap();
+        } finally {
+            $capture->end();
+        }
+
         if (count($localDataHandler->errorLog) > 0) {
             $this->addErrorFlashMessage();
 

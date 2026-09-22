@@ -4,6 +4,7 @@ use AutoDudes\AiSuite\Controller\AiSuiteController;
 use AutoDudes\AiSuite\Controller\Ajax\CliOverviewAjaxController;
 use AutoDudes\AiSuite\Controller\Ajax\CreditsAjaxController;
 use AutoDudes\AiSuite\Controller\Ajax\PageInfoAjaxController;
+use AutoDudes\AiSuite\Controller\Ajax\ProvenanceAssistedController;
 use AutoDudes\AiSuite\Controller\AuditController;
 use AutoDudes\AiSuite\Controller\BackgroundTaskController;
 use AutoDudes\AiSuite\Controller\ContentController;
@@ -117,6 +118,10 @@ return [
     'title_generation' => [
         'path' => '/generate/sys-file-title',
         'target' => MetadataController::class.'::generateTitleAction',
+    ],
+    'aisuite_provenance_assisted' => [
+        'path' => '/provenance/assisted',
+        'target' => ProvenanceAssistedController::class.'::recordAction',
     ],
     'aisuite_metadata_generation_slide_one' => [
         'path' => '/generate/ai-metadata-slide-one',

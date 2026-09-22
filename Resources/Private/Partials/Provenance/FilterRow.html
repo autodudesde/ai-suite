@@ -1,0 +1,55 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<form method="get" action="{formAction}" class="row g-2 mb-3">
+    <f:for each="{formFields}" as="value" key="name"><input type="hidden" name="{name}" value="{value}" /></f:for>
+    <input type="hidden" name="area" value="{area}" />
+    <f:render partial="Provenance/OtherFilters" arguments="{otherFilters: otherFilters}" />
+
+    <div class="col-auto">
+        <select name="filters[{area}][mode]" class="form-select form-select-sm">
+            <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.allModes"/></option>
+            <f:for each="{0: 'generated', 1: 'assisted', 2: 'translated'}" as="mode">
+                <option value="{mode}" <f:if condition="{filter.mode} == {mode}">selected="selected"</f:if>>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.badge.{mode}"/>
+                </option>
+            </f:for>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="filters[{area}][feature]" class="form-select form-select-sm">
+            <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.allFeatures"/></option>
+            <f:for each="{featureOptions}" as="feature">
+                <option value="{feature}" <f:if condition="{filter.feature} == {feature}">selected="selected"</f:if>>
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.feature.{feature}" default="{feature}"/>
+                </option>
+            </f:for>
+        </select>
+    </div>
+    <f:if condition="{area} == 'records'">
+        <div class="col-auto">
+            <select name="filters[{area}][tablename]" class="form-select form-select-sm">
+                <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.allTables"/></option>
+                <f:for each="{tableOptions}" as="label" key="table">
+                    <option value="{table}" <f:if condition="{filter.tablename} == {table}">selected="selected"</f:if>>{label}</option>
+                </f:for>
+            </select>
+        </div>
+    </f:if>
+    <div class="col-auto">
+        <select name="filters[{area}][reviewed]" class="form-select form-select-sm">
+            <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.allReviewStates"/></option>
+            <option value="no" <f:if condition="{filter.reviewed} == 'no'">selected="selected"</f:if>><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.notReviewed"/></option>
+            <option value="yes" <f:if condition="{filter.reviewed} == 'yes'">selected="selected"</f:if>><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.reviewed"/></option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-default btn-sm">
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.applyFilter"/>
+        </button>
+    </div>
+    <div class="col-auto align-self-center text-muted">
+        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.range" arguments="{0: pagination.firstEntry, 1: pagination.lastEntry, 2: total}"/>
+    </div>
+</form>
+</html>

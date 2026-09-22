@@ -1,0 +1,53 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:if condition="{pagination.numberOfPages} > 1">
+    <nav aria-label="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.pagination')}">
+        <ul class="pagination mb-0">
+            <f:if condition="{pagination.previousUri}">
+                <f:then>
+                    <li class="page-item">
+                        <a class="page-link" href="{pagination.firstUri}" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.firstPage')}">
+                            <core:icon identifier="actions-view-paging-first" size="small" />
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{pagination.previousUri}" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.previousPage')}">
+                            <core:icon identifier="actions-view-paging-previous" size="small" />
+                        </a>
+                    </li>
+                </f:then>
+                <f:else>
+                    <li class="page-item disabled" aria-hidden="true"><span class="page-link"><core:icon identifier="actions-view-paging-first" size="small" /></span></li>
+                    <li class="page-item disabled" aria-hidden="true"><span class="page-link"><core:icon identifier="actions-view-paging-previous" size="small" /></span></li>
+                </f:else>
+            </f:if>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.pageIndicator" arguments="{0: pagination.currentPage, 1: pagination.numberOfPages}"/>
+                </span>
+            </li>
+
+            <f:if condition="{pagination.nextUri}">
+                <f:then>
+                    <li class="page-item">
+                        <a class="page-link" href="{pagination.nextUri}" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.nextPage')}">
+                            <core:icon identifier="actions-view-paging-next" size="small" />
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="{pagination.lastUri}" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.provenance.overview.lastPage')}">
+                            <core:icon identifier="actions-view-paging-last" size="small" />
+                        </a>
+                    </li>
+                </f:then>
+                <f:else>
+                    <li class="page-item disabled" aria-hidden="true"><span class="page-link"><core:icon identifier="actions-view-paging-next" size="small" /></span></li>
+                    <li class="page-item disabled" aria-hidden="true"><span class="page-link"><core:icon identifier="actions-view-paging-last" size="small" /></span></li>
+                </f:else>
+            </f:if>
+        </ul>
+    </nav>
+</f:if>
+</html>

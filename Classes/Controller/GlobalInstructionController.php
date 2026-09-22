@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\TcaSelectLabelService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
@@ -56,6 +57,7 @@ class GlobalInstructionController extends AbstractBackendController
         protected readonly LoggerInterface $logger,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly UuidService $uuidService,
+        protected readonly TcaSelectLabelService $tcaSelectLabelService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -225,6 +227,11 @@ class GlobalInstructionController extends AbstractBackendController
     {
         foreach ($instructions as $key => $globalInstruction) {
             $instructions[$key]['flag'] = $this->getFlagIdentifier($globalInstruction, $sites);
+            $context = (string) ($globalInstruction['context'] ?? '');
+            $instructions[$key]['scopeLabel'] = $this->tcaSelectLabelService->label(
+                $this->aiSuiteContext->globalInstructionService->getScopeItems($context),
+                (string) ($globalInstruction['scope'] ?? '')
+            );
 
             if ('pages' === $type) {
                 $selectedPages = $globalInstruction['selected_pages'] ? explode(',', $globalInstruction['selected_pages']) : [];
