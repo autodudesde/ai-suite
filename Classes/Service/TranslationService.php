@@ -56,6 +56,9 @@ class TranslationService
         'twitter_description',
     ];
 
+    /** @var array<string, list<array{0: string, 1: string, 2: array<string, mixed>}>> */
+    private array $inlineParentCandidates = [];
+
     public function __construct(
         protected readonly ContentService $contentService,
         protected readonly UriBuilder $uriBuilder,
@@ -178,7 +181,7 @@ class TranslationService
         $uuid = $this->uuidService->generateUuid();
         $site = $this->siteFinder->getSiteByPageId($pageId);
         $params['redirect'] = $returnUrl;
-        $params['cmd'][$table][$id]['localize'] = $lUid_OnPage;
+        $params['cmd'] = $this->buildLocalizationCommand((string) $table, (int) $id, (int) $lUid_OnPage);
         $params['cmd']['localization'][0]['aiSuite']['srcLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($site->getDefaultLanguage()->getLanguageId(), $pageId);
         $params['cmd']['localization'][0]['aiSuite']['destLangIsoCode'] = $this->siteService->getIsoCodeByLanguageId($lUid_OnPage, $pageId);
         $params['cmd']['localization'][0]['aiSuite']['destLangId'] = $lUid_OnPage;
@@ -910,28 +913,60 @@ class TranslationService
 
     public function findOrCreateLocalization(string $table, int $sourceUid, int $targetLanguageUid, ?string $parentField = null): ?int
     {
-        $parentField ??= 'pages' === $table
-            ? 'l10n_parent'
-            : ($this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table) ?? 'l18n_parent');
-
-        $existing = $this->translationRepository->getRecordTranslation($sourceUid, $targetLanguageUid, $table, $parentField);
-        if (null !== $existing) {
-            return (int) $existing['uid'];
+        $existingUid = $this->findLocalizationUid($table, $sourceUid, $targetLanguageUid, $parentField);
+        if (null !== $existingUid) {
+            return $existingUid;
         }
 
         $this->provenanceCapture->begin(ProvenanceContext::translated());
 
         try {
             $dh = GeneralUtility::makeInstance(DataHandler::class);
-            $dh->start([], [$table => [$sourceUid => ['localize' => $targetLanguageUid]]]);
+            $dh->start([], $this->buildLocalizationCommand($table, $sourceUid, $targetLanguageUid));
             $dh->process_cmdmap();
         } finally {
             $this->provenanceCapture->end();
         }
 
         $translatedUid = $dh->copyMappingArray_merged[$table][$sourceUid] ?? null;
+        if (null !== $translatedUid) {
+            return (int) $translatedUid;
+        }
 
-        return null !== $translatedUid ? (int) $translatedUid : null;
+        return $this->findLocalizationUid($table, $sourceUid, $targetLanguageUid, $parentField);
+    }
+
+    /**
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    public function buildLocalizationCommand(string $table, int $uid, int $targetLanguageUid, int $depth = 0): array
+    {
+        $parent = 'pages' === $table || $depth >= 10 ? null : $this->resolveInlineParent($table, $uid);
+        if (null === $parent || !$this->tcaCompatibilityService->isLanguageAware($parent[0])) {
+            return [$table => [$uid => ['localize' => $targetLanguageUid]]];
+        }
+
+        [$parentTable, $parentUid, $parentField] = $parent;
+        $cmdmap = null !== $this->findLocalizationUid($parentTable, $parentUid, $targetLanguageUid)
+            ? []
+            : $this->buildLocalizationCommand($parentTable, $parentUid, $targetLanguageUid, $depth + 1);
+        $cmdmap[$parentTable][$parentUid]['inlineLocalizeSynchronize'] = [
+            'field' => $parentField,
+            'language' => $targetLanguageUid,
+            'ids' => [$uid],
+        ];
+
+        return $cmdmap;
+    }
+
+    protected function findLocalizationUid(string $table, int $uid, int $targetLanguageUid, ?string $parentField = null): ?int
+    {
+        $parentField ??= 'pages' === $table
+            ? 'l10n_parent'
+            : ($this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table) ?? 'l18n_parent');
+        $translation = $this->translationRepository->getRecordTranslation($uid, $targetLanguageUid, $table, $parentField);
+
+        return null !== $translation ? (int) $translation['uid'] : null;
     }
 
     /**
@@ -1550,35 +1585,59 @@ class TranslationService
     }
 
     /**
-     * @return null|array{0: string, 1: int}
+     * @return null|array{0: string, 1: int, 2: string}
      */
     protected function resolveInlineParent(string $childTable, int $childUid): ?array
     {
+        $candidates = $this->getInlineParentCandidates($childTable);
+        if ([] === $candidates) {
+            return null;
+        }
         $childRow = BackendUtility::getRecordWSOL($childTable, $childUid);
         if (!is_array($childRow)) {
             return null;
         }
-        foreach ($this->tcaCompatibilityService->getAllTableNames() as $parentTable) {
-            foreach ($this->tcaCompatibilityService->getColumnConfigs($parentTable) as $config) {
-                if (
-                    !in_array($config['type'] ?? '', ['inline', 'file'], true)
-                    || ($config['foreign_table'] ?? '') !== $childTable
-                    || empty($config['foreign_field'])
-                ) {
-                    continue;
+        foreach ($candidates as [$parentTable, $parentField, $config]) {
+            $foreignTableField = (string) ($config['foreign_table_field'] ?? '');
+            if ('' !== $foreignTableField && ($childRow[$foreignTableField] ?? '') !== $parentTable) {
+                continue;
+            }
+            foreach ((array) ($config['foreign_match_fields'] ?? []) as $matchField => $matchValue) {
+                if ((string) ($childRow[$matchField] ?? '') !== (string) $matchValue) {
+                    continue 2;
                 }
-                $foreignTableField = (string) ($config['foreign_table_field'] ?? '');
-                if ('' !== $foreignTableField && ($childRow[$foreignTableField] ?? '') !== $parentTable) {
-                    continue;
-                }
-                $parentUid = (int) ($childRow[$config['foreign_field']] ?? 0);
-                if ($parentUid > 0) {
-                    return [$parentTable, $parentUid];
-                }
+            }
+            $parentUid = (int) ($childRow[$config['foreign_field']] ?? 0);
+            if ($parentUid > 0) {
+                return [$parentTable, $parentUid, $parentField];
             }
         }
 
         return null;
+    }
+
+    /**
+     * @return list<array{0: string, 1: string, 2: array<string, mixed>}>
+     */
+    protected function getInlineParentCandidates(string $childTable): array
+    {
+        if (isset($this->inlineParentCandidates[$childTable])) {
+            return $this->inlineParentCandidates[$childTable];
+        }
+        $candidates = [];
+        foreach ($this->tcaCompatibilityService->getAllTableNames() as $parentTable) {
+            foreach ($this->tcaCompatibilityService->getColumnConfigs($parentTable) as $field => $config) {
+                if (
+                    in_array($config['type'] ?? '', ['inline', 'file'], true)
+                    && ($config['foreign_table'] ?? '') === $childTable
+                    && !empty($config['foreign_field'])
+                ) {
+                    $candidates[] = [$parentTable, (string) $field, $config];
+                }
+            }
+        }
+
+        return $this->inlineParentCandidates[$childTable] = $candidates;
     }
 
     /**
@@ -1651,13 +1710,7 @@ class TranslationService
     protected function executeLocalizationCommand(string $table, int $uid, int $targetLanguageUid): array
     {
         $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-        $cmd = [
-            $table => [
-                $uid => [
-                    'localize' => $targetLanguageUid,
-                ],
-            ],
-        ];
+        $cmd = $this->buildLocalizationCommand($table, $uid, $targetLanguageUid);
 
         $this->provenanceCapture->begin(ProvenanceContext::translated());
 
@@ -1672,7 +1725,15 @@ class TranslationService
             throw new \Exception("Error creating {$table} translation: ".implode(', ', $dataHandler->errorLog));
         }
 
-        return $dataHandler->copyMappingArray_merged;
+        $copyMapping = $dataHandler->copyMappingArray_merged;
+        if (!isset($copyMapping[$table][$uid])) {
+            $createdUid = $this->findLocalizationUid($table, $uid, $targetLanguageUid);
+            if (null !== $createdUid) {
+                $copyMapping[$table][$uid] = $createdUid;
+            }
+        }
+
+        return $copyMapping;
     }
 
     /**

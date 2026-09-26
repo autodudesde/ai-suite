@@ -85,11 +85,11 @@
             </trans-unit>
             <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
                 <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
-                <target>AI Suite Lizenzschlüssel: Trage deinen generierten API-Schlüssel ein oder erzeuge unter https://www.autodudes.de/ einen neuen</target>
+                <target>AI Suite-Lizenzschlüssel: Trage deinen generierten API-Schlüssel ein oder erzeuge unter https://www.autodudes.de/ einen neuen</target>
             </trans-unit>
             <trans-unit id="aiSuiteServer" resname="aiSuiteServer">
                 <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
-                <target>AI Suite Server: Trage die URL ein, unter der der AI Suite Server erreichbar ist (Standard: https://api.autodudes.de/)</target>
+                <target>AI Suite-Server: Trage die URL ein, unter der der AI Suite-Server erreichbar ist (Standard: https://api.autodudes.de/)</target>
             </trans-unit>
             <trans-unit id="aiSuiteSystemDomain" resname="aiSuiteSystemDomain">
                 <source>System domain: Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available. Leave empty to auto-detect it from the site configuration.</source>
@@ -165,11 +165,11 @@
             </trans-unit>
             <trans-unit id="aiModelHubApiKey" resname="aiModelHubApiKey">
                 <source>Enter your AI Model Hub API key (IONOS, also used for Flux)</source>
-                <target>Trage deinen AI Model Hub API-Schlüssel ein (IONOS, auch für Flux)</target>
+                <target>Trage deinen AI-Model-Hub-API-Schlüssel ein (IONOS, auch für Flux)</target>
             </trans-unit>
             <trans-unit id="mittwaldAiModelHubApiKey" resname="mittwaldAiModelHubApiKey">
                 <source>Enter your Mittwald AI Model Hub API key (Mittwald models)</source>
-                <target>Trage deinen Mittwald AI Model Hub API-Schlüssel ein (Mittwald-Modelle)</target>
+                <target>Trage deinen Mittwald-AI-Model-Hub-API-Schlüssel ein (Mittwald-Modelle)</target>
             </trans-unit>
             <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
                 <source>Enable Basic Authentication</source>
@@ -209,7 +209,7 @@
             </trans-unit>
             <trans-unit id="forceGdpa" resname="forceGdpa">
                 <source>Only load GDPR-compliant libraries (restricts available AI models to libraries marked as GDPR-compliant on the AI Suite server)</source>
-                <target>Nur DSGVO-konforme Bibliotheken laden (beschränkt die verfügbaren KI-Modelle auf Bibliotheken, die auf dem AI Suite Server als DSGVO-konform gekennzeichnet sind)</target>
+                <target>Nur DSGVO-konforme Bibliotheken laden (beschränkt die verfügbaren KI-Modelle auf Bibliotheken, die auf dem AI Suite-Server als DSGVO-konform gekennzeichnet sind)</target>
             </trans-unit>
             <trans-unit id="provenanceTracking" resname="provenanceTracking">
                 <source>Record which records were written by an AI feature (EU AI Act Art. 50(2) evidence, and the basis for the badges in the backend)</source>
@@ -217,7 +217,7 @@
             </trans-unit>
             <trans-unit id="provenanceDiscloseTranslations" resname="provenanceDiscloseTranslations">
                 <source>Disclose AI translations as AI-generated as well (recorded either way; a faithful translation arguably preserves the semantics and is exempt)</source>
-                <target>KI-Übersetzungen ebenfalls als KI-generiert kennzeichnen (erfasst werden sie in jedem Fall; eine getreue Übersetzung erhält wohl die Bedeutung und ist dann ausgenommen)</target>
+                <target>KI-Übersetzungen ebenfalls als KI-generiert kennzeichnen (erfasst werden sie in jedem Fall; eine getreue Übersetzung erhält nach verbreiteter Auffassung die Bedeutung und ist dann ausgenommen)</target>
             </trans-unit>
             <trans-unit id="provenanceShowLabels" resname="provenanceShowLabels">
                 <source>Show the AI marking in the backend (badge in the page module, notice in the file metadata). Off keeps recording and the machine-readable image marking, it only stops labelling what editors see.</source>

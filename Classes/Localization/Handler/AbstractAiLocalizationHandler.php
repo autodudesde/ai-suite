@@ -10,6 +10,7 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\ProvenanceCaptureService;
 use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\TranslationService;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Localization\Finisher\ReloadLocalizationFinisher;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerInterface;
@@ -193,11 +194,9 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
             ? $this->localizePageIfMissing($pageId, $destLanguageId)
             : [];
 
-        $cmd = [
-            $table => [
-                $recordUid => [$dataHandlerCommand => $destLanguageId],
-            ],
-        ];
+        $cmd = 'localize' === $dataHandlerCommand
+            ? GeneralUtility::makeInstance(TranslationService::class)->buildLocalizationCommand($table, $recordUid, $destLanguageId)
+            : [$table => [$recordUid => [$dataHandlerCommand => $destLanguageId]]];
         $cmd['localization'][0]['aiSuite'] = $aiSuiteBase;
 
         return array_merge($errorLog, $this->executeCommandMap($cmd));

@@ -19,10 +19,10 @@
             <f:if condition="{availableNewsDetailPlugins}">
                 <div class="form-group">
                     <label for="newsDetailPlugin" class="control-label fw-bold mb-2">
-                        News Detail Plugins
+                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.form.label.newsDetailPlugins" />
                     </label>
                     <select id="newsDetailPlugin" class="form-control">
-                        <option value="">Please select...</option>
+                        <option value=""><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.dropdown.pleaseSelect" /></option>
                         <f:for each="{availableNewsDetailPlugins}" as="plugin">
                             <option value="{plugin.pid}">{plugin.title} (PID: {plugin.pid})</option>
                         </f:for>

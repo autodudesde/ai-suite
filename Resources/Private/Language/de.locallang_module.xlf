@@ -5,7 +5,7 @@
         <body>
             <trans-unit id="aiSuite.module.Agencies.translateXlf.fileNamePlaceholder">
                 <source>e.g. locallang.xlf</source>
-                <target>zB locallang.xlf</target>
+                <target>z. B. locallang.xlf</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.PageContent.submit">
@@ -87,7 +87,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.description">
                 <source>Configure global settings for AI Suite, e.g. AI Suite API Key, GDPR mode or directory protection.</source>
-                <target>Konfiguriere die globalen Einstellungen der AI Suite, z. B. AI Suite API Key, GDPR-Mode oder Verzeichnisschutz.</target>
+                <target>Konfiguriere die globalen Einstellungen der AI Suite, z. B. AI Suite-API-Key, GDPR-Mode oder Verzeichnisschutz.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.globalSettingsSection.linklabel">
                 <source>Open</source>
@@ -215,7 +215,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createImageFile.title">
                 <source>Create an image</source>
-                <target>Erstellen eines Images</target>
+                <target>Bild erstellen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.description">
                 <source>With the help of AI, you can have a page tree created. This is created with the pages you want.</source>
@@ -419,7 +419,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowPages.description">
                 <source>Edit or update multiple page meta properties and subpages at once.</source>
-                <target>Bearbeite oder aktualisiere mehrere Seiten-Metadaten und Unterseiten gleichzeitig.</target>
+                <target>Bearbeite oder aktualisiere die Metadaten mehrerer Seiten und Unterseiten gleichzeitig.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowPages.linklabel">
                 <source>Edit pages metas</source>
@@ -459,7 +459,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowTranslations.linklabel">
                 <source>Start translation WorkflowManager</source>
-                <target>WorkflowManager Aufgabe zur Übersetzung starten</target>
+                <target>WorkflowManager-Aufgabe zur Übersetzung starten</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.workflowTranslations.title">
                 <source>WorkflowManager for translations</source>
@@ -515,7 +515,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.translateXlfFile.description">
                 <source>Translate an extensions XLF language file in a choosen language. Remember that there has to be a destination directory for the translation.</source>
-                <target>Übersetze eine XLF-Sprachdatei mit Erweiterung in eine ausgewählte Sprache. Denke daran, dass es ein Zielverzeichnis für die Übersetzung geben muss.</target>
+                <target>Übersetze die XLF-Sprachdatei einer Extension in eine ausgewählte Sprache. Denke daran, dass es ein Zielverzeichnis für die Übersetzung geben muss.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.translateXlfFile.linklabel">
                 <source>Translate XLF file</source>
@@ -523,7 +523,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.translateXlfFile.title">
                 <source>Translate an extensions XLF file</source>
-                <target>Übersetzen einer XLF-Datei mit Erweiterung</target>
+                <target>XLF-Datei einer Extension übersetzen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.updatePromptTemplates.description">
                 <source>The AI Suite provides prompt templates. You can also add your own custom prompt templates. This action only updates the server prompt templates. Your custom prompt templates remain untouched.</source>
@@ -544,7 +544,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.destinationFileNotFound.message.suffix">
                 <source>not found, will create a new one.</source>
-                <target>nicht gefunden, werde eine neue Datei erstellen.</target>
+                <target>nicht gefunden, es wird eine neue Datei erstellt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.destinationFileNotFound.title">
                 <source>Destination file not found</source>
@@ -597,7 +597,7 @@
 
             <trans-unit id="aiSuite.module.fetchingDataSuccessful.message">
                 <source>Please check and confirm the results.</source>
-                <target>Bitte überprüfen und bestätige die Ergebnisse.</target>
+                <target>Bitte überprüfe und bestätige die Ergebnisse.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.fetchingDataSuccessful.title">
                 <source>Successfully fetched data</source>
@@ -673,11 +673,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.og_description">
                 <source>Open Graph Description</source>
-                <target>Open Graph Beschreibung</target>
+                <target>Open-Graph-Beschreibung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.og_title">
                 <source>Open Graph Title</source>
-                <target>Open Graph Titel</target>
+                <target>Open-Graph-Titel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.seo_title">
                 <source>Title for search engines</source>
@@ -685,7 +685,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.twitter_description">
                 <source>X / Twitter Description</source>
-                <target>X / Twitter Beschreibung</target>
+                <target>X / Twitter-Beschreibung</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.twitter_title">
                 <source>X / Twitter Title</source>
@@ -800,7 +800,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.missingAiSuiteApiKey.title">
                 <source>Please enter your AI Suite API key in the extension configuration.</source>
-                <target>Bitte gebe deinen AI Suite API-Schlüssel in der Erweiterungskonfiguration ein.</target>
+                <target>Bitte gib deinen AI Suite-API-Schlüssel in der Erweiterungskonfiguration ein.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.modal.abort">
@@ -833,7 +833,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.gptImageSelectionError">
                 <source>Unable to load GPT Image suggestions</source>
-                <target>GPT Image-Bildvorschläge können nicht geladen werden</target>
+                <target>GPT-Image-Bildvorschläge können nicht geladen werden</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.gptImageSlideOne">
                 <source>Generated image suggestions</source>
@@ -841,7 +841,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.enteredPromptMessage">
                 <source>Please enter your prompt with at least ten characters</source>
-                <target>Bitte gebe deinen Prompt mit mindestens zehn Zeichen ein</target>
+                <target>Bitte gib deinen Prompt mit mindestens zehn Zeichen ein</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.enteredPromptTitle">
                 <source>Prompt is too short</source>
@@ -937,7 +937,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.noTranslationLibrariesAvailable">
                 <source>No AI Suite translation libraries available.</source>
-                <target>Keine AI Suite Übersetzungsbibliotheken verfügbar.</target>
+                <target>Keine AI Suite-Übersetzungsbibliotheken verfügbar.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.saveAnyway">
                 <source>Save anyway</source>
@@ -980,7 +980,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.notification.modal.noMetadataInputMessage">
                 <source>You don't have entered an input value. Please select your favorite suggestion or enter your own data.</source>
-                <target>Du hast keinen Eingabewert eingegeben. Bitte wähle einen Vorschlag aus oder gebe deine eigenen Daten ein.</target>
+                <target>Du hast keinen Eingabewert eingegeben. Bitte wähle einen Vorschlag aus oder gib deine eigenen Daten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.notification.modal.noMetadataInputTitle">
                 <source>Missing metadata</source>
@@ -1159,7 +1159,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.cliOverview.header">
                 <source>AI Suite CLI Overview</source>
-                <target>AI Suite CLI Übersicht</target>
+                <target>AI Suite-CLI-Übersicht</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.errorDuringResponse">
                 <source>We received an error during the response. Please try again and check your settings/inputs.</source>
@@ -1183,7 +1183,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.hideShowButtons">
                 <source>Hide / show buttons</source>
-                <target>Schaltflächen ausblenden/einblenden</target>
+                <target>Buttons ausblenden/einblenden</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.manageLicense">
                 <source>License</source>
@@ -1295,7 +1295,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.sortable-input.submit">
                 <source>Submit</source>
-                <target>Einreichen</target>
+                <target>Übernehmen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.sortable-input.title">
                 <source>Insert the new page title:</source>
@@ -1383,7 +1383,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.validatePageStructure.submit">
                 <source>Create structure</source>
-                <target>Struktur schaffen</target>
+                <target>Struktur erstellen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.watchIntroductionVideo">
                 <source>Watch introduction video</source>
@@ -1443,15 +1443,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.PageContent.validate.explanation">
                 <source>Validate your AI result before adding this to your page.</source>
-                <target>Validieren das KI-Ergebnis, bevor du es deiner Seite hinzufügen.</target>
+                <target>Validiere das KI-Ergebnis, bevor du es deiner Seite hinzufügst.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.PageContent.validate.imagePrompt">
                 <source>The image prompt. You can refactor the image prompt and reorder a for a new image.</source>
-                <target>Die Bildaufforderung. Du kannst die Bildaufforderung umgestalten und für ein neues Bild neu anordnen.</target>
+                <target>Der Bild-Prompt. Du kannst ihn überarbeiten und damit ein neues Bild anfordern.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.PageContent.validate.requestImage">
                 <source>Request for a new image.</source>
-                <target>Anfrage für ein neues Bild.</target>
+                <target>Neues Bild anfordern</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.PageContent.whichPosition">
                 <source>Position of the new element</source>
@@ -1467,7 +1467,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.Translate.overview.header">
                 <source>Translate for language support</source>
-                <target>Übersetzen für Sprachunterstützung</target>
+                <target>Übersetzungen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.actionmenu.agencies">
                 <source>Agency</source>
@@ -1519,7 +1519,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.backgroundTask.errorFetchingTasks">
                 <source>Error while fetching TaskEngine tasks</source>
-                <target>Fehler beim Abrufen von TaskEngine Aufgaben</target>
+                <target>Fehler beim Abrufen von TaskEngine-Aufgaben</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.contentElementDataGenerate.message">
                 <source>Content element data successfully created.</source>
@@ -1639,11 +1639,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.clickAndSave.tooltip">
                 <source>If &quot;Click and Save&quot; is activated, metadata is saved directly when you click on the desired field.</source>
-                <target>Wenn &quot;Click and Save&quot; aktiviert ist, werden Metadaten direkt beim Klick auf das gewünschte Feld gespeichert.</target>
+                <target>Wenn „Click and Save“ aktiviert ist, werden Metadaten direkt beim Klick auf das gewünschte Feld gespeichert.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.translation.scope.files">
                 <source>Page file references only</source>
-                <target>Nur Verweise auf Auslagerungsdateien</target>
+                <target>Nur Seiten-Dateireferenzen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.noFileReferencesFound">
                 <source>No file references available for your selection.</source>
@@ -1667,7 +1667,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.translation.header.pageFileReferences">
                 <source>Page file references</source>
-                <target>Auslagerungsdateireferenzen</target>
+                <target>Seiten-Dateireferenzen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.translation.scope">
                 <source>Translation Scope</source>
@@ -1682,8 +1682,8 @@
                 <target>Zielsprache</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.equalLanguagesWarning">
-                <source>Please execute the filter once.</source>
-                <target>Bitte führe den Filter einmal aus.</target>
+                <source>Select a target language that differs from the source language and run the filter.</source>
+                <target>Wähle eine Zielsprache, die sich von der Ausgangssprache unterscheidet, und führe den Filter aus.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationFailed">
                 <source>Image generation failed with the following error: </source>
@@ -1699,7 +1699,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imagePromptSettings">
                 <source>Image prompt settings</source>
-                <target>Einstellungen für Bildaufforderung</target>
+                <target>Einstellungen für den Bild-Prompt</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.midjourneySlideTwo">
                 <source>Select image and title</source>
@@ -1707,7 +1707,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsMessage">
                 <source>There are more than one global instruction for scope &quot;image&quot;. Only the last added instruction will be considered.</source>
-                <target>Für den Bereich &quot;Bild&quot; gibt es mehrere globale Anweisungen. Nur die zuletzt hinzugefügte Anweisung wird berücksichtigt.</target>
+                <target>Für den Bereich „Bild“ gibt es mehrere globale Anweisungen. Nur die zuletzt hinzugefügte Anweisung wird berücksichtigt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsTitle">
                 <source>Multiple global instruction for scope &quot;image&quot;.</source>
@@ -1871,11 +1871,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.aiSuiteApiKey">
                 <source>AI Suite License Key</source>
-                <target>AI Suite Lizenzschlüssel</target>
+                <target>AI Suite-Lizenzschlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.aiSuiteServer">
                 <source>AI Suite Server URL</source>
-                <target>AI Suite Server-URL</target>
+                <target>AI Suite-Server-URL</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.mediaStorageFolder">
                 <source>Media Storage Folder</source>
@@ -1915,19 +1915,19 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.openAiApiKey">
                 <source>OpenAI API Key</source>
-                <target>OpenAI API-Schlüssel</target>
+                <target>OpenAI-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.anthropicApiKey">
                 <source>Anthropic API Key</source>
-                <target>Anthropic API-Schlüssel</target>
+                <target>Anthropic-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.googleTranslateApiKey">
                 <source>Google Translate API Key</source>
-                <target>Google Translate API-Schlüssel</target>
+                <target>Google-Translate-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.deeplApiKey">
                 <source>DeepL API Key</source>
-                <target>DeepL API-Schlüssel</target>
+                <target>DeepL-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.deeplApiMode">
                 <source>Free version of DeepL API</source>
@@ -1935,7 +1935,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.midjourneyApiKey">
                 <source>Midjourney API Key</source>
-                <target>Midjourney API-Schlüssel</target>
+                <target>Midjourney-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.midjourneyId">
                 <source>Midjourney ID</source>
@@ -1943,11 +1943,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.aiModelHubApiKey">
                 <source>AI Model Hub API Key</source>
-                <target>AI Model Hub API-Schlüssel</target>
+                <target>AI-Model-Hub-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.mittwaldAiModelHubApiKey">
                 <source>Mittwald AI Model Hub API Key</source>
-                <target>Mittwald AI Model Hub API-Schlüssel</target>
+                <target>Mittwald-AI-Model-Hub-API-Schlüssel</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
                 <source>Enable Basic Authentication</source>
@@ -2031,7 +2031,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.invalidUrl.message" approved="yes">
                 <source>Please enter an absolute, valid URL (e.g. https://example.com/page).</source>
-                <target>Bitte eine absolute, gültige URL eingeben (z. B. https://example.com/seite).</target>
+                <target>Gib bitte eine absolute, gültige URL ein (z. B. https://example.com/seite).</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.result.headline" approved="yes">
                 <source>Audit result</source>
@@ -2163,7 +2163,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.saveKeyword.question" approved="yes">
                 <source>Save this focus keyword to the page properties (keywords field)?</source>
-                <target>Dieses Fokus-Keyword in den Seiteneigenschaften (Feld „Schlagworte") speichern?</target>
+                <target>Dieses Fokus-Keyword in den Seiteneigenschaften (Feld „Schlagworte“) speichern?</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.saveKeyword.button" approved="yes">
                 <source>Save focus keyword</source>
@@ -2367,7 +2367,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.candidates.adopt" approved="yes">
                 <source>Adopt as focus keyword</source>
-                <target>Als Focus-Keyword übernehmen</target>
+                <target>Als Fokus-Keyword übernehmen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.type.questions" approved="yes">
                 <source>Questions/FAQ coverage</source>
@@ -2671,15 +2671,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.score" approved="yes">
                 <source>Audit score (0-100, calculated from the findings)</source>
-                <target>Audit-Score (0–100, aus den Funden berechnet)</target>
+                <target>Audit-Score (0-100, aus den Funden berechnet)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.workspaceNotice" approved="yes">
                 <source>The audit fetches the page from the outside and therefore always evaluates the published live version, not your workspace draft.</source>
-                <target>Der Audit ruft die Seite von außen ab und bewertet deshalb immer die veröffentlichte Live-Fassung, nicht Ihren Entwurf im Workspace.</target>
+                <target>Der Audit ruft die Seite von außen ab und bewertet deshalb immer die veröffentlichte Live-Fassung, nicht deinen Entwurf im Workspace.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.translationReadOnly" approved="yes">
                 <source>This is a translated page's audit - fix and generation actions run on the default language.</source>
-                <target>Dies ist der Audit einer Übersetzung. Fix- und Generier-Aktionen laufen auf der Standardsprache.</target>
+                <target>Dies ist das Audit einer Übersetzung. Fix- und Generier-Aktionen laufen auf der Standardsprache.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.tile.title" approved="yes">
                 <source>AI Suite Audit</source>
@@ -2703,7 +2703,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.description" approved="yes">
                 <source>Runs the audit page by page for the selected page and its subpages. You see the total cost BEFORE anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
-                <target>Führt den Audit Seite für Seite für die gewählte Seite und ihre Unterseiten aus. Die Gesamtkosten siehst du VOR der ersten Abbuchung; geht das Guthaben mittendrin aus, stoppt der Lauf sauber und lässt sich fortsetzen. Versteckte Seiten werden dabei nicht berücksichtigt.</target>
+                <target>Führt das Audit Seite für Seite für die gewählte Seite und ihre Unterseiten aus. Die Gesamtkosten siehst du VOR der ersten Abbuchung; geht das Guthaben mittendrin aus, stoppt der Lauf sauber und lässt sich fortsetzen. Versteckte Seiten werden dabei nicht berücksichtigt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.depth" approved="yes">
                 <source>Depth</source>
@@ -2795,19 +2795,19 @@
             </trans-unit>
             <trans-unit id="widgets.auditScores.high" approved="yes">
                 <source>Good (90-100)</source>
-                <target>Gut (90–100)</target>
+                <target>Gut (90-100)</target>
             </trans-unit>
             <trans-unit id="widgets.auditScores.medium" approved="yes">
                 <source>Needs work (50-89)</source>
-                <target>Verbesserungswürdig (50–89)</target>
+                <target>Verbesserungswürdig (50-89)</target>
             </trans-unit>
             <trans-unit id="widgets.auditScores.low" approved="yes">
                 <source>Critical (0-49)</source>
-                <target>Kritisch (0–49)</target>
+                <target>Kritisch (0-49)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.auditModel.perRun" approved="yes">
                 <source>- Let editors choose per run -</source>
-                <target>– Redakteure wählen je Lauf –</target>
+                <target>- Redakteure wählen je Lauf -</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.gap.noDomainData" approved="yes">
                 <source>No ranking data exists for this domain yet - it may be new or not indexed. The content gap analysis needs existing rankings; start with the SEO audit and indexable content.</source>
@@ -2999,7 +2999,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.provenance.overview.intro" approved="yes">
                 <source>Every record an AI feature wrote, newest first. Marking a text as reviewed records that a human checked it and takes editorial responsibility. That is the exception Art. 50(4) provides for text. It does not apply to images, audio or video.</source>
-                <target>Jeder Datensatz, den eine KI-Funktion geschrieben hat, neueste zuerst. „Als geprüft markieren" hält fest, dass ein Mensch den Text geprüft hat und ihn redaktionell verantwortet. Das ist die Ausnahme, die Art. 50(4) für Text vorsieht. Für Bilder, Audio und Video gilt sie nicht.</target>
+                <target>Jeder Datensatz, den eine KI-Funktion geschrieben hat, neueste zuerst. „Als geprüft markieren“ hält fest, dass ein Mensch den Text geprüft hat und ihn redaktionell verantwortet. Das ist die Ausnahme, die Art. 50(4) für Text vorsieht. Für Bilder, Audio und Video gilt sie nicht.</target>
             </trans-unit>
             <trans-unit id="aiSuite.provenance.overview.allModes" approved="yes">
                 <source>All kinds</source>
