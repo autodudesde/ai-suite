@@ -1275,7 +1275,7 @@
                 <source>Target Language</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.equalLanguagesWarning">
-                <source>Please execute the filter once.</source>
+                <source>Select a target language that differs from the source language and run the filter.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.modal.imageGenerationFailed">
                 <source>Image generation failed with the following error: </source>

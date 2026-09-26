@@ -45,7 +45,7 @@
 
             <trans-unit id="aiSuite.easyLanguagePlugin.noLibraryFound">
                 <source>No model available. Please select one in the extension settings or contact your administrator to verify the selected model.</source>
-                <target>Kein Model verfügbar. Bitte wähle eines in den Erweiterungseinstellungen aus oder wende dich an deinen Administrator, um das ausgewählte Modell überprüfen zu lassen.</target>
+                <target>Kein Modell verfügbar. Bitte wähle eines in den Erweiterungseinstellungen aus oder wende dich an deinen Administrator, um das ausgewählte Modell überprüfen zu lassen.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.easyLanguagePlugin.pleaseWait">
@@ -102,7 +102,7 @@
 
             <trans-unit id="aiSuite.error.fileReference.notFound">
                 <source>No file reference row found for sys file reference uid %s. It seems that the file reference was deleted in the meanwhile or is are some other inconsistency with the database.</source>
-                <target>Keine Dateireferenz-Zeile für sys file reference uid %s gefunden. Es scheint, dass die Dateireferenz zwischenzeitlich gelöscht wurde oder es andere Inkonsistenzen mit der Datenbank gibt.</target>
+                <target>Keine Dateireferenz für sys_file_reference-UID %s gefunden. Es scheint, dass die Dateireferenz zwischenzeitlich gelöscht wurde oder es andere Inkonsistenzen mit der Datenbank gibt.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.error.invalidFormData">
@@ -127,43 +127,43 @@
 
             <trans-unit id="aiSuite.error.server.aiSuiteError">
                 <source>AI Suite Server error: %s</source>
-                <target>AI Suite Server Fehler: %s</target>
+                <target>AI Suite-Server-Fehler: %s</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notAvailable">
                 <source>AI Suite server endpoint is currently not available.</source>
-                <target>AI Suite Server Endpunkt ist derzeit nicht verfügbar.</target>
+                <target>AI Suite-Server-Endpunkt ist derzeit nicht verfügbar.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.httpStatus">
                 <source>The AI Suite Server answered with HTTP %s. See the AI Suite log for details.</source>
-                <target>Der AI Suite Server antwortete mit HTTP %s. Details stehen im AI-Suite-Log.</target>
+                <target>Der AI Suite-Server antwortete mit HTTP %s. Details stehen im AI Suite-Log.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.payloadTooLarge">
                 <source>The request was too large for the AI Suite Server (HTTP 413). Reduce the number of pages processed per run.</source>
-                <target>Die Anfrage war zu groß für den AI Suite Server (HTTP 413). Bitte die Anzahl der pro Lauf verarbeiteten Seiten reduzieren.</target>
+                <target>Die Anfrage war zu groß für den AI Suite-Server (HTTP 413). Reduziere bitte die Anzahl der pro Lauf verarbeiteten Seiten.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.unauthorized">
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
-                <target>Dein AI Suite API-Key fehlt oder ist ungültig. Bitte prüfe den Key in der Extension-Konfiguration. Einen Key erhältst du unter https://www.autodudes.de</target>
+                <target>Dein AI Suite-API-Key fehlt oder ist ungültig. Bitte prüfe den Key in der Extension-Konfiguration. Einen Key erhältst du unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.forbidden">
                 <source>Your AI Suite API key is valid but does not have permission for this action. Please check your plan or contact support.</source>
-                <target>Dein AI Suite API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfe deinen Tarif oder kontaktiere den Support.</target>
+                <target>Dein AI Suite-API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfe deinen Tarif oder kontaktiere den Support.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
-                <target>Dein AI Suite API-Key ist abgelaufen. Bitte erneuere ihn unter https://www.autodudes.de</target>
+                <target>Dein AI Suite-API-Key ist abgelaufen. Bitte erneuere ihn unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.invalidRequest">
                 <source>The AI Suite server rejected the request because a value was missing or malformed. The details are in the message below.</source>
-                <target>Der AI-Suite-Server hat die Anfrage abgelehnt, weil ein Wert fehlte oder ungültig war. Die Einzelheiten stehen in der Meldung darunter.</target>
+                <target>Der AI Suite-Server hat die Anfrage abgelehnt, weil ein Wert fehlte oder ungültig war. Die Einzelheiten stehen in der Meldung darunter.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestRateLimited">
                 <source>Too many requests in a short time. Please wait a moment and try again.</source>
-                <target>Zu viele Anfragen in kurzer Zeit. Bitte einen Moment warten und erneut versuchen.</target>
+                <target>Zu viele Anfragen in kurzer Zeit. Warte bitte einen Moment und versuche es erneut.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.gdprModelBlocked">
                 <source>GDPR mode is active, so this AI model may not be used. Pick a data-protection-compliant model.</source>
-                <target>Der DSGVO-Modus ist aktiv, dieses KI-Modell darf daher nicht verwendet werden. Bitte ein datenschutzkonformes Modell wählen.</target>
+                <target>Der DSGVO-Modus ist aktiv, dieses KI-Modell darf daher nicht verwendet werden. Wähle bitte ein datenschutzkonformes Modell.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.targetLanguageNotSupported">
                 <source>The selected AI model does not support this target language.</source>
@@ -171,7 +171,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.thirdPartyApi">
                 <source>The AI provider did not return a usable answer. Failed requests are not billed; please try again later.</source>
-                <target>Der KI-Anbieter hat keine verwertbare Antwort geliefert. Fehlgeschlagene Anfragen werden nicht berechnet; bitte später erneut versuchen.</target>
+                <target>Der KI-Anbieter hat keine verwertbare Antwort geliefert. Fehlgeschlagene Anfragen werden nicht berechnet; versuche es bitte später erneut.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.webSearchUnavailable">
                 <source>Web research is not available for this installation under the current data-protection settings.</source>
@@ -183,27 +183,27 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
-                <target>Dein AI Suite API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte lade deine Anfragen unter https://www.autodudes.de auf.</target>
+                <target>Dein AI Suite-API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte lade deine Anfragen unter https://www.autodudes.de auf.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestLimitReached">
                 <source>Your AI Suite API key has reached its request limit. Please get further requests at https://www.autodudes.de</source>
-                <target>Dein AI Suite API-Key hat sein Anfrage-Limit erreicht. Bitte beziehe weitere Anfragen unter https://www.autodudes.de</target>
+                <target>Dein AI Suite-API-Key hat sein Anfrage-Limit erreicht. Bitte beziehe weitere Anfragen unter https://www.autodudes.de</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.missingAiModelApiKey">
                 <source>A required AI model API key is missing. Please check your "Bring Your Own Keys" settings in the extension configuration.</source>
-                <target>Ein benötigter API-Key für ein AI-Modell fehlt. Bitte prüfe deine „Bring Your Own Keys"-Einstellungen in der Extension-Konfiguration.</target>
+                <target>Ein benötigter API-Key für ein AI-Modell fehlt. Bitte prüfe deine „Bring Your Own Keys“-Einstellungen in der Extension-Konfiguration.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.unexpected">
                 <source>Unexpected AI Suite server endpoint error</source>
-                <target>Unerwarteter AI Suite Server Endpunkt Fehler</target>
+                <target>Unerwarteter AI Suite-Server-Endpunkt-Fehler</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.apiKeyMissing.title">
                 <source>AI Suite API key missing</source>
-                <target>AI Suite API-Key fehlt</target>
+                <target>AI Suite-API-Key fehlt</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.apiKeyMissing.message">
                 <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
-                <target>Es ist kein AI Suite API-Key konfiguriert. Bitte hinterlege deinen Key in der Extension-Konfiguration. Falls du noch keinen Key hast, erhältst du einen unter https://www.autodudes.de</target>
+                <target>Es ist kein AI Suite-API-Key konfiguriert. Bitte hinterlege deinen Key in der Extension-Konfiguration. Falls du noch keinen Key hast, erhältst du einen unter https://www.autodudes.de</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.error.localization.recordNotFound">
@@ -230,15 +230,15 @@
 
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
-                <target>Seiteninhalt konnte nicht geladen werden. Wenn die HTTP-Basisauthentifizierung aktiv ist, aktiviere diese bitte in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
+                <target>Seiteninhalt konnte nicht geladen werden. Wenn die Seite durch HTTP-Basisauthentifizierung geschützt ist, aktiviere bitte die entsprechende Option in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
                 <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
-                <target>Seiteninhalt konnte nicht geladen werden - die Vorschau-URL antwortete mit HTTP %s. Versteckte oder zeitgesteuerte Seiten lassen sich für diese Anfrage nicht rendern.</target>
+                <target>Seiteninhalt konnte nicht geladen werden: Die Vorschau-URL antwortete mit HTTP %s. Versteckte oder zeitgesteuerte Seiten lassen sich für diese Anfrage nicht rendern.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.unauthorized">
                 <source>Page content could not be loaded (HTTP %s). If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
-                <target>Seiteninhalt konnte nicht geladen werden (HTTP %s). Wenn die HTTP-Basisauthentifizierung aktiv ist, aktiviere diese bitte in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
+                <target>Seiteninhalt konnte nicht geladen werden (HTTP %s). Wenn die Seite durch HTTP-Basisauthentifizierung geschützt ist, aktiviere bitte die entsprechende Option in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentInvalid">
                 <source>The fetched page content seems invalid or is an error page (too short or no HTML body). The page may not render properly in the frontend. Please check the frontend output of this page.</source>
@@ -345,7 +345,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.form.label.newsDetailPlugins">
                 <source>News Detail Plugins</source>
-                <target>News Detail Plugins</target>
+                <target>News-Detail-Plugins</target>
             </trans-unit>
             <trans-unit id="aiSuite.form.label.sourceLanguage">
                 <source>Source Language:</source>
@@ -424,12 +424,12 @@
 
             <trans-unit id="aiSuite.generation.ogDescriptionSuggestions">
                 <source>Generate Open Graph description suggestions (1 Credit)</source>
-                <target>Open Graph-Beschreibungsvorschläge generieren (1 Credit)</target>
+                <target>Open-Graph-Beschreibungsvorschläge generieren (1 Credit)</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.generation.ogTitleSuggestions">
                 <source>Generate Open Graph title suggestions (1 Credit)</source>
-                <target>Open Graph-Titelvorschläge generieren (1 Credit)</target>
+                <target>Open-Graph-Titelvorschläge generieren (1 Credit)</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.generation.pageTitleSuggestions">
@@ -483,7 +483,7 @@
 
             <trans-unit id="aiSuite.imageTitleFreeTextPlaceholder">
                 <source>Enter custom image title</source>
-                <target>Gebe einen benutzerdefinierten Bildtitel ein</target>
+                <target>Gib einen benutzerdefinierten Bildtitel ein</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.imageWizardSlideOneButton">
@@ -493,7 +493,7 @@
 
             <trans-unit id="aiSuite.imageWizardSlideOneHeader">
                 <source>Enter prompt and image generation library</source>
-                <target>Gebe deine Prompt ein und wähle das KI-Model für die Bildgenerierung</target>
+                <target>Gib deinen Prompt ein und wähle das KI-Modell für die Bildgenerierung</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.error.failedToStartTranslation">
@@ -572,7 +572,7 @@
 
             <trans-unit id="aiSuite.js.warning.couldNotLoadSummary">
                 <source>Could not load detailed summary - will proceed with whole page translation</source>
-                <target>Detaillierte Zusammenfassung konnte nicht geladen werden - fahre mit Ganzseitenübersetzung fort</target>
+                <target>Detaillierte Zusammenfassung konnte nicht geladen werden. Die Ganzseitenübersetzung wird fortgesetzt.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.wizard.languageSelection">
@@ -613,12 +613,12 @@
 
             <trans-unit id="aiSuite.metadataWizardSlideOneHeader">
                 <source>Enter metadata generation settings</source>
-                <target>Gebe die Einstellungen für die Metadatengenerierung ein</target>
+                <target>Gib die Einstellungen für die Metadatengenerierung ein</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.mlangTabsTab">
                 <source>AI Suite</source>
-                <target>AI-Suite</target>
+                <target>AI Suite</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.modal.metadata.useFor">
@@ -668,12 +668,12 @@
 
             <trans-unit id="aiSuite.notification.errorDeletingTask">
                 <source>Error while deleting TaskEngine task data</source>
-                <target>Fehler beim Löschen der TaskEngine Aufgaben</target>
+                <target>Fehler beim Löschen der TaskEngine-Aufgaben</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.notification.errorSavingTask">
                 <source>Error while saving background task data</source>
-                <target>Fehler beim Speichern der TaskEngine Aufgaben</target>
+                <target>Fehler beim Speichern der TaskEngine-Aufgaben</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.notification.generation.error">
@@ -694,7 +694,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.fileReferencesUpdateError">
                 <source>Unexpected error while saving selected file reference metadata. Please check your logs for further information.</source>
-                <target>Unerwarteter Fehler beim Speichern der ausgewählten Dateiverweismetadaten. Weitere Informationen finden du in den Log-Dateien.</target>
+                <target>Unerwarteter Fehler beim Speichern der ausgewählten Dateiverweismetadaten. Weitere Informationen findest du in den Log-Dateien.</target>
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.fileReferencesUpdateError.noFileSelected">
                 <source>No file references selected.</source>
@@ -722,7 +722,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.workflow.successDescription">
                 <source>Switch to the TaskEngine to check the progress.</source>
-                <target>Wechsel zur TaskEngine, um den Fortschritt zu überprüfen.</target>
+                <target>Wechsle zur TaskEngine, um den Fortschritt zu überprüfen.</target>
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.workflow.successUpdate">
                 <source>Metadata fields successfully updated</source>
@@ -734,7 +734,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.pageUpdateError">
                 <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
-                <target>Unerwarteter Fehler beim Speichern der ausgewählten Seitenmetadaten. Weitere Informationen finden du in den Log-Dateien.</target>
+                <target>Unerwarteter Fehler beim Speichern der ausgewählten Seitenmetadaten. Weitere Informationen findest du in den Log-Dateien.</target>
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.requestError">
                 <source>Request error</source>
@@ -765,7 +765,7 @@
 
             <trans-unit id="aiSuite.notification.invalidUrlMessage">
                 <source>Please check and edit your inputs.</source>
-                <target>Bitte überprüfen und korrigiere deine Eingaben.</target>
+                <target>Bitte überprüfe und korrigiere deine Eingaben.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.notification.invalidUrlTitle">
@@ -816,7 +816,7 @@
 
             <trans-unit id="aiSuite.notification.translation.failed.message">
                 <source>Translation task(s) have failed for this page. You can retry them by clicking the button below.</source>
-                <target>Die Übersetzungsaufgabe(n) für diese Seite sind fehlgeschlagen. Du kannst es erneut versuchen, indem du auf die Schaltfläche unten klickst.</target>
+                <target>Die Übersetzungsaufgabe(n) für diese Seite sind fehlgeschlagen. Du kannst es erneut versuchen, indem du auf den Button unten klickst.</target>
             </trans-unit>
             <trans-unit id="aiSuite.notification.translation.failed.title">
                 <source>Translation Failed</source>
@@ -843,7 +843,7 @@
 
             <trans-unit id="aiSuite.promptTemplate.deleteModalText">
                 <source>Are you sure you want to delete the prompt template &quot;{0}&quot;?</source>
-                <target>Möchtest du das Prompt Template „{0}“ wirklich löschen?</target>
+                <target>Möchtest du die Prompt-Vorlage „{0}“ wirklich löschen?</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.regenerateSuggestions">
@@ -853,7 +853,7 @@
 
             <trans-unit id="aiSuite.selectSysLanguage">
                 <source>Select (target) language:</source>
-                <target>Wähle die (Ziel-) Sprache aus:</target>
+                <target>Wähle die (Ziel-)Sprache aus:</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.status.info">
@@ -873,12 +873,12 @@
 
             <trans-unit id="aiSuite.textGenerationLibrary">
                 <source>Select text generation AI</source>
-                <target>Wähle das KI-Model zur Textgenerierung aus</target>
+                <target>Wähle das KI-Modell zur Textgenerierung aus</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.translateFileMetadata">
                 <source>Translate File Metadata</source>
-                <target>Übersetzen von Datei-Metadaten</target>
+                <target>Datei-Metadaten übersetzen</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.translateRecord">
@@ -1053,7 +1053,7 @@
 
             <trans-unit id="aiSuite.unableToFetchNewsRecord">
                 <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the &quot;Metadata&quot; tab for fetching the news record.</source>
-                <target>Bitte kontaktiere deinen Administrator. Der Inhalt des News-Datensatzes mit der ID %s konnte nicht abgerufen werden. Die Seite mit der ID %s hat kein Plugin, um die Detailansicht des News-Datensatzes anzuzeigen. Bitte überprüfe deine AI Suite Extensioneinstellungen und stelle sicher, dass du im Tab „Metadaten“ eine korrekte Seiten-ID zum Abrufen des News-Datensatzes eingegeben hast.</target>
+                <target>Bitte kontaktiere deinen Administrator. Der Inhalt des News-Datensatzes mit der ID %s konnte nicht abgerufen werden. Die Seite mit der ID %s hat kein Plugin, um die Detailansicht des News-Datensatzes anzuzeigen. Bitte überprüfe deine AI Suite-Extension-Einstellungen und stelle sicher, dass du im Tab „Metadaten“ eine korrekte Seiten-ID zum Abrufen des News-Datensatzes eingegeben hast.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.unableToLinkToPage">
@@ -1104,7 +1104,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.imageGenerationLibrary">
                 <source>Select image generation AI</source>
-                <target>Wählen das KI-Model für die Bildgenerierung</target>
+                <target>Wähle das KI-Modell für die Bildgenerierung</target>
             </trans-unit>
             <trans-unit id="aiSuite.imageSettings.midjourney">
                 <source>Additional Midjourney image settings</source>
@@ -1116,7 +1116,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.imageSettings.midjourney.no">
                 <source>Exclusions (Negative prompting)</source>
-                <target>Ausschlüsse (negative Aufforderung)</target>
+                <target>Ausschlüsse (Negative Prompt)</target>
             </trans-unit>
             <trans-unit id="aiSuite.imageSettings.midjourney.sref">
                 <source>Style Reference (URL of an image)</source>
@@ -1144,7 +1144,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.translateGenerationLibrary">
                 <source>Select translation generation AI</source>
-                <target>Wähle das KI-Model für die Übersetzungsgenerierung aus</target>
+                <target>Wähle das KI-Modell für die Übersetzungsgenerierung aus</target>
             </trans-unit>
             <trans-unit id="aiSuite.translation.allContentElements">
                 <source>All content elements on the page</source>
@@ -1232,7 +1232,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.generation.newsKeywordsSuggestions">
                 <source>Generate keywords suggestions for news article (1 Credit)</source>
-                <target>Keywords für Nachrichtenartikel generieren (1 Credit)</target>
+                <target>Keyword-Vorschläge für News-Artikel generieren (1 Credit)</target>
             </trans-unit>
             <trans-unit id="aiSuite.globalInstructions.deleteCancel">
                 <source>Cancel</source>
@@ -1264,7 +1264,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.imageSettings.midjourney.sref.tooltip">
                 <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
-                <target>Gebe eine Webadresse (URL) ein, unter der das Bild gespeichert ist. Du kannst Bilder als Stilreferenzen verwenden, um den Stil oder die Ästhetik der Bilder zu beeinflussen, die Midjourney erstellen soll.</target>
+                <target>Gib eine Webadresse (URL) ein, unter der das Bild gespeichert ist. Du kannst Bilder als Stilreferenzen verwenden, um den Stil oder die Ästhetik der Bilder zu beeinflussen, die Midjourney erstellen soll.</target>
             </trans-unit>
             <trans-unit id="aiSuite.imageSettings.midjourney.version.tooltip">
                 <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
@@ -1296,7 +1296,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.js.summary.pageFileReferenceFields">
                 <source>Page file reference fields:</source>
-                <target>Auslagerungsdatei-Referenzfelder:</target>
+                <target>Seiten-Dateireferenzfelder:</target>
             </trans-unit>
             <trans-unit id="aiSuite.js.summary.pageFileReferences">
                 <source>Page file references:</source>
@@ -1348,15 +1348,15 @@
             </trans-unit>
             <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.label">
                 <source>AI Suite: No models available</source>
-                <target>AI Suite: Keine Models verfügbar</target>
+                <target>AI Suite: Keine Modelle verfügbar</target>
             </trans-unit>
             <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.description">
                 <source>No AI translation models are configured or permitted for your user group. Please check your AI Suite configuration and backend group permissions.</source>
-                <target>Es sind keine KI-Übersetzungsmodels konfiguriert oder für deine Benutzergruppe freigegeben. Bitte überprüfe die AI-Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
+                <target>Es sind keine KI-Übersetzungsmodelle konfiguriert oder für deine Benutzergruppe freigegeben. Bitte überprüfe die AI Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
             </trans-unit>
             <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.error">
                 <source>No AI translation models are available. Please check your AI Suite configuration and backend group permissions.</source>
-                <target>Es sind keine KI-Übersetzungsmodels verfügbar. Bitte überprüfe die AI-Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
+                <target>Es sind keine KI-Übersetzungsmodelle verfügbar. Bitte überprüfe die AI Suite-Konfiguration und die Berechtigungen deiner Backend-Benutzergruppe.</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.title">
                 <source>CLI Task Overview</source>
@@ -1364,11 +1364,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.schedulerNotLoaded">
                 <source>The TYPO3 Scheduler extension (EXT:scheduler) is not installed. CLI background tasks created by AI Suite will not be processed automatically. Install and enable EXT:scheduler and configure a recurring task that runs the "ai-suite:process-tasks" command.</source>
-                <target>Die TYPO3-Scheduler-Erweiterung (EXT:scheduler) ist nicht installiert. Von der AI Suite erzeugte CLI-Hintergrundaufgaben werden nicht automatisch verarbeitet. Installiere und aktiviere EXT:scheduler und richte einen wiederkehrenden Task ein, der den Befehl „ai-suite:process-tasks" ausführt.</target>
+                <target>Die TYPO3-Scheduler-Erweiterung (EXT:scheduler) ist nicht installiert. Von der AI Suite erzeugte CLI-Hintergrundaufgaben werden nicht automatisch verarbeitet. Installiere und aktiviere EXT:scheduler und richte einen wiederkehrenden Task ein, der den Befehl „ai-suite:process-tasks“ ausführt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.processTasksCommandNotScheduled">
                 <source>EXT:scheduler is installed but no active scheduler task is configured to run the "ai-suite:process-tasks" command. CLI-handled workflow tasks will be queued but never persisted back to TYPO3 records. Open the Scheduler module and add a recurring task that executes "ai-suite:process-tasks".</source>
-                <target>EXT:scheduler ist installiert, aber es ist kein aktiver Scheduler-Task konfiguriert, der den Befehl „ai-suite:process-tasks" ausführt. Per CLI verarbeitete Workflow-Aufgaben werden in die Warteschlange geschrieben, aber nie in TYPO3-Datensätze zurückgeschrieben. Öffne das Scheduler-Modul und lege einen wiederkehrenden Task an, der „ai-suite:process-tasks" ausführt.</target>
+                <target>EXT:scheduler ist installiert, aber es ist kein aktiver Scheduler-Task konfiguriert, der den Befehl „ai-suite:process-tasks“ ausführt. Per CLI verarbeitete Workflow-Aufgaben werden in die Warteschlange geschrieben, aber nie in TYPO3-Datensätze zurückgeschrieben. Öffne das Scheduler-Modul und lege einen wiederkehrenden Task an, der „ai-suite:process-tasks“ ausführt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.statistics.title">
                 <source>Statistics</source>
