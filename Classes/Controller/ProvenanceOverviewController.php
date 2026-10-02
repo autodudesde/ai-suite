@@ -337,7 +337,7 @@ class ProvenanceOverviewController extends AbstractBackendController
             return ['title' => '', 'link' => ''];
         }
 
-        $title = BackendUtility::getRecordTitle($usage['table'], $record, true);
+        $title = BackendUtility::getRecordTitle($usage['table'], $record);
         if ('pages' !== $usage['table']) {
             $page = $this->titleOf('pages', (int) ($record['pid'] ?? 0));
             $title = '' !== $page ? $page.' › '.$title : $title;
@@ -452,7 +452,7 @@ class ProvenanceOverviewController extends AbstractBackendController
     {
         $record = BackendUtility::getRecord($table, $uid);
 
-        return null !== $record ? BackendUtility::getRecordTitle($table, $record, true) : '';
+        return null !== $record ? BackendUtility::getRecordTitle($table, $record) : '';
     }
 
     /**
@@ -563,7 +563,7 @@ class ProvenanceOverviewController extends AbstractBackendController
         return [
             'table' => $table,
             'uid' => $uid,
-            'title' => null !== $record ? BackendUtility::getRecordTitle($table, $record, true) : '',
+            'title' => null !== $record ? BackendUtility::getRecordTitle($table, $record) : '',
             'exists' => null !== $record,
             'pageUid' => (int) ($record['pid'] ?? 0),
             'mode' => (string) $row['mode'],

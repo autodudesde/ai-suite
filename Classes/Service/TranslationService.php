@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
@@ -649,11 +648,6 @@ class TranslationService
                 'message' => 'Error processing translation tasks: '.$e->getMessage(),
             ];
         }
-    }
-
-    public function getLanguageService(): LanguageService
-    {
-        return $this->localizationService->getLanguageService();
     }
 
     /**

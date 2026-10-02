@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
-use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
-use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
 use Psr\Http\Message\ServerRequestInterface;
@@ -60,10 +58,8 @@ class MetadataService
     ];
 
     public function __construct(
-        protected readonly PagesRepository $pagesRepository,
         protected readonly PageRepository $pageRepository,
         protected readonly RequestFactory $requestFactory,
-        protected readonly RequestsRepository $requestsRepository,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly BackendUserService $backendUserService,
         protected readonly TranslationService $translationService,

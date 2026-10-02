@@ -14,7 +14,6 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Hooks;
 
-use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\MultiLanguageTranslationService;
 use AutoDudes\AiSuite\Service\TcaCompatibilityService;
 use AutoDudes\AiSuite\Service\WorkspaceContextService;
@@ -41,7 +40,6 @@ class AutoTranslationHook implements SingletonInterface
         protected readonly MultiLanguageTranslationService $multiLanguageTranslationService,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
         protected readonly ExtensionConfiguration $extensionConfiguration,
-        protected readonly BackendUserService $backendUserService,
         protected readonly WorkspaceContextService $workspaceContextService,
         protected readonly LoggerInterface $logger,
     ) {}

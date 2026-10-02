@@ -40,36 +40,6 @@ class TranslationRepository extends AbstractRepository
     }
 
     /**
-     * @param array<string, mixed> $elementUids
-     *
-     * @return list<array<string, mixed>>
-     *
-     * @throws Exception
-     */
-    public function getTranslatedElements(array $elementUids, int $targetLanguageUid, string $table): array
-    {
-        $languageField = $this->tcaCompatibilityService->getLanguageFieldName($table);
-        $parentField = $this->tcaCompatibilityService->getTranslationOriginPointerFieldName($table);
-        if (null === $languageField || null === $parentField) {
-            return [];
-        }
-
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
-        $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-
-        return $queryBuilder
-            ->select('uid', $parentField)
-            ->from($table)
-            ->where(
-                $queryBuilder->expr()->in($parentField, $queryBuilder->createNamedParameter($elementUids, Connection::PARAM_INT_ARRAY)),
-                $queryBuilder->expr()->eq($languageField, $queryBuilder->createNamedParameter($targetLanguageUid))
-            )
-            ->executeQuery()
-            ->fetchAllAssociative()
-        ;
-    }
-
-    /**
      * @return list<array<string, mixed>>
      *
      * @throws Exception

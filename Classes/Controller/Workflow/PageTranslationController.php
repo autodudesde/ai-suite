@@ -194,14 +194,4 @@ class PageTranslationController extends AbstractBackendController
             'failedPages' => $failedPages,
         ]);
     }
-
-    public function pagesTranslationApplyAction(ServerRequestInterface $serverRequest): ResponseInterface
-    {
-        return new Response();
-    }
-
-    public function pagesTranslationRetryAction(ServerRequestInterface $serverRequest): ResponseInterface
-    {
-        return new Response();
-    }
 }

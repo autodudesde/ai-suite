@@ -155,29 +155,6 @@ class ProvenanceService
         }
     }
 
-    /**
-     * @param list<int> $uids
-     *
-     * @return array<int, list<array<string, mixed>>>
-     */
-    public function findForRecords(string $table, array $uids): array
-    {
-        if ('' === $table || [] === $uids) {
-            return [];
-        }
-
-        try {
-            return $this->provenanceRepository->findForRecords($table, $uids);
-        } catch (\Throwable $e) {
-            $this->logger->error('Could not read the register', [
-                'table' => $table,
-                'error' => $e->getMessage(),
-            ]);
-
-            return [];
-        }
-    }
-
     public function primeForPage(string $table, int $pageId): void
     {
         if ('' === $table || $pageId <= 0 || !$this->isEnabled()) {
@@ -387,11 +364,6 @@ class ProvenanceService
         }
 
         return array_values(array_unique($fields));
-    }
-
-    public function isAiGenerated(string $table, int $uid): bool
-    {
-        return [] !== $this->findForRecord($table, $uid);
     }
 
     public function transferAfterPublish(string $table, int $liveUid): void

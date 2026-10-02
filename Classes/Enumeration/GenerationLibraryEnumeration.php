@@ -16,11 +16,9 @@ namespace AutoDudes\AiSuite\Enumeration;
 
 final class GenerationLibraryEnumeration
 {
-    public const ERROR = '';
     public const IMAGE = 'image';
     public const METADATA = 'text';
     public const PAGETREE = 'text';
-    public const GOOGLE_TRANSLATE = 'translate';
     public const TRANSLATE = 'text';
 
     public const CONTENT = 'text,image';

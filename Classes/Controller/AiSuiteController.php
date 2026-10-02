@@ -20,8 +20,6 @@ use AutoDudes\AiSuite\Factory\SettingsFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
-use AutoDudes\AiSuite\Service\UuidService;
-use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -57,8 +55,6 @@ class AiSuiteController extends AbstractBackendController
         protected readonly RequestsRepository $requestsRepository,
         protected readonly SettingsFactory $settingsFactory,
         protected readonly LoggerInterface $logger,
-        protected readonly ViewFactoryService $viewFactoryService,
-        protected readonly UuidService $uuidService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,

@@ -16,7 +16,6 @@ use AutoDudes\AiSuite\Service\TranslationService;
 use Doctrine\DBAL\Exception;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -35,7 +34,6 @@ class TranslationHook
         protected readonly LocalizationService $localizationService,
         protected readonly SendRequestService $sendRequestService,
         protected readonly FlashMessageService $flashMessageService,
-        protected readonly ConnectionPool $connectionPool,
         protected readonly GlossarService $glossarService,
         protected readonly LoggerInterface $logger,
         protected readonly MetadataService $metadataService,

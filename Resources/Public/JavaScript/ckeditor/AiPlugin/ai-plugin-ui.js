@@ -3,56 +3,48 @@ import {ButtonView,ContextualBalloon,clickOutsideHandler} from '@ckeditor/ckedit
 import ModalView from '@autodudes/ai-suite/ckeditor/AiPlugin/ai-plugin-view.js';
 import General from '@autodudes/ai-suite/helper/general.js';
 import Ajax from '@autodudes/ai-suite/helper/ajax.js';
-import Icons from '@typo3/backend/icons.js';
+import Notification from '@typo3/backend/notification.js';
 import Provenance from '@autodudes/ai-suite/helper/provenance.js';
+import {fallbackIcon, loadPluginIcon} from '@autodudes/ai-suite/ckeditor/plugin-icon.js';
 
 export default class AiPluginUI extends Plugin {
     static get requires() {
         return [ ButtonView ];
     }
 
-    async init() {
+    init() {
         const editor = this.editor;
         this.contextualBalloon = editor.plugins.get( ContextualBalloon );
-        // Prefer the per-editor configuration (inline-safe, travels with this editor instance);
-        // fall back to the legacy page-global setting only if it is not present.
         const aiSuiteConfig = editor.config.get('aiSuite') || (TYPO3.settings && TYPO3.settings.aiSuite) || {};
         this.languageCode = aiSuiteConfig.rteLanguageCode || 'en';
         this.pageId = aiSuiteConfig.pageId || 0;
-        const data = {
-            pageId: this.pageId,
-        }
-        const prefillContent = await this._fetchRteContent(data);
-        this.libraries = prefillContent['libraries'];
-        this.promptTemplates = prefillContent['promptTemplates'];
-        this.globalInstructions = prefillContent['globalInstructions'];
-        this.uuid = prefillContent['uuid'];
+        this.libraries = [];
+        this.promptTemplates = [];
+        this.globalInstructions = '';
+        this.uuid = '';
         this.selectedContent = '';
-
-        try {
-            const iconHtml = await Icons.getIcon('tx-aisuite-extension', Icons.sizes.small);
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = iconHtml;
-            const imgSrc = tempDiv.querySelector('.icon-markup img').src;
-            if(!imgSrc) {
-                throw new Error('Icon image source not found');
-            }
-            const iconResponse = await fetch(imgSrc);
-            this.icon = await iconResponse.text();
-        } catch (e) {
-            this.icon = '<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 64 64" style="enable-background:new 0 0 64 64;" xml:space="preserve"><style type="text/css">.st0{fill:url(#Rechteck_44_00000013910148143574501140000004453864656853440669_);}.st1{fill:#FFFFFF;}</style><linearGradient id="Rechteck_44_00000121964855297047390660000008192662802121740730_" gradientUnits="userSpaceOnUse" x1="-387.6407" y1="330.0303" x2="-387.5814" y2="329.9711" gradientTransform="matrix(1080 0 0 -1080 418651.9375 356432.75)"><stop offset="0" style="stop-color:#F09C42"/><stop offset="1" style="stop-color:#AF4E26"/><stop offset="1" style="stop-color:#381C19"/></linearGradient><rect id="Rechteck_44" style="fill:url(#Rechteck_44_00000121964855297047390660000008192662802121740730_);" width="64" height="64"/><path id="Vereinigungsmenge_8" className="st1" d="M25.3,44.7c4-1,4.7-1.8,5.6-6.2c0.9,4.5,1.6,5.2,5.6,6.2c-4,1-4.7,1.7-5.6,6.2 C30,46.5,29.3,45.7,25.3,44.7z M25.7,27c9.1-2.2,10.7-3.9,12.6-14c2,10,3.6,11.8,12.6,14c-9.1,2.2-10.7,3.9-12.6,14 C36.4,31,34.8,29.2,25.7,27L25.7,27z M13,32.2c4.6-1.1,5.4-2,6.4-7c1,5,1.8,5.9,6.4,7c-4.6,1.1-5.4,2-6.4,7 C18.4,34.2,17.6,33.3,13,32.2z"/></svg>';
-        }
+        this._prefillLoading = null;
+        const iconLoading = loadPluginIcon();
 
         editor.ui.componentFactory.add( 'AiPlugin', () => {
             const button = new ButtonView();
 
             button.label = TYPO3.lang['aiSuite.mlangTabsTab'];
-            button.icon = this.icon;
+            button.icon = fallbackIcon;
             button.tooltip = true;
             button.withText = true;
+            iconLoading.then((icon) => {
+                button.icon = icon;
+            });
 
             button.on( 'execute', async () => {
                 this.selectedContent = '';
+
+                await this._ensurePrefill();
+                if (this.libraries.length === 0) {
+                    Notification.warning(TYPO3.lang['aiSuite.easyLanguagePlugin.noLibraryFound'], '', 8);
+                    return;
+                }
 
                 const modalView = await this._createFormView(editor.locale);
                 this.selectedContent = await this._getSelectedContent(editor);
@@ -65,6 +57,27 @@ export default class AiPluginUI extends Plugin {
 
             return button;
         } );
+
+        this._ensurePrefill();
+    }
+
+    _ensurePrefill() {
+        if (this._prefillLoading === null) {
+            this._prefillLoading = this._fetchRteContent({pageId: this.pageId}).then((prefillContent) => {
+                if (prefillContent === null || typeof prefillContent !== 'object') {
+                    this._prefillLoading = null;
+                    return;
+                }
+                this.libraries = Object.values(prefillContent['libraries'] || {});
+                this.promptTemplates = prefillContent['promptTemplates'] || [];
+                this.globalInstructions = prefillContent['globalInstructions'] || '';
+                this.uuid = prefillContent['uuid'] || '';
+                if (this.libraries.length === 0) {
+                    this._prefillLoading = null;
+                }
+            });
+        }
+        return this._prefillLoading;
     }
 
     async _fetchRteContent(data) {

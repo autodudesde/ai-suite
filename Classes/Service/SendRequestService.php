@@ -16,7 +16,6 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest\ServerRequest;
-use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Domain\Repository\RequestsRepository;
 use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
@@ -55,6 +54,7 @@ class SendRequestService
         'webSearchUnavailable' => 'aiSuite.error.server.webSearchUnavailable',
         'promptViolation' => 'aiSuite.error.server.promptViolation',
         'payloadTooLarge' => 'aiSuite.error.server.payloadTooLarge',
+        'requestStatusNotFound' => 'aiSuite.error.server.requestStatusNotFound',
     ];
 
     /** @var array<string, mixed> */
@@ -67,7 +67,6 @@ class SendRequestService
         protected readonly ModelService $modelService,
         protected readonly LocalizationService $localizationService,
         protected readonly LoggerInterface $logger,
-        protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
         protected readonly SystemDomainResolver $systemDomainResolver,
         protected readonly ProvenanceCaptureService $provenanceCapture,
     ) {

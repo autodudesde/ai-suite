@@ -353,9 +353,6 @@
             <trans-unit id="aiSuite.tca.glossar.input">
                 <source>Word/paragraph</source>
             </trans-unit>
-            <trans-unit id="aiSuite.tca.globalInstructions.instructions">
-                <source>Global Instructions</source>
-            </trans-unit>
 
             <trans-unit id="aiSuite.permissions.enableGlobalSettings">
                 <source>Enable &quot;Global Settings&quot; section within backend module</source>

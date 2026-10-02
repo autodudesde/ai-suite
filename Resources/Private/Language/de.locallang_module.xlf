@@ -966,10 +966,6 @@
                 <source>File was uploaded successfully and metadata was set</source>
                 <target>Die Datei wurde erfolgreich hochgeladen und die Metadaten wurden festgelegt.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.close">
-                <source>Close</source>
-                <target>Schließen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.notification.modal.noFieldsSelectedMessage">
                 <source>You don't have selected any fields. Please select at least one field to continue.</source>
                 <target>Du hast keine Felder ausgewählt. Bitte wähle mindestens ein Feld aus, um fortzufahren.</target>
@@ -989,10 +985,6 @@
             <trans-unit id="aiSuite.module.notification.modal.noSelectedPageMessage">
                 <source>You don't have selected a page. Please select one.</source>
                 <target>Du hast keine Seite ausgewählt. Bitte wähle eine aus.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.warning">
-                <source>Warning</source>
-                <target>Warnung</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.oneCredit">
@@ -1217,10 +1209,6 @@
                 <source>No pages found for translation with the selected criteria.</source>
                 <target>Mit den ausgewählten Kriterien wurden keine Seiten zur Übersetzung gefunden.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.workflowFilelist.selectedDirectory">
-                <source>Selected directory</source>
-                <target>Ausgewähltes Verzeichnis</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.selectedDirectories">
                 <source>Selected directories</source>
                 <target>Ausgewählte Verzeichnisse</target>
@@ -1385,10 +1373,6 @@
                 <source>Create structure</source>
                 <target>Struktur erstellen</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.watchIntroductionVideo">
-                <source>Watch introduction video</source>
-                <target>Einführungsvideo ansehen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.backgroundTask.filter.label">
                 <source>Filter Tasks</source>
                 <target>Aufgaben filtern</target>
@@ -1413,61 +1397,13 @@
                 <source>Error while preparing files</source>
                 <target>Fehler beim Vorbereiten der Dateien</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.Agencies.overview.header">
-                <source>Support for agencies for the daily work</source>
-                <target>Unterstützung von Agenturen bei der täglichen Arbeit</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.Agencies.translateXlf.destinationLang">
                 <source>Target language</source>
                 <target>Zielsprache</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.File.overview.header">
-                <source>Create new files or file metadata</source>
-                <target>Erstellen neuer Dateien oder Dateimetadaten</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.description">
-                <source>This module works on the active page, which is selected in the page tree on the left.</source>
-                <target>Dieses Modul arbeitet auf der aktiven Seite, die im Seitenbaum links ausgewählt ist.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.positionAfter">
-                <source>Insert after</source>
-                <target>Einfügen nach</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.positionFirst">
-                <source>Insert on first position [0]</source>
-                <target>An erster Stelle einfügen [0]</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.validate.addSocialContent">
-                <source>Add / generate post</source>
-                <target>Beitrag hinzufügen/generieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.validate.explanation">
-                <source>Validate your AI result before adding this to your page.</source>
-                <target>Validiere das KI-Ergebnis, bevor du es deiner Seite hinzufügst.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.validate.imagePrompt">
-                <source>The image prompt. You can refactor the image prompt and reorder a for a new image.</source>
-                <target>Der Bild-Prompt. Du kannst ihn überarbeiten und damit ein neues Bild anfordern.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.validate.requestImage">
-                <source>Request for a new image.</source>
-                <target>Neues Bild anfordern</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.PageContent.whichPosition">
-                <source>Position of the new element</source>
-                <target>Position des neuen Elements</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.Pages.overview.header">
-                <source>Work on pages and page tree</source>
-                <target>Arbeiten an Seiten und Seitenbaum</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.Pages.pagesSelect">
                 <source>Selected page</source>
                 <target>Ausgewählte Seite</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.Translate.overview.header">
-                <source>Translate for language support</source>
-                <target>Übersetzungen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.actionmenu.agencies">
                 <source>Agency</source>
@@ -1496,42 +1432,6 @@
             <trans-unit id="aiSuite.module.actionmenu.promptTemplate">
                 <source>Prompt Manager</source>
                 <target>Prompt-Manager</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.actionmenu.translate">
-                <source>Translate</source>
-                <target>Übersetzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.aiSuiteTrailer">
-                <source>AI Suite trailer</source>
-                <target>AI Suite-Trailer</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.backgroundTask.deleteAbort">
-                <source>Abort</source>
-                <target>Abbrechen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.backgroundTask.deleteAllModalText">
-                <source>Delete all visible tasks</source>
-                <target>Alle sichtbaren Aufgaben löschen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.backgroundTask.deleteModalTitle">
-                <source>Do you want to continue?</source>
-                <target>Möchtest du fortfahren?</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.backgroundTask.errorFetchingTasks">
-                <source>Error while fetching TaskEngine tasks</source>
-                <target>Fehler beim Abrufen von TaskEngine-Aufgaben</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.contentElementDataGenerate.message">
-                <source>Content element data successfully created.</source>
-                <target>Inhaltselementdaten erfolgreich erstellt.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.contentElementDataGenerate.title">
-                <source>Request successful</source>
-                <target>Anfrage erfolgreich</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.createContent.overview.header">
-                <source>Create content</source>
-                <target>Inhalte erstellen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.dashboard.card.createPagetree.linklabel">
                 <source>Create</source>
@@ -1585,18 +1485,6 @@
                 <source>Translate File Metadata</source>
                 <target>Übersetzen von Datei-Metadaten</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.errorMissingArguments.message">
-                <source>Could not fetch required action arguments.</source>
-                <target>Erforderliche Aktionsargumente konnten nicht abgerufen werden.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorMissingArguments.title">
-                <source>Missing action arguments</source>
-                <target>Fehlende Aktionsargumente</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.errorPageContentNotCreated.title">
-                <source>Page content could not be created.</source>
-                <target>Seiteninhalt konnte nicht erstellt werden.</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.errorValidContentElementResponse.title">
                 <source>Could not fetch valid content element response.</source>
                 <target>Es konnte keine gültige Inhaltselementantwort abgerufen werden.</target>
@@ -1621,105 +1509,17 @@
                 <source>Processing pages for translation. This may take a moment. Please wait...</source>
                 <target>Seiten werden zur Übersetzung verarbeitet. Dies kann einen Moment dauern. Bitte warten...</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.general.useWholeContent">
-                <source>Use whole content</source>
-                <target>Gesamten Inhalt verwenden</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchPlaceholder">
-                <source>Search...</source>
-                <target>Suchen...</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchReset">
-                <source>Reset</source>
-                <target>Zurücksetzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.searchSubmit">
-                <source>Search</source>
-                <target>Suchen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.clickAndSave.tooltip">
-                <source>If &quot;Click and Save&quot; is activated, metadata is saved directly when you click on the desired field.</source>
-                <target>Wenn „Click and Save“ aktiviert ist, werden Metadaten direkt beim Klick auf das gewünschte Feld gespeichert.</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.translation.scope.files">
                 <source>Page file references only</source>
                 <target>Nur Seiten-Dateireferenzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.noFileReferencesFound">
-                <source>No file references available for your selection.</source>
-                <target>Für deine Auswahl sind keine Datei-Referenzen verfügbar.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.noFilesForTranslation">
                 <source>No files found for translation with the current filter settings.</source>
                 <target>Mit den aktuellen Filtereinstellungen wurden keine Dateien zur Übersetzung gefunden.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.onlyUseGlobalInstructions">
-                <source>Only use Global Instructions (override predefined prompt)</source>
-                <target>Nur globale Anweisungen verwenden (vordefinierten Prompt überschreiben)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.pageType">
-                <source>Page type</source>
-                <target>Seitentyp</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.saveTranslationMetadataBtn">
-                <source>Save Translation Metadata</source>
-                <target>Übersetzte Metadaten speichern</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.translation.header.pageFileReferences">
-                <source>Page file references</source>
-                <target>Seiten-Dateireferenzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.translation.scope">
-                <source>Translation Scope</source>
-                <target>Übersetzungs-Scope</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.translation.sourceLanguage">
-                <source>Source/default language</source>
-                <target>Ausgangssprache</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.translation.targetLanguage">
-                <source>Target Language</source>
-                <target>Zielsprache</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.equalLanguagesWarning">
                 <source>Select a target language that differs from the source language and run the filter.</source>
                 <target>Wähle eine Zielsprache, die sich von der Ausgangssprache unterscheidet, und führe den Filter aus.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationFailed">
-                <source>Image generation failed with the following error: </source>
-                <target>Die Bildgenerierung ist mit dem folgenden Fehler fehlgeschlagen:</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationInProcessMidjourney">
-                <source>Selected image will be generated. This may take a moment. Please wait...</source>
-                <target>Das ausgewählte Bild wird generiert. Dies kann einen Moment dauern. Bitte warten...</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imageGenerationWizard">
-                <source>Image generation wizard</source>
-                <target>Assistent zur Bildgenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.imagePromptSettings">
-                <source>Image prompt settings</source>
-                <target>Einstellungen für den Bild-Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.modal.midjourneySlideTwo">
-                <source>Select image and title</source>
-                <target>Bild und Titel auswählen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsMessage">
-                <source>There are more than one global instruction for scope &quot;image&quot;. Only the last added instruction will be considered.</source>
-                <target>Für den Bereich „Bild“ gibt es mehrere globale Anweisungen. Nur die zuletzt hinzugefügte Anweisung wird berücksichtigt.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.multipleGlobalImageInstructionsTitle">
-                <source>Multiple global instruction for scope &quot;image&quot;.</source>
-                <target>Mehrere globale Anweisungen für den Bereich „Bild“.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.notification.modal.noSelectedPageTitle">
-                <source>No page selected</source>
-                <target>Keine Seite ausgewählt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.pageStructure.defaultPrompt">
-                <source>Create me a page structure for [...].</source>
-                <target>Erstelle mir eine Seitenstruktur für […].</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.pageChooser">
                 <source>Paste the new structure under the following page:</source>
@@ -1733,25 +1533,9 @@
                 <source>Select the page you want to start from:</source>
                 <target>Seite, auf der du beginnen möchtest:</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.preparePages.pageSelected">
-                <source>Selected page:</source>
-                <target>Ausgewählte Seite:</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.preparePages.title">
-                <source>Select pages and field</source>
-                <target>Seiten und Feld auswählen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.module.preparePagesTranslation.pageChooser">
                 <source>Start from page</source>
                 <target>Beginne mit der Seite</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.preparePagesTranslation.title">
-                <source>Prepare Pages for Translation</source>
-                <target>Seiten für die Übersetzung vorbereiten</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.promptTemplateManager.managePromptTemplates.searchPlaceholder">
-                <source>Search...</source>
-                <target>Suchen...</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.sourceXliffFileEmpty.message">
                 <source>No trans-unit entries found in XLIFF file.</source>
@@ -1797,10 +1581,6 @@
                 <source>Requests</source>
                 <target>Anfragen</target>
             </trans-unit>
-            <trans-unit id="aiSuite.statistics.requestsMonthly" approved="yes">
-                <source>Requests (last 3 months)</source>
-                <target>Anfragen (letzte 3 Monate)</target>
-            </trans-unit>
             <trans-unit id="aiSuite.statistics.requestsDaily" approved="yes">
                 <source>Requests per day</source>
                 <target>Anfragen pro Tag</target>
@@ -1844,122 +1624,6 @@
             <trans-unit id="aiSuite.module.settings.maskedHint">
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>
                 <target>Dieser Wert ist aus Sicherheitsgründen maskiert. Lasse ihn unverändert, um den aktuellen Wert beizubehalten, oder gib einen neuen Wert ein, um ihn zu aktualisieren.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.aiSuiteApi">
-                <source>AI Suite API</source>
-                <target>AI Suite API</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.media">
-                <source>Media</source>
-                <target>Medien</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.translation">
-                <source>Translation</source>
-                <target>Übersetzung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.metadata">
-                <source>Metadata</source>
-                <target>Metadaten</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.byok">
-                <source>Bring Your Own Keys</source>
-                <target>Eigene API-Schlüssel (Bring Your Own Keys)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.category.basicAuth">
-                <source>HTTP Basic Authentication</source>
-                <target>HTTP-Basis-Authentifizierung (Verzeichnisschutz)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.aiSuiteApiKey">
-                <source>AI Suite License Key</source>
-                <target>AI Suite-Lizenzschlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.aiSuiteServer">
-                <source>AI Suite Server URL</source>
-                <target>AI Suite-Server-URL</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.mediaStorageFolder">
-                <source>Media Storage Folder</source>
-                <target>Medien-Speicherordner</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.translateFlexFormFields">
-                <source>Translate FlexForm fields</source>
-                <target>FlexForm-Felder übersetzen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.easyLanguageLibrary">
-                <source>Easy Language Library</source>
-                <target>Bibliothek für Leichte Sprache</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.disableTranslationFunctionality">
-                <source>Disable translation functionality</source>
-                <target>Übersetzungsfunktion deaktivieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.metadataSuggestionCount">
-                <source>Metadata suggestion count</source>
-                <target>Anzahl der Metadaten-Vorschläge</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateTitle">
-                <source>Auto-generate image titles on upload</source>
-                <target>Bildtitel beim Upload automatisch generieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateAlternative">
-                <source>Auto-generate alternative text on upload</source>
-                <target>Alternativtext beim Upload automatisch generieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateModel">
-                <source>Auto-generate metadata model</source>
-                <target>Modell für automatische Metadaten-Generierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.metadataAutogenerateApproach">
-                <source>Auto-generate metadata approach</source>
-                <target>Vorgehen für automatische Metadaten-Generierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.openAiApiKey">
-                <source>OpenAI API Key</source>
-                <target>OpenAI-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.anthropicApiKey">
-                <source>Anthropic API Key</source>
-                <target>Anthropic-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.googleTranslateApiKey">
-                <source>Google Translate API Key</source>
-                <target>Google-Translate-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.deeplApiKey">
-                <source>DeepL API Key</source>
-                <target>DeepL-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.deeplApiMode">
-                <source>Free version of DeepL API</source>
-                <target>Kostenlose Version der DeepL-API</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.midjourneyApiKey">
-                <source>Midjourney API Key</source>
-                <target>Midjourney-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.midjourneyId">
-                <source>Midjourney ID</source>
-                <target>Midjourney-ID</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.aiModelHubApiKey">
-                <source>AI Model Hub API Key</source>
-                <target>AI-Model-Hub-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.mittwaldAiModelHubApiKey">
-                <source>Mittwald AI Model Hub API Key</source>
-                <target>Mittwald-AI-Model-Hub-API-Schlüssel</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.basicAuth_enable">
-                <source>Enable Basic Authentication</source>
-                <target>Basis-Authentifizierung aktivieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.basicAuth_user">
-                <source>Basic Auth Username</source>
-                <target>Benutzername (Basis-Auth)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.module.settings.field.basicAuth_pass">
-                <source>Basic Auth Password</source>
-                <target>Passwort (Basis-Auth)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.actionmenu.audit" approved="yes">
                 <source>Audit</source>

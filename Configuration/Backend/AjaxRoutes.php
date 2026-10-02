@@ -71,54 +71,6 @@ return [
         'path' => '/aisuite/audit/authorbox-save-author',
         'target' => AuditController::class.'::authorboxSaveAuthorAction',
     ],
-    'description_generation' => [
-        'path' => '/generate/meta-description',
-        'target' => MetadataController::class.'::generateMetaDescriptionAction',
-    ],
-    'keywords_generation' => [
-        'path' => '/generate/keywords',
-        'target' => MetadataController::class.'::generateKeywordsAction',
-    ],
-    'seo_title_generation' => [
-        'path' => '/generate/page-title',
-        'target' => MetadataController::class.'::generatePageTitleAction',
-    ],
-    'og_title_generation' => [
-        'path' => '/generate/og-title',
-        'target' => MetadataController::class.'::generateOgTitleAction',
-    ],
-    'twitter_title_generation' => [
-        'path' => '/generate/twitter-title',
-        'target' => MetadataController::class.'::generateTwitterTitleAction',
-    ],
-    'og_description_generation' => [
-        'path' => '/generate/og-description',
-        'target' => MetadataController::class.'::generateOgDescriptionAction',
-    ],
-    'twitter_description_generation' => [
-        'path' => '/generate/twitter-description',
-        'target' => MetadataController::class.'::generateTwitterDescriptionAction',
-    ],
-    'news_description_generation' => [
-        'path' => '/generate/news-meta-description',
-        'target' => MetadataController::class.'::generateNewsMetaDescriptionAction',
-    ],
-    'news_alternative_title_generation' => [
-        'path' => '/generate/news-alternative-title',
-        'target' => MetadataController::class.'::generateNewsAlternativeTitleAction',
-    ],
-    'news_keywords_generation' => [
-        'path' => '/generate/news-keywords',
-        'target' => MetadataController::class.'::generateNewsKeywordsAction',
-    ],
-    'alternative_generation' => [
-        'path' => '/generate/sys-file-alternative',
-        'target' => MetadataController::class.'::generateAlternativeAction',
-    ],
-    'title_generation' => [
-        'path' => '/generate/sys-file-title',
-        'target' => MetadataController::class.'::generateTitleAction',
-    ],
     'aisuite_provenance_assisted' => [
         'path' => '/provenance/assisted',
         'target' => ProvenanceAssistedController::class.'::recordAction',
@@ -154,10 +106,6 @@ return [
     'aisuite_regenerate_images' => [
         'path' => '/generate/ai-image-regenerate',
         'target' => ImageController::class.'::regenerateImageAction',
-    ],
-    'aisuite_regenerate_filelist_images' => [
-        'path' => '/generate/ai-image-regenerate-filelist',
-        'target' => ImageController::class.'::regenerateImageFileListAction',
     ],
     'aisuite_file_process' => [
         'path' => '/generate/file/process',
@@ -255,14 +203,6 @@ return [
         'path' => '/translation/wizard-slide-one',
         'target' => TranslationController::class.'::getTranslationWizardSlideOneAction',
     ],
-    'aisuite_translation_wizard_slide_two' => [
-        'path' => '/translation/wizard-slide-two',
-        'target' => TranslationController::class.'::getTranslationWizardSlideTwoAction',
-    ],
-    'aisuite_translation_wizard_slide_three' => [
-        'path' => '/translation/wizard-slide-three',
-        'target' => TranslationController::class.'::getTranslationWizardSlideThreeAction',
-    ],
     'aisuite_workflow_pages_translation_prepare' => [
         'path' => '/workflow/pages-translation-prepare',
         'target' => PageTranslationController::class.'::pagesTranslationPrepareExecuteAction',
@@ -270,14 +210,6 @@ return [
     'aisuite_workflow_pages_translation_execute' => [
         'path' => '/workflow/pages-translation-execute',
         'target' => PageTranslationController::class.'::pagesTranslationExecuteAction',
-    ],
-    'aisuite_workflow_pages_translation_apply' => [
-        'path' => '/workflow/pages-translation-apply',
-        'target' => PageTranslationController::class.'::pagesTranslationApplyAction',
-    ],
-    'aisuite_workflow_pages_translation_retry' => [
-        'path' => '/workflow/pages-translation-retry',
-        'target' => PageTranslationController::class.'::pagesTranslationRetryAction',
     ],
     'aisuite_globalinstruction_preview' => [
         'path' => '/globalinstruction/preview',

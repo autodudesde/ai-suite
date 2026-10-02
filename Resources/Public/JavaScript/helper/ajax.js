@@ -1,11 +1,15 @@
 import AjaxRequest from "@typo3/core/ajax/ajax-request.js";
 import Notification from "@typo3/backend/notification.js";
 
+function parseBody(body) {
+    return typeof body === "string" ? JSON.parse(body) : body;
+}
+
 async function errorDetail(error) {
     if (error && typeof error.resolve === "function") {
         try {
             const body = await error.resolve();
-            const parsed = typeof body === "string" ? JSON.parse(body) : body;
+            const parsed = parseBody(body);
             if (parsed && parsed.error) {
                 return parsed.error;
             }
@@ -25,7 +29,7 @@ class Ajax {
             )
             .then(async function (response) {
                 const resolved = await response.resolve();
-                const responseBody = JSON.parse(resolved);
+                const responseBody = parseBody(resolved);
                 if(responseBody.error) {
                     return null;
                 } else {
@@ -46,7 +50,7 @@ class Ajax {
                 if(returnJson) {
                     return resolved;
                 } else {
-                    const responseBody = JSON.parse(resolved);
+                    const responseBody = parseBody(resolved);
                     if(responseBody.error) {
                         Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], responseBody.error);
                         return null;
@@ -66,7 +70,7 @@ class Ajax {
             .then(async function (response) {
 
                 const resolved = await response.resolve();
-                const responseBody = JSON.parse(resolved);
+                const responseBody = parseBody(resolved);
                 if (responseBody.error) {
                     return null;
                 } else {
@@ -88,7 +92,7 @@ class Ajax {
             )
             .then(async function (response) {
                 const resolved = await response.resolve();
-                const responseBody = JSON.parse(resolved);
+                const responseBody = parseBody(resolved);
                 if (responseBody.error) {
                     Notification.error(TYPO3.lang['aiSuite.notification.generation.requestError'], responseBody.error);
                     return null;

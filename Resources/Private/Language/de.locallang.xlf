@@ -145,10 +145,6 @@
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
                 <target>Dein AI Suite-API-Key fehlt oder ist ungültig. Bitte prüfe den Key in der Extension-Konfiguration. Einen Key erhältst du unter https://www.autodudes.de</target>
             </trans-unit>
-            <trans-unit id="aiSuite.error.server.forbidden">
-                <source>Your AI Suite API key is valid but does not have permission for this action. Please check your plan or contact support.</source>
-                <target>Dein AI Suite-API-Key ist gültig, hat aber keine Berechtigung für diese Aktion. Bitte prüfe deinen Tarif oder kontaktiere den Support.</target>
-            </trans-unit>
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
                 <target>Dein AI Suite-API-Key ist abgelaufen. Bitte erneuere ihn unter https://www.autodudes.de</target>
@@ -181,6 +177,10 @@
                 <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
                 <target>Die Eingabe wurde von der Inhaltsrichtlinie des Anbieters abgelehnt. Bitte umformulieren.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.requestStatusNotFound">
+                <source>The AI Suite server no longer knows this background task, so it could not be re-queued. Delete the task and start the action again.</source>
+                <target>Der AI Suite Server kennt diese Hintergrundaufgabe nicht mehr, sie konnte daher nicht erneut eingereiht werden. Lösche die Aufgabe und starte die Aktion neu.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
                 <target>Dein AI Suite-API-Key hat nicht genügend verbleibende Anfragen für diese Aktion. Bitte lade deine Anfragen unter https://www.autodudes.de auf.</target>
@@ -196,10 +196,6 @@
             <trans-unit id="aiSuite.error.server.unexpected">
                 <source>Unexpected AI Suite server endpoint error</source>
                 <target>Unerwarteter AI Suite-Server-Endpunkt-Fehler</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.error.apiKeyMissing.title">
-                <source>AI Suite API key missing</source>
-                <target>AI Suite-API-Key fehlt</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.apiKeyMissing.message">
                 <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
@@ -470,6 +466,26 @@
             <trans-unit id="aiSuite.globalInstructions.tooltip">
                 <source>Show the global instructions that apply to this prompt</source>
                 <target>Die globalen Anweisungen anzeigen, die für diesen Prompt gelten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewTitle">
+                <source>Global instructions preview</source>
+                <target>Vorschau der globalen Anweisungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewInstructions">
+                <source>Global instructions:</source>
+                <target>Globale Anweisungen:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewPrompt">
+                <source>Current prompt:</source>
+                <target>Aktueller Prompt:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.translation.tasksProcessed">
+                <source>Translation tasks processed</source>
+                <target>Übersetzungsaufgaben verarbeitet</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.translation.tasksError">
+                <source>Translation task error</source>
+                <target>Fehler bei den Übersetzungsaufgaben</target>
             </trans-unit>
             <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
                 <source>Global instructions</source>
@@ -1041,11 +1057,6 @@
                 <target>Keine übersetzbaren Felder gefunden. Die ausgewählten Inhaltselemente haben möglicherweise keinen Textinhalt oder verwenden unbekannte Inhaltstypen.</target>
             </trans-unit>
 
-            <trans-unit id="aiSuite.translation.pageMetadataLocalizationFailed">
-                <source>Page metadata localization failed.</source>
-                <target>Die Lokalisierung der Seitenmetadaten ist fehlgeschlagen.</target>
-            </trans-unit>
-
             <trans-unit id="aiSuite.translation.wholePageNoContentElements">
                 <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
                 <target>Die Seitenmetadaten wurden erfolgreich übersetzt, aber es wurden keine Inhaltselemente zur Übersetzung gefunden.</target>
@@ -1142,10 +1153,6 @@
                 <source>No libraries are available. Please contact your system administrator to get access to at least one library.</source>
                 <target>Es sind keine Bibliotheken verfügbar. Bitte wende dich an deinen Systemadministrator, um Zugriff auf mindestens eine Bibliothek zu erhalten.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.translateGenerationLibrary">
-                <source>Select translation generation AI</source>
-                <target>Wähle das KI-Modell für die Übersetzungsgenerierung aus</target>
-            </trans-unit>
             <trans-unit id="aiSuite.translation.allContentElements">
                 <source>All content elements on the page</source>
                 <target>Alle Inhaltselemente auf der Seite</target>
@@ -1182,10 +1189,6 @@
                 <source>No file selected</source>
                 <target>Keine Datei ausgewählt</target>
             </trans-unit>
-            <trans-unit id="aiSuite.action.translateWholePage">
-                <source>Translate whole page with AI</source>
-                <target>Ganze Seite mit KI übersetzen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.addImage.noFileMountsAvailable">
                 <source>No file mounts available for current user</source>
                 <target>Für den aktuellen Benutzer sind keine FileMounts verfügbar</target>
@@ -1193,126 +1196,6 @@
             <trans-unit id="aiSuite.addImage.noFolderAvailable">
                 <source>No folder available for current user</source>
                 <target>Für den aktuellen Benutzer ist kein Ordner verfügbar</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.aiPlugin.title">
-                <source>AI Suite</source>
-                <target>AI Suite</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.contentElementPromptHeader">
-                <source>Prompt</source>
-                <target>Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.currentPrompt.label">
-                <source>Current Prompt</source>
-                <target>Aktueller Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.autoGenerationSuccess.title">
-                <source>Metadata generation successful</source>
-                <target>Metadatengenerierung erfolgreich</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingAutoUpload.title">
-                <source>Metadata generation error</source>
-                <target>Fehler bei der Metadatengenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingField.title">
-                <source>Metadata generation error</source>
-                <target>Fehler bei der Metadatengenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
-                <source>Metadata generation error</source>
-                <target>Fehler bei der Metadatengenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title">
-                <source>Metadata generation error</source>
-                <target>Fehler bei der Metadatengenerierung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.generation.keywordsSuggestions">
-                <source>Generate keywords suggestions (1 Credit)</source>
-                <target>Keyword-Vorschläge generieren (1 Credit)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.generation.newsKeywordsSuggestions">
-                <source>Generate keywords suggestions for news article (1 Credit)</source>
-                <target>Keyword-Vorschläge für News-Artikel generieren (1 Credit)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteCancel">
-                <source>Cancel</source>
-                <target>Abbrechen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteConfirm">
-                <source>Delete</source>
-                <target>Löschen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteModalTitle">
-                <source>Warning</source>
-                <target>Warnung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.label">
-                <source>Global Instructions</source>
-                <target>Globale Anweisungen</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.modal.title">
-                <source>Global Instructions &amp; Prompt Preview</source>
-                <target>Globale Anweisungen und Prompt-Vorschau</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.aspectRatio.tooltip">
-                <source>Changes the aspect ratio of the generated image. An aspect ratio is the width-to-height ratio of an image.</source>
-                <target>Ändert das Seitenverhältnis des generierten Bildes. Das Seitenverhältnis ist das Verhältnis von Breite zu Höhe eines Bildes.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.no.tooltip">
-                <source>Tell Midjourney what not to include in your image. Accepts multiple words separated with commas.</source>
-                <target>Sag Midjourney, was nicht in dein Bild aufgenommen werden soll. Akzeptiert mehrere durch Kommas getrennte Wörter.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.sref.tooltip">
-                <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
-                <target>Gib eine Webadresse (URL) ein, unter der das Bild gespeichert ist. Du kannst Bilder als Stilreferenzen verwenden, um den Stil oder die Ästhetik der Bilder zu beeinflussen, die Midjourney erstellen soll.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.version.tooltip">
-                <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
-                <target>Du kannst zwischen Midjourney-Versionen wechseln. Verschiedene Versionen zeichnen sich dadurch aus, dass sie unterschiedliche Arten von Bildern erzeugen.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageWizardPromptHeader">
-                <source>Image prompt</source>
-                <target>Bild-Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageWizardSlideOneImagePrompt">
-                <source>Image prompt</source>
-                <target>Bild-Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.button.easyLanguage">
-                <source>Easy Language</source>
-                <target>Einfache Sprache</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.button.ok">
-                <source>OK</source>
-                <target>OK</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.progress.translationInProgress">
-                <source>Translation in progress...</source>
-                <target>Übersetzung läuft...</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageAlreadyExists">
-                <source>✓ Page already exists in target language.</source>
-                <target>✓ Seite existiert bereits in der Zielsprache.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageFileReferenceFields">
-                <source>Page file reference fields:</source>
-                <target>Seiten-Dateireferenzfelder:</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageFileReferences">
-                <source>Page file references:</source>
-                <target>Seiten-Dateireferenzen:</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.references">
-                <source>reference(s)</source>
-                <target>Referenz(en)</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.metaDataWizardPromptHeader">
-                <source>Custom metadata prompt</source>
-                <target>Benutzerdefinierter Metadaten-Prompt</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.metadataWizardSlideOnePrompt">
-                <source>Metadata prompt</source>
-                <target>Metadaten-Prompt</target>
             </trans-unit>
             <trans-unit id="aiSuite.notification.deleteSuccessTitle">
                 <source>Delete</source>
@@ -1329,22 +1212,6 @@
             <trans-unit id="aiSuite.notification.generation.translation.sameLanguage">
                 <source>Source and target languages cannot be the same.</source>
                 <target>Quell- und Zielsprache dürfen nicht identisch sein.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.promptTemplate.deleteModalTitle">
-                <source>Warning</source>
-                <target>Warnung</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.synchronizeGlossary">
-                <source>Synchronize Glossary Entries</source>
-                <target>Glossareinträge synchronisieren</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.translateXlfHeader">
-                <source>XLF file properties</source>
-                <target>XLF-Dateieigenschaften</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.translation.fileReferences">
-                <source>File references (alternative text, titles)</source>
-                <target>Dateireferenzen (Alternativer Text, Titel)</target>
             </trans-unit>
             <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.label">
                 <source>AI Suite: No models available</source>
@@ -1409,10 +1276,6 @@
             <trans-unit id="aiSuite.cliOverview.noTasks">
                 <source>No failed tasks, everything looks fine.</source>
                 <target>Keine fehlgeschlagenen Tasks, alles in Ordnung.</target>
-            </trans-unit>
-            <trans-unit id="aiSuite.cliOverview.column.uuid">
-                <source>UUID</source>
-                <target>UUID</target>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.column.number">
                 <source>#</source>

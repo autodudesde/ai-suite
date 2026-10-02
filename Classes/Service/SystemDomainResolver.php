@@ -33,6 +33,11 @@ class SystemDomainResolver implements SingletonInterface
 
     public function resolve(?string $explicitDomain = null): string
     {
+        $configured = $this->fromConfiguration();
+        if (null !== $configured) {
+            return $configured;
+        }
+
         $explicit = $this->normalizeHost((string) $explicitDomain);
         if (null !== $explicit) {
             return $explicit;
@@ -42,7 +47,7 @@ class SystemDomainResolver implements SingletonInterface
             return $this->resolvedDomain;
         }
 
-        $this->resolvedDomain = $this->fromConfiguration() ?? $this->fromRequest() ?? $this->fromSites() ?? '';
+        $this->resolvedDomain = $this->fromRequest() ?? $this->fromSites() ?? '';
 
         return $this->resolvedDomain;
     }
