@@ -197,7 +197,7 @@ div[data-module-id="aiSuite"] {
 
             .status {
                 position: absolute;
-                top: 61%;
+                top: 66%;
                 font-size: 0.9rem;
             }
         }
@@ -205,7 +205,7 @@ div[data-module-id="aiSuite"] {
         &.active .cancel {
             display: flex;
             position: absolute;
-            top: 56%;
+            top: 58%;
             font-size: 0.9rem;
             animation: show 0s both;
             animation-delay: 0.8s;

@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
+use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
@@ -222,6 +223,15 @@ class AgencyController extends AbstractBackendController
             $this->view->addFlashMessage(
                 $exception->getMessage(),
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFileNotFound.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->translateXlfAction();
+        } catch (AiSuiteException $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->view->addFlashMessage(
+                $exception->getMessage(),
+                $this->aiSuiteContext->localizationService->translate($exception->getTitleKey()),
                 ContextualFeedbackSeverity::ERROR
             );
 

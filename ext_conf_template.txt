@@ -1,10 +1,13 @@
-# customcategory=aisuitelicense=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.license
-# customcategory=aisuitekeys=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.keys
-# customcategory=aisuitetranslation=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.translation
-# customcategory=aisuitemetadata=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.metadata
-# customcategory=aisuitegeneral=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.general
-# customcategory=aisuiteaiact=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.aiAct
+# customcategory=license and server=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.license
+# customcategory=audits=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.audits
+# customcategory=translation=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.translation
+# customcategory=metadata=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.metadata
+# customcategory=media=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.media
+# customcategory=cli=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.cli
+# customcategory=eu ai act=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.aiAct
+# customcategory=own api keys=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:category.keys
 # customsubcategory=license=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.license
+# customsubcategory=dataprotection=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.dataProtection
 # customsubcategory=basicauth=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.basicAuth
 # customsubcategory=keystext=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.keysText
 # customsubcategory=keystranslation=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.keysTranslation
@@ -14,93 +17,94 @@
 # customsubcategory=metadata=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.metadata
 # customsubcategory=metadataupload=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.metadataUpload
 # customsubcategory=mediastorage=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.mediaStorage
-# customsubcategory=dataprotection=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.dataProtection
 # customsubcategory=backgroundtasks=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.backgroundTasks
 # customsubcategory=audit=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.audit
 # customsubcategory=provenance=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:subcategory.provenance
 
-# cat=aisuitelicense/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteApiKey
+# cat=license and server/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteApiKey
 aiSuiteApiKey =
-# cat=aisuitelicense/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteServer
+# cat=license and server/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteServer
 aiSuiteServer = https://api.autodudes.de/
-# cat=aisuitelicense/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteSystemDomain
+# cat=license and server/license; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiSuiteSystemDomain
 aiSuiteSystemDomain =
-# cat=aisuitelicense/basicauth; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthEnable
+# cat=license and server/dataprotection; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:forceGdpa
+forceGdpa = 0
+# cat=license and server/basicauth; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthEnable
 basicAuth.enable = 0
-# cat=aisuitelicense/basicauth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthUser
+# cat=license and server/basicauth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthUser
 basicAuth.user =
-# cat=aisuitelicense/basicauth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthPass
+# cat=license and server/basicauth; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:basicAuthPass
 basicAuth.pass =
 
-# cat=aisuitekeys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
-openAiApiKey =
-# cat=aisuitekeys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:anthropicApiKey
-anthropicApiKey =
-# cat=aisuitekeys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiModelHubApiKey
-aiModelHubApiKey =
-# cat=aisuitekeys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mittwaldAiModelHubApiKey
-mittwaldAiModelHubApiKey =
-# cat=aisuitekeys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:staanApiKey
-staanApiKey =
-# cat=aisuitekeys/keystranslation; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:googleTranslateApiKey
-googleTranslateApiKey =
-# cat=aisuitekeys/keystranslation; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:deeplApiKey
-deeplApiKey =
-# cat=aisuitekeys/keystranslation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:deeplApiMode
-deeplApiMode =
-# cat=aisuitekeys/keysimage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyApiKey
-midjourneyApiKey =
-# cat=aisuitekeys/keysimage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyId
-midjourneyId =
+# cat=audits/audit; type=options[WCAG 2 Level A=WCAG2A,WCAG 2 Level AA (Default)=WCAG2AA,WCAG 2 Level AAA=WCAG2AAA]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:auditWcagStandard
+auditWcagStandard = WCAG2AA
 
-# cat=aisuitetranslation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:disableTranslationFunctionality
+# cat=audits/audit; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:auditDefaultTextModel
+auditDefaultTextModel =
+
+# cat=translation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:disableTranslationFunctionality
 disableTranslationFunctionality = 0
-# cat=aisuitetranslation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
+# cat=translation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
 translateFlexFormFields = 1
-# cat=aisuitetranslation/translation; type=options[OpenAI=ChatGPT,Claude=Anthropic,Meta Llama-3.3 (70B-Instruct)=AiSuiteTextUltimate]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
+# cat=translation/translation; type=options[OpenAI=ChatGPT,Claude=Anthropic,Meta Llama-3.3 (70B-Instruct)=AiSuiteTextUltimate]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
 easyLanguageLibrary = ChatGPT
-# cat=aisuitetranslation/autotranslation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:enableAutoTranslateOnSave
+# cat=translation/autotranslation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:enableAutoTranslateOnSave
 enableAutoTranslateOnSave = 0
-# cat=aisuitetranslation/autotranslation; type=options[Page module (apply on open)=pageModule,CLI scheduler=cli,Directly on save=direct]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMode
+# cat=translation/autotranslation; type=options[Page module (apply on open)=pageModule,CLI scheduler=cli,Directly on save=direct]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMode
 autoTranslateMode = pageModule
-# cat=aisuitetranslation/autotranslation; type=options[OpenAI=ChatGPT,DeepL=Deepl,Google Translate=GoogleTranslate,Claude=Anthropic,Mittwald AI=MittwaldMinistral14B]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateModel
+# cat=translation/autotranslation; type=options[OpenAI=ChatGPT,DeepL=Deepl,Google Translate=GoogleTranslate,Claude=Anthropic,Mittwald AI=MittwaldMinistral14B]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateModel
 autoTranslateModel = ChatGPT
-# cat=aisuitetranslation/autotranslation; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMaxElementsPerSave
+# cat=translation/autotranslation; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:autoTranslateMaxElementsPerSave
 autoTranslateMaxElementsPerSave = 15
 
-# cat=aisuitemetadata/metadata; type=options[1=1,2=2,3=3,4=4,5=5]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataSuggestionCount
+# cat=metadata/metadata; type=options[1=1,2=2,3=3,4=4,5=5]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataSuggestionCount
 metadataSuggestionCount = 5
-# cat=aisuitemetadata/metadata; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:minPlausiblePageContentLength
+# cat=metadata/metadata; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:minPlausiblePageContentLength
 minPlausiblePageContentLength = 100
-# cat=aisuitemetadata/metadataupload; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateTitle
+# cat=metadata/metadataupload; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateTitle
 metadataAutogenerateTitle =
-# cat=aisuitemetadata/metadataupload; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateAlternative
+# cat=metadata/metadataupload; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateAlternative
 metadataAutogenerateAlternative =
-# cat=aisuitemetadata/metadataupload; type=options[Vision=Vision]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateModel
+# cat=metadata/metadataupload; type=options[Vision=Vision]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateModel
 metadataAutogenerateModel = Vision
-# cat=aisuitemetadata/metadataupload; type=options[Add generated suggestions to TaskEngine=taskEngine,Save (first suggestion) directly=saveDirectly]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateApproach
+# cat=metadata/metadataupload; type=options[Add generated suggestions to TaskEngine=taskEngine,Save (first suggestion) directly=saveDirectly]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogenerateApproach
 metadataAutogenerateApproach = taskEngine
-# cat=aisuitemetadata/metadataupload; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogeneratePrompt
+# cat=metadata/metadataupload; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:metadataAutogeneratePrompt
 metadataAutogeneratePrompt =
 
-# cat=aisuitegeneral/mediastorage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mediaStorageFolder
+# cat=media/mediastorage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mediaStorageFolder
 mediaStorageFolder =
-# cat=aisuitegeneral/dataprotection; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:forceGdpa
-forceGdpa = 0
 
-# cat=aisuiteaiact/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceTracking
+# cat=cli/backgroundtasks; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:maxTasks
+maxTasks = 50
+
+# cat=eu ai act/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceTracking
 provenanceTracking = 1
 
 
-# cat=aisuiteaiact/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceDiscloseTranslations
+# cat=eu ai act/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceDiscloseTranslations
 provenanceDiscloseTranslations = 0
 
-# cat=aisuiteaiact/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceShowLabels
+# cat=eu ai act/provenance; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:provenanceShowLabels
 provenanceShowLabels = 1
-# cat=aisuitegeneral/backgroundtasks; type=int+; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:maxTasks
-maxTasks = 50
-# cat=aisuitegeneral/audit; type=options[WCAG 2 Level A=WCAG2A,WCAG 2 Level AA (Default)=WCAG2AA,WCAG 2 Level AAA=WCAG2AAA]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:auditWcagStandard
-auditWcagStandard = WCAG2AA
 
-# cat=aisuitegeneral/audit; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:auditDefaultTextModel
-auditDefaultTextModel =
+# cat=own api keys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:openAiApiKey
+openAiApiKey =
+# cat=own api keys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:anthropicApiKey
+anthropicApiKey =
+# cat=own api keys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:aiModelHubApiKey
+aiModelHubApiKey =
+# cat=own api keys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:mittwaldAiModelHubApiKey
+mittwaldAiModelHubApiKey =
+# cat=own api keys/keystext; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:staanApiKey
+staanApiKey =
+# cat=own api keys/keystranslation; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:googleTranslateApiKey
+googleTranslateApiKey =
+# cat=own api keys/keystranslation; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:deeplApiKey
+deeplApiKey =
+# cat=own api keys/keystranslation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:deeplApiMode
+deeplApiMode =
+# cat=own api keys/keysimage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyApiKey
+midjourneyApiKey =
+# cat=own api keys/keysimage; type=string; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:midjourneyId
+midjourneyId =

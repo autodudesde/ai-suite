@@ -436,10 +436,6 @@
                 <source>Word/paragraph</source>
                 <target>Wort/Absatz</target>
             </trans-unit>
-            <trans-unit id="aiSuite.tca.globalInstructions.instructions">
-                <source>Global Instructions</source>
-                <target>Globale Anweisungen</target>
-            </trans-unit>
             <trans-unit id="aiSuite.permissions.modelGptImage">
                 <source>GPT Image</source>
                 <target>GPT Image</target>

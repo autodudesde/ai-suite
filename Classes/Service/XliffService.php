@@ -79,15 +79,18 @@ class XliffService implements SingletonInterface
         /** @var array<string, mixed> $rawData */
         $rawData = self::simpleXMLElementToArray($xmlData);
         if (empty($rawData['file']['body']) && $sourceFile) {
-            throw new AiSuiteException('Agencies/TranslateXlf', 'aiSuite.module.sourceXliffFileEmpty.title');
+            throw new AiSuiteException(
+                'Agency/TranslateXlf',
+                'module:aiSuite.module.sourceXliffFileEmpty.message',
+                'module:aiSuite.module.sourceXliffFileEmpty.title',
+                $this->localizationService->translate('module:aiSuite.module.sourceXliffFileEmpty.message'),
+            );
         }
         if (empty($rawData['file']['body']) && !$sourceFile) {
             $rawData['file']['body'] = [];
         }
 
         return new XliffFile(
-            $filename,
-            $package,
             $xmlData,
             $rawData,
             self::xmlArrayToStructuredArray($rawData)

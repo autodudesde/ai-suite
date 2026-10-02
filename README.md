@@ -137,7 +137,7 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 |---|---|---|
 | `aiSuiteApiKey` | _(empty)_ | Your AutoDudes AI Suite license key. Required for the credit-based providers. |
 | `aiSuiteServer` | `https://api.autodudes.de/` | AI Suite server endpoint. Change only for self-hosted / proxied setups. |
-| `aiSuiteSystemDomain` | _(empty)_ | Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available; empty detects it from the site configuration. |
+| `aiSuiteSystemDomain` | _(empty)_ | Domain this installation is licensed for. When set, it is sent for every site, so one license covers all sites of a multi-site setup (e.g. microsites edited from one backend). Also needed for CLI and cron runs, where no HTTP host is available; empty detects it from the backend host or the site configuration. |
 
 ### Translation
 

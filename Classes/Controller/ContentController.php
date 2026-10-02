@@ -25,7 +25,6 @@ use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
-use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -35,7 +34,6 @@ use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Exception;
@@ -65,11 +63,9 @@ class ContentController extends AbstractBackendController
         protected readonly UuidService $uuidService,
         protected readonly ContentService $contentService,
         protected readonly RichTextElementService $richTextElementService,
-        protected readonly Context $context,
         protected readonly PageContentFactory $pageContentFactory,
         protected readonly LoggerInterface $logger,
         protected readonly ExtensionConfiguration $extensionConfiguration,
-        protected readonly ViewFactoryService $viewFactoryService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,

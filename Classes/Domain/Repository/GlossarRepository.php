@@ -113,21 +113,6 @@ class GlossarRepository extends AbstractRepository
     /**
      * @return array<string, mixed>
      */
-    public function findAll(): array|false
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-
-        return $queryBuilder
-            ->select('input')
-            ->from($this->table)
-            ->executeQuery()
-            ->fetchAssociative()
-        ;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
     public function findDeeplGlossaryEntry(int $rootPageId, int $defaultLanguageId, int $targetLanguageId): array|false
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_aisuite_domain_model_deepl');

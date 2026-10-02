@@ -19,9 +19,17 @@
                 <source>Metadata</source>
                 <target>Metadaten</target>
             </trans-unit>
-            <trans-unit id="category.general" resname="category.general">
-                <source>General</source>
-                <target>Allgemein</target>
+            <trans-unit id="category.media" resname="category.media">
+                <source>Media</source>
+                <target>Medien</target>
+            </trans-unit>
+            <trans-unit id="category.cli" resname="category.cli">
+                <source>CLI</source>
+                <target>CLI</target>
+            </trans-unit>
+            <trans-unit id="category.audits" resname="category.audits">
+                <source>Audits</source>
+                <target>Audits</target>
             </trans-unit>
             <trans-unit id="category.aiAct" resname="category.aiAct">
                 <source>EU AI Act</source>
@@ -92,8 +100,8 @@
                 <target>AI Suite-Server: Trage die URL ein, unter der der AI Suite-Server erreichbar ist (Standard: https://api.autodudes.de/)</target>
             </trans-unit>
             <trans-unit id="aiSuiteSystemDomain" resname="aiSuiteSystemDomain">
-                <source>System domain: Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available. Leave empty to auto-detect it from the site configuration.</source>
-                <target>System-Domain: Domain, für die diese Installation lizenziert ist. Wird für CLI- und Cron-Läufe gebraucht, in denen kein HTTP-Host verfügbar ist. Leer lassen, um sie automatisch aus der Site-Konfiguration zu ermitteln.</target>
+                <source>System domain: Domain this installation is licensed for. When set, it is sent for every site of the installation, so one license covers all sites of a multi-site setup. Also needed for CLI and cron runs, where no HTTP host is available. Leave empty to detect it from the backend host or the site configuration.</source>
+                <target>System-Domain: Domain, für die diese Installation lizenziert ist. Ist sie gesetzt, wird sie für jede Site der Installation gesendet, sodass eine Lizenz alle Sites eines Multi-Site-Setups abdeckt. Wird außerdem für CLI- und Cron-Läufe gebraucht, in denen kein HTTP-Host verfügbar ist. Leer lassen, um sie aus dem Backend-Host oder der Site-Konfiguration zu ermitteln.</target>
             </trans-unit>
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>

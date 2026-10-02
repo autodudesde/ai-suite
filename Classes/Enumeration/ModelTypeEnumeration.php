@@ -36,7 +36,6 @@ final class ModelTypeEnumeration
     public const MITTWALDMINISTRAL14BVISION = 'mittwaldAiModelHubApiKey';
 
     public const OPENAILUNA = 'openAiApiKey';
-    public const OPENAITERRA = 'openAiApiKey';
     public const IONOSQWEN35 = 'aiModelHubApiKey';
     public const CLAUDEHAIKU45 = 'anthropicApiKey';
     public const CLAUDESONNET5 = 'anthropicApiKey';

@@ -74,11 +74,15 @@ class GenerateSuggestions {
                 pageId: postData.pageId ?? null,
                 targetFolder: postData.targetFolder ?? null
             }, modalContent);
+            modal.find('.panel-body select#newsDetailPlugin').on('change', function () {
+                this.classList.toggle('is-invalid', this.value === '');
+            });
             aiSuiteGenerateButton.on('click', async function (ev) {
                 let textAiModel = modal.find('.panel-body input[name="libraries[textGenerationLibrary]"]:checked').val() ?? '';
                 let newsDetailPlugin = modal.find('.panel-body select#newsDetailPlugin');
                 let sysLanguageSelection = modal.find('.panel-body #languageSelection select');
-                if(modal.find('.panel-body select#newsDetailPlugin') && newsDetailPlugin.val() === '') {
+                if(newsDetailPlugin.length > 0 && newsDetailPlugin.val() === '') {
+                    newsDetailPlugin.addClass('is-invalid').trigger('focus');
                     Notification.warning(TYPO3.lang['aiSuite.notification.generation.workflow.missingSelection'], TYPO3.lang['aiSuite.notification.generation.newsDetailPlugin.missingSelectionInfo'], 8);
                     return;
                 }
@@ -113,9 +117,6 @@ class GenerateSuggestions {
                 .then((res) => {
                     clearInterval(self.intervalId);
                     ResponseHandling.handleResponse(res, TYPO3.lang['aiSuite.module.modal.metaDataError']);
-                    // On error or empty result handleResponse already showed a
-                    // notification; dismiss the wizard instead of rendering an
-                    // empty/stale slide.
                     if (res === null || res.error) {
                         MultiStepWizard.dismiss();
                         return;

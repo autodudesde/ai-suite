@@ -23,8 +23,6 @@ use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
-use AutoDudes\AiSuite\Service\UuidService;
-use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -61,8 +59,6 @@ class BackgroundTaskController extends AbstractBackendController
         protected readonly LoggerInterface $logger,
         protected readonly SettingsFactory $settingsFactory,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
-        protected readonly ViewFactoryService $viewFactoryService,
-        protected readonly UuidService $uuidService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -302,7 +298,19 @@ class BackgroundTaskController extends AbstractBackendController
                 ]
             );
             if ('Error' === $answer->getType()) {
-                throw new \Exception($this->aiSuiteContext->localizationService->translate('aiSuite.error.server.aiSuiteError', [$answer->getResponseData()['message']]));
+                $errorMessage = $this->requestService->getClientErrorMessage($answer);
+                if ('' === $errorMessage) {
+                    $errorMessage = $answer->getMessage();
+                }
+                $this->backgroundTaskRepository->updateStatus([
+                    $uuid => [
+                        'status' => 'task-error',
+                        'answer' => (string) ($backgroundTask['answer'] ?? ''),
+                        'error' => $errorMessage,
+                    ],
+                ]);
+
+                throw new \Exception($this->aiSuiteContext->localizationService->translate('aiSuite.error.server.aiSuiteError', [$errorMessage]));
             }
             $this->backgroundTaskRepository->updateStatus([
                 $uuid => [

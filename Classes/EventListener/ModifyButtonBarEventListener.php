@@ -10,7 +10,6 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\BackgroundTaskService;
 use AutoDudes\AiSuite\Service\IconService;
 use AutoDudes\AiSuite\Service\LocalizationService;
-use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\UuidService;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
@@ -21,7 +20,6 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Attribute\AsEventListener;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -40,13 +38,11 @@ class ModifyButtonBarEventListener
         protected readonly IconService $iconService,
         protected readonly UriBuilder $uriBuilder,
         protected readonly BackendUserService $backendUserService,
-        protected readonly SiteService $siteService,
         protected readonly UuidService $uuidService,
         protected readonly LocalizationService $localizationService,
         protected readonly TranslationService $translationService,
         protected readonly GlossarRepository $glossarRepository,
         protected readonly ExtensionConfiguration $extensionConfiguration,
-        protected readonly FlashMessageService $flashMessageService,
         protected readonly BackendRouteService $backendRouteService,
         protected readonly Typo3Version $typo3Version,
         protected readonly BackgroundTaskService $backgroundTaskService,
@@ -173,7 +169,7 @@ class ModifyButtonBarEventListener
                     JavaScriptModuleInstruction::create('@autodudes/ai-suite/translation/reload-page.js')
                         ->instance([
                             'success' => $result['success'],
-                            'notificationTitle' => $result['success'] ? 'Translation Tasks Processed' : 'Translation Task Error',
+                            'notificationTitle' => $this->localizationService->translate($result['success'] ? 'aiSuite.translation.tasksProcessed' : 'aiSuite.translation.tasksError'),
                             'notificationMessage' => $result['message'],
                         ])
                 );

@@ -20,7 +20,6 @@ class RequestsRepository
 {
     protected ConnectionPool $connectionPool;
     protected string $table = 'tx_aisuite_domain_model_requests';
-    protected string $sortBy = 'uid';
 
     public function __construct(ConnectionPool $connectionPool)
     {

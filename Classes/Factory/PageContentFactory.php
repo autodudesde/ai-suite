@@ -18,9 +18,7 @@ use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Service\AiImageStoreService;
 use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\TcaCompatibilityService;
-use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderReadPermissionsException;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -35,11 +33,9 @@ class PageContentFactory
     public function __construct(
         protected readonly StorageRepository $storageRepository,
         protected readonly AiImageStoreService $aiImageStore,
-        protected readonly LinkService $linkService,
         protected readonly SettingsFactory $settingsFactory,
         protected readonly BackendUserService $backendUserService,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
-        protected readonly LoggerInterface $logger,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }

@@ -17,7 +17,6 @@ class AiSuiteContext implements SingletonInterface
         public GlobalInstructionService $globalInstructionService,
         public SessionService $sessionService,
         public IconService $iconService,
-        public SendRequestService $sendRequestService,
         public UuidService $uuidService,
         public MetadataService $metadataService,
         public AiSuiteModuleNavigationService $moduleNavigationService,

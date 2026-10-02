@@ -99,10 +99,6 @@ return [
         'path' => '/aisuite/prompt/manage/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
     ],
-    'ai_suite_prompt_update_customprompttemplates' => [
-        'path' => '/aisuite/prompt/update/custom-prompt-templates',
-        'target' => PromptTemplateController::class.'::handleRequest',
-    ],
     'ai_suite_prompt_activate_customprompttemplates' => [
         'path' => '/aisuite/prompt/activate/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
@@ -133,10 +129,6 @@ return [
         'target' => GlobalInstructionController::class.'::handleRequest',
     ],
     // Content routes
-    'ai_suite_content_create' => [
-        'path' => '/aisuite/content/create',
-        'target' => ContentController::class.'::handleRequest',
-    ],
     'ai_suite_content_request' => [
         'path' => '/aisuite/content/request',
         'target' => ContentController::class.'::handleRequest',

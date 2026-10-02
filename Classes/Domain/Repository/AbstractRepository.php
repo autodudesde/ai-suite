@@ -31,17 +31,6 @@ class AbstractRepository
         protected readonly string $sortBy = '',
     ) {}
 
-    public function updateQuery(string $whereColumn, string $whereValue, string $updateColumn, string $updateValue): void
-    {
-        $this->connectionPool->getConnectionForTable($this->table)
-            ->update(
-                $this->table,
-                [$updateColumn => $updateValue],
-                [$whereColumn => $whereValue]
-            )
-        ;
-    }
-
     /**
      * @return list<array<string, mixed>>
      *
