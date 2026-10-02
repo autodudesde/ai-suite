@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
+use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Domain\Repository\BackgroundTaskRepository;
-use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileMetadataRepository;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -23,7 +23,6 @@ class BackgroundTaskService implements SingletonInterface
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
-        protected readonly PagesRepository $pagesRepository,
         protected readonly SiteFinder $siteFinder,
         protected readonly PageRepository $pageRepository,
         protected readonly MetadataService $metadataService,
@@ -649,10 +648,17 @@ class BackgroundTaskService implements SingletonInterface
                 );
 
                 if ('Error' === $answer->getType()) {
-                    $errorMessage = $answer->getResponseData()['message'] ?? 'Unknown error occurred';
+                    $errorMessage = $this->retryErrorMessage($answer);
                     $this->logger->error('Error retrying background task', [
                         'uuid' => $uuid,
                         'message' => $errorMessage,
+                    ]);
+                    $this->backgroundTaskRepository->updateStatus([
+                        $uuid => [
+                            'status' => 'task-error',
+                            'answer' => (string) ($task['answer'] ?? ''),
+                            'error' => $errorMessage,
+                        ],
                     ]);
                     ++$failed;
 
@@ -804,6 +810,16 @@ class BackgroundTaskService implements SingletonInterface
                 'message' => 'An error occurred: '.$e->getMessage(),
             ];
         }
+    }
+
+    private function retryErrorMessage(ClientAnswer $answer): string
+    {
+        $message = $this->sendRequestService->getClientErrorMessage($answer);
+        if ('' === $message) {
+            $message = trim((string) ($answer->getResponseData()['message'] ?? ''));
+        }
+
+        return '' === $message ? 'Unknown error occurred' : $message;
     }
 
     /**

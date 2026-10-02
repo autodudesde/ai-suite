@@ -15,8 +15,14 @@
             <trans-unit id="category.metadata" resname="category.metadata">
                 <source>Metadata</source>
             </trans-unit>
-            <trans-unit id="category.general" resname="category.general">
-                <source>General</source>
+            <trans-unit id="category.media" resname="category.media">
+                <source>Media</source>
+            </trans-unit>
+            <trans-unit id="category.cli" resname="category.cli">
+                <source>CLI</source>
+            </trans-unit>
+            <trans-unit id="category.audits" resname="category.audits">
+                <source>Audits</source>
             </trans-unit>
             <trans-unit id="category.aiAct" resname="category.aiAct">
                 <source>EU AI Act</source>
@@ -70,7 +76,7 @@
                 <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
             </trans-unit>
             <trans-unit id="aiSuiteSystemDomain" resname="aiSuiteSystemDomain">
-                <source>System domain: Domain this installation is licensed for. Needed for CLI and cron runs, where no HTTP host is available. Leave empty to auto-detect it from the site configuration.</source>
+                <source>System domain: Domain this installation is licensed for. When set, it is sent for every site of the installation, so one license covers all sites of a multi-site setup. Also needed for CLI and cron runs, where no HTTP host is available. Leave empty to detect it from the backend host or the site configuration.</source>
             </trans-unit>
             <trans-unit id="mediaStorageFolder" resname="mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>

@@ -44,23 +44,6 @@ class BackgroundTaskRepository
      *
      * @throws Exception
      */
-    public function findAll(): array
-    {
-        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
-
-        return $queryBuilder
-            ->select('*')
-            ->from($this->table)
-            ->executeQuery()
-            ->fetchAllAssociative()
-        ;
-    }
-
-    /**
-     * @return list<array<string, mixed>>
-     *
-     * @throws Exception
-     */
     public function findAllPageBackgroundTasks(): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -378,23 +361,6 @@ class BackgroundTaskRepository
             ->orderBy('crdate', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative()
-        ;
-    }
-
-    public function deleteByParentUuid(string $parentUuid): int
-    {
-        if ('' === $parentUuid) {
-            return 0;
-        }
-
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-
-        return $queryBuilder
-            ->delete($this->table)
-            ->where(
-                $queryBuilder->expr()->eq('parent_uuid', $queryBuilder->createNamedParameter($parentUuid))
-            )
-            ->executeStatement()
         ;
     }
 

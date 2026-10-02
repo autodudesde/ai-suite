@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
-use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use AutoDudes\AiSuite\Factory\PageStructureFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
@@ -49,7 +48,6 @@ class PagesController extends AbstractBackendController
         EventDispatcher $eventDispatcher,
         AiSuiteContext $aiSuiteContext,
         protected readonly PageStructureFactory $pageStructureFactory,
-        protected readonly PagesRepository $pagesRepository,
         protected readonly LoggerInterface $logger,
     ) {
         parent::__construct(

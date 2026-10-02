@@ -99,14 +99,6 @@ class AiSuiteModuleNavigationService implements SingletonInterface
     /**
      * @return list<array{route: string, labelKey: string, permission: null|string, icon: string}>
      */
-    public function getEntries(): array
-    {
-        return self::ENTRIES;
-    }
-
-    /**
-     * @return list<array{route: string, labelKey: string, permission: null|string, icon: string}>
-     */
     public function getPermittedEntries(): array
     {
         return array_values(array_filter(

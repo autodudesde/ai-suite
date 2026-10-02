@@ -500,22 +500,6 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * @throws UndefinedSchemaException
-     */
-    public function hasCapability(string $table, TcaSchemaCapability $capability): bool
-    {
-        if (null !== $this->tcaSchemaFactory) {
-            return $this->tcaSchemaFactory->get($table)->hasCapability($capability);
-        }
-
-        return match ($capability) {
-            TcaSchemaCapability::SoftDelete => !empty($GLOBALS['TCA'][$table]['ctrl']['delete']),
-            TcaSchemaCapability::Language => !empty($GLOBALS['TCA'][$table]['ctrl']['languageField']),
-            default => false,
-        };
-    }
-
-    /**
      * @return array<string, mixed>
      */
     public function getTypes(string $table): array

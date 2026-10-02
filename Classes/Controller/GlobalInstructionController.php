@@ -21,7 +21,6 @@ use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TcaSelectLabelService;
 use AutoDudes\AiSuite\Service\TranslationService;
-use AutoDudes\AiSuite\Service\UuidService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -56,7 +55,6 @@ class GlobalInstructionController extends AbstractBackendController
         protected readonly PagesRepository $pagesRepository,
         protected readonly LoggerInterface $logger,
         protected readonly ViewFactoryService $viewFactoryService,
-        protected readonly UuidService $uuidService,
         protected readonly TcaSelectLabelService $tcaSelectLabelService,
     ) {
         parent::__construct(

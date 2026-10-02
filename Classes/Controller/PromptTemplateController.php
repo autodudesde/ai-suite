@@ -15,7 +15,6 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Controller;
 
 use AutoDudes\AiSuite\Domain\Repository\CustomPromptTemplateRepository;
-use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
@@ -48,7 +47,6 @@ class PromptTemplateController extends AbstractBackendController
         EventDispatcher $eventDispatcher,
         AiSuiteContext $aiSuiteContext,
         protected readonly CustomPromptTemplateRepository $customPromptTemplateRepository,
-        protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
         protected readonly TcaSelectLabelService $tcaSelectLabelService,
         protected readonly PromptTemplateScopeService $promptTemplateScopeService,

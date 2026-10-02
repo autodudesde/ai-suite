@@ -177,21 +177,6 @@ class SessionService implements SingletonInterface
         return max(0, min(FolderSelectionService::MAX_DEPTH, (int) ($options['depth'] ?? 0)));
     }
 
-    public function resetFilelistSelection(string $route): void
-    {
-        $backendUser = $this->backendUserService->getBackendUser();
-        if (null === $backendUser) {
-            return;
-        }
-
-        $sessionData = $backendUser->getSessionData(self::SESSION_NAMESPACE) ?? [];
-        unset(
-            $sessionData[$route]['options']['directories'],
-            $sessionData[$route]['options']['directoriesTouched'],
-        );
-        $backendUser->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
-    }
-
     public function getFilelistFolder(): ?Folder
     {
         $directoryId = $this->getFilelistFolderId();

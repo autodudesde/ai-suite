@@ -19,15 +19,12 @@ use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\GlossarService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
-use AutoDudes\AiSuite\Service\UuidService;
-use AutoDudes\AiSuite\Service\ViewFactoryService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
-use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -48,9 +45,6 @@ class GlossarController extends AbstractBackendController
         EventDispatcher $eventDispatcher,
         AiSuiteContext $aiSuiteContext,
         protected readonly GlossarService $glossarService,
-        protected readonly DataHandler $dataHandler,
-        protected readonly ViewFactoryService $viewFactoryService,
-        protected readonly UuidService $uuidService,
         protected readonly LoggerInterface $logger,
     ) {
         parent::__construct(

@@ -26,7 +26,6 @@ class Pages
         protected string $seoTitle,
         protected string $description,
         protected string $slug,
-        protected string $txAiSuiteTopiclist,
         protected int $tstamp,
         protected int $permsUserid,
         protected int $permsGroupid,
@@ -39,7 +38,6 @@ class Pages
         $this->seoTitle = trim($seoTitle);
         $this->description = trim($description);
         $this->slug = trim($slug);
-        $this->txAiSuiteTopiclist = trim($txAiSuiteTopiclist);
     }
 
     public static function createEmpty(): self
@@ -54,7 +52,6 @@ class Pages
             '', // seoTitle
             '', // description
             '', // slug
-            '', // txAiSuiteTopiclist
             0, // tstamp
             0, // permsUserid
             0, // permsGroupid
@@ -89,57 +86,11 @@ class Pages
         return $this;
     }
 
-    public function getDoktype(): int
-    {
-        return $this->doktype;
-    }
-
-    public function setDoktype(int $doktype): self
-    {
-        $this->doktype = $doktype;
-
-        return $this;
-    }
-
-    public function getHidden(): int
-    {
-        return $this->hidden;
-    }
-
     public function setHidden(int $hidden): self
     {
         $this->hidden = $hidden;
 
         return $this;
-    }
-
-    public function getDeleted(): int
-    {
-        return $this->deleted;
-    }
-
-    public function setDeleted(int $deleted): self
-    {
-        $this->deleted = $deleted;
-
-        return $this;
-    }
-
-    public function getNavHide(): int
-    {
-        return $this->navHide;
-    }
-
-    public function setNavHide(int $navHide): self
-    {
-        $this->navHide = $navHide;
-
-        return $this;
-    }
-
-    public function getSeoTitle(): string
-    {
-        return $this->seoTitle;
     }
 
     public function setSeoTitle(string $seoTitle): self
@@ -159,107 +110,6 @@ class Pages
         $this->description = trim($description);
 
         return $this;
-    }
-
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(string $slug): self
-    {
-        $this->slug = trim($slug);
-
-        return $this;
-    }
-
-    public function getTxAiSuiteTopiclist(): string
-    {
-        return $this->txAiSuiteTopiclist;
-    }
-
-    public function setTxAiSuiteTopiclist(string $txAiSuiteTopiclist): self
-    {
-        $this->txAiSuiteTopiclist = trim($txAiSuiteTopiclist);
-
-        return $this;
-    }
-
-    public function getTstamp(): int
-    {
-        return $this->tstamp;
-    }
-
-    public function setTstamp(int $tstamp): self
-    {
-        $this->tstamp = $tstamp;
-
-        return $this;
-    }
-
-    public function getPermsUserid(): int
-    {
-        return $this->permsUserid;
-    }
-
-    public function setPermsUserid(int $permsUserid): self
-    {
-        $this->permsUserid = $permsUserid;
-
-        return $this;
-    }
-
-    public function getPermsGroupid(): int
-    {
-        return $this->permsGroupid;
-    }
-
-    public function setPermsGroupid(int $permsGroupid): self
-    {
-        $this->permsGroupid = $permsGroupid;
-
-        return $this;
-    }
-
-    public function getPermsUser(): int
-    {
-        return $this->permsUser;
-    }
-
-    public function setPermsUser(int $permsUser): self
-    {
-        $this->permsUser = $permsUser;
-
-        return $this;
-    }
-
-    public function getPermsGroup(): int
-    {
-        return $this->permsGroup;
-    }
-
-    public function setPermsGroup(int $permsGroup): self
-    {
-        $this->permsGroup = $permsGroup;
-
-        return $this;
-    }
-
-    public function getPermsEverybody(): int
-    {
-        return $this->permsEverybody;
-    }
-
-    public function setPermsEverybody(int $permsEverybody): self
-    {
-        $this->permsEverybody = $permsEverybody;
-
-        return $this;
-    }
-
-    public function getIsSiteroot(): int
-    {
-        return $this->isSiteroot;
     }
 
     public function setIsSiteroot(int $isSiteroot): void

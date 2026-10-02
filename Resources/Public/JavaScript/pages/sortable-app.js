@@ -107,15 +107,6 @@ function addButtonDialogEvent (button)
     });
 }
 
-function addButtonEditEvent (button)
-{
-    button.addEventListener('click', function(e){
-        e.preventDefault();
-        dialog.classList.add('active');
-        this.classList.add('clicked');
-    });
-}
-
 function addButtonDeleteEvent (button)
 {
     button.addEventListener('click', function(e){

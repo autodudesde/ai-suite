@@ -185,17 +185,17 @@ class GlobalInstructions {
         const sections = [
             '<div class="form-group">',
             '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">',
-            '<h3 style="margin: 0;">Global Instructions Preview</h3>',
+            '<h3 style="margin: 0;">' + this.escapeHtml(TYPO3.lang['aiSuite.globalInstructions.previewTitle'] ?? 'Global instructions preview') + '</h3>',
             '</div>'
         ];
 
         if (globalInstructions) {
-            sections.push('<h4>Global Instructions:</h4>');
+            sections.push('<h4>' + this.escapeHtml(TYPO3.lang['aiSuite.globalInstructions.previewInstructions'] ?? 'Global instructions:') + '</h4>');
             sections.push(this.createBlock(globalInstructions, true));
         }
 
         if (textareaContent) {
-            sections.push('<h4>Current Prompt:</h4>');
+            sections.push('<h4>' + this.escapeHtml(TYPO3.lang['aiSuite.globalInstructions.previewPrompt'] ?? 'Current prompt:') + '</h4>');
             sections.push(this.createBlock(textareaContent, false));
         }
 

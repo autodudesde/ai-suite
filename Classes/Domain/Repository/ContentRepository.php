@@ -170,29 +170,6 @@ class ContentRepository extends AbstractRepository
     }
 
     /**
-     * @return list<int>
-     */
-    public function getReferencedFileUids(int $contentUid): array
-    {
-        $qb = $this->connectionPool->getQueryBuilderForTable('sys_file_reference');
-        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-
-        $uids = $qb
-            ->select('uid_local')
-            ->from('sys_file_reference')
-            ->where(
-                $qb->expr()->eq('uid_foreign', $qb->createNamedParameter($contentUid, Connection::PARAM_INT)),
-                $qb->expr()->eq('tablenames', $qb->createNamedParameter('tt_content')),
-            )
-            ->orderBy('sorting_foreign', 'ASC')
-            ->executeQuery()
-            ->fetchFirstColumn()
-        ;
-
-        return array_values(array_unique(array_map('intval', $uids)));
-    }
-
-    /**
      * @param null|list<int>    $restrictToPageIds
      * @param null|list<string> $searchFields
      *
@@ -239,40 +216,6 @@ class ContentRepository extends AbstractRepository
         }
 
         return $qb->executeQuery()->fetchAllAssociative();
-    }
-
-    /**
-     * @param list<int> $pageIds
-     * @param list<int> $contentUids
-     *
-     * @return list<int>
-     */
-    public function findUidsByPagesOrUids(array $pageIds = [], array $contentUids = []): array
-    {
-        $qb = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $qb->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
-
-        $qb->select('uid')
-            ->from($this->table)
-            ->where($qb->expr()->eq('hidden', 0))
-            ->orderBy('pid', 'ASC')
-            ->addOrderBy('colPos', 'ASC')
-            ->addOrderBy('sorting', 'ASC')
-        ;
-
-        if (!empty($contentUids)) {
-            $qb->andWhere($qb->expr()->in('uid', $qb->createNamedParameter(
-                array_map('intval', $contentUids),
-                Connection::PARAM_INT_ARRAY,
-            )));
-        } elseif (!empty($pageIds)) {
-            $qb->andWhere($qb->expr()->in('pid', $qb->createNamedParameter(
-                array_map('intval', $pageIds),
-                Connection::PARAM_INT_ARRAY,
-            )));
-        }
-
-        return array_map('intval', $qb->executeQuery()->fetchFirstColumn());
     }
 
     /**

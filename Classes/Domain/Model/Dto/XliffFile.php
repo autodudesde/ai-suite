@@ -14,8 +14,6 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Model\Dto;
 
-use TYPO3\CMS\Core\Package\PackageInterface;
-
 class XliffFile
 {
     /**
@@ -23,22 +21,10 @@ class XliffFile
      * @param array<string, mixed> $rawData
      */
     public function __construct(
-        protected readonly string $filename,
-        protected readonly PackageInterface $package,
         protected readonly \SimpleXMLElement $simpleXMLElement,
         protected readonly array $rawData,
         protected readonly array $formatedData,
     ) {}
-
-    public function getFilename(): string
-    {
-        return $this->filename;
-    }
-
-    public function getPackage(): PackageInterface
-    {
-        return $this->package;
-    }
 
     public function getSimpleXMLElement(): \SimpleXMLElement
     {

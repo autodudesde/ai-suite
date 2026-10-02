@@ -6,26 +6,19 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class GlossarService implements SingletonInterface
 {
-    /** @var array<string, mixed> */
-    protected array $extConf;
-
     public function __construct(
         protected readonly GlossarRepository $glossarRepository,
         protected readonly SendRequestService $sendRequestService,
         protected readonly SiteService $siteService,
         protected readonly PageRepository $pageRepository,
         protected readonly LoggerInterface $logger,
-        protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly LocalizationService $localizationService,
-    ) {
-        $this->extConf = $this->extensionConfiguration->get('ai_suite');
-    }
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -62,8 +55,8 @@ class GlossarService implements SingletonInterface
     {
         try {
             $rootPageId = $this->siteService->getSiteRootPageId($pid);
-            $foundPages = $this->pageRepository->getDescendantPageIdsRecursive($rootPageId, 99);
-            $glossarEntries = $this->glossarRepository->findAllEntriesForPages(array_values($foundPages));
+            $foundPages = [$rootPageId, ...$this->pageRepository->getDescendantPageIdsRecursive($rootPageId, 99)];
+            $glossarEntries = $this->glossarRepository->findAllEntriesForPages($foundPages);
 
             $defaultLanguageRecords = [];
             $translationRecords = [];
@@ -101,6 +94,12 @@ class GlossarService implements SingletonInterface
                         ];
                     }
                 }
+            }
+
+            if ([] === $inputCombinations) {
+                $this->logger->warning('No translated glossary entries found below root page '.$rootPageId.', nothing to synchronize.');
+
+                return false;
             }
 
             $deeplGlossaryUuids = [];
@@ -146,7 +145,12 @@ class GlossarService implements SingletonInterface
 
                 return false;
             }
-            $createdGlossaries = $answer->getResponseData()['createdGlossaries'];
+            $createdGlossaries = $answer->getResponseData()['createdGlossaries'] ?? [];
+            if (count($createdGlossaries) < count($inputCombinations)) {
+                $this->logger->error('DeepL glossary synchronization returned '.count($createdGlossaries).' of '.count($inputCombinations).' glossaries.');
+
+                return false;
+            }
             foreach ($createdGlossaries as $glossaryId => $glossaryName) {
                 $nameParts = explode('__', $glossaryName);
                 $combinationKey = $nameParts[1].'__'.$nameParts[2];

@@ -115,9 +115,6 @@
             <trans-unit id="aiSuite.error.server.unauthorized">
                 <source>Your AI Suite API key is missing or invalid. Please check the key in the extension configuration. You can obtain a key at https://www.autodudes.de</source>
             </trans-unit>
-            <trans-unit id="aiSuite.error.server.forbidden">
-                <source>Your AI Suite API key is valid but does not have permission for this action. Please check your plan or contact support.</source>
-            </trans-unit>
             <trans-unit id="aiSuite.error.server.apiKeyExpired">
                 <source>Your AI Suite API key has expired. Please renew it at https://www.autodudes.de</source>
             </trans-unit>
@@ -142,6 +139,9 @@
             <trans-unit id="aiSuite.error.server.promptViolation">
                 <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.requestStatusNotFound">
+                <source>The AI Suite server no longer knows this background task, so it could not be re-queued. Delete the task and start the action again.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
             </trans-unit>
@@ -153,9 +153,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.unexpected">
                 <source>Unexpected AI Suite server endpoint error</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.error.apiKeyMissing.title">
-                <source>AI Suite API key missing</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.apiKeyMissing.message">
                 <source>No AI Suite API key is configured. Please enter your key in the extension configuration. If you don't have a key yet, you can get one at https://www.autodudes.de</source>
@@ -369,6 +366,21 @@
 
             <trans-unit id="aiSuite.globalInstructions.tooltip">
                 <source>Show the global instructions that apply to this prompt</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewTitle">
+                <source>Global instructions preview</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewInstructions">
+                <source>Global instructions:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.globalInstructions.previewPrompt">
+                <source>Current prompt:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translation.tasksProcessed">
+                <source>Translation tasks processed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.translation.tasksError">
+                <source>Translation task error</source>
             </trans-unit>
             <trans-unit id="aiSuite.globalInstructions.show_global_instructions">
                 <source>Global instructions</source>
@@ -818,10 +830,6 @@
                 <source>No translatable fields found. The selected content elements may have no text content or use unknown content types.</source>
             </trans-unit>
 
-            <trans-unit id="aiSuite.translation.pageMetadataLocalizationFailed">
-                <source>Page metadata localization failed.</source>
-            </trans-unit>
-
             <trans-unit id="aiSuite.translation.wholePageNoContentElements">
                 <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
             </trans-unit>
@@ -895,9 +903,6 @@
             <trans-unit id="aiSuite.noLibrariesAvailable">
                 <source>No libraries are available. Please contact your system administrator to get access to at least one library.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.translateGenerationLibrary">
-                <source>Select translation generation AI</source>
-            </trans-unit>
             <trans-unit id="aiSuite.translation.allContentElements">
                 <source>All content elements on the page</source>
             </trans-unit>
@@ -925,104 +930,11 @@
             <trans-unit id="aiSuite.notification.generation.fileUpdateError.noFileSelected">
                 <source>No file selected</source>
             </trans-unit>
-            <trans-unit id="aiSuite.action.translateWholePage">
-                <source>Translate whole page with AI</source>
-            </trans-unit>
             <trans-unit id="aiSuite.addImage.noFileMountsAvailable">
                 <source>No file mounts available for current user</source>
             </trans-unit>
             <trans-unit id="aiSuite.addImage.noFolderAvailable">
                 <source>No folder available for current user</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.aiPlugin.title">
-                <source>AI Suite</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.contentElementPromptHeader">
-                <source>Prompt</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.currentPrompt.label">
-                <source>Current Prompt</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.autoGenerationSuccess.title">
-                <source>Metadata generation successful</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingAutoUpload.title">
-                <source>Metadata generation error</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.errorGeneratingField.title">
-                <source>Metadata generation error</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGenerateUpload.title">
-                <source>Metadata generation error</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.flashMessage.metadata.unexpectedErrorAutoGeneration.title">
-                <source>Metadata generation error</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.generation.keywordsSuggestions">
-                <source>Generate keywords suggestions (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.generation.newsKeywordsSuggestions">
-                <source>Generate keywords suggestions for news article (1 Credit)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteCancel">
-                <source>Cancel</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteConfirm">
-                <source>Delete</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.deleteModalTitle">
-                <source>Warning</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.label">
-                <source>Global Instructions</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.globalInstructions.modal.title">
-                <source>Global Instructions &amp; Prompt Preview</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.aspectRatio.tooltip">
-                <source>Changes the aspect ratio of the generated image. An aspect ratio is the width-to-height ratio of an image.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.no.tooltip">
-                <source>Tell Midjourney what not to include in your image. Accepts multiple words separated with commas.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.sref.tooltip">
-                <source>Enter web address (URL) where the image is stored. You can use images as style references in your prompt to influence the style or aesthetic of images you want Midjourney to make.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageSettings.midjourney.version.tooltip">
-                <source>You can switch between Midjourney versions. Different versions excel at producing different types of images.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageWizardPromptHeader">
-                <source>Image prompt</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.imageWizardSlideOneImagePrompt">
-                <source>Image prompt</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.button.easyLanguage">
-                <source>Easy Language</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.button.ok">
-                <source>OK</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.progress.translationInProgress">
-                <source>Translation in progress...</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageAlreadyExists">
-                <source>✓ Page already exists in target language.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageFileReferenceFields">
-                <source>Page file reference fields:</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.pageFileReferences">
-                <source>Page file references:</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.js.summary.references">
-                <source>reference(s)</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.metaDataWizardPromptHeader">
-                <source>Custom metadata prompt</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.metadataWizardSlideOnePrompt">
-                <source>Metadata prompt</source>
             </trans-unit>
             <trans-unit id="aiSuite.notification.deleteSuccessTitle">
                 <source>Delete</source>
@@ -1035,18 +947,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.notification.generation.translation.sameLanguage">
                 <source>Source and target languages cannot be the same.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.promptTemplate.deleteModalTitle">
-                <source>Warning</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.synchronizeGlossary">
-                <source>Synchronize Glossary Entries</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.translateXlfHeader">
-                <source>XLF file properties</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.translation.fileReferences">
-                <source>File references (alternative text, titles)</source>
             </trans-unit>
             <trans-unit id="aiSuite.localizationHandler.noModelsAvailable.label">
                 <source>AI Suite: No models available</source>
@@ -1095,9 +995,6 @@
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.noTasks">
                 <source>No failed tasks, everything looks fine.</source>
-            </trans-unit>
-            <trans-unit id="aiSuite.cliOverview.column.uuid">
-                <source>UUID</source>
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.column.number">
                 <source>#</source>
