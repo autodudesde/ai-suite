@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $GLOBALS['TCA']['pages']['columns']['description']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiSeoMetaDescription';
 
 $GLOBALS['TCA']['pages']['columns']['seo_title']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiSeoPageTitle';

@@ -49,8 +49,7 @@ class PageStructureFactory
             }
             $newUid = (int) $this->pagesRepository->addPage($page);
             if ($newUid <= 0) {
-                // The DataHandler refused the page. Its children would otherwise be created at the
-                // root, which is the one place they must not appear.
+                // Children of a refused page would otherwise be created at the root
                 continue;
             }
 

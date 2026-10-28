@@ -16,6 +16,7 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 
 use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 class SysFileMetadataRepository extends AbstractRepository
@@ -51,7 +52,7 @@ class SysFileMetadataRepository extends AbstractRepository
     ): array {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $constraints = [
-            $queryBuilder->expr()->in('file', $uids),
+            $queryBuilder->expr()->in('file', $queryBuilder->createNamedParameter(array_map('intval', $uids), Connection::PARAM_INT_ARRAY)),
             $queryBuilder->expr()->eq('sys_language_uid', $languageUid),
         ];
         if ($showOnlyEmpty) {
@@ -131,7 +132,7 @@ class SysFileMetadataRepository extends AbstractRepository
             ->select('*')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->in('uid', $uids)
+                $queryBuilder->expr()->in('uid', $queryBuilder->createNamedParameter(array_map('intval', $uids), Connection::PARAM_INT_ARRAY))
             )
         ;
         $metadataList = $queryBuilder->executeQuery()->fetchAllAssociative();
@@ -151,7 +152,7 @@ class SysFileMetadataRepository extends AbstractRepository
             ->select('uid', 'file')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->in('file', $fileUids),
+                $queryBuilder->expr()->in('file', $queryBuilder->createNamedParameter(array_map('intval', $fileUids), Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq('sys_language_uid', 0)
             )
         ;

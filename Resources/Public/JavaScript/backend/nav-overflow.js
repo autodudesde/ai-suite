@@ -1,7 +1,3 @@
-/**
- * Module: @autodudes/ai-suite/backend/nav-overflow
- *
- */
 import DocumentService from "@typo3/core/document-service.js";
 
 class NavOverflow {

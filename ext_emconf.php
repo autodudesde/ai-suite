@@ -12,7 +12,7 @@ $EM_CONF['ai_suite'] = [
             'typo3' => '13.4.1-13.4.99'
         ],
         'conflicts' => [
-            'ai_seo_helper' => '0.1.0-1.9.99'
+            'ai_seo_helper' => '0.1.0-1.9.99',
         ],
         'suggests' => [
             'container' => '',
@@ -22,11 +22,11 @@ $EM_CONF['ai_suite'] = [
     ],
     'autoload' => [
         'psr-4' => [
-            'AutoDudes\\AiSuite\\' => 'Classes'
+            'AutoDudes\AiSuite\\' => 'Classes',
         ],
     ],
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '13.18.2',
+    'version' => '13.19.0',
 ];

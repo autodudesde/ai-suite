@@ -7,6 +7,9 @@ import Modal from '@typo3/backend/modal.js';
 import Notification from "@typo3/backend/notification.js";
 import Provenance from '@autodudes/ai-suite/helper/provenance.js';
 import {fallbackIcon, loadPluginIcon} from '@autodudes/ai-suite/ckeditor/plugin-icon.js';
+import {openCompareModal} from '@autodudes/ai-suite/ckeditor/CompareModal/compare-modal.js';
+
+const TARGET_MARKER = 'aiSuite:easyLanguageTarget';
 
 export default class AiEasyLanguagePluginUi extends Plugin {
     static get requires() {
@@ -47,7 +50,7 @@ export default class AiEasyLanguagePluginUi extends Plugin {
 
                 if(this.selectedContent.trim() === '') {
                     const self = this;
-                    Modal.confirm('Information', TYPO3.lang['aiSuite.easyLanguagePlugin.noContentSelectedModalText'], Severity.info, [
+                    Modal.confirm(TYPO3.lang['aiSuite.module.general.noContentSelectedTitle'], TYPO3.lang['aiSuite.easyLanguagePlugin.noContentSelectedModalText'], Severity.info, [
                         {
                             text: TYPO3.lang['aiSuite.easyLanguagePlugin.useWholeContent'],
                             active: true,
@@ -92,13 +95,8 @@ export default class AiEasyLanguagePluginUi extends Plugin {
     }
 
     async _fetchRteContent() {
-        let res = await Ajax.fetchLibraries('aisuite_ckeditor_easy_language_libraries');
-        if (General.isUsable(res)) {
-            return res.output;
-        } else {
-            console.error('Error');
-            return null;
-        }
+        const res = await Ajax.fetchLibraries('aisuite_ckeditor_easy_language_libraries');
+        return General.isUsable(res) ? res.output : null;
     }
 
     async _sendRequest(editor) {
@@ -110,23 +108,59 @@ export default class AiEasyLanguagePluginUi extends Plugin {
             uuid: this.uuid,
             type: 'easy-language',
         };
+        const modifyWholeContent = this.modifyWholeContent;
+        if (!modifyWholeContent) {
+            this._markTarget();
+        }
         Notification.info(TYPO3.lang['aiSuite.easyLanguagePlugin.inProgress'], TYPO3.lang['aiSuite.easyLanguagePlugin.pleaseWait'], 8);
-        let res = await Ajax.sendRteAjaxRequest( postData );
-        if(General.isUsable(res)) {
-            editor.model.change( () => {
-                if(this.modifyWholeContent) {
-                    this.editor.data.set(res.output);
-                } else {
-                    const viewFragment = this.editor.data.processor.toView( res.output );
-                    const modelFragment = this.editor.data.toModel( viewFragment );
-                    this.editor.model.insertContent(modelFragment);
-                }
-            } );
-            Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', postData.textModel);
-            Notification.success(TYPO3.lang['aiSuite.easyLanguagePlugin.success']);
-        } else {
-            console.error('Error');
+        const res = await Ajax.sendRteAjaxRequest( postData );
+        if (!General.isUsable(res)) {
+            this._clearTarget();
             Notification.error(TYPO3.lang['aiSuite.easyLanguagePlugin.failed']);
+            return;
+        }
+        openCompareModal(res.diff ?? '', {
+            onAccept: () => {
+                this._apply(res.output, modifyWholeContent);
+                Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', postData.textModel);
+                Notification.success(TYPO3.lang['aiSuite.easyLanguagePlugin.success']);
+            },
+            onDiscard: () => this._clearTarget(),
+        });
+    }
+
+    _apply(html, modifyWholeContent) {
+        const model = this.editor.model;
+        if (modifyWholeContent) {
+            this.editor.data.set(html);
+            return;
+        }
+        const marker = model.markers.get(TARGET_MARKER);
+        model.change( (writer) => {
+            if (marker) {
+                writer.setSelection(marker.getRange());
+            }
+            model.insertContent(this.editor.data.toModel( this.editor.data.processor.toView( html ) ));
+        } );
+        this._clearTarget();
+    }
+
+    _markTarget() {
+        const model = this.editor.model;
+        model.change( (writer) => {
+            const range = model.document.selection.getFirstRange();
+            if (model.markers.has(TARGET_MARKER)) {
+                writer.updateMarker(TARGET_MARKER, { range });
+            } else {
+                writer.addMarker(TARGET_MARKER, { range, usingOperation: false, affectsData: false });
+            }
+        } );
+    }
+
+    _clearTarget() {
+        const model = this.editor.model;
+        if (model.markers.has(TARGET_MARKER)) {
+            model.change( (writer) => writer.removeMarker(TARGET_MARKER) );
         }
     }
 

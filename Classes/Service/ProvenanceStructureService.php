@@ -16,9 +16,6 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\ProvenanceRepository;
 
-/**
- * Answers two questions for a register row: who owns the record, and under what it groups.
- */
 class ProvenanceStructureService
 {
     public const TYPE_PAGE = 'page';

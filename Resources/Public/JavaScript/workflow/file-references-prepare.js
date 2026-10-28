@@ -182,13 +182,13 @@ class FileReferencePrepare {
                     if (res.output?.failedFileReferences?.length > 0) {
                         Notification.error(
                             TYPO3.lang['aiSuite.notification.generation.error'],
-                            TYPO3.lang['aiSuite.notification.generation.failedFileReferences'] + res.output.failedFileReferences.join(', ')
+                            TYPO3.lang['aiSuite.notification.generation.failedFileReferences'] + ' ' + res.output.failedFileReferences.join(', ')
                         );
                     }
 
                     let statusElement = document.querySelector('.module-body .spinner-overlay .status');
                     if (statusElement !== null && selectedFileReferences && handledFileReferences) {
-                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledFileReferences).length} / ${Object.keys(selectedFileReferences).length}`;
+                        statusElement.innerHTML = `${res.output.message} ${Object.keys(handledFileReferences).length} / ${Object.keys(selectedFileReferences).length}`;
                     }
 
                     return res;

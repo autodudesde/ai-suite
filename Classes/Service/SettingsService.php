@@ -33,6 +33,10 @@ class SettingsService implements SingletonInterface
         'basicAuth.pass',
     ];
 
+    private const SECTION_HINTS = [
+        'metadataupload' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.metadataUpload.hint',
+    ];
+
     public function isMaskedField(string $key): bool
     {
         return in_array($key, self::MASKED_FIELDS, true);
@@ -76,7 +80,7 @@ class SettingsService implements SingletonInterface
      * @param array<string, array<string, mixed>> $definitions
      * @param array<string, array<string, mixed>> $settings
      *
-     * @return list<array{key: string, label: string, sections: list<array{label: string, settings: list<array<string, mixed>>}>}>
+     * @return list<array{key: string, label: string, sections: list<array{key: string, label: string, hint: string, settings: list<array<string, mixed>>}>}>
      */
     public function buildCategoryTree(array $definitions, array $settings): array
     {
@@ -96,6 +100,7 @@ class SettingsService implements SingletonInterface
             }
             if (!isset($tree[$category]['sections'][$subcategory])) {
                 $tree[$category]['sections'][$subcategory] = [
+                    'key' => $subcategory,
                     'label' => (string) ($definition['subcategoryLabel'] ?? $subcategory),
                     'settings' => [],
                 ];
@@ -108,7 +113,9 @@ class SettingsService implements SingletonInterface
             $sections = [];
             foreach ($category['sections'] as $section) {
                 $sections[] = [
+                    'key' => $section['key'],
                     'label' => $section['label'],
+                    'hint' => self::SECTION_HINTS[$section['key']] ?? '',
                     'settings' => $section['settings'],
                 ];
             }

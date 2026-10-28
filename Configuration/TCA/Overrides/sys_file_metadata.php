@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $GLOBALS['TCA']['sys_file_metadata']['columns']['alternative']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiSysFileAlternative';
 
 $GLOBALS['TCA']['sys_file_metadata']['columns']['title']['config']['fieldControl']['tx_aisuite_custom_field']['renderType'] = 'aiSysFileTitle';

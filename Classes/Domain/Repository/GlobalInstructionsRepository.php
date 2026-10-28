@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
@@ -57,7 +58,7 @@ class GlobalInstructionsRepository
                 $queryBuilder->expr()->eq('p.uid', $queryBuilder->quoteIdentifier('gi.pid'))
             )
             ->where(
-                $queryBuilder->expr()->in('gi.pid', $allowedMounts),
+                $queryBuilder->expr()->in('gi.pid', $queryBuilder->createNamedParameter($allowedMounts, Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq('gi.context', $queryBuilder->createNamedParameter($context))
             )
         ;
@@ -119,7 +120,7 @@ class GlobalInstructionsRepository
      *
      * @return array<string, mixed>
      */
-    public function findExistingGlobalInstruction(string $context, string $scope, array $selectedTree): array
+    public function findExistingGlobalInstruction(string $context, string $scope, array $selectedTree, ?int $excludeUid = null): array
     {
         $selectionIdentifier = 'pages' === $context ? 'selected_pages' : 'selected_directories';
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
@@ -133,7 +134,7 @@ class GlobalInstructionsRepository
         ;
         if ('pages' === $context) {
             $queryBuilder->andWhere(
-                $queryBuilder->expr()->in($selectionIdentifier, $selectedTree)
+                $queryBuilder->expr()->in($selectionIdentifier, $queryBuilder->createNamedParameter(array_map('intval', $selectedTree), Connection::PARAM_INT_ARRAY))
             );
         } else {
             $orExpressions = [];
@@ -143,6 +144,11 @@ class GlobalInstructionsRepository
             if (count($orExpressions) > 0) {
                 $queryBuilder->andWhere($queryBuilder->expr()->or(...$orExpressions));
             }
+        }
+        if (null !== $excludeUid) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->neq('uid', $queryBuilder->createNamedParameter($excludeUid, Connection::PARAM_INT))
+            );
         }
         $result = $queryBuilder
             ->setMaxResults(1)

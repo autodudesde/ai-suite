@@ -74,6 +74,24 @@ class SystemDomainResolver implements SingletonInterface
         return '' === $domain ? '' : 'https://'.$domain;
     }
 
+    public function resolveActualHost(): string
+    {
+        return $this->fromSites() ?? $this->fromRequest() ?? '';
+    }
+
+    /**
+     * @return array{request_system_instance: string, request_system_host: string}
+     */
+    public function instanceIdentity(): array
+    {
+        $encryptionKey = (string) ($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] ?? '');
+
+        return [
+            'request_system_instance' => '' === $encryptionKey ? '' : hash_hmac('sha256', 'ai_suite-instance', $encryptionKey),
+            'request_system_host' => $this->resolveActualHost(),
+        ];
+    }
+
     private function fromConfiguration(): ?string
     {
         return $this->normalizeHost($this->readConfiguredDomain());

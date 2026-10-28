@@ -31,8 +31,8 @@ export default class ModalView extends View {
             }
             this.radioButtonGroup.push(radioButton);
         }
-        let promptTemplateDisplay = 'flex';
-        if(promptTemplates.length > 0) {
+        this.dropdown = null;
+        if (promptTemplates.length > 0) {
             this.dropdown = createDropdown( editorLocale );
 
             this.dropdown.buttonView.set( {
@@ -60,10 +60,8 @@ export default class ModalView extends View {
                 items.forEach((item) => { item.model.set('isActive', false) });
                 selectedItem.set('isActive', true);
                 this.promptInputView.element.value = selectedItem.promptTemplate;
+                this.showPromptError(false);
             });
-        } else {
-            promptTemplateDisplay = 'none';
-            this.dropdown = '';
         }
         const iconPencil = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="m9.293 3.293-8 8A.997.997 0 0 0 1 12v3h3c.265 0 .52-.105.707-.293l8-8-3.414-3.414zM8.999 5l.5.5-5 5-.5-.5 5-5zM4 14H3v-1H2v-1l1-1 2 2-1 1zM13.707 5.707l1.354-1.354a.5.5 0 0 0 0-.707L12.354.939a.5.5 0 0 0-.707 0l-1.354 1.354 3.414 3.414z"/></g></svg>';
         this.saveButtonView = this._createButton(TYPO3.lang['aiSuite.module.PageContent.submit'], iconPencil, 'ck-button-save');
@@ -80,165 +78,96 @@ export default class ModalView extends View {
                     tag: 'div',
                     attributes: {
                         class: 'ck-dialog-inputs',
-                        style: {
-                            display: 'flex',
-                            flexDirection: 'column',
-                            padding: 'var(--ck-spacing-large)',
-                            whiteSpace: 'initial',
-                            width: '100%',
-                            minWidth: '450px',
-                            maxWidth: '700px'
-                        },
                     },
                     children: [
                         {
                             tag: 'div',
                             attributes: {
                                 class: 'ck-dialog-headerbar',
-                                style: {
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    fontWeight: 'bold',
-                                    fontSize: '1.1rem',
-                                    marginBottom: 'var(--ck-spacing-medium)',
-                                    width: '100%'
-                                }
-                            },
-                            children: [
-                                TYPO3.lang['aiSuite.module.general.adjustContentWithAi'],
-                                this.cancelButtonView
-                            ]
-                        },
-                        {
-                            tag: 'div',
-                            attributes: {
-                                class: 'ck-prompt-template-title',
-                                style: {
-                                    display: promptTemplateDisplay,
-                                    width: '100%',
-                                    fontWeight: 'bold',
-                                    marginBottom: 'var(--ck-spacing-medium)'
-                                }
-                            },
-                            children: [
-                                TYPO3.lang['aiSuite.module.general.promptTemplates'],
-                            ]
-                        },
-                        {
-                            tag: 'div',
-                            attributes: {
-                                class: 'ck-prompt-template-dropdown',
-                                style: {
-                                    display: promptTemplateDisplay,
-                                    width: '100%',
-                                    marginBottom: 'var(--ck-spacing-large)'
-                                }
-                            },
-                            children: [
-                                this.dropdown
-                            ]
-                        },
-                        {
-                            tag: 'div',
-                            attributes: {
-                                class: 'ck-prompt-input-label',
-                                style: {
-                                    display: 'flex',
-                                    width: '100%',
-                                    //fontWeight: 'bold',
-                                    marginBottom: 'var(--ck-spacing-medium)'
-                                }
                             },
                             children: [
                                 {
                                     tag: 'span',
-                                    attributes: {
-                                        style: {
-                                            fontWeight: 'bold',
-                                        }
-                                    },
-                                    children: [
-                                        TYPO3.lang['aiSuite.module.general.prompt']
-                                    ]
+                                    attributes: { class: 'ck-ai-plugin__title' },
+                                    children: [ TYPO3.lang['aiSuite.module.general.adjustContentWithAi'] ]
+                                },
+                                this.cancelButtonView
+                            ]
+                        },
+                        this.dropdown ? {
+                            tag: 'div',
+                            attributes: { class: 'ck-ai-plugin__label' },
+                            children: [ TYPO3.lang['aiSuite.module.general.promptTemplates'] ]
+                        } : null,
+                        this.dropdown ? {
+                            tag: 'div',
+                            attributes: { class: 'ck-prompt-template-dropdown' },
+                            children: [ this.dropdown ]
+                        } : null,
+                        {
+                            tag: 'div',
+                            attributes: { class: 'ck-ai-plugin__label ck-prompt-input-label' },
+                            children: [
+                                {
+                                    tag: 'span',
+                                    children: [ TYPO3.lang['aiSuite.module.general.prompt'] ]
                                 },
                                 this.globalInstructions ? this.globalInstructionsButtonView : null,
                             ].filter(child => child !== null)
                         },
                         {
                             tag: 'div',
-                            attributes: {
-                                class: 'ck-prompt-input',
-                                style: {
-                                    display: 'flex',
-                                    width: '100%',
-                                    marginBottom: 'var(--ck-spacing-large)'
-                                }
-                            },
-                            children: [
-                                this.promptInputView,
-                            ]
+                            attributes: { class: 'ck-prompt-input' },
+                            children: [ this.promptInputView ]
                         },
                         {
                             tag: 'div',
-                            attributes: {
-                                class: 'ck-prompt-input-label',
-                                style: {
-                                    display: 'flex',
-                                    width: '100%',
-                                    fontWeight: 'bold',
-                                    marginBottom: 'var(--ck-spacing-medium)'
-                                }
-                            },
-                            children: [
-                                TYPO3.lang['aiSuite.textGenerationLibrary'],
-                            ]
+                            attributes: { class: 'ck-ai-plugin__error', role: 'alert' },
+                            children: [ TYPO3.lang['aiSuite.module.general.promptRequired'] ]
                         },
                         {
                             tag: 'div',
-                            attributes: {
-                                class: 'ck-radio-button-group',
-                                style: {
-                                    display: 'flex',
-                                    width: '100%',
-                                    marginBottom: '1rem',
-                                    position: 'relative',
-                                    flexWrap: 'wrap'
-                                }
-                            },
+                            attributes: { class: 'ck-ai-plugin__label' },
+                            children: [ TYPO3.lang['aiSuite.textGenerationLibrary'] ]
+                        },
+                        {
+                            tag: 'div',
+                            attributes: { class: 'ck-radio-button-group' },
                             children: this.radioButtonGroup
                         },
                         {
                             tag: 'div',
-                            attributes: {
-                                class: 'ck-save-button',
-                                style: {
-                                    display: 'flex'
-                                }
-                            },
-                            children: [
-                                this.saveButtonView,
-                            ]
+                            attributes: { class: 'ck-save-button' },
+                            children: [ this.saveButtonView ]
                         },
-                    ],
+                    ].filter(child => child !== null),
                 },
                 {
                     tag: 'div',
-                    attributes: {
-                        class: 'ck-spinner-wrapper',
-                        style: {
-                            width: '100%',
-                            height: '100%',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            display: 'none'
-                        }
-                    },
-                    children: [
-                        this.spinner
-                    ]
+                    attributes: { class: 'ck-spinner-wrapper' },
+                    children: [ this.spinner ]
                 }
             ]
         });
+    }
+
+    getPrompt() {
+        return this.promptInputView.element.value;
+    }
+
+    getSelectedModel() {
+        return this.element.querySelector('.ck-radio-button-group input[type="radio"]:checked')?.value ?? '';
+    }
+
+    showPromptError(visible) {
+        this.element.classList.toggle('has-prompt-error', visible);
+        if (visible) {
+            this.promptInputView.focus();
+        }
+    }
+
+    setLoading(loading) {
+        this.element.classList.toggle('is-loading', loading);
     }
 
     render() {

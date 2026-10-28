@@ -1,6 +1,6 @@
 # TYPO3 AI Suite
 
-The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies. It seamlessly integrates a wide variety of AI providers and the AutoDudes open-source models directly into the TYPO3 backend, so editors generate, translate and optimize content without ever leaving TYPO3.
+The AI Suite optimizes the workflow of project managers, agencies and freelancers by using the latest AI technologies. It seamlessly integrates a wide variety of AI providers directly into the TYPO3 backend, so editors generate, translate and optimize content without ever leaving TYPO3.
 
 It covers the everyday editorial chores that scale badly by hand: image and page metadata (single records and in bulk), content translation, **Easy Language** rewrites for accessible copy, content creation and rewriting, AI image generation, and whole page-tree generation. Long-running jobs run asynchronously through the built-in **TaskEngine**, and access is gated per feature and per AI model through TYPO3 backend-group permissions. SEO and accessibility audits, translation on save, usage statistics and an overview of AI-generated content round it off.
 
@@ -15,7 +15,7 @@ Two optional extensions build on it: an [MCP server](#mcp-server-optional-sub-ex
 - 🏷️ **Generate page metadata** (SEO title, description, abstract, Open Graph / Twitter cards) for a single page or in bulk over a whole page subtree.
 - 🖼️ **Generate file metadata** (alternative text, title, description) for images, single file or for every file in a folder. Optionally auto-generate on upload.
 - ✍️ **Create & optimize content**: full content elements from a prompt in the new content element wizard, and AI rework of existing copy in the rich text editor (free prompt or prompt template).
-- 🌍 **Translate anything**: single records, whole pages, file metadata or list selections, with DeepL glossary sync and FlexForm field translation.
+- 🌍 **Translate anything**: single records, whole pages, file metadata or list selections, with DeepL glossary sync, FlexForm field translation and link titles that keep their target.
 - 🧱 **Generate complete page trees** from a single prompt, with page metadata and content inside the new pages.
 - 🎨 **Generate AI images** straight into FAL, ready to be referenced as a real `sys_file`.
 - 📰 **Generate news records** (when EXT:news is present) via a **News with AI** button in the list module.
@@ -36,7 +36,7 @@ The set of models offered to a given backend user depends on the AI-model permis
 | Capability | Where in the backend | Models |
 |---|---|---|
 | **Page metadata** (SEO, OG, Twitter) | SEO field controls, page-tree context menu, WorkflowManager, TaskEngine | OpenAI (ChatGPT), Anthropic/Claude, Mittwald (Ministral-3-14B-Instruct-2512), Meta Llama-3.3 (70B-Instruct) |
-| **File / image metadata** (alt, title, description) | File list, file metadata field controls, auto-on-upload | OpenAI Vision, Mittwald (Ministral-3-14B-Instruct-2512 Vision), plus the configured metadata model |
+| **File / image metadata** (alt, title, description) | File list, file metadata field controls, auto-on-upload | OpenAI Vision, Mittwald (Ministral-3-14B-Instruct-2512 Vision) |
 | **Content generation** (tt_content) | New content element wizard (AI Suite Content tab) | OpenAI (ChatGPT), Anthropic/Claude, Mittwald (Ministral-3-14B-Instruct-2512), Meta Llama-3.3 (70B-Instruct) |
 | **Page-tree generation** | Backend module page-tree wizard | OpenAI (ChatGPT), Anthropic/Claude, Mittwald (Ministral-3-14B-Instruct-2512), Meta Llama-3.3 (70B-Instruct) |
 | **Translation** (records, pages, file metadata) | Localization wizard, list wizard, file metadata | DeepL, Google Translate, OpenAI (ChatGPT), Anthropic/Claude, Mittwald (Ministral-3-14B-Instruct-2512) |
@@ -45,7 +45,7 @@ The set of models offered to a given backend user depends on the AI-model permis
 | **Image generation** | Image generation buttons on image fields and in the file list | GPT Image (OpenAI), Midjourney, Flux |
 | **Audits** (SEO, accessibility, GEO questions, content gap, topic clusters, competitors) | Audit module, page-tree context menu, page module tile | AutoDudes audit infrastructure; the text analysis runs on the model chosen per run or on `auditDefaultTextModel` |
 | **Translation on save** | Page module, CLI or directly on save (`autoTranslateMode`) | OpenAI (ChatGPT), DeepL, Google Translate, Anthropic/Claude, Mittwald (Ministral-3-14B-Instruct-2512) via `autoTranslateModel` |
-| **ChEddi chat** (optional extension) | Drawer on every backend page | OpenAI GPT-5.6 Luna, IONOS Qwen3.5-397B-A17B, Claude Haiku 4.5, Claude Sonnet 5, Claude Opus 5 |
+| **ChEddi chat** (optional extension) | Drawer on every backend page | OpenAI GPT-5.6 Luna, IONOS Qwen3.5-397B-A17B, IONOS Qwen3.8-27B, Claude Haiku 5.5, Claude Sonnet 5.5 |
 
 You can run these models through the AutoDudes credit system (a single API key, see [Licensing & credits](#licensing--credits)) or bring your own provider keys (BYOK).
 
@@ -129,14 +129,14 @@ See [autodudes.de](https://www.autodudes.de/) for current packages and pricing.
 
 All settings live under **Admin Tools → Settings → Extension Configuration → `ai_suite`** and are also reachable from the backend module's **Settings** area (when the `Global Settings` permission is granted). Sensitive values (API keys, passwords) are masked in the module UI.
 
-`aiSuiteApiKey`, the provider keys under [Bring your own keys](#bring-your-own-keys) except `staanApiKey`, `deeplApiMode` and `mediaStorageFolder` can also be overridden per backend group, in the group record.
+`aiSuiteApiKey`, the provider keys under [Bring your own keys](#bring-your-own-keys) (except `staanApiKey`), `deeplApiMode` and `mediaStorageFolder` can also be overridden per backend group, in the group record. The override applies to non-admin users; admins always use the extension configuration.
 
 ### AI Suite API
 
 | Setting | Default | Description |
 |---|---|---|
 | `aiSuiteApiKey` | _(empty)_ | Your AutoDudes AI Suite license key. Required for the credit-based providers. |
-| `aiSuiteServer` | `https://api.autodudes.de/` | AI Suite server endpoint. Change only for self-hosted / proxied setups. |
+| `aiSuiteServer` | `https://api.autodudes.de/` | AI Suite server endpoint. Change only for self-hosted / proxied setups. Must start with `https://`: the extension sends the API key with every request, so it refuses to save or call a plain `http://` URL. |
 | `aiSuiteSystemDomain` | _(empty)_ | Domain this installation is licensed for. When set, it is sent for every site, so one license covers all sites of a multi-site setup (e.g. microsites edited from one backend). Also needed for CLI and cron runs, where no HTTP host is available; empty detects it from the backend host or the site configuration. |
 
 ### Translation
@@ -144,6 +144,7 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 | Setting | Default | Description |
 |---|---|---|
 | `translateFlexFormFields` | `1` | Also translate FlexForm field values, not just regular columns. |
+| `translatePlainHtml` | `0` | Also translate the markup of "Plain HTML" content elements (`bodytext` of CType `html`). The translation is written unfiltered and rendered in the frontend as it is, so a manipulated answer could place a script there. Off: the field is neither sent nor written. |
 | `easyLanguageLibrary` | `ChatGPT` | Model used for Easy Language rewrites (`ChatGPT`, `Anthropic`, or `AiSuiteTextUltimate` / Meta Llama-3.3). |
 | `disableTranslationFunctionality` | `0` | Master switch that unregisters the translation decorators (`DatabaseRecordList` and the core's page-localization handler) and the translation DataHandler hooks, translation on save included. |
 | `enableAutoTranslateOnSave` | `0` | Translate content elements into all site languages automatically when they are saved. |
@@ -167,13 +168,15 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 
 | Setting | Default | Description |
 |---|---|---|
-| `mediaStorageFolder` | _(empty)_ | Target FAL folder for AI-generated images. Empty = an `ai-images` folder in the default upload folder. |
+| `mediaStorageFolder` | _(empty)_ | Target FAL folder for AI-generated images, as a folder name or a combined identifier such as `1:/user_upload/ai-images`; it is created if missing. Empty = `ai-images`, below the default folder of the default storage for admins and below the first file mount for editors. |
 
 ### GDPR
 
 | Setting | Default | Description |
 |---|---|---|
 | `forceGdpa` | `0` | Offer only GDPR-compliant models; the flag is sent to the AI Suite Server with the request for the available models. |
+
+The extension sends no IP addresses of editors to the AI Suite Server. API keys stored in backend groups are masked in the form. Errors are logged with the exception object (PSR-3); TYPO3's file writer adds its stack trace, which contains argument values (content, keys) unless PHP's `zend.exception_ignore_args` is on, as it is in `php.ini-production`. Keep it on in production.
 
 ### AI Act / provenance
 
@@ -262,7 +265,7 @@ whoever works with the system.
 | `midjourneyId` | _(empty)_ | Your Midjourney account ID. |
 | `aiModelHubApiKey` | _(empty)_ | Your IONOS AI Model Hub API key (IONOS models, also used for Flux). |
 | `mittwaldAiModelHubApiKey` | _(empty)_ | Your Mittwald AI Model Hub API key (Mittwald models). |
-| `staanApiKey` | _(empty)_ | Your Staan API key. Only needed for ChEddi's web research under GDPR mode. |
+| `staanApiKey` | _(empty)_ | Your Staan API key. Only needed on a plan that runs on your own provider keys, and only for ChEddi's web research under GDPR mode. |
 
 ## Backend-group permissions
 
@@ -293,7 +296,7 @@ AI Suite gates access on two independent axes that both apply on every action: *
 | `enable_toolbar_stats_item` | Credits toolbar item |
 | `enable_global_settings` | Settings area inside the backend module |
 | `enable_agency` | Agencies area |
-| `enable_audit` | SEO and accessibility audits (Audit module, context menu, ChEddi and MCP audit tools) |
+| `enable_audit` | All page audits: SEO, accessibility and content audits (Audit module, context menu, ChEddi and MCP audit tools) |
 | `enable_statistics` | Statistics view |
 | `enable_provenance_overview` | *AI content* overview, including marking entries as reviewed |
 
@@ -313,7 +316,7 @@ AI Suite gates access on two independent axes that both apply on every action: *
 | `Deepl` | DeepL |
 | `GoogleTranslate` | Google Translate |
 
-> Flags and keys are registered in `ext_tables.php` (`customPermOptions`); their labels live in `Resources/Private/Language/locallang_tca.xlf` (`aiSuite.permissions.*`). The optional extensions add their own entries to both sections: `ai_suite_mcp` the flags `enable_mcp_access`, `enable_mcp_media_upload` and `enable_mcp_rendered_page_read`, ChEddi the flags `enable_cheddi_interface` and `enable_web_research` plus the chat models `OpenAiLuna`, `IonosQwen35`, `ClaudeHaiku45`, `ClaudeSonnet5` and `ClaudeOpus5`.
+> Flags and keys are registered in `ext_tables.php` (`customPermOptions`); their labels live in `Resources/Private/Language/locallang_tca.xlf` (`aiSuite.permissions.*`). The optional extensions add their own entries to both sections: `ai_suite_mcp` the flags `enable_mcp_access`, `enable_mcp_media_upload` and `enable_mcp_rendered_page_read` (and it relabels `enable_audit` to cover its audit tools). ChEddi keeps its permissions in two lists of its own, *ChEddi Features* and *ChEddi Models*, set independently of the ones above; see the ChEddi README.
 
 ## Features in depth
 
@@ -321,7 +324,7 @@ AI Suite gates access on two independent axes that both apply on every action: *
 
 Add AI-generated SEO metadata (title, description, abstract, Open Graph and Twitter fields) to pages, and alternative text / title / description to files. Available as **field controls** next to the relevant TCA fields for a single record, and as **bulk operations** through the WorkflowManager / TaskEngine for whole folders or page subtrees. File metadata can be **auto-generated on upload** (`metadataAutogenerate*`), either queued for review in the TaskEngine or saved directly.
 
-Page abstracts are generated from the page's rendered frontend content. Custom doktypes that do not render meaningful content yield a thin or generic abstract, that is expected behaviour, not a bug. `minPlausiblePageContentLength` only rejects fetched pages shorter than the threshold; it does not make a thin abstract better.
+Page abstracts are generated from the page's rendered frontend content, fetched from its live frontend URL (workspace 0), also when the editor works in a workspace: the AI never reads a workspace draft. Custom doktypes that do not render meaningful content yield a thin or generic abstract, that is expected behaviour, not a bug. `minPlausiblePageContentLength` only rejects fetched pages shorter than the threshold; it does not make a thin abstract better.
 
 ### Content creation & optimization
 
@@ -333,7 +336,9 @@ Translate single records, whole pages, file metadata or list selections. Transla
 
 - **Easy Language** rewrites for accessible content, as a CKEditor plugin (model: `easyLanguageLibrary`).
 - **FlexForm field translation** (`translateFlexFormFields`).
+- **Link fields** (TCA type `link`, also inside FlexForms): only the link title is translated, the target of the existing link is kept. A title with no stored link to go into is dropped instead of being written as a bare link.
 - **DeepL glossary sync** from the AI Suite glossary table, started with the button in the list module (`enable_translation_deepl_sync`).
+- **Glossary per site.** A glossary entry applies only to content of the site in whose page tree it is stored, for DeepL and for the text models alike; content outside any site is translated without a glossary. The localization wizard, the automatic translation and the CLI page translation apply it automatically; the page translation workflow offers the glossary of the start page's site, the file translation workflow lets the editor pick a site.
 - Decorators over the core `DatabaseRecordList` and over the core's page-localization handler add the AI translation entry points. Which core class that is differs by TYPO3 major. The whole translation surface can be switched off with `disableTranslationFunctionality`.
 
 **Translations are created hidden.** That is TYPO3, not AI Suite: `tt_content` carries
@@ -422,8 +427,12 @@ vendor/bin/typo3 ai-suite:retry-tasks
 `--type`/`-t` and `--model`/`-m` pick workflow and AI model, `--start-from-pid`, `--depth`,
 `--page-type`, `--column`, `--sys-language`, `--show-only-empty` and `--include-hidden` select the
 pages for a metadata run, `--source-language`, `--target-language` and `--translation-scope` a
-translation, `--directory` and `--show-only-used` a file metadata run, and `--prompt` overrides the
-generated prompt. `ai-suite:retry-tasks` takes `--type`/`-t` and `--model`/`-m`, where the model
+translation, `--directory`, `--depth` (subfolder levels, max 5) and `--show-only-used` a file
+metadata run, and `--prompt` overrides the generated prompt. In the Scheduler task form,
+`--type`, `--model` and `--column` are dropdowns: model and column only list what fits the chosen
+type, and the model falls back to a text field when the AI Suite Server cannot be reached.
+`ai-suite:retry-tasks` takes
+`--type`/`-t` and `--model`/`-m`, where the model
 defaults to the one the failed task used. `ai-suite:process-tasks` takes no options.
 
 Schedule `ai-suite:process-tasks` via the TYPO3 Scheduler or system cron so queued results get persisted automatically. It is also required when `autoTranslateMode = cli`.
@@ -481,7 +490,7 @@ AI Suite adds the following custom tables (schema in `ext_tables.sql`):
 | `tx_aisuite_domain_model_server_prompt_template` | Server-provided prompt templates |
 | `tx_aisuite_domain_model_global_instructions` | Project-wide global instructions |
 | `tx_aisuite_domain_model_deepl` | DeepL language / configuration data |
-| `tx_aisuite_domain_model_glossar` | Glossary entries (used for DeepL glossary sync) |
+| `tx_aisuite_domain_model_glossar` | Glossary entries, scoped to the site they are stored in (text-model translations and DeepL glossary sync) |
 | `tx_aisuite_domain_model_requests` | Request and credit counters shown in the toolbar |
 | `tx_aisuite_domain_model_backgroundtask` | TaskEngine background tasks |
 | `tx_aisuite_audit_result` | Stored audit results per page, language and audit type |
@@ -491,7 +500,7 @@ It also adds columns to `be_groups` for the per-group overrides of the API keys 
 
 ## MCP server (optional sub-extension)
 
-AI Suite ships with an optional **MCP (Model Context Protocol) server** sub-extension, `ai_suite_mcp`, which exposes the same AI capabilities to MCP-compatible clients (Claude Desktop, Claude.ai, ChatGPT, MCP Inspector, …) so a model can drive your TYPO3 backend directly from a chat. It reuses AI Suite's providers, credit accounting and per-feature / per-model permissions, and adds OAuth 2.1 auth and workspace-aware writes.
+AI Suite ships with an optional **MCP (Model Context Protocol) server** sub-extension, `ai_suite_mcp`, which exposes your TYPO3 content and a subset of the AI capabilities (page and file metadata, images, translation, audits) to MCP-compatible clients (Claude Desktop, Claude.ai, ChatGPT, MCP Inspector, …) so a model can drive your TYPO3 backend directly from a chat. Most of its tools run locally and cost nothing; the client's model composes the content. It reuses AI Suite's providers, credit accounting and per-feature / per-model permissions, and adds OAuth 2.1 auth and workspace-aware writes.
 
 The endpoint stays off until `enableMcp` is set. The extension requires the system extensions `workspaces` and `reports`, and it adds the backend-group flags `enable_mcp_access`, `enable_mcp_media_upload` and `enable_mcp_rendered_page_read`.
 
@@ -501,12 +510,12 @@ See the [`ai_suite_mcp` extension on the TYPO3 Extension Repository](https://ext
 
 <img src="Resources/Public/Icons/cheddi.png" alt="ChEddi" width="64" align="right">
 
-ChEddi (`autodudes/cheddi`, extension key `cheddi`) puts a chat drawer on every backend page. Editors say in plain language what they need, and ChEddi works on the real records through the tools of `ai_suite_mcp`, run inside the backend as the logged-in user and with exactly that user's permissions. Read-only steps run on their own unless they cost credits, in which case they are confirmed like a write; every write needs a click and a destructive one a second click. By default the changes land in a workspace draft the editor can publish or discard from the drawer.
+ChEddi (`autodudes/cheddi`, extension key `cheddi`) puts a chat drawer on every backend page. Editors say in plain language what they need, and ChEddi works on the real records through the tools of `ai_suite_mcp`, run inside the backend as the logged-in user and with exactly that user's permissions. Read-only steps run on their own unless they carry a fixed credit cost (the audits), in which case they are confirmed like a write; every write needs a click and a destructive one a second click. By default the changes land in a workspace draft the editor can publish or discard from the drawer.
 
 - **Dependencies:** `ai_suite`, `ai_suite_mcp`, `workspaces`, `reports` and `scheduler`; Composer pulls them in.
-- **Access:** the backend-group flag `tx_aisuite_features:enable_cheddi_interface` plus at least one chat model (`OpenAiLuna`, `IonosQwen35`, `ClaudeHaiku45`, `ClaudeSonnet5`, `ClaudeOpus5`). The experimental web research has its own flag, `enable_web_research`.
+- **Access:** the backend-group flag `tx_aisuite_features:enable_cheddi_interface` plus at least one chat model (`OpenAiLuna`, `IonosQwen35`, `IonosQwen38`, `ClaudeHaiku55`, `ClaudeSonnet55`). The experimental web research has its own flag, `enable_web_research`.
 - **AI Suite Server:** every turn goes through the server configured here (`aiSuiteServer`, `aiSuiteApiKey`), also on plans that run on your own keys.
-- **Settings:** ChEddi's own settings are prefixed `chat*`. Most inherit the matching `ai_suite_mcp` setting (GDPR mode comes from `ai_suite`), table lists extend the MCP lists, and markup and GDPR settings can only tighten.
+- **Settings:** ChEddi's own settings are prefixed `chat*`. Settings with an `ai_suite_mcp` counterpart inherit it (GDPR mode comes from `ai_suite`), table lists extend the MCP lists, and markup and GDPR settings can only tighten; `chatWriteMode` and `chatLogVerbose` replace the MCP value.
 
 The ChEddi README (`autodudes/cheddi`) covers installation, permissions, web research and configuration.
 

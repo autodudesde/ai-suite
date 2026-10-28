@@ -5,6 +5,7 @@
 <f:layout name="Module" />
 
 <f:section name="Content">
+    <f:asset.css identifier="ai-suite-settings" href="EXT:ai_suite/Resources/Public/Css/settings.css" />
     <h1 class="mb-3 fw-semibold">
         <core:icon identifier="tx-aisuite-extension-v14" size="medium" />
         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.header" />
@@ -35,14 +36,21 @@
                          data-bs-parent="#aiSuiteSettingsAccordion">
                         <div class="panel-body">
                             <f:for each="{category.sections}" as="section" iteration="sectionIteration">
-                                <f:if condition="{section.label}">
-                                    <h2 class="h5 fw-semibold{f:if(condition: '{sectionIteration.isFirst}', then: ' mb-3', else: ' mt-4 mb-3')}">
-                                        <f:translate key="{section.label}" default="{section.label}" />
-                                    </h2>
-                                </f:if>
-                                <f:for each="{section.settings}" as="setting">
-                                    <f:render partial="Settings/Field" arguments="{setting: setting}" />
-                                </f:for>
+                                <div class="aisuite-settings-section{f:if(condition: '{sectionIteration.isFirst}', else: ' mt-4')}" data-settings-section="{section.key}">
+                                    <f:if condition="{section.label}">
+                                        <h2 class="aisuite-settings-section-title h5 fw-semibold">
+                                            <f:translate key="{section.label}" default="{section.label}" />
+                                        </h2>
+                                    </f:if>
+                                    <div class="aisuite-settings-section-body">
+                                        <f:if condition="{section.hint}">
+                                            <p class="text-muted mb-3"><f:translate key="{section.hint}" /></p>
+                                        </f:if>
+                                        <f:for each="{section.settings}" as="setting">
+                                            <f:render partial="Settings/Field" arguments="{setting: setting}" />
+                                        </f:for>
+                                    </div>
+                                </div>
                             </f:for>
                         </div>
                     </div>

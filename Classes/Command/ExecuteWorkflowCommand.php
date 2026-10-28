@@ -19,6 +19,7 @@ use AutoDudes\AiSuite\Service\FolderSelectionService;
 use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\SiteService;
 use AutoDudes\AiSuite\Service\SystemDomainResolver;
+use AutoDudes\AiSuite\Service\WorkflowCommandOptionsService;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -29,7 +30,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'ai-suite:execute-workflow',
+    name: WorkflowCommandOptionsService::COMMAND_IDENTIFIER,
     description: 'Executes an AI Suite workflow (metadata generation or translation) and stores tasks for later CLI processing.',
 )]
 class ExecuteWorkflowCommand extends Command
@@ -41,6 +42,7 @@ class ExecuteWorkflowCommand extends Command
         protected readonly LibraryService $libraryService,
         protected readonly SiteService $siteService,
         protected readonly SystemDomainResolver $systemDomainResolver,
+        protected readonly WorkflowCommandOptionsService $workflowCommandOptionsService,
         protected readonly LoggerInterface $logger,
     ) {
         parent::__construct();
@@ -240,14 +242,7 @@ class ExecuteWorkflowCommand extends Command
         $config['startFromPid'] = $this->resolveIntegerOption($input, $io, 'start-from-pid', 'Start from page ID', 1);
         $config['pageType'] = $this->resolveChoiceKey($input, $io, 'page-type', 'Page type filter', $this->workflowProcessingService->getAvailablePageTypes());
         $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Depth for page traversal', 0);
-        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
-            'seo_title' => 'Title',
-            'description' => 'Description',
-            'og_title' => 'OG Title',
-            'og_description' => 'OG Description',
-            'twitter_title' => 'Twitter Title',
-            'twitter_description' => 'Twitter Description',
-        ]);
+        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', $this->workflowCommandOptionsService->getColumns('page'));
         $config['sysLanguage'] = $this->resolveLanguageOption($input, $io, 'sys-language', 'System language', $config['startFromPid']);
         $config['showOnlyEmpty'] = $this->resolveBooleanOption($input, $io, 'show-only-empty', 'Consider only empty fields?');
         $config['includeHidden'] = (bool) $input->getOption('include-hidden');
@@ -273,11 +268,7 @@ class ExecuteWorkflowCommand extends Command
     {
         $config['startFromPid'] = $this->resolveIntegerOption($input, $io, 'start-from-pid', 'Start from page ID', 1);
         $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Depth for page traversal', 0);
-        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
-            'title' => 'Title',
-            'alternative' => 'Alternative Text',
-            'description' => 'Description',
-        ]);
+        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', $this->workflowCommandOptionsService->getColumns('fileReferences'));
         $config['sysLanguage'] = $this->resolveLanguageOption($input, $io, 'sys-language', 'System language', $config['startFromPid']);
         $config['showOnlyEmpty'] = $this->resolveBooleanOption($input, $io, 'show-only-empty', 'Show only empty fields?');
     }
@@ -289,11 +280,7 @@ class ExecuteWorkflowCommand extends Command
     {
         $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directories to process, comma separated for more than one — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
         $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Sub folder levels below the given directories (0 = only the given directories, max '.FolderSelectionService::MAX_DEPTH.')', 0);
-        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
-            'title' => 'Title',
-            'alternative' => 'Alternative Text',
-            'description' => 'Description',
-        ]);
+        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', $this->workflowCommandOptionsService->getColumns('fileMetadata'));
         $config['sysLanguage'] = $this->resolveLanguageOption($input, $io, 'sys-language', 'System language');
         $config['showOnlyEmpty'] = $this->resolveBooleanOption($input, $io, 'show-only-empty', 'Show only empty fields?');
         $config['showOnlyUsed'] = $this->resolveBooleanOption($input, $io, 'show-only-used', 'Show only used files?');
@@ -306,12 +293,7 @@ class ExecuteWorkflowCommand extends Command
     {
         $config['directory'] = $this->resolveOptionalStringOption($input, $io, 'directory', 'Directories to process, comma separated for more than one — either a path relative to the default storage root (e.g. "/user_upload/") or a combined identifier targeting a specific storage (e.g. "1:/user_upload/"). Press Enter to use the default storage root') ?? '';
         $config['depth'] = $this->resolveIntegerOption($input, $io, 'depth', 'Sub folder levels below the given directories (0 = only the given directories, max '.FolderSelectionService::MAX_DEPTH.')', 0);
-        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', [
-            'title' => 'Title',
-            'alternative' => 'Alternative Text',
-            'description' => 'Description',
-            'all' => 'All Columns',
-        ]);
+        $config['column'] = $this->resolveChoiceKey($input, $io, 'column', 'Column to process', $this->workflowCommandOptionsService->getColumns('fileMetadataTranslation'));
         $config['sourceLanguage'] = $this->resolveLanguageOption($input, $io, 'source-language', 'Source language for translation');
         $config['targetLanguage'] = $this->resolveLanguageOption($input, $io, 'target-language', 'Target language for translation', excludeKeys: [$config['sourceLanguage']]);
         $config['showOnlyUsed'] = $this->resolveBooleanOption($input, $io, 'show-only-used', 'Show only used files?');

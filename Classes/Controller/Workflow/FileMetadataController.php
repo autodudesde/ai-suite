@@ -115,14 +115,14 @@ class FileMetadataController extends AbstractBackendController
 
             $foundFileReferences = $this->sysFileReferenceRepository->fetchSysFileReferences(array_values($foundPageUids), $workflowData['column'], (int) $languageParts[1], $workflowData['showOnlyEmpty']);
             $params['unsupportedFileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
-                if (!$this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($fileReference['uid_local'])) {
+                if (!$this->aiSuiteContext->backendUserService->canEditRecord('sys_file_reference', (int) $fileReference['uid'])) {
                     return false;
                 }
 
                 return !in_array($fileReference['fileMimeType'], MetadataService::SUPPORTED_IMAGE_MIME_TYPES);
             });
             $params['fileReferences'] = array_filter($foundFileReferences, function ($fileReference) {
-                if (!$this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($fileReference['uid_local'])) {
+                if (!$this->aiSuiteContext->backendUserService->canEditRecord('sys_file_reference', (int) $fileReference['uid'])) {
                     return false;
                 }
 
@@ -178,7 +178,11 @@ class FileMetadataController extends AbstractBackendController
             return $workflowData;
         }
 
-        $fileReferences = json_decode($workflowData['fileReferences'], true);
+        $guard = $this->aiSuiteContext->workflowSelectionGuard;
+        $fileReferences = $guard->fileReferenceTargets((array) json_decode((string) $workflowData['fileReferences'], true));
+        if (null === $fileReferences || !$guard->mayUseFileMetadataColumn((string) ($workflowData['column'] ?? ''))) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.workflow.selectionNotAllowed'), 403);
+        }
         $languageParts = explode('__', $workflowData['sysLanguage']);
         $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'fileReferences');
 
@@ -211,7 +215,7 @@ class FileMetadataController extends AbstractBackendController
         }
 
         return $this->jsonSuccess($response, [
-            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing', ['file references']),
+            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing.fileReferences'),
             'failedFileReferences' => $failedFileReferences,
         ]);
     }
@@ -230,8 +234,7 @@ class FileMetadataController extends AbstractBackendController
                     $workflowData['column'] => $fileMetadataFieldValue,
                 ];
             }
-            // Named here rather than left to `refineModel()`: the generation happened in an earlier
-            // request, so nothing fills the model into this window.
+            // Named explicitly: refineModel() has no answer to read the model from in this request
             $this->aiSuiteContext->provenanceCapture->begin(
                 ProvenanceContext::generated(
                     ProvenanceContext::FEATURE_METADATA,
@@ -300,7 +303,11 @@ class FileMetadataController extends AbstractBackendController
 
         $scope = 'fileMetadata';
 
-        $workflowDataFiles = json_decode($workflowData['files'], true);
+        $workflowDataFiles = (array) json_decode((string) $workflowData['files'], true);
+        $guard = $this->aiSuiteContext->workflowSelectionGuard;
+        if (!$guard->mayUseFileMetadataColumn((string) ($workflowData['column'] ?? ''), true) || !$guard->mayEditRecords('sys_file_metadata', array_keys($workflowDataFiles))) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.workflow.selectionNotAllowed'), 403);
+        }
         $languageParts = explode('__', $workflowData['sysLanguage']);
         $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'fileMetadata');
 
@@ -334,7 +341,7 @@ class FileMetadataController extends AbstractBackendController
         }
 
         return $this->jsonSuccess($response, [
-            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing', ['files']),
+            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing.files'),
             'failedFiles' => $failedFilesMetadata,
         ]);
     }
@@ -363,8 +370,7 @@ class FileMetadataController extends AbstractBackendController
                     }
                 }
             }
-            // Named here rather than left to `refineModel()`: the generation happened in an earlier
-            // request, so nothing fills the model into this window.
+            // Named explicitly: refineModel() has no answer to read the model from in this request
             $this->aiSuiteContext->provenanceCapture->begin(
                 ProvenanceContext::generated(
                     ProvenanceContext::FEATURE_METADATA,

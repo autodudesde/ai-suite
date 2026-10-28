@@ -36,7 +36,7 @@ class RequestsRepository
             ->select('free_requests', 'paid_requests', 'abo_requests', 'model_type')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($this->keyOf($apiKey)))
             )
             ->executeQuery()
             ->fetchAllAssociative()
@@ -47,6 +47,7 @@ class RequestsRepository
 
     public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
     {
+        $this->deleteUnhashedKeys();
         $apiKeyEntity = $this->findEntryByApiKey($apiKey);
         if (count($apiKeyEntity) > 0 && $freeRequests > -1 && $paidRequests > -1) {
             $this->updateRequests($freeRequests, $paidRequests, $aboRequests, $modelType, $apiKey);
@@ -66,9 +67,8 @@ class RequestsRepository
             ->set('paid_requests', $paidRequests)
             ->set('abo_requests', $aboRequests)
             ->set('model_type', $modelType)
-            ->set('api_key', $apiKey)
             ->where(
-                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($this->keyOf($apiKey)))
             )
             ->executeStatement()
         ;
@@ -84,7 +84,7 @@ class RequestsRepository
                 'paid_requests' => $paidRequests,
                 'abo_requests' => $aboRequests,
                 'model_type' => $modelType,
-                'api_key' => $apiKey,
+                'api_key' => $this->keyOf($apiKey),
             ])
             ->executeStatement()
         ;
@@ -96,9 +96,30 @@ class RequestsRepository
         $queryBuilder->delete($this->table);
         if (!empty($apiKey)) {
             $queryBuilder->where(
-                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($apiKey))
+                $queryBuilder->expr()->eq('api_key', $queryBuilder->createNamedParameter($this->keyOf($apiKey)))
             );
         }
         $queryBuilder->executeStatement();
+    }
+
+    private function keyOf(string $apiKey): string
+    {
+        return hash('sha256', $apiKey);
+    }
+
+    private function deleteUnhashedKeys(): void
+    {
+        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+        $storedKeys = $queryBuilder->select('api_key')->from($this->table)->executeQuery()->fetchFirstColumn();
+        foreach (array_unique(array_map('strval', $storedKeys)) as $storedKey) {
+            if (1 === preg_match('/^[a-f0-9]{64}$/', $storedKey)) {
+                continue;
+            }
+            $delete = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+            $delete->delete($this->table)
+                ->where($delete->expr()->eq('api_key', $delete->createNamedParameter($storedKey)))
+                ->executeStatement()
+            ;
+        }
     }
 }

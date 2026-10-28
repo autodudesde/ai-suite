@@ -46,6 +46,8 @@ auditDefaultTextModel =
 disableTranslationFunctionality = 0
 # cat=translation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translateFlexFormFields
 translateFlexFormFields = 1
+# cat=translation/translation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:translatePlainHtml
+translatePlainHtml = 0
 # cat=translation/translation; type=options[OpenAI=ChatGPT,Claude=Anthropic,Meta Llama-3.3 (70B-Instruct)=AiSuiteTextUltimate]; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:easyLanguageLibrary
 easyLanguageLibrary = ChatGPT
 # cat=translation/autotranslation; type=boolean; label=LLL:EXT:ai_suite/Resources/Private/Language/ext_conf.xlf:enableAutoTranslateOnSave

@@ -31,7 +31,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
-use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
@@ -156,33 +155,19 @@ class PageMetadataController extends AbstractBackendController
             return $workflowData;
         }
 
-        $pages = json_decode($workflowData['pages'], true);
+        $pages = (array) json_decode((string) $workflowData['pages'], true);
+        $guard = $this->aiSuiteContext->workflowSelectionGuard;
+        if (!$guard->mayUsePageMetadataColumn((string) ($workflowData['column'] ?? '')) || !$guard->mayEditPages(array_keys($pages))) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.workflow.selectionNotAllowed'), 403);
+        }
         $languageParts = explode('__', $workflowData['sysLanguage']);
         $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'page');
-
-        $contentFetcher = function (int $pageUid, int $languageId): string {
-            $page = $this->pageRepository->getPage($pageUid);
-            $previewUriPageId = $pageUid;
-            if (1 === $page['is_siteroot'] && $page['l10n_parent'] > 0) {
-                $previewUriPageId = $page['l10n_parent'];
-            }
-            $previewUri = PreviewUriBuilder::create($previewUriPageId)
-                ->withLanguage($languageId)
-                ->buildUri()
-            ;
-            if (null === $previewUri) {
-                return '';
-            }
-            $url = $this->aiSuiteContext->siteService->buildAbsoluteUri($previewUri);
-
-            return $this->aiSuiteContext->metadataService->fetchContentFromUrl($url);
-        };
 
         $result = $this->workflowProcessingService->processPageMetadataGeneration(
             $workflowData,
             $pages,
             $languageParts,
-            $contentFetcher,
+            $this->aiSuiteContext->metadataService->fetchPageContent(...),
             handledByCli: $handledByCli,
         );
 
@@ -207,7 +192,7 @@ class PageMetadataController extends AbstractBackendController
         }
 
         return $this->jsonSuccess($response, [
-            'message' => $this->aiSuiteContext->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.processing', ['pages']),
+            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing.pages'),
             'failedPages' => $failedPages,
         ]);
     }
@@ -226,8 +211,7 @@ class PageMetadataController extends AbstractBackendController
                     $workflowData['column'] => $pageMetadataFieldValue,
                 ];
             }
-            // Named here rather than left to `refineModel()`: the generation happened in an earlier
-            // request, so nothing fills the model into this window.
+            // Named explicitly: refineModel() has no answer to read the model from in this request
             $this->aiSuiteContext->provenanceCapture->begin(
                 ProvenanceContext::generated(
                     ProvenanceContext::FEATURE_METADATA,

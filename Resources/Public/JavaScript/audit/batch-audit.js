@@ -113,7 +113,7 @@ class BatchAudit {
                 this.updateStatus(this.ll('exhausted', { done: this.index, total: this.pages.length }));
                 this.el('auditBatchStartBtn').textContent = this.ll('resume', { remaining: this.pages.length - this.index });
             } else {
-                this.updateStatus((output?.message || this.ll('planFailed')) + ' — ' + this.ll('stopped', { done: this.index, total: this.pages.length }));
+                this.updateStatus(String(output?.message || this.ll('planFailed')).replace(/[.!?]\s*$/, '') + '. ' + this.ll('stopped', { done: this.index, total: this.pages.length }));
                 this.el('auditBatchStartBtn').textContent = this.ll('resume', { remaining: this.pages.length - this.index });
             }
         }

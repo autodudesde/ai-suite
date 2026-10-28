@@ -461,6 +461,27 @@
             <trans-unit id="aiSuite.module.general.contentGenerationInProcess">
                 <source>Content will be generated. This may take a moment. Please wait...</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.general.promptRequired">
+                <source>Please enter a prompt.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.noContentSelectedTitle">
+                <source>No content selected</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.title">
+                <source>Compare with the original</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.removed">
+                <source>Removed</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.added">
+                <source>Added</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.accept">
+                <source>Accept</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.discard">
+                <source>Discard</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.general.noContentSelected">
                 <source>No content selected. Please select some content.</source>
             </trans-unit>
@@ -520,6 +541,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.twitter_title">
                 <source>X / Twitter Title</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.all">
+                <source>All columns</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.alternative">
                 <source>Image alternative text</source>
@@ -584,8 +608,14 @@
             <trans-unit id="aiSuite.module.workflow.noPagesFound">
                 <source>No pages available for your selection.</source>
             </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.processing">
-                <source>Already handled %s:</source>
+            <trans-unit id="aiSuite.module.workflow.processing.pages">
+                <source>Already handled pages:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.processing.fileReferences">
+                <source>Already handled file references:</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.processing.files">
+                <source>Already handled files:</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.saveMetadataBtn">
                 <source><![CDATA[Update selected metadata <strong>(no credits needed)</strong>]]></source>
@@ -594,7 +624,7 @@
                 <source>Check / uncheck all</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.translation.processing">
-                <source>Already handled %s translations:</source>
+                <source>Already handled translations:</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.workflowFilelist.allColumns">
@@ -974,6 +1004,12 @@
             <trans-unit id="aiSuite.module.pageStructure.headline">
                 <source>Generate page structure</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.pageStructure.sortable-input.addTitle">
+                <source>Add page</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.pageStructure.sortable-input.editTitle">
+                <source>Rename page</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.sortable-input.submit">
                 <source>Submit</source>
             </trans-unit>
@@ -1224,6 +1260,9 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.saveError">
                 <source>An error occurred while saving the settings.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.metadataUpload.hint">
+                <source>Applies only when new files are uploaded. Existing files stay unchanged.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.maskedHint">
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>
@@ -1634,6 +1673,9 @@
             <trans-unit id="aiSuite.module.audit.result.intent">
                 <source>Search intent</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.notAvailable">
+                <source>n/a</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.type.gap">
                 <source>Content gap (rankings)</source>
             </trans-unit>
@@ -1791,7 +1833,7 @@
                 <source>Audit a whole page tree</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.description">
-                <source>Runs the audit page by page for the selected page and its subpages. You see the total cost BEFORE anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
+                <source>Runs the audit page by page for the selected page and its subpages. You see the total cost before anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.depth">
                 <source>Depth</source>
@@ -1806,7 +1848,7 @@
                 <source>Whole subtree</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.plan">
-                <source>Calculate cost estimate</source>
+                <source>Calculate credit costs</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.noPage">
                 <source>Please select a page first.</source>

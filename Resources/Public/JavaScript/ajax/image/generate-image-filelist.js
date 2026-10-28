@@ -9,8 +9,7 @@ class GenerateImage {
         if(General.isUsable(document.querySelector('.t3js-ai-suite-image-generation-filelist-add-btn'))) {
             document.querySelector('.t3js-ai-suite-image-generation-filelist-add-btn').addEventListener("click", function(ev) {
                 ev.preventDefault();
-                // currentTarget, not target: the button carries an icon and a label, and a click on
-                // either of those reads the attributes off the inner element, where they are null.
+                // currentTarget, not target: a click on the inner icon or label carries no attributes
                 const button = ev.currentTarget;
                 let data = {
                     targetFolder: button.getAttribute('data-target-folder') ?? '',

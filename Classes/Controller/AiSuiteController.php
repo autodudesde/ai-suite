@@ -130,14 +130,11 @@ class AiSuiteController extends AbstractBackendController
                     'managePromptTemplates' => $backendUserService->checkPermissions('tx_aisuite_features:enable_prompt_template_button'),
                     'createPagetree' => $backendUserService->checkPermissions('tx_aisuite_features:enable_pages_generation'),
                     'agencySection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_agency'),
-                    // The same three flags the button bar checks, so a card never offers a module
-                    // the navigation refuses to show.
                     'auditSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_audit'),
                     'statisticsSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_statistics'),
                     'provenanceSection' => $backendUserService->checkPermissions('tx_aisuite_features:enable_provenance_overview'),
                 ],
-                // Built here rather than in the template: the backend URI ViewHelpers differ between
-                // the majors this extension has to run on.
+                // Not built in the template: the backend URI ViewHelpers differ between the supported majors
                 'aboutUri' => (string) $this->uriBuilder->buildUriFromRoute('web_aisuite.about'),
             ]);
             BackendUtility::setUpdateSignal('updateTopbar');

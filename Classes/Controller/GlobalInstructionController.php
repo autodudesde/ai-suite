@@ -96,15 +96,7 @@ class GlobalInstructionController extends AbstractBackendController
     {
         try {
             $rootPageId = $this->request->getAttribute('site')->getRootPageId();
-            $pid = $this->request->getQueryParams()['id'] ?? $rootPageId;
-
-            if ('0' === $pid) {
-                $this->view->addFlashMessage(
-                    $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.globalInstructionStorageMessage'),
-                    $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.globalInstructionStorageTitle'),
-                    ContextualFeedbackSeverity::WARNING
-                );
-            }
+            $pid = (int) ($this->request->getQueryParams()['id'] ?? $rootPageId);
 
             $sites = $this->request->getAttribute('site');
             $allowedMounts = $this->aiSuiteContext->backendUserService->getSearchableWebmounts($rootPageId, 10);
@@ -128,6 +120,7 @@ class GlobalInstructionController extends AbstractBackendController
                 'globalInstructionsFiles' => $globalInstructionsFiles,
                 'search' => $search,
                 'pid' => $pid,
+                'isRootLevel' => 0 === $pid,
             ]);
         } catch (\Throwable $e) {
             $this->logger->error($e->getMessage());

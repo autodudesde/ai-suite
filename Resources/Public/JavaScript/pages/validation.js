@@ -34,7 +34,6 @@ class Validation {
     }
 
     addEventListenerGeneratePageStructure() {
-        // generate array out of sortable items and submit form
         let pageStructureSubmitButton = document.querySelector('div[data-module-id="aiSuite"] form.page-structure-create span.submit-page-structure');
         if (General.isUsable(pageStructureSubmitButton)) {
             pageStructureSubmitButton.addEventListener('click', function (event) {

@@ -114,10 +114,21 @@ class FileTranslationController extends AbstractBackendController
 
         $filesMetadataUidList = [];
         $files = [];
-        $workflowDataFiles = json_decode($workflowData['files'], true);
-        foreach ($workflowDataFiles as $sysFileMetaUid => $data) {
+        $workflowDataFiles = (array) json_decode((string) $workflowData['files'], true);
+        $guard = $this->aiSuiteContext->workflowSelectionGuard;
+        $targetLanguageUid = (int) (explode('__', (string) $workflowData['targetLanguage'])[1] ?? 0);
+        if (!$guard->mayUseFileMetadataColumn((string) ($workflowData['column'] ?? ''), true)
+            || !$guard->mayEditRecords('sys_file_metadata', array_keys($workflowDataFiles))
+            || !$guard->mayTranslateInto($targetLanguageUid)
+        ) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.workflow.selectionNotAllowed'), 403);
+        }
+        foreach ($workflowDataFiles as $sysFileMetaUid => $fileMetaData) {
+            $sysFileMetaUid = (int) $sysFileMetaUid;
+            if ($sysFileMetaUid <= 0 || !is_array($fileMetaData)) {
+                continue;
+            }
             $filesMetadataUidList[] = $sysFileMetaUid;
-            $fileMetaData = $workflowDataFiles[$sysFileMetaUid];
             foreach ($fileMetaData as $column => $value) {
                 if ($workflowData['column'] === $column || 'all' === $workflowData['column']) {
                     $files[$sysFileMetaUid][$column] = $value;
@@ -151,25 +162,13 @@ class FileTranslationController extends AbstractBackendController
         $failedFilesMetadata = $result['failedFilesMetadata'];
         $translatableContentForGlossary = $result['translatableContentForGlossary'];
 
-        $glossarEntries = [];
-        $deeplGlossary = [];
-        if (!empty($workflowData['glossary'])) {
-            $glossaryParts = explode('__', $workflowData['glossary']);
-            if (3 === count($glossaryParts)) {
-                $rootPageId = (int) $glossaryParts[0];
-                $sourceLanguageId = (int) $glossaryParts[1];
-                $targetLanguageId = (int) $glossaryParts[2];
-
-                $translatableContent = (string) json_encode($translatableContentForGlossary, SendRequestService::JSON_SAFE_FLAGS);
-                $glossarEntries = $this->glossarService->findGlossarEntries($translatableContent, $targetLanguageId, $sourceLanguageId);
-                $deeplGlossary = $this->glossarService->findDeeplGlossary($rootPageId, $sourceLanguageId, $targetLanguageId);
-            }
-        }
-
-        $extraParams = [
-            'glossary' => json_encode($glossarEntries, SendRequestService::JSON_SAFE_FLAGS),
-            'deepl_glossary_id' => $deeplGlossary['glossar_uuid'] ?? '',
-        ];
+        $glossarySelection = $this->glossarService->resolveGlossarySelection((string) ($workflowData['glossary'] ?? ''));
+        $extraParams = $this->glossarService->buildRequestParameters(
+            (string) json_encode($translatableContentForGlossary, SendRequestService::JSON_SAFE_FLAGS),
+            $glossarySelection['sourceLanguageId'] ?? 0,
+            $glossarySelection['targetLanguageId'] ?? 0,
+            $glossarySelection['rootPageId'] ?? 0,
+        );
 
         $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
             $payload,
@@ -190,7 +189,7 @@ class FileTranslationController extends AbstractBackendController
         }
 
         return $this->jsonSuccess($response, [
-            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing', ['files']),
+            'message' => $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.workflow.processing.files'),
             'failedFiles' => $failedFilesMetadata,
         ]);
     }

@@ -38,7 +38,6 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
-use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Dashboard\Widgets\ChartDataProviderInterface;
@@ -56,8 +55,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
     $services->load('AutoDudes\AiSuite\\', __DIR__.'/../Classes/')->exclude([
         __DIR__.'/../Classes/Domain/Model',
     ]);
-
-    $services->set(Filesystem::class);
 
     $services->set(PagesContextMenuProvider::class)
         ->public()

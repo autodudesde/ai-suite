@@ -1,147 +1,152 @@
-var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
-let dialog = document.querySelector('.sortable-wrap .sortable-input');
+import Modal from '@typo3/backend/modal.js';
+import Severity from '@typo3/backend/severity.js';
 
-// Loop through each nested sortable element
-for (var i = 0; i < nestedSortables.length; i++) {
-    new Sortable(nestedSortables[i], {
-        group: 'nested',
-        animation: 150,
-        fallbackOnBody: true,
-        swapThreshold: 0.65
-    });
-}
+class SortableApp {
+    constructor() {
+        this.wrap = document.querySelector('.sortable-wrap');
+        if (this.wrap === null) {
+            return;
+        }
+        this.wrap.querySelectorAll('.nested-sortable').forEach((list) => this.makeSortable(list));
+        this.wrap.querySelectorAll('button.add').forEach((button) => this.bindAdd(button));
+        this.wrap.querySelectorAll('button.edit').forEach((button) => this.bindEdit(button));
+        this.wrap.querySelectorAll('button.delete').forEach((button) => this.bindDelete(button));
 
-// add buttons
-var addButtonList = Array.from(document.querySelectorAll('.sortable-wrap button.add'));
-if (Array.isArray(addButtonList)){
-    addButtonList.forEach(function(item, index, arr){
-        addButtonDialogEvent(item);
-    });
-}
+        const toggleButtonVisible = document.querySelector('.toggleButtonVisible');
+        if (toggleButtonVisible !== null) {
+            toggleButtonVisible.addEventListener('click', (event) => {
+                event.preventDefault();
+                this.wrap.querySelectorAll('button').forEach((button) => button.classList.toggle('d-none'));
+            });
+        }
+    }
 
-// edit buttons
-var editButtonList = Array.from(document.querySelectorAll('.sortable-wrap button.edit'));
-if (Array.isArray(editButtonList)){
-    editButtonList.forEach(function(item, index, arr){
-        addButtonDialogEvent(item);
-    });
-}
-
-// dialog submit button
-let dialogSubmitButton = document.querySelector('.sortable-wrap .sortable-input button.submit');
-if (dialogSubmitButton !== null && dialogSubmitButton !== undefined){
-    dialogSubmitButton.addEventListener('click', function(e){
-        e.preventDefault();
-        let input = document.querySelector('.sortable-wrap .sortable-input input[type="text"]');
-        insertOrUpdateSortableItem(input.value);
-        document.querySelector('.sortable-wrap .sortable-input input[type="text"]').value = '';
-        dialog.classList.remove('active');
-    });
-}
-
-// dynamic function to insert a sortable item or update the title
-function insertOrUpdateSortableItem (title)
-{
-    let clicked = document.querySelector('.sortable-wrap button.clicked');
-
-    // check if clicked has class 'edit'
-    if (clicked.classList.contains('edit')){
-        let titleSpan = clicked.previousElementSibling;
-        titleSpan.innerHTML = title;
-        titleSpan.dataset.title = title;
-    } else {
-        let newElement = document.createElement('div');
-        newElement.classList.add('list-group-item');
-        newElement.classList.add('nested');
-        let handle = document.createElement('span');
-        handle.classList.add('handle');
-        handle.innerHTML = document.querySelector('.sortable-wrap div.handle').innerHTML;
-        newElement.appendChild(handle);
-        let titleSpan = document.createElement('span');
-        titleSpan.classList.add('title');
-        titleSpan.innerHTML = title;
-        titleSpan.dataset.title = title;
-        newElement.appendChild(titleSpan);
-        let editButton = document.createElement('button');
-        editButton.classList.add('edit');
-        editButton.classList.add('btn');
-        editButton.classList.add('btn-default');
-        editButton.innerHTML = document.querySelector('.sortable-wrap button.edit').innerHTML;
-        addButtonDialogEvent(editButton);
-        newElement.appendChild(editButton);
-        let deleteButton = document.createElement('button');
-        deleteButton.classList.add('delete');
-        deleteButton.classList.add('btn');
-        deleteButton.classList.add('btn-default');
-        deleteButton.innerHTML = document.querySelector('.sortable-wrap button.delete').innerHTML;
-        addButtonDeleteEvent(deleteButton);
-        newElement.appendChild(deleteButton);
-        let listGroup = document.createElement('div');
-        listGroup.classList.add('list-group');
-        listGroup.classList.add('nested-sortable');
-        newElement.appendChild(listGroup);
-        let addButton = document.createElement('button');
-        addButton.classList.add('add');
-        addButton.innerHTML = clicked.innerHTML;
-        addButtonDialogEvent(addButton);
-        newElement.appendChild(addButton);
-
-        new Sortable(listGroup, {
+    makeSortable(list) {
+        new Sortable(list, {
             group: 'nested',
             animation: 150,
             fallbackOnBody: true,
-            swapThreshold: 0.65
+            swapThreshold: 0.65,
         });
-        clicked.previousElementSibling.appendChild(newElement);
     }
-    clicked.classList.remove('clicked');
-}
 
-// reduce duplicate code: add event to button
-function addButtonDialogEvent (button)
-{
-    button.addEventListener('click', function(e){
-        e.preventDefault();
-        dialog.classList.add('active');
-        this.classList.add('clicked');
-    });
-}
-
-function addButtonDeleteEvent (button)
-{
-    button.addEventListener('click', function(e){
-        e.preventDefault();
-        this.parentElement.remove();
-    });
-}
-
-// hide / show buttons
-let toggleButtonVisible = document.querySelector('.toggleButtonVisible');
-if (toggleButtonVisible !== null && toggleButtonVisible !== undefined){
-    toggleButtonVisible.addEventListener('click', function(e){
-        e.preventDefault();
-        var listOfAllBUttons = Array.from(document.querySelectorAll('.sortable-wrap button'));
-        if (Array.isArray(listOfAllBUttons)){
-            listOfAllBUttons.forEach(function(item, index, arr){
-                item.classList.toggle('d-none');
+    bindAdd(button) {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.askForTitle(TYPO3.lang['aiSuite.module.pageStructure.sortable-input.addTitle'], '', (title) => {
+                button.previousElementSibling.appendChild(this.createItem(title, button.innerHTML));
             });
-        }
-    });
+        });
+    }
+
+    bindEdit(button) {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const titleSpan = button.parentElement.querySelector(':scope > .title');
+            this.askForTitle(TYPO3.lang['aiSuite.module.pageStructure.sortable-input.editTitle'], titleSpan.dataset.title ?? '', (title) => {
+                titleSpan.textContent = title;
+                titleSpan.dataset.title = title;
+            });
+        });
+    }
+
+    bindDelete(button) {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            button.parentElement.remove();
+        });
+    }
+
+    askForTitle(modalTitle, currentTitle, onSubmit) {
+        const content = document.createElement('div');
+        const label = document.createElement('label');
+        label.className = 'form-label';
+        label.htmlFor = 'pageStructure-sortable-input';
+        label.textContent = TYPO3.lang['aiSuite.module.pageStructure.sortable-input.title'];
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = 'pageStructure-sortable-input';
+        input.className = 'form-control';
+        input.value = currentTitle;
+        content.append(label, input);
+
+        const submit = (modal) => {
+            const title = input.value.trim();
+            if (title === '') {
+                input.classList.add('is-invalid');
+                input.focus();
+                return;
+            }
+            onSubmit(title);
+            modal.hideModal();
+        };
+
+        const modal = Modal.advanced({
+            title: modalTitle,
+            content: content,
+            severity: Severity.notice,
+            size: Modal.sizes.small,
+            buttons: [
+                {
+                    text: TYPO3.lang['aiSuite.module.modal.abort'],
+                    btnClass: 'btn-default',
+                    name: 'cancel',
+                    trigger: (event, currentModal) => currentModal.hideModal(),
+                },
+                {
+                    text: TYPO3.lang['aiSuite.module.pageStructure.sortable-input.submit'],
+                    btnClass: 'btn-primary',
+                    name: 'submit',
+                    trigger: (event, currentModal) => submit(currentModal),
+                },
+            ],
+        });
+        input.addEventListener('input', () => input.classList.remove('is-invalid'));
+        input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submit(modal);
+            }
+        });
+        modal.addEventListener('typo3-modal-shown', () => input.focus());
+    }
+
+    createItem(title, addButtonMarkup) {
+        const item = document.createElement('div');
+        item.className = 'list-group-item nested';
+
+        const handle = document.createElement('span');
+        handle.className = 'handle';
+        handle.innerHTML = this.wrap.querySelector('div.handle').innerHTML;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'title';
+        titleSpan.textContent = title;
+        titleSpan.dataset.title = title;
+
+        const editButton = this.createButton('edit btn btn-default', this.wrap.querySelector('button.edit').innerHTML);
+        this.bindEdit(editButton);
+        const deleteButton = this.createButton('delete btn btn-default', this.wrap.querySelector('button.delete').innerHTML);
+        this.bindDelete(deleteButton);
+
+        const children = document.createElement('div');
+        children.className = 'list-group nested-sortable';
+        this.makeSortable(children);
+
+        const addButton = this.createButton('add', addButtonMarkup);
+        this.bindAdd(addButton);
+
+        item.append(handle, titleSpan, editButton, deleteButton, children, addButton);
+        return item;
+    }
+
+    createButton(className, markup) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = className;
+        button.innerHTML = markup;
+        return button;
+    }
 }
 
-// delete buttons
-var deleteButtonList = Array.from(document.querySelectorAll('.sortable-wrap button.delete'));
-if (Array.isArray(deleteButtonList)){
-    deleteButtonList.forEach(function(item, index, arr){
-        addButtonDeleteEvent(item);
-    });
-}
-
-// cancel dialog for new item / edit title
-let closeDialog = document.querySelector('.sortable-wrap .sortable-input .inner-wrap span.close');
-if (toggleButtonVisible !== null && toggleButtonVisible !== undefined){
-    closeDialog.addEventListener('click', function(e){
-        e.preventDefault();
-        dialog.classList.remove('active');
-    });
-}
+export default new SortableApp();

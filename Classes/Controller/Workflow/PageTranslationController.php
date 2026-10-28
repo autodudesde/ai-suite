@@ -150,9 +150,13 @@ class PageTranslationController extends AbstractBackendController
     {
         $response = new Response();
         $workflowData = ((array) $serverRequest->getParsedBody())['workflowPagesTranslationExecute'];
-        $pages = json_decode($workflowData['pages'], true);
+        $pages = (array) json_decode((string) $workflowData['pages'], true);
         $sourceLanguageParts = explode('__', $workflowData['sourceLanguage']);
         $targetLanguageParts = explode('__', $workflowData['targetLanguage']);
+        $guard = $this->aiSuiteContext->workflowSelectionGuard;
+        if (!$guard->mayEditPages(array_keys($pages)) || !$guard->mayTranslateInto((int) ($targetLanguageParts[1] ?? 0))) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.workflow.selectionNotAllowed'), 403);
+        }
         $handledByCli = $this->resolveHandledByCli((bool) ($workflowData['handledByCli'] ?? false), 'pageTranslate');
 
         $result = $this->workflowProcessingService->processPageTranslation(
@@ -168,19 +172,15 @@ class PageTranslationController extends AbstractBackendController
             (string) ($workflowData['textAiModel'] ?? ''),
         );
 
-        $payload = $result['payload'];
-        $bulkPayload = $result['bulkPayload'];
         $failedPages = $result['failedPages'];
 
-        $errorMessage = $this->workflowProcessingService->sendWorkflowRequest(
-            $payload,
-            $bulkPayload,
+        $errorMessage = $this->workflowProcessingService->sendPageTranslationRequests(
+            $result,
             $workflowData['parentUuid'],
-            'page-translation',
-            'translation',
-            '',
-            'translate',
-            $workflowData['textAiModel'],
+            (string) $workflowData['textAiModel'],
+            (int) $sourceLanguageParts[1],
+            (int) $targetLanguageParts[1],
+            '' !== (string) ($workflowData['glossary'] ?? ''),
             $this->requestService,
             $this->backgroundTaskRepository,
         );
@@ -190,7 +190,7 @@ class PageTranslationController extends AbstractBackendController
         }
 
         return $this->jsonSuccess($response, [
-            'message' => $this->aiSuiteContext->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.processing', ['pages']),
+            'message' => $this->aiSuiteContext->localizationService->translate('LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.processing'),
             'failedPages' => $failedPages,
         ]);
     }

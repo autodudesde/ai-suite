@@ -9,7 +9,7 @@
             </trans-unit>
             <trans-unit id="category.keys" resname="category.keys">
                 <source>Own API keys</source>
-                <target>Eigene API-Schlüssel</target>
+                <target>Eigene API-Keys</target>
             </trans-unit>
             <trans-unit id="category.translation" resname="category.translation">
                 <source>Translation</source>
@@ -93,7 +93,7 @@
             </trans-unit>
             <trans-unit id="aiSuiteApiKey" resname="aiSuiteApiKey">
                 <source>AI Suite license Key: Enter your generated API key or generate a new one under https://www.autodudes.de/</source>
-                <target>AI Suite-Lizenzschlüssel: Trage deinen generierten API-Schlüssel ein oder erzeuge unter https://www.autodudes.de/ einen neuen</target>
+                <target>AI Suite-Lizenz-Key: Trage deinen generierten API-Key ein oder erzeuge unter https://www.autodudes.de/ einen neuen</target>
             </trans-unit>
             <trans-unit id="aiSuiteServer" resname="aiSuiteServer">
                 <source>AI Suite server: Enter the server url to access the AI Suite server (default: https://api.autodudes.de/)</source>
@@ -111,13 +111,17 @@
                 <source>Translate FlexForm fields</source>
                 <target>FlexForm-Felder übersetzen</target>
             </trans-unit>
+            <trans-unit id="translatePlainHtml" resname="translatePlainHtml">
+                <source>Translate "Plain HTML" content elements: the translated markup is written unfiltered and rendered in the frontend as it is</source>
+                <target>Inhaltselemente vom Typ „Reines HTML“ übersetzen: das übersetzte Markup wird ungefiltert gespeichert und so im Frontend ausgegeben</target>
+            </trans-unit>
             <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
                 <source>Use the following library for "Einfache Sprache" translations</source>
                 <target>Folgende Bibliothek für Übersetzungen in „Einfache Sprache“ verwenden</target>
             </trans-unit>
             <trans-unit id="disableTranslationFunctionality" resname="disableTranslationFunctionality">
-                <source>Disable whole translation functionality (USE WITH CAUTION!)</source>
-                <target>Gesamte Übersetzungsfunktion deaktivieren (MIT VORSICHT VERWENDEN!)</target>
+                <source>Disable whole translation functionality (use with caution)</source>
+                <target>Gesamte Übersetzungsfunktion deaktivieren (mit Vorsicht verwenden)</target>
             </trans-unit>
             <trans-unit id="enableAutoTranslateOnSave" resname="enableAutoTranslateOnSave">
                 <source>Automatically translate content elements into all site languages on save</source>
@@ -141,23 +145,23 @@
             </trans-unit>
             <trans-unit id="openAiApiKey" resname="openAiApiKey">
                 <source>Enter your OpenAI API key</source>
-                <target>Trage deinen OpenAI-API-Schlüssel ein</target>
+                <target>Trage deinen OpenAI-API-Key ein</target>
             </trans-unit>
             <trans-unit id="anthropicApiKey" resname="anthropicApiKey">
                 <source>Enter your Anthropic API key</source>
-                <target>Trage deinen Anthropic-API-Schlüssel ein</target>
+                <target>Trage deinen Anthropic-API-Key ein</target>
             </trans-unit>
             <trans-unit id="staanApiKey" resname="staanApiKey">
                 <source>Enter your Staan API key. Only needed on a plan that runs on your own provider keys, and only for web research under GDPR mode.</source>
-                <target>Trage deinen Staan-API-Schlüssel ein. Nur nötig bei einem Tarif, der mit deinen eigenen Anbieter-Schlüsseln läuft, und nur für die Web-Recherche im DSGVO-Modus.</target>
+                <target>Trage deinen Staan-API-Key ein. Nur nötig bei einem Tarif, der mit deinen eigenen Anbieter-Keys läuft, und nur für die Web-Recherche im DSGVO-Modus.</target>
             </trans-unit>
             <trans-unit id="googleTranslateApiKey" resname="googleTranslateApiKey">
                 <source>Enter your GoogleTranslate API key</source>
-                <target>Trage deinen Google-Translate-API-Schlüssel ein</target>
+                <target>Trage deinen Google-Translate-API-Key ein</target>
             </trans-unit>
             <trans-unit id="deeplApiKey" resname="deeplApiKey">
                 <source>Enter your DeepL API key</source>
-                <target>Trage deinen DeepL-API-Schlüssel ein</target>
+                <target>Trage deinen DeepL-API-Key ein</target>
             </trans-unit>
             <trans-unit id="deeplApiMode" resname="deeplApiMode">
                 <source>Free version of DeepL API</source>
@@ -165,7 +169,7 @@
             </trans-unit>
             <trans-unit id="midjourneyApiKey" resname="midjourneyApiKey">
                 <source>Enter your Midjourney API key</source>
-                <target>Trage deinen Midjourney-API-Schlüssel ein</target>
+                <target>Trage deinen Midjourney-API-Key ein</target>
             </trans-unit>
             <trans-unit id="midjourneyId" resname="midjourneyId">
                 <source>Enter your Midjourney ID</source>
@@ -173,11 +177,11 @@
             </trans-unit>
             <trans-unit id="aiModelHubApiKey" resname="aiModelHubApiKey">
                 <source>Enter your AI Model Hub API key (IONOS, also used for Flux)</source>
-                <target>Trage deinen AI-Model-Hub-API-Schlüssel ein (IONOS, auch für Flux)</target>
+                <target>Trage deinen AI-Model-Hub-API-Key ein (IONOS, auch für Flux)</target>
             </trans-unit>
             <trans-unit id="mittwaldAiModelHubApiKey" resname="mittwaldAiModelHubApiKey">
                 <source>Enter your Mittwald AI Model Hub API key (Mittwald models)</source>
-                <target>Trage deinen Mittwald-AI-Model-Hub-API-Schlüssel ein (Mittwald-Modelle)</target>
+                <target>Trage deinen Mittwald-AI-Model-Hub-API-Key ein (Mittwald-Modelle)</target>
             </trans-unit>
             <trans-unit id="basicAuthEnable" resname="basicAuthEnable">
                 <source>Enable Basic Authentication</source>

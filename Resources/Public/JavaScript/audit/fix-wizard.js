@@ -177,6 +177,8 @@ class FixWizard {
                 button.textContent = TYPO3.lang['aiSuite.module.audit.answers.loading'];
                 const res = await Ajax.sendAjaxRequest('aisuite_audit_questions_answers', {
                     url: button.dataset.url,
+                    pageId: button.dataset.pageId,
+                    languageUid: button.dataset.languageUid,
                     questions: button.dataset.questions,
                 });
                 if (res === null || !res.output || !Array.isArray(res.output.answers)) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') or exit;
@@ -10,50 +12,50 @@ $beGroupColumns = [
     'aiSuiteApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.aiSuiteApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'openAiApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.openAiApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'anthropicApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.anthropicApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'aiModelHubApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.aiModelHubApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'mittwaldAiModelHubApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.mittwaldAiModelHubApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'googleTranslateApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.googleTranslateApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'deeplApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.deeplApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'deeplApiMode' => [
@@ -66,8 +68,8 @@ $beGroupColumns = [
     'midjourneyApiKey' => [
         'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.beGroups.field.midjourneyApiKey',
         'config' => [
-            'type' => 'input',
-            'eval' => 'trim',
+            'type' => 'password',
+            'hashed' => false,
         ],
     ],
     'midjourneyId' => [

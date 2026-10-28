@@ -128,6 +128,17 @@ class LocalizationController extends \TYPO3\CMS\Backend\Controller\Page\Localiza
             $params['uidList']
         );
 
+        if (!$isWholePageTranslation && empty($params['uidList'])
+            && !in_array($params['action'], [static::ACTION_COPY, static::ACTION_LOCALIZE], true)
+        ) {
+            $this->addFlashMessage(
+                $this->localizationService->translate('aiSuite.translation.nothingSelected'),
+                ContextualFeedbackSeverity::WARNING
+            );
+
+            return new JsonResponse([]);
+        }
+
         if ($isWholePageTranslation && empty($params['uidList'])) {
             $pageMetadata = $this->metadataService->collectPageMetadataFields((int) $params['pageId']);
             if (empty($pageMetadata)) {

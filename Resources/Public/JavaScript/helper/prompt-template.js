@@ -33,9 +33,6 @@ class PromptTemplate {
     }
 
     /**
-     * Listens on a container that survives the AJAX re-renders of the workflow views, so the
-     * select does not have to be re-bound after every view update.
-     *
      * @param {Element} container
      * @param {string} textareaSelector
      */
@@ -66,9 +63,6 @@ class PromptTemplate {
     }
 
     /**
-     * A collapsed prompt field still replaces the serverside instruction, so a filled one is
-     * never left hidden: it opens itself and carries a badge.
-     *
      * @param {Element} container
      */
     refreshCollapsibleState(container) {

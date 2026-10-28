@@ -280,6 +280,61 @@ class SiteService implements SingletonInterface
         }
     }
 
+    public function isSiteHost(string $url): bool
+    {
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        if ('' === $host) {
+            return false;
+        }
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $requestHost = $request instanceof ServerRequestInterface ? strtolower($request->getUri()->getHost()) : '';
+        foreach ($this->siteFinder->getAllSites() as $site) {
+            $bases = [$site->getBase()];
+            foreach ($site->getAllLanguages() as $language) {
+                $bases[] = $language->getBase();
+            }
+            foreach ($bases as $base) {
+                $baseHost = strtolower($base->getHost());
+                if (('' === $baseHost ? $requestHost : $baseHost) === $host) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public function isSiteOrigin(string $url): bool
+    {
+        $target = parse_url($url);
+        $targetHost = is_array($target) ? ($target['host'] ?? '') : '';
+        if ('' === $targetHost) {
+            return false;
+        }
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $requestUri = $request instanceof ServerRequestInterface ? $request->getUri() : null;
+        $origin = static fn (string $scheme, string $host, ?int $port): string => strtolower($scheme).'://'.strtolower($host).':'.($port ?? ('https' === strtolower($scheme) ? 443 : 80));
+        $targetOrigin = $origin($target['scheme'] ?? '', $targetHost, $target['port'] ?? null);
+
+        foreach ($this->siteFinder->getAllSites() as $site) {
+            $bases = [$site->getBase()];
+            foreach ($site->getAllLanguages() as $language) {
+                $bases[] = $language->getBase();
+            }
+            foreach ($bases as $base) {
+                $baseUri = '' === $base->getHost() && null !== $requestUri ? $requestUri : $base;
+                if ('' === $baseUri->getHost()) {
+                    continue;
+                }
+                if ($origin('' !== $baseUri->getScheme() ? $baseUri->getScheme() : 'https', $baseUri->getHost(), $baseUri->getPort()) === $targetOrigin) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function buildAbsoluteUri(UriInterface $uri, ?ServerRequestInterface $request = null): string
     {
         $port = $uri->getPort() ? ':'.$uri->getPort() : '';

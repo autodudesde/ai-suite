@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use AutoDudes\AiSuite\Controller\Decorator\ContentElement\NewContentElementController;
 use AutoDudes\AiSuite\Controller\Decorator\Page\LocalizationController;
 use AutoDudes\AiSuite\FormEngine\FieldControl\AiSeoAbstract;
@@ -17,16 +19,19 @@ use AutoDudes\AiSuite\FormEngine\FieldControl\News\AiNewsMetaDescription;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceAlternative;
 use AutoDudes\AiSuite\FormEngine\FieldControl\SysFileReference\AiSysFileReferenceTitle;
 use AutoDudes\AiSuite\FormEngine\FieldInformation\AiProvenanceInformation;
+use AutoDudes\AiSuite\FormEngine\FieldInformation\WorkflowCommandOptionsInformation;
 use AutoDudes\AiSuite\Hooks\AutoTranslationHook;
 use AutoDudes\AiSuite\Hooks\CommandMapPostProcessingHook;
 use AutoDudes\AiSuite\Hooks\GlobalInstructionHook;
 use AutoDudes\AiSuite\Hooks\ProvenanceHook;
 use AutoDudes\AiSuite\Hooks\TranslationHook;
 use TYPO3\CMS\Backend\RecordList\DatabaseRecordList;
+use AutoDudes\AiSuite\Scheduler\WorkflowCommandAdditionalFieldProvider;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Scheduler\Task\ExecuteSchedulableCommandTask;
 
 defined('TYPO3') || exit('Access denied.');
 
@@ -119,6 +124,17 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1756800001] = [
     'priority' => 30,
     'class' => AiProvenanceInformation::class,
 ];
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1761134402] = [
+    'nodeName' => 'aiSuiteWorkflowCommandOptions',
+    'priority' => 30,
+    'class' => WorkflowCommandOptionsInformation::class,
+];
+
+// TYPO3 v12/v13 only; v14 renders scheduler tasks through FormEngine (Configuration/TCA/Overrides/tx_scheduler_task.php)
+if (($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][ExecuteSchedulableCommandTask::class]['additionalFields'] ?? null) === WorkflowCommandAdditionalFieldProvider::DECORATED_PROVIDER) {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][ExecuteSchedulableCommandTask::class]['additionalFields'] = WorkflowCommandAdditionalFieldProvider::class;
+}
 
 if (ExtensionManagementUtility::isLoaded('news')) {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1676410684] = [

@@ -110,7 +110,7 @@ class MetadataController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => true,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.htmlspecialchars($librariesAnswer->getMessage()).'</div>',
                     ]
                 )
             );
@@ -182,20 +182,16 @@ class MetadataController extends AbstractBackendController
             $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction($context, 'metadata', null, $params['targetFolder'] ?? null);
             $globalInstructionsOverride = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$params['targetFolder'] ?? '']);
 
-            $sysFileId = $params['sysFileId'] ? (int) $params['sysFileId'] : 0;
+            $sysFileId = (int) ($params['sysFileId'] ?? 0);
             if ($sysFileId > 0) {
                 $filename = $this->metadataService->getFilename($sysFileId);
-
-                $hasPermission = match ($params['table'] ?? 'sys_file_metadata') {
-                    'sys_file_reference' => $this->aiSuiteContext->backendUserService->canEditFileReferenceMetadata($sysFileId),
-                    default => $this->aiSuiteContext->backendUserService->canEditFileMetadata($sysFileId),
-                };
-                if (!$hasPermission) {
-                    $this->logError('Insufficient permissions to access file with UID '.$sysFileId, $response, 403);
-
-                    return $response;
-                }
             }
+        }
+
+        if (!$this->mayReadContentFor($params)) {
+            $this->logError('Insufficient permissions to generate metadata for '.($params['table'] ?? 'pages'), $response, 403);
+
+            return $response;
         }
 
         try {
@@ -274,5 +270,21 @@ class MetadataController extends AbstractBackendController
         );
 
         return $response;
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function mayReadContentFor(array $params): bool
+    {
+        $backendUserService = $this->aiSuiteContext->backendUserService;
+        $sysFileId = (int) ($params['sysFileId'] ?? 0);
+
+        return match ((string) ($params['table'] ?? '')) {
+            'sys_file_metadata' => $sysFileId > 0 && $backendUserService->canEditFileMetadata($sysFileId),
+            'sys_file_reference' => $sysFileId > 0 && $backendUserService->canEditFileReferenceMetadata($sysFileId),
+            'tx_news_domain_model_news' => $backendUserService->canEditRecord('tx_news_domain_model_news', (int) ($params['id'] ?? 0)),
+            default => $backendUserService->canEditRecord('pages', (int) ($params['pageId'] ?? 0)),
+        };
     }
 }

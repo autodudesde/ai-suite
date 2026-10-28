@@ -15,19 +15,23 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
-use Symfony\Component\Filesystem\Filesystem;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * The one place a generated image enters FAL. The bytes are not touched here: the marking is written
- * upstream, and re-encoding would strip it.
+ * Generated image bytes are stored untouched: re-encoding would strip the image marking.
  */
 class AiImageStoreService
 {
+    private const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
+    private const CHUNK_SIZE = 8192;
+
     public function __construct(
-        protected readonly Filesystem $filesystem,
+        protected readonly RequestFactory $requestFactory,
+        protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly ProvenanceService $provenanceService,
     ) {}
 
@@ -41,11 +45,7 @@ class AiImageStoreService
         $tempFile = $this->download($imageUrl);
 
         try {
-            // Only the name is taken from the caller, never the extension. The wizard derives it in
-            // the browser — from a blob type that can be empty, or from the tail of a signed URL,
-            // where `...jpg?st=2026-09-04&sig=…` becomes the "extension". The core refuses a file
-            // whose extension and mime type disagree, and the downloaded bytes are the only place
-            // that knows the truth.
+            // Only the name is taken from the caller; the extension comes from the downloaded bytes
             $baseName = '' !== $targetFileName ? pathinfo($targetFileName, PATHINFO_FILENAME) : $imageTitle;
 
             $file = $folder->getStorage()->addFile(
@@ -69,8 +69,7 @@ class AiImageStoreService
             $metaData->offsetSet('alternative', $imageTitle);
             $metaData->save();
 
-            // This write bypasses the DataHandler, so the hook never records it. After the save: the
-            // fingerprint reads the stored row.
+            // Bypasses the DataHandler hook; must follow save(), the fingerprint reads the stored row
             $metaDataUid = (int) $metaData->offsetGet('uid');
             if ($metaDataUid > 0) {
                 $this->provenanceService->record(
@@ -96,20 +95,83 @@ class AiImageStoreService
      */
     protected function download(string $imageUrl): string
     {
-        $tempBase = GeneralUtility::tempnam('ai_image_');
-        $this->filesystem->copy($imageUrl, $tempBase);
+        $this->assertServedByAiSuiteServer($imageUrl);
 
-        if (!file_exists($tempBase) || 0 === filesize($tempBase)) {
-            @unlink($tempBase);
-
-            throw new \RuntimeException(sprintf('Failed to download image from %s', $imageUrl));
+        $response = $this->requestFactory->request($imageUrl, 'GET', [
+            'allow_redirects' => false,
+            'stream' => true,
+            'timeout' => 60,
+            'http_errors' => false,
+        ]);
+        if (200 !== $response->getStatusCode()) {
+            throw new \RuntimeException(sprintf('The AI Suite Server answered HTTP %d for the generated image.', $response->getStatusCode()));
         }
 
-        $urlExtension = strtolower(pathinfo($imageUrl, PATHINFO_EXTENSION));
-        $tempFile = $tempBase.'.'.self::extensionOf($tempBase, '' !== $urlExtension ? $urlExtension : 'png');
+        $tempBase = GeneralUtility::tempnam('ai_image_');
+        $handle = fopen($tempBase, 'wb');
+        if (false === $handle) {
+            @unlink($tempBase);
+
+            throw new \RuntimeException('Could not open a temporary file for the generated image.');
+        }
+
+        $written = 0;
+        $body = $response->getBody();
+
+        try {
+            while (!$body->eof()) {
+                $chunk = $body->read(self::CHUNK_SIZE);
+                if ('' === $chunk) {
+                    break;
+                }
+                $written += strlen($chunk);
+                if ($written > self::MAX_IMAGE_BYTES) {
+                    throw new \RuntimeException(sprintf('The generated image exceeds %d bytes.', self::MAX_IMAGE_BYTES));
+                }
+                fwrite($handle, $chunk);
+            }
+        } catch (\Throwable $e) {
+            fclose($handle);
+            @unlink($tempBase);
+
+            throw $e instanceof \RuntimeException ? $e : new \RuntimeException('Downloading the generated image failed.', 1761100000, $e);
+        }
+        fclose($handle);
+
+        $extension = self::imageExtensionOf($tempBase);
+        if (0 === $written || null === $extension) {
+            @unlink($tempBase);
+
+            throw new \RuntimeException('The AI Suite Server did not answer with an image.');
+        }
+
+        $tempFile = $tempBase.'.'.$extension;
         rename($tempBase, $tempFile);
 
         return $tempFile;
+    }
+
+    /**
+     * @throws \RuntimeException
+     */
+    protected function assertServedByAiSuiteServer(string $imageUrl): void
+    {
+        try {
+            $server = parse_url((string) $this->extensionConfiguration->get('ai_suite', 'aiSuiteServer'));
+        } catch (\Throwable) {
+            $server = false;
+        }
+        $image = parse_url($imageUrl);
+
+        $serverHost = is_array($server) ? strtolower($server['host'] ?? '') : '';
+        if ('' === $serverHost || !is_array($image)
+            || 'https' !== strtolower($image['scheme'] ?? '')
+            || strtolower($image['host'] ?? '') !== $serverHost
+            || ($image['port'] ?? null) !== ($server['port'] ?? null)
+            || isset($image['user']) || isset($image['pass'])
+        ) {
+            throw new \RuntimeException('Only images served by the configured AI Suite Server are stored.');
+        }
     }
 
     protected function targetFileName(string $imageTitle, string $tempFile, Folder $folder): string
@@ -126,14 +188,14 @@ class AiImageStoreService
         return $fileName;
     }
 
-    private static function extensionOf(string $file, string $fallback): string
+    private static function imageExtensionOf(string $file): ?string
     {
         return match (mime_content_type($file)) {
             'image/jpeg' => 'jpg',
             'image/png' => 'png',
             'image/gif' => 'gif',
             'image/webp' => 'webp',
-            default => $fallback,
+            default => null,
         };
     }
 }

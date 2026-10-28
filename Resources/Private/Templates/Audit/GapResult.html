@@ -48,41 +48,43 @@
                             <span class="aisuite-audit-pill aisuite-audit-pill--success">{summary.answered} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span>
                         </p>
 
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th class="col-sm-1"></th>
-                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.gap.query"/></th>
-                                    <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.volume"/></th>
-                                    <th class="text-end" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty.help')}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty"/></th>
-                                    <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.gap.position"/></th>
-                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.note"/></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <f:for each="{gaps}" as="gap">
+                        <div class="table-fit">
+                            <table class="table table-striped table-hover">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <f:switch expression="{gap.status}">
-                                                <f:case value="answered"><span class="aisuite-audit-pill aisuite-audit-pill--success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
-                                                <f:case value="partial"><span class="aisuite-audit-pill aisuite-audit-pill--warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
-                                                <f:defaultCase><span class="aisuite-audit-pill aisuite-audit-pill--error"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
-                                            </f:switch>
-                                        </td>
-                                        <td><strong>{gap.keyword}</strong></td>
-                                        <td class="text-end">
-                                            <f:if condition="{gap.searchVolume}">
-                                                <f:then>{gap.searchVolume}</f:then>
-                                                <f:else>—</f:else>
-                                            </f:if>
-                                        </td>
-                                        <td class="text-end">{gap.difficultyDisplay}</td>
-                                        <td class="text-end">{gap.position}</td>
-                                        <td class="text-body-secondary">{gap.note}</td>
+                                        <th class="col-sm-1"></th>
+                                        <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.gap.query"/></th>
+                                        <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.candidates.volume"/></th>
+                                        <th class="text-end" title="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty.help')}"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.difficulty"/></th>
+                                        <th class="text-end"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.gap.position"/></th>
+                                        <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.note"/></th>
                                     </tr>
-                                </f:for>
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    <f:for each="{gaps}" as="gap">
+                                        <tr>
+                                            <td>
+                                                <f:switch expression="{gap.status}">
+                                                    <f:case value="answered"><span class="aisuite-audit-pill aisuite-audit-pill--success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
+                                                    <f:case value="partial"><span class="aisuite-audit-pill aisuite-audit-pill--warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
+                                                    <f:defaultCase><span class="aisuite-audit-pill aisuite-audit-pill--error"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
+                                                </f:switch>
+                                            </td>
+                                            <td><strong>{gap.keyword}</strong></td>
+                                            <td class="text-end">
+                                                <f:if condition="{gap.searchVolume}">
+                                                    <f:then>{gap.searchVolume}</f:then>
+                                                    <f:else><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.result.notAvailable" /></f:else>
+                                                </f:if>
+                                            </td>
+                                            <td class="text-end">{gap.difficultyDisplay}</td>
+                                            <td class="text-end">{gap.position}</td>
+                                            <td class="text-body-secondary">{gap.note}</td>
+                                        </tr>
+                                    </f:for>
+                                </tbody>
+                            </table>
+                        </div>
                     </f:if>
 
                     <f:if condition="{generatePrompt}">

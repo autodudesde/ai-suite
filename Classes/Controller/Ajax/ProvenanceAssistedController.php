@@ -22,17 +22,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Core\Http\JsonResponse;
 
-/**
- * Records that an editor took an AI suggestion into a field.
- *
- * The CKEditor plugins and the field buttons only propose; the value is written by the editor's own
- * form save, in a request this extension never sees. So the marking cannot come from the write —
- * it has to come from the acceptance, which is the moment the editor decides to use what the AI
- * produced. That is `assisted` and not `generated`: a human chose it, and a human will save it.
- *
- * A record that has not been saved yet carries a `NEW…` placeholder instead of a uid; there is
- * nothing to attach an entry to, and the suggestion is simply not recorded.
- */
 #[AsController]
 class ProvenanceAssistedController
 {
@@ -54,8 +43,6 @@ class ProvenanceAssistedController
             return new JsonResponse(['success' => false]);
         }
 
-        // The body names its own table and uid, so without this the route writes the register for
-        // every record in the installation on behalf of anyone who can log in.
         if (!$this->backendUserService->canEditRecord($table, $uid)) {
             return new JsonResponse(['success' => false], 403);
         }

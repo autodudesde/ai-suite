@@ -136,6 +136,16 @@ class SettingsController extends AbstractBackendController
             }
         }
 
+        if (!SendRequestService::isHttpsUrl((string) ($newConf['aiSuiteServer'] ?? ''))) {
+            $this->flashMessageService->getMessageQueueByIdentifier('ai_suite.template.flashMessages')->enqueue(new FlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.serverNotHttpsNotSaved'),
+                '',
+                ContextualFeedbackSeverity::ERROR,
+            ));
+
+            return $this->indexAction($request);
+        }
+
         try {
             $this->extensionConfiguration->set('ai_suite', $newConf);
 

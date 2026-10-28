@@ -22,7 +22,6 @@ use TYPO3\CMS\Backend\Preview\StandardContentPreviewRenderer;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-// PreviewRendererInterface is the only preview extension point common to v12/v13/v14; decorates, never replaces
 class ProvenancePreviewRenderer implements PreviewRendererInterface
 {
     public const ORIGINAL_RENDERERS = 'aiSuiteOriginalPreviewRenderers';

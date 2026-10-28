@@ -24,6 +24,9 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 class XliffService implements SingletonInterface
 {
+    private const FILE_NAME = '/^[A-Za-z0-9][A-Za-z0-9_-]*(?:\.[A-Za-z0-9_-]+)*\.xlf$/';
+    private const LANGUAGE = '/^[a-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
+
     public function __construct(
         protected readonly PackageManager $packageManager,
         protected readonly LocalizationService $localizationService,
@@ -41,7 +44,7 @@ class XliffService implements SingletonInterface
         $sourceFile = $this->readXliff($extensionKey, $filename);
         $destinationFile = false;
         if ('missingProperties' === $translationMode) {
-            $destinationFile = $this->readXliff($extensionKey, $destinationLanguage.'.'.$filename, false);
+            $destinationFile = $this->readXliff($extensionKey, $this->translationFileName($destinationLanguage, $filename), false);
         }
         $neededTranslations = $sourceFile->getFormatedData();
         foreach ($neededTranslations as $transKey => $transValue) {
@@ -62,17 +65,14 @@ class XliffService implements SingletonInterface
      */
     public function readXliff(string $extKey, string $filename, bool $sourceFile = true): XliffFile
     {
-        $package = $this->packageManager->getPackage($extKey);
-        $packagePath = $package->getPackagePath();
-
-        $file = $packagePath.'Resources/Private/Language/'.$filename;
+        $file = $this->languageFilePath($extKey, $filename);
 
         if (!is_readable($file)) {
-            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$file, $extKey]));
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$filename, $extKey]));
         }
         $fileData = file_get_contents($file);
         if (false === $fileData) {
-            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$file, $extKey]));
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$filename, $extKey]));
         }
         $xmlData = new \SimpleXMLElement($fileData);
 
@@ -145,7 +145,7 @@ class XliffService implements SingletonInterface
     {
         $sourceFile = $this->readXliff($fileData['extensionKey'], $fileData['filename']);
         if ('missingProperties' === $fileData['translationMode']) {
-            $destinationFile = $this->readXliff($fileData['extensionKey'], $fileData['destinationLanguage'].'.'.$fileData['filename'], false);
+            $destinationFile = $this->readXliff($fileData['extensionKey'], $this->translationFileName($fileData['destinationLanguage'], $fileData['filename']), false);
             $newTranslation = $sourceFile->getSimpleXMLElement();
             for ($i = 0; $i < count($sourceFile->getRawData()['file']['body']['trans-unit']); ++$i) {
                 $unitAttributes = self::getUnitAttributes($sourceFile, $i);
@@ -185,11 +185,49 @@ class XliffService implements SingletonInterface
             }
         }
 
-        $package = $this->packageManager->getPackage($fileData['extensionKey']);
-        $packagePath = $package->getPackagePath();
-        $file = $packagePath.'Resources/Private/Language/'.$fileData['destinationLanguage'].'.'.$fileData['filename'];
+        $file = $this->languageFilePath($fileData['extensionKey'], $this->translationFileName($fileData['destinationLanguage'], $fileData['filename']));
 
         return $newTranslation->asXML($file);
+    }
+
+    /**
+     * @throws FileNotFoundException
+     */
+    public function translationFileName(string $language, string $filename): string
+    {
+        if (1 !== preg_match(self::LANGUAGE, $language)) {
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$language.'.'.$filename, '']));
+        }
+
+        return $language.'.'.$filename;
+    }
+
+    /**
+     * @throws FileNotFoundException
+     * @throws UnknownPackageException
+     */
+    public function languageFilePath(string $extKey, string $filename): string
+    {
+        if (1 !== preg_match(self::FILE_NAME, $filename)) {
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$filename, $extKey]));
+        }
+        if (!$this->packageManager->isPackageActive($extKey)
+            || $this->packageManager->getPackage($extKey)->getPackageMetaData()->isFrameworkType()
+        ) {
+            throw new UnknownPackageException(sprintf('Package "%s" is not available for translation.', $extKey), 1761091200);
+        }
+
+        $directory = realpath($this->packageManager->getPackage($extKey)->getPackagePath().'Resources/Private/Language');
+        if (false === $directory) {
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$filename, $extKey]));
+        }
+        $file = $directory.'/'.$filename;
+        $resolved = realpath($file);
+        if (false !== $resolved && !str_starts_with($resolved, $directory.'/')) {
+            throw new FileNotFoundException($this->localizationService->translate('aiSuite.error.file.notFound', [$filename, $extKey]));
+        }
+
+        return $file;
     }
 
     public function getUnitAttributes(XliffFile $sourceFile, int $i): string

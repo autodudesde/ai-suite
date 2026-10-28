@@ -14,7 +14,10 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -28,11 +31,15 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
 
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
+        TcaCompatibilityService $tcaCompatibilityService,
         string $table = 'tx_aisuite_domain_model_custom_prompt_template',
         string $sortBy = 'name'
     ) {
         parent::__construct(
             $connectionPool,
+            $workspaceContextService,
+            $tcaCompatibilityService,
             $table,
             $sortBy
         );
@@ -47,7 +54,7 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
      */
     public function findByAllowedMounts(array $allowedMounts, string $search): array
     {
-        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()
             ->removeByType(HiddenRestriction::class)
         ;
@@ -55,21 +62,21 @@ class CustomPromptTemplateRepository extends AbstractPromptTemplateRepository
             ->select('*')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->in('pid', $allowedMounts)
+                $queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($allowedMounts, Connection::PARAM_INT_ARRAY))
             )
+            ->orderBy($this->sortBy, 'ASC')
         ;
-        if ('' !== $search) {
-            $queryBuilder->andWhere(
-                $queryBuilder->expr()->or(
-                    $queryBuilder->expr()->like('name', $queryBuilder->createNamedParameter('%'.$search.'%')),
-                    $queryBuilder->expr()->like('prompt', $queryBuilder->createNamedParameter('%'.$search.'%'))
-                )
-            );
-        }
-        $queryBuilder->orderBy($this->sortBy, 'ASC');
-        $result = $queryBuilder->executeQuery();
 
-        return $result->fetchAllAssociative();
+        $rows = $this->fetchVisibleRows($queryBuilder, true);
+        if ('' === $search) {
+            return $rows;
+        }
+
+        return array_values(array_filter(
+            $rows,
+            static fn (array $row): bool => false !== mb_stripos((string) ($row['name'] ?? ''), $search)
+                || false !== mb_stripos((string) ($row['prompt'] ?? ''), $search),
+        ));
     }
 
     public function deactivateElement(int $id): void
