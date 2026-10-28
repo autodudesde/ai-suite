@@ -78,6 +78,7 @@ class MultiLanguageTranslationService
         protected readonly ProvenanceCaptureService $provenanceCapture,
         protected readonly TranslationRepository $translationRepository,
         protected readonly TcaCompatibilityService $tcaCompatibilityService,
+        protected readonly GlossarService $glossarService,
     ) {}
 
     /**
@@ -203,6 +204,7 @@ class MultiLanguageTranslationService
     protected function translateDirectly(int $sourceUid, int $pageId, string $sourceIsoCode, array $targetLanguageUids, string $model, ?ServerRequestInterface $request, ?array $changedFields = null): void
     {
         $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+        $rootPageId = $this->glossarService->getSiteRootPageId($pageId);
         $translatedLanguages = [];
 
         foreach ($targetLanguageUids as $targetLanguageUid) {
@@ -215,15 +217,17 @@ class MultiLanguageTranslationService
                     continue;
                 }
 
+                $translateFieldsJson = (string) json_encode($translateFields, SendRequestService::JSON_SAFE_FLAGS);
                 $answer = $this->sendRequestService->sendDataRequest(
                     'translate',
                     [
-                        'translate_fields' => (string) json_encode($translateFields, SendRequestService::JSON_SAFE_FLAGS),
+                        'translate_fields' => $translateFieldsJson,
                         'translate_fields_count' => count($translateFields),
                         'source_lang' => $sourceIsoCode,
                         'target_lang' => $targetIsoCode,
                         'uuid' => $this->uuidService->generateUuid(),
                         'global_instructions' => $globalInstructions,
+                        ...$this->glossarService->buildRequestParameters($translateFieldsJson, 0, $targetLanguageUid, $rootPageId),
                     ],
                     '',
                     strtoupper($targetIsoCode),
@@ -324,6 +328,7 @@ class MultiLanguageTranslationService
         $unappliedTasks = $this->backgroundTaskRepository->findUnappliedContentElementTranslationTasks($sourceUid);
         $parentUuid = $this->uuidService->generateUuid();
         $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
+        $rootPageId = $this->glossarService->getSiteRootPageId($pageId);
 
         foreach ($targetLanguageUids as $targetLanguageUid) {
             $supersededTasks = array_values(array_filter(
@@ -381,6 +386,12 @@ class MultiLanguageTranslationService
                     $model,
                     $this->sendRequestService,
                     $this->backgroundTaskRepository,
+                    $this->glossarService->buildRequestParameters(
+                        (string) json_encode($translatableContent, SendRequestService::JSON_SAFE_FLAGS),
+                        0,
+                        $targetLanguageUid,
+                        $rootPageId,
+                    ),
                 );
 
                 if (null !== $errorMessage) {
@@ -456,9 +467,6 @@ class MultiLanguageTranslationService
     }
 
     /**
-     * By record, not by count: a refusal names the record it belongs to (`table:uid`), and a list
-     * that happens to be as long as the answer says nothing about which records it covers.
-     *
      * @param array<string, mixed> $translationResults
      * @param list<string>         $skipped
      */

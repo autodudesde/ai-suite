@@ -71,16 +71,6 @@ class PagesRepository extends AbstractRepository
         ;
     }
 
-    /**
-     * Through the DataHandler, not a raw insert.
-     *
-     * The raw insert bypassed the TCA defaults, the slug generation and the permission check — and
-     * the provenance hook with them, so a generated page tree was the one AI feature the register
-     * could never see. Only the editorial fields are handed over; permissions, timestamps and the
-     * slug are the DataHandler's to set.
-     *
-     * @return string the uid of the new page, empty when the DataHandler refused it
-     */
     public function addPage(Pages $page): string
     {
         $fields = array_intersect_key($page->toDatabase(), array_flip([

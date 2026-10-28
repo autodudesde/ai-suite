@@ -29,7 +29,8 @@ trait CliBackendBootstrapTrait
 
         $parts = null === $baseUrl || '' === $baseUrl ? false : parse_url($baseUrl);
         if (!is_array($parts) || !isset($parts['host']) || '' === $parts['host']) {
-            $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest())
+            // An empty URI, never none: core accepts null in the constructor and then fails in getUri()
+            $GLOBALS['TYPO3_REQUEST'] = (new ServerRequest(''))
                 ->withAttribute('applicationType', SystemEnvironmentBuilder::REQUESTTYPE_BE)
             ;
 

@@ -76,6 +76,7 @@ class PagesTranslationPrepare {
             formData.append('sourceLanguageId', sourceLanguageSelect.value);
             formData.append('targetLanguageId', targetLanguageSelect.value);
             formData.append('textAiModel', textAiModel);
+            formData.append('pageId', document.querySelector('input[name="workflowPagesTranslationPrepare[startFromPid]"]')?.value ?? '0');
 
             const response = await Ajax.sendAjaxRequest('aisuite_glossary_fetch_page_translation', formData);
             if (response && response.glossaries) {
@@ -214,7 +215,7 @@ class PagesTranslationPrepare {
                                 if(counter === 3) { // Smaller batches for translation
                                     try {
                                         handledPages = { ...handledPages, ...currentPages };
-                                        formData.append('workflowPagesTranslationExecute[pages]', JSON.stringify(currentPages));
+                                        formData.set('workflowPagesTranslationExecute[pages]', JSON.stringify(currentPages));
                                         await self.sendPagesTranslationToExecute(formData, selectedPages, handledPages);
                                         counter = 0;
                                         currentPages = {};
@@ -226,7 +227,7 @@ class PagesTranslationPrepare {
                                 counter++;
                             }
                             if(Object.keys(currentPages).length > 0) {
-                                formData.append('workflowPagesTranslationExecute[pages]', JSON.stringify(currentPages));
+                                formData.set('workflowPagesTranslationExecute[pages]', JSON.stringify(currentPages));
                                 await self.sendPagesTranslationToExecute(formData, selectedPages, handledPages);
                             }
                             Generation.hideSpinner();
@@ -294,11 +295,11 @@ class PagesTranslationPrepare {
         let res = await Ajax.sendAjaxRequest('aisuite_workflow_pages_translation_execute', formData);
         if (General.isUsable(res)) {
             if(res.output.failedPages.length > 0) {
-                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.failedPages'] + res.output.failedPages.join(', '));
+                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], TYPO3.lang['aiSuite.notification.generation.failedPages'] + ' ' + res.output.failedPages.join(', '));
             }
             let statusElement = document.querySelector('.module-body .spinner-overlay .status');
             if (statusElement !== null) {
-                statusElement.innerHTML = res.output.message + Object.keys(handledPages).length + ' / ' + Object.keys(selectedPages).length;
+                statusElement.innerHTML = res.output.message + ' ' + Object.keys(handledPages).length + ' / ' + Object.keys(selectedPages).length;
             }
         }
         // No else: Ajax.sendAjaxRequest already shows a Notification on failure (and returns null).

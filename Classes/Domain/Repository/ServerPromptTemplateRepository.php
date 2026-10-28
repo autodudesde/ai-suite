@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Repository;
 
+use AutoDudes\AiSuite\Service\TcaCompatibilityService;
+use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 
 class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
@@ -24,11 +26,15 @@ class ServerPromptTemplateRepository extends AbstractPromptTemplateRepository
 
     public function __construct(
         ConnectionPool $connectionPool,
+        WorkspaceContextService $workspaceContextService,
+        TcaCompatibilityService $tcaCompatibilityService,
         string $table = 'tx_aisuite_domain_model_server_prompt_template',
         string $sortBy = 'name'
     ) {
         parent::__construct(
             $connectionPool,
+            $workspaceContextService,
+            $tcaCompatibilityService,
             $table,
             $sortBy
         );

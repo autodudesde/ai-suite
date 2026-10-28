@@ -5,23 +5,23 @@
         <body>
             <trans-unit id="aiSuite.beGroups.field.aiSuiteApiKey">
                 <source>Group specific AI Suite API key</source>
-                <target>Gruppenspezifischer AI Suite-API-Schlüssel</target>
+                <target>Gruppenspezifischer AI Suite-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.aiModelHubApiKey">
                 <source>Group specific AI Model Hub API key (IONOS, also used for Flux)</source>
-                <target>Gruppenspezifischer AI-Model-Hub-API-Schlüssel (IONOS, auch für Flux)</target>
+                <target>Gruppenspezifischer AI-Model-Hub-API-Key (IONOS, auch für Flux)</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.mittwaldAiModelHubApiKey">
                 <source>Group specific Mittwald AI Model Hub API key</source>
-                <target>Gruppenspezifischer Mittwald-AI-Model-Hub-API-Schlüssel</target>
+                <target>Gruppenspezifischer Mittwald-AI-Model-Hub-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.anthropicApiKey">
                 <source>Group specific Anthropic/Claude API key</source>
-                <target>Gruppenspezifischer Anthropic/Claude-API-Schlüssel</target>
+                <target>Gruppenspezifischer Anthropic/Claude-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.deeplApiKey">
                 <source>Group specific DeepL API key</source>
-                <target>Gruppenspezifischer DeepL-API-Schlüssel</target>
+                <target>Gruppenspezifischer DeepL-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.deeplApiMode">
                 <source>Group uses the free version of DeepL API</source>
@@ -29,7 +29,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.googleTranslateApiKey">
                 <source>Group specific GoogleTranslate API key</source>
-                <target>Gruppenspezifischer GoogleTranslate-API-Schlüssel</target>
+                <target>Gruppenspezifischer Google-Translate-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.mediaStorageFolder">
                 <source>Store image and media files at this folder (e.g. ai-images/subfolder, or a combined identifier like 1:/user_upload/ai-images). If the folder doesn't exist, it will be created.</source>
@@ -37,7 +37,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.midjourneyApiKey">
                 <source>Group specific Midjourney API key</source>
-                <target>Gruppenspezifischer Midjourney-API-Schlüssel</target>
+                <target>Gruppenspezifischer Midjourney-API-Key</target>
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.midjourneyId">
                 <source>Group specific Midjourney ID</source>
@@ -45,7 +45,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.beGroups.field.openAiApiKey">
                 <source>Group specific OpenAI API key</source>
-                <target>Gruppenspezifischer OpenAI-API-Schlüssel</target>
+                <target>Gruppenspezifischer OpenAI-API-Key</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.beGroups.tab.settings">
@@ -60,7 +60,7 @@
 
             <trans-unit id="aiSuite.permissions.enableBackgroundTaskHandlingDescription">
                 <source>If active the &quot;TaskEngine&quot; button will be shown within the backend module</source>
-                <target>Wenn aktiv, wird der Button &quot;TaskEngine&quot; im Backend-Modul angezeigt</target>
+                <target>Wenn aktiv, wird der Button „TaskEngine“ im Backend-Modul angezeigt</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.permissions.enableContentElementGeneration">
@@ -80,7 +80,7 @@
 
             <trans-unit id="aiSuite.permissions.enableGlobalInstructionsButtonDescription">
                 <source>If active the &quot;Global Instructions&quot; button will be shown within the backend module</source>
-                <target>Wenn aktiv, wird der Button &quot;Globale Anweisungen&quot; im Backend-Modul angezeigt</target>
+                <target>Wenn aktiv, wird der Button „Globale Anweisungen“ im Backend-Modul angezeigt</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.permissions.enableImageGeneration">
@@ -100,7 +100,7 @@
 
             <trans-unit id="aiSuite.permissions.enableMassActionGenerationDescription">
                 <source>If active the &quot;WorkflowManager&quot; button will be shown within the backend module</source>
-                <target>Wenn aktiv, wird der Button &quot;WorkflowManager&quot; im Backend-Modul angezeigt</target>
+                <target>Wenn aktiv, wird der Button „WorkflowManager“ im Backend-Modul angezeigt</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.permissions.enableMetadataGeneration">
@@ -130,7 +130,7 @@
 
             <trans-unit id="aiSuite.permissions.enablePagesGenerationDescription">
                 <source>If active the &quot;Pages&quot; button will be shown within the backend module</source>
-                <target>Wenn aktiv, wird der Button &quot;Seiten&quot; im Backend-Modul angezeigt</target>
+                <target>Wenn aktiv, wird der Button „Seiten“ im Backend-Modul angezeigt</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.permissions.enableAgency">
@@ -383,6 +383,10 @@
                 <source>Metadata (Files)</source>
                 <target>Metadaten (Dateien)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.files.translation">
+                <source>Metadata translations (Files, DeepL and Google Translate are excluded)</source>
+                <target>Metadaten-Übersetzungen (Dateien, DeepL und Google Translate sind ausgeschlossen)</target>
+            </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
                 <source>ContentElements</source>
                 <target>Inhaltselemente</target>
@@ -442,11 +446,11 @@
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableGlobalSettings">
                 <source>Enable &quot;Global Settings&quot; section within backend module</source>
-                <target>Bereich &quot;Globale Einstellungen&quot; im Backend-Modul aktivieren</target>
+                <target>Bereich „Globale Einstellungen“ im Backend-Modul aktivieren</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableGlobalSettingsDescription">
                 <source>If active the &quot;Global Settings&quot; button will be shown within the backend module to manage extension configuration</source>
-                <target>Wenn aktiv, wird der Button &quot;Globale Einstellungen&quot; im Backend-Modul angezeigt, um die Erweiterungskonfiguration zu verwalten</target>
+                <target>Wenn aktiv, wird der Button „Globale Einstellungen“ im Backend-Modul angezeigt, um die Extension-Konfiguration zu verwalten</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableCliWorkflowExecution">
                 <source>Allow CLI/Scheduler-based workflow execution</source>
@@ -454,7 +458,7 @@
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableCliWorkflowExecutionDescription">
                 <source>Shows the &quot;Generate with AI and auto-fill in background&quot; button in the workflow manager. Background tasks created this way are processed asynchronously by the scheduler-driven ai-suite:process-tasks command. Requires EXT:scheduler.</source>
-                <target>Zeigt den Button &quot;Mit KI generieren und im Hintergrund automatisch ausfüllen&quot; im Workflow-Manager. So erstellte Hintergrund-Aufgaben werden asynchron vom Scheduler-gesteuerten Befehl ai-suite:process-tasks verarbeitet. Erfordert EXT:scheduler.</target>
+                <target>Zeigt den Button „Mit KI generieren und im Hintergrund automatisch ausfüllen“ im Workflow-Manager. So erstellte Hintergrund-Aufgaben werden asynchron vom Scheduler-gesteuerten Befehl ai-suite:process-tasks verarbeitet. Erfordert EXT:scheduler.</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAudit" approved="yes">
                 <source>Enable SEO and accessibility audits</source>

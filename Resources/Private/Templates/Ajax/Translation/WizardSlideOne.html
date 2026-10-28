@@ -26,11 +26,17 @@
                 </f:for>
             </select>
         </div>
-        <div class="alert alert-info">
-            <strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.wholePageIncludes" /></strong>
-            <ul>
-                <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.pageProperties" /></li>
-                <li><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.allContentElements" /></li>
+        <div class="form-group">
+            <span class="form-label d-block"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.wholePageIncludes" /></span>
+            <ul class="list-unstyled mb-0">
+                <li class="d-flex gap-2 align-items-start mb-1">
+                    <core:icon identifier="actions-check" size="small" />
+                    <span><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.pageProperties" /></span>
+                </li>
+                <li class="d-flex gap-2 align-items-start">
+                    <core:icon identifier="actions-check" size="small" />
+                    <span><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.translation.allContentElements" /></span>
+                </li>
             </ul>
         </div>
     </div>

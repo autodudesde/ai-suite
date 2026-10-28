@@ -127,17 +127,32 @@
             <trans-unit id="aiSuite.error.server.gdprModelBlocked">
                 <source>GDPR mode is active, so this AI model may not be used. Pick a data-protection-compliant model.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.modelNotAvailable">
+                <source>The selected AI model is currently not available for this action. Please pick another model.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.keyIsFreddi">
+                <source>The configured key is a FrEddi key for the frontend assistant. It does not work in the AI Suite. Enter the AI Suite key here and the FrEddi key in the FrEddi extension (freddiApiKey).</source>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.targetLanguageNotSupported">
                 <source>The selected AI model does not support this target language.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.thirdPartyApi">
-                <source>The AI provider did not return a usable answer. Failed requests are not billed; please try again later.</source>
+                <source>The AI provider did not return a usable answer. Failed requests are not billed. Please try again later.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.imageRehostFailed">
+                <source>The generated image could not be stored. Failed requests are not billed. Please try again.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.auditGatewayUnavailable">
+                <source>The audit service did not deliver a result. Failed requests are not billed. Please try again later.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.webSearchUnavailable">
                 <source>Web research is not available for this installation under the current data-protection settings.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.promptViolation">
                 <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.moderationUnavailable">
+                <source>The prompt could not be checked against the content policy, so the request was not processed. Failed requests are not billed. Please try again later.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestStatusNotFound">
                 <source>The AI Suite server no longer knows this background task, so it could not be re-queued. Delete the task and start the action again.</source>
@@ -177,6 +192,12 @@
 
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.notPublic">
+                <source>The URL does not point to a public website and was not fetched.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.tooLarge">
+                <source>The page is too large to be analysed.</source>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
                 <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
@@ -436,7 +457,7 @@
                 <source>This may take a few moments.</source>
             </trans-unit>
             <trans-unit id="aiSuite.js.progress.translatingWholePage">
-                <source>Translating Whole Page...</source>
+                <source>Translation in progress.</source>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.summary.contentElements">
@@ -833,6 +854,9 @@
             <trans-unit id="aiSuite.translation.wholePageNoContentElements">
                 <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.translation.nothingSelected">
+                <source>Nothing was translated: select the content elements to translate, or translate the whole page.</source>
+            </trans-unit>
 
             <trans-unit id="aiSuite.unableToFetchNewsRecord">
                 <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the &quot;Metadata&quot; tab for fetching the news record.</source>
@@ -1028,6 +1052,27 @@
             </trans-unit>
             <trans-unit id="aiSuite.cliOverview.scope.metadata">
                 <source>File Metadata Translation</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.workflow.selectionNotAllowed">
+                <source>The selection contains records, fields or languages you may not edit.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.modelNotAllowed">
+                <source>Your user group may not use the AI model %s.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.noPageAccess">
+                <source>You do not have access to this page.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.imageNotStored">
+                <source>The generated image could not be stored. The log names the reason.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.serverNotHttps">
+                <source>The AI Suite server URL must start with https://. No request was sent.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.serverNotHttpsNotSaved">
+                <source>The AI Suite server URL must start with https://. The settings were not saved.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.routeNotAllowed">
+                <source>You do not have permission to use this AI Suite feature.</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.generationNotAllowed">
                 <source>You do not have permission to use AI content generation.</source>

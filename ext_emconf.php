@@ -9,10 +9,10 @@ $EM_CONF['ai_suite'] = [
     'author_company' => 'AutoDudes',
     'constraints' => [
         'depends' => [
-            'typo3' => '14.3.0-14.9.99'
+            'typo3' => '14.3.0-14.9.99',
         ],
         'conflicts' => [
-            'ai_seo_helper' => '0.1.0-1.9.99'
+            'ai_seo_helper' => '0.1.0-1.9.99',
         ],
         'suggests' => [
             'container' => '',
@@ -22,11 +22,11 @@ $EM_CONF['ai_suite'] = [
     ],
     'autoload' => [
         'psr-4' => [
-            'AutoDudes\\AiSuite\\' => 'Classes'
+            'AutoDudes\AiSuite\\' => 'Classes',
         ],
     ],
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '14.6.2',
+    'version' => '14.7.0',
 ];

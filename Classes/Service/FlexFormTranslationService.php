@@ -36,7 +36,8 @@ class FlexFormTranslationService implements SingletonInterface
     ];
 
     public function __construct(
-        protected readonly FlexFormTools $flexFormTools
+        protected readonly FlexFormTools $flexFormTools,
+        protected readonly LinkTitleService $linkTitleService,
     ) {}
 
     /**
@@ -116,6 +117,16 @@ class FlexFormTranslationService implements SingletonInterface
                     continue;
                 }
                 $type = $fieldConfiguration['type'] ?? '';
+                if ('link' === $type) {
+                    $title = is_string($dataValues[$key]['vDEF'] ?? null) ? $this->linkTitleService->extractTitle($dataValues[$key]['vDEF']) : '';
+                    if ('' === $title) {
+                        unset($dataValues[$key]);
+                    } else {
+                        $dataValues[$key]['vDEF'] = $title;
+                    }
+
+                    continue;
+                }
                 if (in_array($type, $this->ignoredFlexformFieldTypes)) {
                     unset($dataValues[$key]);
                 }

@@ -163,9 +163,10 @@ class BackgroundTaskController extends AbstractBackendController
             if (empty($backgroundTask['table_name'])) {
                 throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
             }
+            if (!$this->aiSuiteContext->workflowSelectionGuard->mayManageTask($backgroundTask)) {
+                throw new \Exception('Background task '.$data['uuid'].' belongs to a record the user may not edit');
+            }
 
-            // The model is on the task row, and it has to come from there: the answer that named it
-            // belongs to the request that queued the task, long gone by the time an editor saves.
             $model = (string) ($backgroundTask['model'] ?? '');
             $this->aiSuiteContext->provenanceCapture->begin(
                 'translation' === $backgroundTask['type']
@@ -229,8 +230,14 @@ class BackgroundTaskController extends AbstractBackendController
             $data = (array) $request->getParsedBody();
             $uuids = $data['uuids'] ?? [];
 
-            if (empty($uuids)) {
+            if (empty($uuids) || !is_array($uuids)) {
                 throw new \Exception($this->aiSuiteContext->localizationService->translate('aiSuite.error.backgroundTask.noUuidsProvided'));
+            }
+            foreach ($uuids as $uuid) {
+                $backgroundTask = $this->backgroundTaskRepository->findByUuid((string) $uuid);
+                if (!is_array($backgroundTask) || !$this->aiSuiteContext->workflowSelectionGuard->mayManageTask($backgroundTask)) {
+                    throw new \Exception('Background task '.$uuid.' is unknown or belongs to a record the user may not edit');
+                }
             }
             $answer = $this->requestService->sendDataRequest(
                 'handleBackgroundTask',
@@ -283,6 +290,9 @@ class BackgroundTaskController extends AbstractBackendController
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($uuid);
             if (empty($backgroundTask) || !is_array($backgroundTask)) {
                 throw new \Exception($this->aiSuiteContext->localizationService->translate('aiSuite.error.backgroundTask.notFound', [$uuid]));
+            }
+            if (!$this->aiSuiteContext->workflowSelectionGuard->mayManageTask($backgroundTask)) {
+                throw new \Exception('Background task '.$uuid.' belongs to a record the user may not edit');
             }
 
             if ('translation' === $backgroundTask['type']) {

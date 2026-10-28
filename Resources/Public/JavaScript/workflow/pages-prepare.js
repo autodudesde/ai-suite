@@ -182,13 +182,13 @@ class PagesPrepare {
                     if (res.output?.failedPages?.length > 0) {
                         Notification.error(
                             TYPO3.lang['aiSuite.notification.generation.error'],
-                            TYPO3.lang['aiSuite.notification.generation.failedPages'] + res.output.failedPages.join(', ')
+                            TYPO3.lang['aiSuite.notification.generation.failedPages'] + ' ' + res.output.failedPages.join(', ')
                         );
                     }
 
                     let statusElement = document.querySelector('.module-body .spinner-overlay .status');
                     if (statusElement !== null && selectedPages && handledPages) {
-                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
+                        statusElement.innerHTML = `${res.output.message} ${Object.keys(handledPages).length} / ${Object.keys(selectedPages).length}`;
                     }
 
                     return res;

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Service;
 
+use AutoDudes\AiSuite\Domain\Model\Dto\ServerAnswer\ClientAnswer;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -24,6 +25,11 @@ class LibraryService implements SingletonInterface
      * @var list<string>
      */
     private const VISION_MODEL_IDENTIFIERS = ['Vision', 'MittwaldMinistral14BVision'];
+
+    /**
+     * @var array<string, ClientAnswer>
+     */
+    private array $workflowLibrariesAnswers = [];
 
     public function __construct(
         protected readonly BackendUserService $backendUserService,
@@ -119,7 +125,8 @@ class LibraryService implements SingletonInterface
         }
         [$libraryType, $action] = $resolved;
 
-        $librariesAnswer = $this->sendRequestService->sendLibrariesRequest($libraryType, $action, ['text']);
+        $librariesAnswer = $this->workflowLibrariesAnswers[$libraryType.'|'.$action]
+            ??= $this->sendRequestService->sendLibrariesRequest($libraryType, $action, ['text']);
         if ('Error' === $librariesAnswer->getType()) {
             $message = $librariesAnswer->getMessage() ?: 'Unknown error fetching available models.';
 

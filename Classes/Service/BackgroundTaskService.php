@@ -35,6 +35,7 @@ class BackgroundTaskService implements SingletonInterface
         protected readonly ExtensionConfiguration $extensionConfiguration,
         protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
         protected readonly ProvenanceCaptureService $provenanceCapture,
+        protected readonly WorkflowSelectionGuard $workflowSelectionGuard,
     ) {}
 
     /**
@@ -467,6 +468,7 @@ class BackgroundTaskService implements SingletonInterface
      */
     public function handleFileMetadataTranslationSave(array $backgroundTask, array $data): void
     {
+        $this->assertWritableTarget($backgroundTask);
         if ('NEW' === $backgroundTask['mode']) {
             $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'translation', 'metadata');
             if (empty($sysFileMetadataRow)) {
@@ -525,6 +527,7 @@ class BackgroundTaskService implements SingletonInterface
      */
     public function handleNewMetadataRecordSave(array $backgroundTask, array $data): void
     {
+        $this->assertWritableTarget($backgroundTask);
         $sysFileMetadataRow = $this->backgroundTaskRepository->findFileUid($backgroundTask['table_uid'], $data['uuid'], 'metadata', 'fileMetadata');
         if (empty($sysFileMetadataRow)) {
             throw new \Exception($this->localizationService->translate('aiSuite.error.backgroundTask.fileUidNotFound', [$data['uuid']]));
@@ -554,7 +557,7 @@ class BackgroundTaskService implements SingletonInterface
         $datamap = [
             $backgroundTask['table_name'] => [
                 $translatedMetadataUid => [
-                    $data['column'] => $data['inputValue'],
+                    $backgroundTask['column'] => $data['inputValue'],
                 ],
             ],
         ];
@@ -572,6 +575,7 @@ class BackgroundTaskService implements SingletonInterface
      */
     public function handleExistingMetadataRecordSave(array $backgroundTask, array $data): void
     {
+        $this->assertWritableTarget($backgroundTask);
         $datamap = [
             $backgroundTask['table_name'] => [
                 $backgroundTask['table_uid'] => [
@@ -687,8 +691,7 @@ class BackgroundTaskService implements SingletonInterface
             ];
         } catch (\Exception $e) {
             $this->logger->error('Exception during retryFailedTasks', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'exception' => $e,
             ]);
 
             return [
@@ -801,14 +804,27 @@ class BackgroundTaskService implements SingletonInterface
             ];
         } catch (\Exception $e) {
             $this->logger->error('Exception during updateAllTaskStatuses', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'exception' => $e,
             ]);
 
             return [
                 'success' => false,
                 'message' => 'An error occurred: '.$e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $backgroundTask
+     *
+     * @throws \RuntimeException
+     */
+    private function assertWritableTarget(array $backgroundTask): void
+    {
+        $table = (string) ($backgroundTask['table_name'] ?? '');
+        $column = (string) ($backgroundTask['column'] ?? '');
+        if (!$this->workflowSelectionGuard->isWritableMetadataTarget($table, $column)) {
+            throw new \RuntimeException(sprintf('Background task %s targets %s.%s, which is no metadata field.', (string) ($backgroundTask['uuid'] ?? ''), $table, $column));
         }
     }
 
@@ -1032,8 +1048,7 @@ class BackgroundTaskService implements SingletonInterface
                 throw new \Exception('Background task with uuid '.$data['uuid'].' has invalid table_name');
             }
 
-            // The answer was fetched in an earlier request, so `refineModel()` has nothing to fill
-            // in here — the task row is what remembers which model produced it.
+            // Named explicitly: refineModel() has no answer to read the model from in this request
             $taskModel = (string) ($backgroundTask['model'] ?? '');
             $this->provenanceCapture->begin(
                 'translation' === $backgroundTask['type']
@@ -1075,8 +1090,7 @@ class BackgroundTaskService implements SingletonInterface
             ];
         } catch (\Throwable $e) {
             $this->logger->error('Exception during processFinishedMetadataTask', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'exception' => $e,
             ]);
 
             return [

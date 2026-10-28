@@ -54,7 +54,7 @@ class SysFileReferenceRepository extends AbstractRepository
             )
             ->where(
                 $queryBuilder->expr()->eq('sf.type', 2),
-                $queryBuilder->expr()->in('sfr.pid', $pagesUids),
+                $queryBuilder->expr()->in('sfr.pid', $queryBuilder->createNamedParameter($pagesUids, Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq('sfr.sys_language_uid', $queryBuilder->createNamedParameter($sysLanguageUid)),
                 $queryBuilder->expr()->eq('sf.missing', 0),
             )

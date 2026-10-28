@@ -51,7 +51,7 @@ class ContentRepository extends AbstractRepository
                 $queryBuilder->expr()->eq('p.uid', $queryBuilder->quoteIdentifier('tt_content.pid'))
             )
             ->where(
-                $queryBuilder->expr()->in('tt_content.pid', $pids),
+                $queryBuilder->expr()->in('tt_content.pid', $queryBuilder->createNamedParameter($pids, Connection::PARAM_INT_ARRAY)),
                 $queryBuilder->expr()->eq('tt_content.sys_language_uid', $languageId),
                 $queryBuilder->expr()->eq('tt_content.CType', $queryBuilder->createNamedParameter('news_newsdetail')),
                 $queryBuilder->expr()->eq('p.deleted', 0)

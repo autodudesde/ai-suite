@@ -22,7 +22,6 @@ use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Backend\Routing\PreviewUriBuilder;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -136,7 +135,7 @@ class WorkflowProcessingService implements SingletonInterface
     /**
      * @param array<int, mixed> $pages
      *
-     * @return array<string, mixed>
+     * @return array{payload: list<array<string, mixed>>, bulkPayload: list<BackgroundTask>, failedPages: list<int>, rootPageIds: list<int>}
      */
     public function processPageTranslation(
         array $pages,
@@ -153,6 +152,7 @@ class WorkflowProcessingService implements SingletonInterface
         $payload = [];
         $bulkPayload = [];
         $failedPages = [];
+        $rootPageIds = [];
 
         foreach ($pages as $pageUid => $pageData) {
             try {
@@ -183,13 +183,59 @@ class WorkflowProcessingService implements SingletonInterface
 
             $bulkPayload[] = $entry['task'];
             $payload[] = $entry['item'];
+            $rootPageIds[] = $this->glossarService->getSiteRootPageId((int) $pageUid);
         }
 
         return [
             'payload' => $payload,
             'bulkPayload' => $bulkPayload,
             'failedPages' => $failedPages,
+            'rootPageIds' => $rootPageIds,
         ];
+    }
+
+    /**
+     * @param array{payload: list<array<string, mixed>>, bulkPayload: list<BackgroundTask>, rootPageIds: list<int>} $result
+     */
+    public function sendPageTranslationRequests(
+        array $result,
+        string $parentUuid,
+        string $model,
+        int $sourceLanguageUid,
+        int $targetLanguageUid,
+        bool $withGlossary,
+        SendRequestService $requestService,
+        BackgroundTaskRepository $backgroundTaskRepository,
+        ?string $requestSystemDomain = null,
+    ): ?string {
+        $groups = [];
+        foreach ($result['payload'] as $index => $item) {
+            $rootPageId = $result['rootPageIds'][$index] ?? 0;
+            $groups[$rootPageId]['payload'][] = $item;
+            $groups[$rootPageId]['bulkPayload'][] = $result['bulkPayload'][$index];
+        }
+
+        foreach ($groups as $rootPageId => $group) {
+            $errorMessage = $this->sendWorkflowRequest(
+                $group['payload'],
+                $group['bulkPayload'],
+                $parentUuid,
+                'page-translation',
+                'translation',
+                '',
+                'translate',
+                $model,
+                $requestService,
+                $backgroundTaskRepository,
+                $this->buildPageTranslationGlossaryParameters($group['payload'], $sourceLanguageUid, $targetLanguageUid, (int) $rootPageId, $withGlossary),
+                $requestSystemDomain,
+            );
+            if (null !== $errorMessage) {
+                return $errorMessage;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -240,8 +286,7 @@ class WorkflowProcessingService implements SingletonInterface
                     );
 
                     $folderCombinedIdentifier = $this->workflowViewService->getFolderCombinedIdentifier($fileUid);
-                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folderCombinedIdentifier);
-                    $globalInstructionsOverride = $this->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', array_filter([$folderCombinedIdentifier], static fn ($v) => null !== $v));
+                    $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('files', 'translation', null, $folderCombinedIdentifier);
                     $translatableContent = [
                         'sys_file_metadata' => [
                             $defaultSysFileMetaUid => [
@@ -256,7 +301,6 @@ class WorkflowProcessingService implements SingletonInterface
                         'target_language' => $targetLanguage,
                         'uuid' => $uuid,
                         'global_instructions' => $globalInstructions,
-                        'override_predefined_prompt' => $globalInstructionsOverride,
                     ];
                 } catch (\Throwable $e) {
                     $this->logger->error('Error while processing file '.$fileUid.' with sys file metadata uid '.$sysFileMetaUid.': '.$e->getMessage());
@@ -292,9 +336,12 @@ class WorkflowProcessingService implements SingletonInterface
         $customPrompt = trim((string) ($workflowData['customPrompt'] ?? ''));
         $filesMetadataUidList = [];
         $files = [];
-        foreach ($workflowDataFiles as $sysFileMetaUid => $data) {
+        foreach ($workflowDataFiles as $sysFileMetaUid => $fileMetaData) {
+            $sysFileMetaUid = (int) $sysFileMetaUid;
+            if ($sysFileMetaUid <= 0 || !is_array($fileMetaData)) {
+                continue;
+            }
             $filesMetadataUidList[] = $sysFileMetaUid;
-            $fileMetaData = $workflowDataFiles[$sysFileMetaUid];
             foreach ($fileMetaData as $column => $value) {
                 if ($workflowData['column'] === $column || 'all' === $workflowData['column']) {
                     $files[$sysFileMetaUid][$column] = $value;
@@ -592,6 +639,7 @@ class WorkflowProcessingService implements SingletonInterface
         ?string $requestSystemDomain = null,
         bool $handledByCli = true,
         ?callable $progress = null,
+        bool $withGlossary = false,
     ): array {
         $payload = [];
         $bulkPayload = [];
@@ -602,6 +650,13 @@ class WorkflowProcessingService implements SingletonInterface
         $total = count($pages);
         $maxBytes = $this->directiveService->getEffectiveMaxUploadSize();
         $maxItems = $this->directiveService->getEffectiveMaxItemsPerRequest();
+
+        $pageRootPageIds = [];
+        foreach (array_keys($pages) as $pageUid) {
+            $pageRootPageIds[(int) $pageUid] = $this->glossarService->getSiteRootPageId((int) $pageUid);
+        }
+        uksort($pages, static fn (int|string $a, int|string $b): int => $pageRootPageIds[(int) $a] <=> $pageRootPageIds[(int) $b]);
+        $chunkRootPageId = 0;
 
         foreach ($pages as $pageUid => $pageData) {
             try {
@@ -631,8 +686,9 @@ class WorkflowProcessingService implements SingletonInterface
             }
 
             $entrySize = $this->measureChunkItem($entry['item']);
+            $entryRootPageId = $pageRootPageIds[(int) $pageUid];
 
-            if (count($payload) > 0 && (($byteBudget + $entrySize) >= $maxBytes || count($payload) >= $maxItems)) {
+            if (count($payload) > 0 && (($byteBudget + $entrySize) >= $maxBytes || count($payload) >= $maxItems || $entryRootPageId !== $chunkRootPageId)) {
                 $itemsInChunk = count($payload);
                 $errorMessage = $this->flushChunk(
                     $payload,
@@ -646,7 +702,7 @@ class WorkflowProcessingService implements SingletonInterface
                     $model,
                     $requestService,
                     $backgroundTaskRepository,
-                    [],
+                    $this->buildPageTranslationGlossaryParameters($payload, $sourceLanguageUid, $targetLanguageUid, $chunkRootPageId, $withGlossary),
                     $requestSystemDomain,
                 );
 
@@ -670,6 +726,7 @@ class WorkflowProcessingService implements SingletonInterface
             $payload[] = $entry['item'];
             $bulkPayload[] = $entry['task'];
             $byteBudget += $entrySize;
+            $chunkRootPageId = $entryRootPageId;
         }
 
         $itemsInChunk = count($payload);
@@ -685,7 +742,7 @@ class WorkflowProcessingService implements SingletonInterface
             $model,
             $requestService,
             $backgroundTaskRepository,
-            [],
+            $this->buildPageTranslationGlossaryParameters($payload, $sourceLanguageUid, $targetLanguageUid, $chunkRootPageId, $withGlossary),
             $requestSystemDomain,
         );
 
@@ -883,7 +940,8 @@ class WorkflowProcessingService implements SingletonInterface
                     $languageParts[0],
                     [
                         'text' => $extConf['metadataAutogenerateModel'],
-                    ]
+                    ],
+                    configuredModelSetting: 'metadataAutogenerateModel',
                 );
 
                 if ('Error' === $answer->getType()) {
@@ -968,7 +1026,7 @@ class WorkflowProcessingService implements SingletonInterface
             $workflowData,
             $pages,
             $languageParts,
-            $this->buildPageContentFetcher(),
+            $this->metadataService->fetchPageContent(...),
             $this->sendRequestService,
             $this->backgroundTaskRepository,
             $requestSystemDomain,
@@ -1048,6 +1106,7 @@ class WorkflowProcessingService implements SingletonInterface
             $requestSystemDomain,
             true,
             $progress,
+            true,
         );
     }
 
@@ -1385,33 +1444,13 @@ class WorkflowProcessingService implements SingletonInterface
             ];
         }
 
-        $extraParams = [];
-        if (!empty($config['glossary'])) {
-            $glossaryParts = explode('__', (string) $config['glossary']);
-            if (3 === count($glossaryParts)) {
-                $rootPageId = (int) $glossaryParts[0];
-                $sourceLanguageId = (int) $glossaryParts[1];
-                $glossaryTargetLanguageId = (int) $glossaryParts[2];
-                $translatableContent = (string) json_encode(
-                    $result['translatableContentForGlossary'],
-                    JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE
-                );
-                $glossarEntries = $this->glossarService->findGlossarEntries(
-                    $translatableContent,
-                    $glossaryTargetLanguageId,
-                    $sourceLanguageId,
-                );
-                $deeplGlossary = $this->glossarService->findDeeplGlossary(
-                    $rootPageId,
-                    $sourceLanguageId,
-                    $glossaryTargetLanguageId,
-                );
-                $extraParams = [
-                    'glossary' => json_encode($glossarEntries, JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE),
-                    'deepl_glossary_id' => is_array($deeplGlossary) ? ($deeplGlossary['glossar_uuid'] ?? '') : '',
-                ];
-            }
-        }
+        $glossarySelection = $this->glossarService->resolveGlossarySelection((string) ($config['glossary'] ?? ''));
+        $extraParams = $this->glossarService->buildRequestParameters(
+            (string) json_encode($result['translatableContentForGlossary'], SendRequestService::JSON_SAFE_FLAGS),
+            $glossarySelection['sourceLanguageId'] ?? 0,
+            $glossarySelection['targetLanguageId'] ?? 0,
+            $glossarySelection['rootPageId'] ?? 0,
+        );
 
         $requestSystemDomain = $this->domainResolverService->getDomainBySiteIdentifier(end($sourceLanguageParts));
         $errorMessage = $this->sendWorkflowRequest(
@@ -1607,6 +1646,25 @@ class WorkflowProcessingService implements SingletonInterface
     }
 
     /**
+     * @param list<array<string, mixed>> $payload
+     *
+     * @return array<string, string>
+     */
+    private function buildPageTranslationGlossaryParameters(array $payload, int $sourceLanguageUid, int $targetLanguageUid, int $rootPageId, bool $withGlossary): array
+    {
+        if (!$withGlossary || [] === $payload) {
+            return [];
+        }
+
+        return $this->glossarService->buildRequestParameters(
+            (string) json_encode(array_column($payload, 'translatable_content'), SendRequestService::JSON_SAFE_FLAGS),
+            $sourceLanguageUid,
+            $targetLanguageUid,
+            $rootPageId,
+        );
+    }
+
+    /**
      * @param array<string, mixed> $config
      * @param list<int>            $allowedFileTypes
      *
@@ -1697,26 +1755,5 @@ class WorkflowProcessingService implements SingletonInterface
         if ('' !== $notificationTarget) {
             $this->logger->warning('Target language filter adjusted: '.$notificationTarget);
         }
-    }
-
-    private function buildPageContentFetcher(): callable
-    {
-        return function (int $pageUid, int $languageId): string {
-            $page = $this->pageRepository->getPage($pageUid);
-            $previewUriPageId = $pageUid;
-            if (1 === ($page['is_siteroot'] ?? 0) && ($page['l10n_parent'] ?? 0) > 0) {
-                $previewUriPageId = $page['l10n_parent'];
-            }
-            $previewUri = PreviewUriBuilder::create($previewUriPageId)
-                ->withLanguage($languageId)
-                ->buildUri()
-            ;
-            if (null === $previewUri) {
-                return '';
-            }
-            $url = $this->siteService->buildAbsoluteUri($previewUri);
-
-            return $this->metadataService->fetchContentFromUrl($url);
-        };
     }
 }

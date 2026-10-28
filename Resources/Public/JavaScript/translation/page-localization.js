@@ -1,6 +1,3 @@
-/**
- * Module: @autodudes/ai-suite/translation/page-localization
- */
 import DocumentService from "@typo3/core/document-service.js";
 import Modal from '@typo3/backend/modal.js';
 import MultiStepWizard from '@autodudes/ai-suite/helper/multi-step-wizard-patch.js';
@@ -132,7 +129,7 @@ class PageLocalization {
                 MultiStepWizard.lockNextStep();
                 MultiStepWizard.lockPrevStep();
 
-                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.js.progress.translatingWholePage'] + ' ' + TYPO3.lang['aiSuite.js.progress.mayTakeMoments']));
+                slide.html(Generation.showSpinnerModal(TYPO3.lang['aiSuite.js.progress.translatingWholePage'], 400, TYPO3.lang['aiSuite.js.progress.mayTakeMoments']));
 
                 if (self.selectedSourceLanguageId && self.selectedTargetLanguageId && self.selectedTranslationServiceId) {
                     await self.startWholePageTranslation();

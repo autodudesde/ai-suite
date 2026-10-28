@@ -81,7 +81,7 @@ class ImageController extends AbstractBackendController
                 'errorType' => $librariesAnswer->getErrorType(),
             ]);
 
-            return new HtmlResponse('<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>');
+            return new HtmlResponse('<div class="alert alert-danger" role="alert">'.htmlspecialchars($librariesAnswer->getMessage()).'</div>');
         }
 
         $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates('imageWizard');
@@ -302,11 +302,6 @@ class ImageController extends AbstractBackendController
             $parsedBody = (array) $request->getParsedBody();
             $fileTarget = (string) ($parsedBody['fileTarget'] ?? '');
 
-            // An `assert()` stood here. It threw an AssertionError, which is an Error and not an
-            // Exception, so the catch below never saw it and the editor got the backend's exception
-            // page instead of a message. The target is a request value: it can be missing, name a
-            // folder that was deleted, or name a file where a folder was meant — and a deleted one
-            // throws here rather than answering with null, so all three end up in one place.
             $fileTargetObject = null;
             if ('' !== $fileTarget) {
                 try {
@@ -347,7 +342,7 @@ class ImageController extends AbstractBackendController
                 'error' => $e->getMessage(),
             ]);
 
-            return new JsonResponse(['success' => false, 'error' => $e->getMessage()], 500);
+            return new JsonResponse(['success' => false, 'error' => $this->aiSuiteContext->localizationService->translate('aiSuite.error.imageNotStored')], 500);
         }
     }
 }

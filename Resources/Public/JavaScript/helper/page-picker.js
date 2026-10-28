@@ -2,12 +2,6 @@ import Ajax from "@autodudes/ai-suite/helper/ajax.js";
 import Modal from "@typo3/backend/modal.js";
 import { MessageUtility } from "@typo3/backend/utility/message-utility.js";
 
-/**
- * Gemeinsamer Seiten-Picker (Partial Libs/PagePicker.html): öffnet den
- * Element-Browser, schreibt die gewählte uid ins Hidden-Feld und holt den
- * Seitentitel für die Anzeige. Optionaler Admin-Haken „neue Root-Seite"
- * setzt den Wert auf -1 und sperrt die Auswahl.
- */
 class PagePicker {
     initAll(onPicked = null) {
         for (const container of document.querySelectorAll('div[data-module-id="aiSuite"] .ai-suite-page-picker')) {

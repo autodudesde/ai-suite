@@ -84,11 +84,14 @@
             <trans-unit id="translateFlexFormFields" resname="translateFlexFormFields">
                 <source>Translate FlexForm fields</source>
             </trans-unit>
+            <trans-unit id="translatePlainHtml" resname="translatePlainHtml">
+                <source>Translate "Plain HTML" content elements: the translated markup is written unfiltered and rendered in the frontend as it is</source>
+            </trans-unit>
             <trans-unit id="easyLanguageLibrary" resname="easyLanguageLibrary">
                 <source>Use the following library for "Einfache Sprache" translations</source>
             </trans-unit>
             <trans-unit id="disableTranslationFunctionality" resname="disableTranslationFunctionality">
-                <source>Disable whole translation functionality (USE WITH CAUTION!)</source>
+                <source>Disable whole translation functionality (use with caution)</source>
             </trans-unit>
             <trans-unit id="enableAutoTranslateOnSave" resname="enableAutoTranslateOnSave">
                 <source>Automatically translate content elements into all site languages on save</source>

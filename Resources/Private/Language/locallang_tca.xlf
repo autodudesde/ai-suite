@@ -313,6 +313,9 @@
             <trans-unit id="aiSuite.tca.globalInstructions.scope.files.metadata">
                 <source>Metadata (Files)</source>
             </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.files.translation">
+                <source>Metadata translations (Files, DeepL and Google Translate are excluded)</source>
+            </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
                 <source>ContentElements</source>
             </trans-unit>

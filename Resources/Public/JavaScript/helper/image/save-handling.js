@@ -97,8 +97,7 @@ class SaveHandling {
                     'fileName': imageName,
                     'fileTarget': data.targetFolder
                 };
-                // The core action this asks dereferences the folder without a check, so a target it
-                // cannot resolve answers with an exception page rather than with a result.
+                // The core action dereferences the folder unchecked: an unresolvable target yields an exception page
                 let existFileRes = await Ajax.sendAjaxRequest('file_exists', postData, true);
                 if(General.isUsable(existFileRes) && General.isUsable(existFileRes.id)) {
                     const fileExtension = imageName.split('.').pop();

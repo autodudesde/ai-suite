@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use AutoDudes\AiSuite\Controller\AgencyController;
 use AutoDudes\AiSuite\Controller\AiSuiteController;
 use AutoDudes\AiSuite\Controller\AuditController;
@@ -17,6 +19,7 @@ return [
     'ai_suite_record_edit' => [
         'path' => 'ai/suite/record/edit',
         'target' => ContentController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_content_element_generation', 'enable_news_generation'],
         'redirect' => [
             'enable' => true,
             'parameters' => [
@@ -27,170 +30,224 @@ return [
     'ai_suite_dashboard' => [
         'path' => '/aisuite/dashboard',
         'target' => AiSuiteController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => [],
     ],
-    // Page routes
     'ai_suite_page' => [
         'path' => '/aisuite/page',
         'target' => PagesController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_pages_generation'],
     ],
     'ai_suite_page_create_pagetree' => [
         'path' => '/aisuite/page/create/pagetree',
         'target' => PagesController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_pages_generation'],
     ],
     'ai_suite_audit' => [
         'path' => '/aisuite/audit',
         'target' => AuditController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_audit'],
     ],
     'ai_suite_audit_run' => [
         'path' => '/aisuite/audit/run',
         'methods' => ['POST'],
         'target' => AuditController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_audit'],
     ],
     'ai_suite_audit_cached' => [
         'path' => '/aisuite/audit/cached',
         'target' => AuditController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_audit'],
     ],
     'ai_suite_audit_save_keyword' => [
         'path' => '/aisuite/audit/save-keyword',
         'methods' => ['POST'],
         'target' => AuditController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_audit'],
     ],
     'ai_suite_audit_export' => [
         'path' => '/aisuite/audit/export',
         'target' => AuditController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_audit'],
     ],
     'ai_suite_page_validate_pagetree' => [
         'path' => '/aisuite/page/validate/pagetree',
         'methods' => ['POST'],
         'target' => PagesController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_pages_generation'],
     ],
     'ai_suite_page_validate_pagetree_create' => [
         'path' => '/aisuite/page/validate/pagetree/create',
         'methods' => ['POST'],
         'target' => PagesController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_pages_generation'],
     ],
-    // Agencies routes
     'ai_suite_agencies' => [
         'path' => '/aisuite/agencies',
         'target' => AgencyController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_agency'],
     ],
     'ai_suite_agencies_translate_xlf' => [
         'path' => '/aisuite/agencies/translate/xlf',
         'target' => AgencyController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_agency'],
     ],
     'ai_suite_agencies_validate_xlf' => [
         'path' => '/aisuite/agencies/validate/xlf',
         'target' => AgencyController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_agency'],
     ],
     'ai_suite_agencies_write_xlf' => [
         'path' => '/aisuite/agencies/write/xlf',
         'target' => AgencyController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_agency'],
     ],
-    // Prompt routes
     'ai_suite_prompt' => [
         'path' => '/aisuite/prompt',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
     'ai_suite_prompt_update_serverprompttemplates' => [
         'path' => '/aisuite/prompt/update/server-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
     'ai_suite_prompt_manage_customprompttemplates' => [
         'path' => '/aisuite/prompt/manage/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
     'ai_suite_prompt_activate_customprompttemplates' => [
         'path' => '/aisuite/prompt/activate/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
     'ai_suite_prompt_deactivate_customprompttemplates' => [
         'path' => '/aisuite/prompt/deactivate/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
     'ai_suite_prompt_delete_customprompttemplates' => [
         'path' => '/aisuite/prompt/delete/custom-prompt-templates',
         'target' => PromptTemplateController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_prompt_template_button'],
     ],
-    // Global Instructions routes
     'ai_suite_global_instructions' => [
         'path' => '/aisuite/global-instructions',
         'target' => GlobalInstructionController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_instructions_button'],
     ],
     'ai_suite_global_instructions_activate' => [
         'path' => '/aisuite/global-instructions/activate',
         'target' => GlobalInstructionController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_instructions_button'],
     ],
     'ai_suite_global_instructions_deactivate' => [
         'path' => '/aisuite/global-instructions/deactivate',
         'target' => GlobalInstructionController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_instructions_button'],
     ],
     'ai_suite_global_instructions_delete' => [
         'path' => '/aisuite/global-instructions/delete',
         'target' => GlobalInstructionController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_instructions_button'],
     ],
-    // Content routes
     'ai_suite_content_request' => [
         'path' => '/aisuite/content/request',
         'target' => ContentController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_content_element_generation', 'enable_news_generation'],
     ],
     'ai_suite_content_save' => [
         'path' => '/aisuite/content/save',
         'target' => ContentController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_content_element_generation', 'enable_news_generation'],
     ],
-    // Workflow routes
     'ai_suite_workflow' => [
         'path' => '/aisuite/workflow',
         'target' => WorkflowManagerController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_massaction_generation'],
     ],
     'ai_suite_workflow_pages_prepare' => [
         'path' => '/aisuite/workflow/pages-prepare',
         'target' => WorkflowManagerController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_massaction_generation'],
     ],
     'ai_suite_workflow_filereferences_prepare' => [
         'path' => '/aisuite/workflow/file-references-prepare',
         'target' => WorkflowManagerController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_massaction_generation'],
     ],
     'ai_suite_workflow_filelist_files_prepare' => [
         'path' => '/aisuite/workflow/files-prepare',
         'target' => FilelistController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_massaction_generation'],
     ],
     'ai_suite_workflow_pages_translation_prepare' => [
         'path' => '/aisuite/workflow/pages-translation-prepare',
         'target' => WorkflowManagerController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_translation_whole_page', 'enable_massaction_generation'],
     ],
-    // Background task routes
     'ai_suite_backgroundtask' => [
         'path' => '/aisuite/backgroundtask',
         'target' => BackgroundTaskController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_background_task_handling'],
     ],
     'ai_suite_workflow_filelist_files_translate_prepare' => [
         'path' => '/aisuite/workflow/files-translate-prepare',
         'target' => FilelistController::class.'::handleRequest',
+        'aiSuitePermission' => ['enable_translation_sys_file_metadata', 'enable_massaction_generation'],
     ],
-    // Settings routes
     'ai_suite_settings' => [
         'path' => '/aisuite/settings',
         'target' => SettingsController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_settings'],
     ],
     'ai_suite_settings_save' => [
         'path' => '/aisuite/settings/save',
         'methods' => ['POST'],
         'target' => SettingsController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_global_settings'],
     ],
-    // Provenance overview
     'ai_suite_provenance_review' => [
         'path' => '/aisuite/provenance/review',
         'methods' => ['POST'],
         'target' => ProvenanceOverviewController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_provenance_overview'],
     ],
     'ai_suite_provenance_cleanup' => [
         'path' => '/aisuite/provenance/cleanup',
         'methods' => ['POST'],
         'target' => ProvenanceOverviewController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'web_aisuite',
+        'aiSuitePermission' => ['enable_provenance_overview'],
     ],
-    // Filelist routes
     'ai_suite_filelist' => [
         'path' => '/aisuite/filelist',
         'target' => FilelistController::class.'::handleRequest',
+        'inheritAccessFromModule' => 'files_aisuite',
+        'aiSuitePermission' => ['enable_translation_sys_file_metadata', 'enable_massaction_generation'],
     ],
 ];

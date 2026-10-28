@@ -99,8 +99,6 @@ class AuditResultRepository
     }
 
     /**
-     * Upsert: one cached result per page, audit type and language.
-     *
      * @param array<string, mixed> $result
      */
     public function store(int $pageUid, string $auditType, string $keyword, array $result, ?int $runTs = null, int $languageUid = 0): void

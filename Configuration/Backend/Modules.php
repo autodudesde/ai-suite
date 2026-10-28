@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use AutoDudes\AiSuite\Controller\AboutController;
 use AutoDudes\AiSuite\Controller\AgencyController;
 use AutoDudes\AiSuite\Controller\AiSuiteController;
@@ -28,50 +30,62 @@ return [
         'routes' => [
             '_default' => [
                 'target' => AiSuiteController::class.'::handleRequest',
+                'aiSuitePermission' => [],
             ],
             'audit' => [
                 'path' => '/audit',
                 'target' => AuditController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_audit'],
             ],
             'workflow' => [
                 'path' => '/workflow',
                 'target' => WorkflowManagerController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_massaction_generation'],
             ],
             'backgroundtask' => [
                 'path' => '/background-task',
                 'target' => BackgroundTaskController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_background_task_handling'],
             ],
             'global_instructions' => [
                 'path' => '/global-instructions',
                 'target' => GlobalInstructionController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_global_instructions_button'],
             ],
             'prompt' => [
                 'path' => '/prompt',
                 'target' => PromptTemplateController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_prompt_template_button'],
             ],
             'page' => [
                 'path' => '/page',
                 'target' => PagesController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_pages_generation'],
             ],
             'agencies' => [
                 'path' => '/agencies',
                 'target' => AgencyController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_agency'],
             ],
             'settings' => [
                 'path' => '/settings',
                 'target' => SettingsController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_global_settings'],
             ],
             'statistics' => [
                 'path' => '/statistics',
                 'target' => StatisticsController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_statistics'],
             ],
             'provenance' => [
                 'path' => '/provenance',
                 'target' => ProvenanceOverviewController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_provenance_overview'],
             ],
             'about' => [
                 'path' => '/about',
                 'target' => AboutController::class.'::handleRequest',
+                'aiSuitePermission' => [],
             ],
         ],
     ],
@@ -86,14 +100,17 @@ return [
         'routes' => [
             '_default' => [
                 'target' => FilelistController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_translation_sys_file_metadata', 'enable_massaction_generation'],
             ],
             'files_prepare' => [
                 'path' => '/files-prepare',
                 'target' => FilelistController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_massaction_generation'],
             ],
             'files_translate_prepare' => [
                 'path' => '/files-translate-prepare',
                 'target' => FilelistController::class.'::handleRequest',
+                'aiSuitePermission' => ['enable_translation_sys_file_metadata', 'enable_massaction_generation'],
             ],
         ],
         'moduleData' => [
@@ -119,6 +136,7 @@ return [
         'routes' => [
             '_default' => [
                 'target' => CliOverviewController::class.'::handleRequest',
+                'aiSuitePermission' => [],
             ],
         ],
     ],

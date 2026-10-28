@@ -76,7 +76,7 @@ class TranslationController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.htmlspecialchars($librariesAnswer->getMessage()).'</div>',
                     ]
                 )
             );

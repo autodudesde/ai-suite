@@ -6,41 +6,94 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\GlossarRepository;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
 
 class GlossarService implements SingletonInterface
 {
+    /**
+     * @var null|array<int, list<int>>
+     */
+    private ?array $glossaryPidsBySiteRoot = null;
+
     public function __construct(
         protected readonly GlossarRepository $glossarRepository,
         protected readonly SendRequestService $sendRequestService,
         protected readonly SiteService $siteService,
-        protected readonly PageRepository $pageRepository,
         protected readonly LoggerInterface $logger,
         protected readonly LocalizationService $localizationService,
     ) {}
 
+    public function getSiteRootPageId(int $pageId): int
+    {
+        if ($pageId <= 0) {
+            return 0;
+        }
+
+        return $this->siteService->getSiteRootPageId($pageId);
+    }
+
     /**
-     * @return array<string, mixed>
+     * @return list<int>
      */
-    public function findGlossarEntries(string $jsonContent, int $destLangUid, int $srcLangUid): array
+    public function getSiteGlossaryPids(int $rootPageId): array
+    {
+        if ($rootPageId <= 0) {
+            return [];
+        }
+
+        return $this->getGlossaryPidsBySiteRoot()[$rootPageId] ?? [];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function findGlossarEntries(string $jsonContent, int $destLangUid, int $srcLangUid, int $rootPageId): array
     {
         $glossary = [];
-        $glossarExpressions = $this->glossarRepository->findBySysLanguageUid($destLangUid);
-        foreach ($glossarExpressions as $glossarExpression) {
-            if ($glossarExpression['l18n_parent'] > 0) {
-                if (0 === $srcLangUid) {
-                    $parentExpression = $this->glossarRepository->findEntryByUid($glossarExpression['l18n_parent']);
-                } else {
-                    $parentExpression = $this->glossarRepository->findEntryByL18nParentAndUid($glossarExpression['l18n_parent'], $srcLangUid);
-                }
-                if (isset($parentExpression['input']) && str_contains($jsonContent, $parentExpression['input'])) {
-                    $glossary[$parentExpression['input']] = $glossarExpression['input'];
-                }
+        foreach ($this->findTermPairs($srcLangUid, $destLangUid, $rootPageId) as [$sourceTerm, $targetTerm]) {
+            if (str_contains($jsonContent, $sourceTerm)) {
+                $glossary[$sourceTerm] = $targetTerm;
             }
         }
 
         return $glossary;
+    }
+
+    /**
+     * @return array{glossary: string, deepl_glossary_id: string}
+     */
+    public function buildRequestParameters(string $content, int $srcLangUid, int $destLangUid, int $rootPageId): array
+    {
+        if ($rootPageId <= 0) {
+            return ['glossary' => '[]', 'deepl_glossary_id' => ''];
+        }
+        $deeplGlossary = $this->findDeeplGlossary($rootPageId, $srcLangUid, $destLangUid);
+
+        return [
+            'glossary' => (string) json_encode($this->findGlossarEntries($content, $destLangUid, $srcLangUid, $rootPageId), SendRequestService::JSON_SAFE_FLAGS),
+            'deepl_glossary_id' => is_array($deeplGlossary) ? (string) ($deeplGlossary['glossar_uuid'] ?? '') : '',
+        ];
+    }
+
+    /**
+     * @return null|array{rootPageId: int, sourceLanguageId: int, targetLanguageId: int}
+     */
+    public function resolveGlossarySelection(string $selection): ?array
+    {
+        $parts = explode('__', $selection);
+        if (3 !== count($parts) || !ctype_digit($parts[0]) || !ctype_digit($parts[1]) || !ctype_digit($parts[2])) {
+            return null;
+        }
+        $rootPageId = (int) $parts[0];
+        if ($rootPageId <= 0 || $this->getSiteRootPageId($rootPageId) !== $rootPageId) {
+            return null;
+        }
+
+        return [
+            'rootPageId' => $rootPageId,
+            'sourceLanguageId' => (int) $parts[1],
+            'targetLanguageId' => (int) $parts[2],
+        ];
     }
 
     /**
@@ -54,9 +107,14 @@ class GlossarService implements SingletonInterface
     public function syncDeeplGlossar(int $pid, int $defaultLanguageId = 0): bool
     {
         try {
-            $rootPageId = $this->siteService->getSiteRootPageId($pid);
-            $foundPages = [$rootPageId, ...$this->pageRepository->getDescendantPageIdsRecursive($rootPageId, 99)];
-            $glossarEntries = $this->glossarRepository->findAllEntriesForPages($foundPages);
+            $rootPageId = $this->getSiteRootPageId($pid);
+            $glossaryPids = $this->getSiteGlossaryPids($rootPageId);
+            if ([] === $glossaryPids) {
+                $this->logger->warning('No glossary entries found in the site of page '.$pid.', nothing to synchronize.');
+
+                return false;
+            }
+            $glossarEntries = $this->glossarRepository->findAllEntriesForPages($glossaryPids);
 
             $defaultLanguageRecords = [];
             $translationRecords = [];
@@ -176,81 +234,129 @@ class GlossarService implements SingletonInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, string>
      */
     public function getAvailableGlossariesForFileTranslation(
         int $sourceLanguageId,
         int $targetLanguageId,
         string $sourceLanguageIso,
         string $targetLanguageIso,
-        string $textAiModel
+        string $textAiModel,
+        ?int $rootPageId = null
     ): array {
         $availableGlossaries = [];
 
-        if (empty($sourceLanguageIso) || empty($targetLanguageIso)) {
+        if (empty($sourceLanguageIso) || empty($targetLanguageIso) || 0 === $rootPageId) {
             return $availableGlossaries;
         }
 
-        $hasGlossaryEntries = $this->hasGlossaryEntriesForLanguageCombination($sourceLanguageId, $targetLanguageId);
+        if ('Deepl' === $textAiModel) {
+            $glossaries = $this->glossarRepository->findDeeplGlossaryUuidsBySourceAndTargetLanguage($sourceLanguageIso, $targetLanguageIso);
 
-        if ($hasGlossaryEntries) {
-            if ('Deepl' === $textAiModel) {
-                $glossaries = $this->glossarRepository->findDeeplGlossaryUuidsBySourceAndTargetLanguage($sourceLanguageIso, $targetLanguageIso);
-
-                foreach ($glossaries as $glossary) {
-                    $rootPageId = $glossary['root_page_uid'];
-                    $siteName = $this->siteService->getDomainByRootPageId($rootPageId);
-                    $key = $rootPageId.'__'.$sourceLanguageId.'__'.$targetLanguageId;
-                    $labelArguments = [
-                        strtoupper($sourceLanguageIso),
-                        strtoupper($targetLanguageIso),
-                        $siteName,
-                    ];
-                    $label = $this->localizationService->translate('aiSuite.generation.workflow.selectGlossaryLabel', $labelArguments);
-
-                    if (array_key_exists('external', $glossary) && $glossary['external']) {
-                        $label .= $this->localizationService->translate('aiSuite.generation.workflow.selectGlossaryExternal');
-                    }
-
-                    $availableGlossaries[$key] = $label;
+            foreach ($glossaries as $glossary) {
+                $glossaryRootPageId = (int) $glossary['root_page_uid'];
+                $isExternal = (bool) ($glossary['external'] ?? false);
+                if (null !== $rootPageId && $glossaryRootPageId !== $rootPageId) {
+                    continue;
                 }
-            } else {
-                $rootPageUids = $this->glossarRepository->findDistinctRootPageUidsWithGlossaryEntries();
-
-                foreach ($rootPageUids as $rootPageId) {
-                    $siteName = $this->siteService->getDomainByRootPageId($rootPageId);
-                    $key = $rootPageId.'__'.$sourceLanguageId.'__'.$targetLanguageId;
-                    $labelArguments = [
-                        strtoupper($sourceLanguageIso),
-                        strtoupper($targetLanguageIso),
-                        $siteName,
-                    ];
-                    $availableGlossaries[$key] = $this->localizationService->translate('aiSuite.generation.workflow.selectGlossaryLabel', $labelArguments);
+                if (!$isExternal && !$this->hasGlossaryEntriesForLanguageCombination($sourceLanguageId, $targetLanguageId, $glossaryRootPageId)) {
+                    continue;
                 }
+                $label = $this->buildGlossaryLabel($sourceLanguageIso, $targetLanguageIso, $glossaryRootPageId);
+                if ($isExternal) {
+                    $label .= $this->localizationService->translate('aiSuite.generation.workflow.selectGlossaryExternal');
+                }
+                $availableGlossaries[$glossaryRootPageId.'__'.$sourceLanguageId.'__'.$targetLanguageId] = $label;
             }
+
+            return $availableGlossaries;
+        }
+
+        $siteRootPageIds = null === $rootPageId ? array_keys($this->getGlossaryPidsBySiteRoot()) : [$rootPageId];
+        foreach ($siteRootPageIds as $siteRootPageId) {
+            if (!$this->siteLanguagesMatch($siteRootPageId, $sourceLanguageId, $targetLanguageId, $sourceLanguageIso, $targetLanguageIso)
+                || !$this->hasGlossaryEntriesForLanguageCombination($sourceLanguageId, $targetLanguageId, $siteRootPageId)
+            ) {
+                continue;
+            }
+            $availableGlossaries[$siteRootPageId.'__'.$sourceLanguageId.'__'.$targetLanguageId] = $this->buildGlossaryLabel($sourceLanguageIso, $targetLanguageIso, $siteRootPageId);
         }
 
         return $availableGlossaries;
     }
 
-    public function hasGlossaryEntriesForLanguageCombination(int $sourceLanguageId, int $targetLanguageId): bool
+    public function hasGlossaryEntriesForLanguageCombination(int $sourceLanguageId, int $targetLanguageId, int $rootPageId): bool
     {
-        $glossarExpressions = $this->glossarRepository->findBySysLanguageUid($targetLanguageId);
+        return [] !== $this->findTermPairs($sourceLanguageId, $targetLanguageId, $rootPageId);
+    }
 
-        foreach ($glossarExpressions as $glossarExpression) {
-            if ($glossarExpression['l18n_parent'] > 0) {
-                if (0 === $sourceLanguageId) {
-                    $parentExpression = $this->glossarRepository->findEntryByUid($glossarExpression['l18n_parent']);
-                } else {
-                    $parentExpression = $this->glossarRepository->findEntryByL18nParentAndUid($glossarExpression['l18n_parent'], $sourceLanguageId);
-                }
+    /**
+     * @return list<array{0: string, 1: string}>
+     */
+    private function findTermPairs(int $sourceLanguageId, int $targetLanguageId, int $rootPageId): array
+    {
+        $pids = $this->getSiteGlossaryPids($rootPageId);
+        if ([] === $pids) {
+            return [];
+        }
+        $translations = array_values(array_filter(
+            $this->glossarRepository->findBySysLanguageUidAndPages($targetLanguageId, $pids),
+            static fn (array $translation): bool => $translation['l18n_parent'] > 0
+        ));
+        if ([] === $translations) {
+            return [];
+        }
+        $sourceInputs = $this->glossarRepository->findSourceInputsByParents(
+            array_values(array_unique(array_column($translations, 'l18n_parent'))),
+            $sourceLanguageId,
+            $pids
+        );
 
-                if (!empty($parentExpression['input'])) {
-                    return true;
+        $pairs = [];
+        foreach ($translations as $translation) {
+            $sourceTerm = $sourceInputs[$translation['l18n_parent']] ?? '';
+            if ('' !== $sourceTerm) {
+                $pairs[] = [$sourceTerm, $translation['input']];
+            }
+        }
+
+        return $pairs;
+    }
+
+    /**
+     * @return array<int, list<int>>
+     */
+    private function getGlossaryPidsBySiteRoot(): array
+    {
+        if (null === $this->glossaryPidsBySiteRoot) {
+            $this->glossaryPidsBySiteRoot = [];
+            foreach ($this->glossarRepository->findDistinctPids() as $pid) {
+                $rootPageId = $this->siteService->getSiteRootPageId($pid);
+                if ($rootPageId > 0) {
+                    $this->glossaryPidsBySiteRoot[$rootPageId][] = $pid;
                 }
             }
         }
 
-        return false;
+        return $this->glossaryPidsBySiteRoot;
+    }
+
+    private function siteLanguagesMatch(int $rootPageId, int $sourceLanguageId, int $targetLanguageId, string $sourceLanguageIso, string $targetLanguageIso): bool
+    {
+        try {
+            return strtolower($this->siteService->getIsoCodeByLanguageIdIncludingDisabled($sourceLanguageId, $rootPageId)) === strtolower($sourceLanguageIso)
+                && strtolower($this->siteService->getIsoCodeByLanguageIdIncludingDisabled($targetLanguageId, $rootPageId)) === strtolower($targetLanguageIso);
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    private function buildGlossaryLabel(string $sourceLanguageIso, string $targetLanguageIso, int $rootPageId): string
+    {
+        return $this->localizationService->translate('aiSuite.generation.workflow.selectGlossaryLabel', [
+            strtoupper($sourceLanguageIso),
+            strtoupper($targetLanguageIso),
+            $this->siteService->getDomainByRootPageId($rootPageId),
+        ]);
     }
 }

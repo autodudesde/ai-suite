@@ -229,13 +229,13 @@ class FilelistFilesTranslationPrepare {
                     if (res.output?.failedFiles?.length > 0) {
                         Notification.error(
                             TYPO3.lang['aiSuite.notification.generation.error'],
-                            TYPO3.lang['aiSuite.notification.generation.failedFiles'] + res.output.failedFiles.join(', ')
+                            TYPO3.lang['aiSuite.notification.generation.failedFiles'] + ' ' + res.output.failedFiles.join(', ')
                         );
                     }
 
                     let statusElement = document.querySelector('.module-body .spinner-overlay .status');
                     if (statusElement !== null && selectedFiles && handledFiles) {
-                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
+                        statusElement.innerHTML = `${res.output.message} ${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
                     }
 
                     return res;

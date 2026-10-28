@@ -219,13 +219,13 @@ class GlobalInstructions {
         });
     }
     createPromptContent(button, context = document) {
-        const formGroup = button.closest('.form-group');
+        const formGroup = button.closest('.form-group, .ai-suite-custom-prompt');
         const textarea = formGroup ? formGroup.querySelector('textarea') : context.querySelector('textarea');
         return textarea ? textarea.value : '';
     }
 
     createPromptContentMultiStepWizard(button, modal) {
-        const formGroup = button.closest('.form-group');
+        const formGroup = button.closest('.form-group, .ai-suite-custom-prompt');
         let textarea;
 
         if (formGroup) {

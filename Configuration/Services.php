@@ -38,7 +38,6 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ReferenceConfigurator;
-use Symfony\Component\Filesystem\Filesystem;
 use TYPO3\CMS\Backend\Localization\LocalizationHandlerRegistry;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -58,8 +57,6 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
         __DIR__.'/../Classes/Domain/Model',
         __DIR__.'/../Classes/Localization/Handler',
     ]);
-
-    $services->set(Filesystem::class);
 
     $services->set(PagesContextMenuProvider::class)
         ->public()

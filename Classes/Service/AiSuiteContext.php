@@ -21,5 +21,6 @@ class AiSuiteContext implements SingletonInterface
         public MetadataService $metadataService,
         public AiSuiteModuleNavigationService $moduleNavigationService,
         public ProvenanceCaptureService $provenanceCapture,
+        public WorkflowSelectionGuard $workflowSelectionGuard,
     ) {}
 }

@@ -32,7 +32,6 @@ class CommandMapPostProcessingHook extends \B13\Container\Hooks\Datahandler\Comm
             if ('copyToLanguage' === $command) {
                 $containerId = $last;
                 $pos = $this->containerService->getAfterContainerElementTarget($container);
-                // move next record after last child
                 $cmd = ['tt_content' => [$last => [
                     'move' => [
                         'target' => $pos,

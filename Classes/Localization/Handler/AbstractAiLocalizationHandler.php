@@ -104,7 +104,9 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
                 $aiSuiteBase
             );
         } else {
-            $errorLog = [];
+            return LocalizationResult::error([
+                $this->localizationService->translate('aiSuite.translation.nothingSelected'),
+            ]);
         }
 
         if ([] !== $errorLog) {
@@ -221,9 +223,7 @@ abstract class AbstractAiLocalizationHandler implements LocalizationHandlerInter
      */
     protected function executeCommandMap(array $cmd): array
     {
-        // The localization commands create the translated records themselves, so they belong in the
-        // same window as the field values the wizard writes afterwards.
-        // The handler's identifier is the model — it is the same string the permission check uses.
+        // The handler's identifier is the model
         $capture = GeneralUtility::makeInstance(ProvenanceCaptureService::class);
         $capture->begin(ProvenanceContext::translated(
             ProvenanceContext::FEATURE_TRANSLATION,
