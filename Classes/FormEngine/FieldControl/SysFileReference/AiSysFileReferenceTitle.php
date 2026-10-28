@@ -8,6 +8,7 @@ use AutoDudes\AiSuite\Service\BackendUserService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\SiteService;
+use AutoDudes\AiSuite\Service\WorkflowViewService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -41,6 +42,7 @@ class AiSysFileReferenceTitle extends AbstractNode
             if (isset($this->data['parentPageRow']['l10n_parent'][0]) && (int) $this->data['parentPageRow']['l10n_parent'][0] > 0) {
                 $pageUid = (int) $this->data['parentPageRow']['l10n_parent'][0];
             }
+            $folderCombinedIdentifier = GeneralUtility::makeInstance(WorkflowViewService::class)->getFolderCombinedIdentifier($sysFileId);
             $langIsoCode = $siteService->getIsoCodeByLanguageId((int) $this->data['databaseRow']['sys_language_uid'], $pageUid);
         } catch (\Throwable $e) {
             return [];
@@ -58,6 +60,7 @@ class AiSysFileReferenceTitle extends AbstractNode
                 'data-table' => $this->data['tableName'],
                 'data-field-name' => 'title',
                 'data-field-label' => 'Title',
+                'data-target-folder' => $folderCombinedIdentifier,
             ],
             'javaScriptModules' => [
                 JavaScriptModuleInstruction::create('@autodudes/ai-suite/metadata/generate-suggestions.js'),

@@ -116,6 +116,20 @@ class TcaCompatibilityService implements SingletonInterface
 
     /**
      * @throws UndefinedSchemaException
+     */
+    public function isExcludeField(string $table, string $field): bool
+    {
+        if (null !== $this->tcaSchemaFactory) {
+            $schema = $this->tcaSchemaFactory->get($table);
+
+            return $schema->hasField($field) && $schema->getField($field)->supportsAccessControl();
+        }
+
+        return (bool) ($GLOBALS['TCA'][$table]['columns'][$field]['exclude'] ?? false);
+    }
+
+    /**
+     * @throws UndefinedSchemaException
      * @throws UndefinedFieldException
      */
     public function getFieldLabel(string $table, string $field): string
@@ -239,6 +253,18 @@ class TcaCompatibilityService implements SingletonInterface
     /**
      * @throws UndefinedSchemaException
      */
+    public function ignoresRootLevelRestriction(string $table): bool
+    {
+        $raw = null !== $this->tcaSchemaFactory
+            ? ($this->tcaSchemaFactory->get($table)->getRawConfiguration()['security'] ?? [])
+            : ($GLOBALS['TCA'][$table]['ctrl']['security'] ?? []);
+
+        return true === (\is_array($raw) ? ($raw['ignoreRootLevelRestriction'] ?? false) : false);
+    }
+
+    /**
+     * @throws UndefinedSchemaException
+     */
     public function canExistOnPages(string $table): bool
     {
         $rootLevel = null !== $this->tcaSchemaFactory
@@ -287,8 +313,7 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
-     * `GridColumnItem::getRecord()` hands back an array below v14 and a `RecordInterface` from v14 on,
-     * where `getRow()` is the array accessor. One badge renderer for all three majors needs this.
+     * `GridColumnItem::getRecord()` returns an array below v14 and a `RecordInterface` from v14 on.
      */
     public function resolveGridItemUid(GridColumnItem $item): int
     {
@@ -709,6 +734,11 @@ class TcaCompatibilityService implements SingletonInterface
      */
     public function isRawMarkupField(string $table, string $field, ?string $typeKey = null): bool
     {
+        // v12 without EXT:t3editor gives the HTML element a plain textarea, yet the frontend still renders it unfiltered
+        if ('tt_content' === $table && 'bodytext' === $field && 'html' === $typeKey) {
+            return true;
+        }
+
         if (null !== $typeKey) {
             $config = $this->getEffectiveFieldConfiguration($table, $typeKey, $field);
             if ([] !== $config) {

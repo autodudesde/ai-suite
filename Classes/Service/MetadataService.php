@@ -6,7 +6,10 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
+use AutoDudes\AiSuite\Exception\ResponseTooLargeException;
 use AutoDudes\AiSuite\Exception\UnableToFetchNewsRecordException;
+use AutoDudes\AiSuite\Exception\UnsafeUrlException;
+use AutoDudes\AiSuite\Service\Http\PublicUrlGuard;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Log\LoggerInterface;
@@ -39,9 +42,19 @@ class MetadataService
         'image/webp',
     ];
 
+    public const PAGE_METADATA_COLUMNS = [
+        'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'abstract',
+    ];
+
+    public const FILE_METADATA_COLUMNS = ['title', 'alternative', 'description'];
+
     private const PREVIEW_CONNECT_TIMEOUT = 10;
 
     private const PREVIEW_TIMEOUT = 30;
+
+    private const PUBLIC_MAX_REDIRECTS = 5;
+
+    private const PUBLIC_MAX_BYTES = 5 * 1024 * 1024;
 
     /** @var list<string> */
     protected array $pageMetadataColumns = [
@@ -74,6 +87,7 @@ class MetadataService
         protected readonly WorkspaceContextService $workspaceContextService,
         protected readonly Context $context,
         protected readonly LoggerInterface $logger,
+        protected readonly PublicUrlGuard $publicUrlGuard,
     ) {}
 
     /**
@@ -181,6 +195,11 @@ class MetadataService
     /**
      * @throws FetchedContentFailedException
      */
+    public function fetchPageContent(int $pageId, int $languageUid): string
+    {
+        return $this->fetchContentFromUrl($this->getPreviewUrl($pageId, [], $languageUid));
+    }
+
     public function fetchContentFromUrl(string $previewUrl): string
     {
         try {
@@ -201,18 +220,14 @@ class MetadataService
     public function getContentFromPreviewUrl(string $previewUrl): string
     {
         $options = [];
-        if (array_key_exists('be_typo_user', $_COOKIE)) {
-            $options = [
-                'headers' => ['Cookie' => 'be_typo_user='.$_COOKIE['be_typo_user']],
-            ];
-        }
-
-        $basicAuth = $this->basicAuthService->getBasicAuth();
-        if (!empty($basicAuth)) {
-            if (!isset($options['headers'])) {
-                $options['headers'] = [];
+        if ($this->siteService->isSiteOrigin($previewUrl)) {
+            if (array_key_exists('be_typo_user', $_COOKIE)) {
+                $options['headers']['Cookie'] = 'be_typo_user='.$_COOKIE['be_typo_user'];
             }
-            $options['headers']['Authorization'] = 'Basic '.$basicAuth;
+            $basicAuth = $this->basicAuthService->getBasicAuth();
+            if (!empty($basicAuth)) {
+                $options['headers']['Authorization'] = 'Basic '.$basicAuth;
+            }
         }
 
         $options['http_errors'] = false;
@@ -220,37 +235,61 @@ class MetadataService
         $options['timeout'] = self::PREVIEW_TIMEOUT;
 
         $response = $this->requestFactory->request($previewUrl, 'GET', $options);
-        $statusCode = $response->getStatusCode();
-        $fetchedContent = $response->getBody()->getContents();
 
-        if ($statusCode >= 400) {
-            $this->logger->warning('Preview URL returned an HTTP error status', [
-                'previewUrl' => $previewUrl,
-                'statusCode' => $statusCode,
-            ]);
+        return $this->evaluateFetchedContent($previewUrl, $response->getStatusCode(), $response->getBody()->getContents());
+    }
 
-            $messageKey = in_array($statusCode, [401, 403, 407], true)
-                ? 'aiSuite.fetchContentFailed.unauthorized'
-                : 'aiSuite.fetchContentFailed.httpStatus';
+    /**
+     * @throws FetchedContentFailedException
+     */
+    public function fetchPublicContent(string $url): string
+    {
+        $current = $url;
+        for ($hop = 0; $hop <= self::PUBLIC_MAX_REDIRECTS; ++$hop) {
+            try {
+                $target = $this->publicUrlGuard->check($current);
+            } catch (\InvalidArgumentException|UnsafeUrlException $e) {
+                $this->logger->warning('Refused to fetch a URL that is not public', ['url' => $current, 'reason' => $e->getMessage()]);
 
-            throw new FetchedContentFailedException($this->localizationService->translate($messageKey, [$statusCode]));
+                throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed.notPublic'));
+            }
+
+            try {
+                $response = $this->publicUrlGuard->fetch($current, $target, [
+                    'allow_redirects' => false,
+                    'stream' => true,
+                    'http_errors' => false,
+                    'connect_timeout' => self::PREVIEW_CONNECT_TIMEOUT,
+                    'timeout' => self::PREVIEW_TIMEOUT,
+                ], self::PUBLIC_MAX_BYTES);
+            } catch (ResponseTooLargeException) {
+                throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed.tooLarge'));
+            }
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode >= 300 && $statusCode < 400 && $response->hasHeader('Location')) {
+                try {
+                    $current = $this->publicUrlGuard->resolveRedirectTarget($current, $response->getHeaderLine('Location'));
+                } catch (\InvalidArgumentException) {
+                    throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed.httpStatus', [$statusCode]));
+                }
+
+                continue;
+            }
+
+            $body = $response->getBody();
+            $content = '';
+            while (!$body->eof()) {
+                $content .= $body->read(8192);
+                if (strlen($content) > self::PUBLIC_MAX_BYTES) {
+                    throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed.tooLarge'));
+                }
+            }
+
+            return $this->evaluateFetchedContent($current, $statusCode, $content);
         }
 
-        if (empty($fetchedContent)) {
-            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
-        }
-
-        if (!$this->isPlausiblePageContent($fetchedContent)) {
-            $this->logger->warning('Preview URL returned implausible content (possible error/handler page)', [
-                'previewUrl' => $previewUrl,
-                'statusCode' => $statusCode,
-                'contentLength' => strlen(trim($fetchedContent)),
-            ]);
-
-            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentInvalid'));
-        }
-
-        return $fetchedContent;
+        throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
     }
 
     /**
@@ -298,11 +337,7 @@ class MetadataService
      */
     public function getMetadataColumns(): array
     {
-        $metadataColumns = [
-            'seo_title', 'description', 'og_title', 'og_description', 'twitter_title', 'twitter_description', 'abstract',
-        ];
-
-        return $this->getAvailableColumns($metadataColumns, 'pages');
+        return $this->getAvailableColumns(self::PAGE_METADATA_COLUMNS, 'pages');
     }
 
     /**
@@ -310,11 +345,7 @@ class MetadataService
      */
     public function getFileMetadataColumns(): array
     {
-        $metadataColumns = [
-            'title', 'alternative', 'description',
-        ];
-
-        return $this->getAvailableColumns($metadataColumns, 'sys_file_reference');
+        return $this->getAvailableColumns(self::FILE_METADATA_COLUMNS, 'sys_file_reference');
     }
 
     /**
@@ -408,7 +439,8 @@ class MetadataService
                         $languageCode,
                         [
                             'text' => $textAiModel,
-                        ]
+                        ],
+                        configuredModelSetting: 'metadataAutogenerateModel',
                     );
 
                     if ('Error' === $answer->getType()) {
@@ -440,8 +472,7 @@ class MetadataService
             }
 
             if (!empty($datamap['sys_file_metadata'][$fileMetadataUid])) {
-                // Named here rather than left to `refineModel()`: this window opens around the save,
-                // long after the request whose answer would have carried the model.
+                // Named explicitly: refineModel() has no answer to read the model from in this request
                 $this->provenanceCapture->begin(
                     ProvenanceContext::generated(ProvenanceContext::FEATURE_METADATA, (string) $textAiModel)
                 );
@@ -565,6 +596,41 @@ class MetadataService
         ];
 
         return $formDataCompiler->compile($formDataCompilerInput, GeneralUtility::makeInstance(TcaDatabaseRecord::class));
+    }
+
+    /**
+     * @throws FetchedContentFailedException
+     */
+    private function evaluateFetchedContent(string $previewUrl, int $statusCode, string $fetchedContent): string
+    {
+        if ($statusCode >= 400) {
+            $this->logger->warning('Preview URL returned an HTTP error status', [
+                'previewUrl' => $previewUrl,
+                'statusCode' => $statusCode,
+            ]);
+
+            $messageKey = in_array($statusCode, [401, 403, 407], true)
+                ? 'aiSuite.fetchContentFailed.unauthorized'
+                : 'aiSuite.fetchContentFailed.httpStatus';
+
+            throw new FetchedContentFailedException($this->localizationService->translate($messageKey, [$statusCode]));
+        }
+
+        if (empty($fetchedContent)) {
+            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentFailed'));
+        }
+
+        if (!$this->isPlausiblePageContent($fetchedContent)) {
+            $this->logger->warning('Preview URL returned implausible content (possible error/handler page)', [
+                'previewUrl' => $previewUrl,
+                'statusCode' => $statusCode,
+                'contentLength' => strlen(trim($fetchedContent)),
+            ]);
+
+            throw new FetchedContentFailedException($this->localizationService->translate('aiSuite.fetchContentInvalid'));
+        }
+
+        return $fetchedContent;
     }
 
     private function createLiveContext(): Context

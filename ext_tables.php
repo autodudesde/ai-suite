@@ -1,16 +1,8 @@
 <?php
 
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+declare(strict_types=1);
 
 defined('TYPO3') or exit;
-
-ExtensionManagementUtility::addTypoScript(
-    'ai_suite',
-    'setup',
-    '@import "EXT:ai_suite/Configuration/TypoScript/setup.typoscript"'
-);
-
-$lll = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:';
 
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions']['tx_aisuite_features'] = [
     'header' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.permissions.headerAiSuiteFeatures',

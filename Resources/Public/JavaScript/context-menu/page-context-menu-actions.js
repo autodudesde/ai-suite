@@ -1,7 +1,3 @@
-/**
- * Module: @autodudes/ai-suite/context-menu/page-context-menu-actions-actions
- */
-
 class ContextMenuActions {
     contextMenuLink (table, uid, data) {
         if (data.action === 'translateWholePage') {

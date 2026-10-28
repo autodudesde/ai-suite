@@ -21,15 +21,15 @@ use AutoDudes\AiSuite\Exception\AiSuiteServerException;
 use AutoDudes\AiSuite\Factory\SettingsFactory;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\RequestFactory;
 
 class SendRequestService
 {
     public const JSON_SAFE_FLAGS = JSON_HEX_QUOT | JSON_HEX_TAG | JSON_UNESCAPED_UNICODE;
+
+    public const CONFIGURED_MODEL_SETTINGS = ['metadataAutogenerateModel', 'easyLanguageLibrary', 'auditDefaultTextModel'];
 
     private const SERVER_CONNECT_TIMEOUT = 10;
 
@@ -49,10 +49,15 @@ class SendRequestService
         'invalidRequest' => 'aiSuite.error.server.invalidRequest',
         'requestRateLimited' => 'aiSuite.error.server.requestRateLimited',
         'gdprModelBlocked' => 'aiSuite.error.server.gdprModelBlocked',
+        'modelNotAvailable' => 'aiSuite.error.server.modelNotAvailable',
+        'keyIsFreddi' => 'aiSuite.error.server.keyIsFreddi',
         'targetLanguageNotSupported' => 'aiSuite.error.server.targetLanguageNotSupported',
         'thirdPartyApi' => 'aiSuite.error.server.thirdPartyApi',
+        'imageRehostFailed' => 'aiSuite.error.server.imageRehostFailed',
+        'auditGatewayUnavailable' => 'aiSuite.error.server.auditGatewayUnavailable',
         'webSearchUnavailable' => 'aiSuite.error.server.webSearchUnavailable',
         'promptViolation' => 'aiSuite.error.server.promptViolation',
+        'moderationUnavailable' => 'aiSuite.error.server.moderationUnavailable',
         'payloadTooLarge' => 'aiSuite.error.server.payloadTooLarge',
         'requestStatusNotFound' => 'aiSuite.error.server.requestStatusNotFound',
     ];
@@ -69,6 +74,7 @@ class SendRequestService
         protected readonly LoggerInterface $logger,
         protected readonly SystemDomainResolver $systemDomainResolver,
         protected readonly ProvenanceCaptureService $provenanceCapture,
+        protected readonly BackendUserService $backendUserService,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
@@ -79,6 +85,11 @@ class SendRequestService
             $this->logger->warning('AI Suite request skipped: no API key configured');
 
             return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.apiKeyMissing.message'), 'missingApiKey');
+        }
+        if (!self::isHttpsUrl((string) ($this->extConf['aiSuiteServer'] ?? ''))) {
+            $this->logger->warning('AI Suite request skipped: the server URL does not use https');
+
+            return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.serverNotHttps'));
         }
 
         try {
@@ -99,7 +110,7 @@ class SendRequestService
                 $this->logger->error('AI Suite Server answered with an HTTP error status', [
                     'endpoint' => $endpoint,
                     'statusCode' => $statusCode,
-                    'body' => substr($responseBody, 0, 512),
+                    'errorType' => (string) ((json_decode($responseBody, true)['body']['errorType'] ?? null) ?: ''),
                 ]);
 
                 if (413 === $statusCode) {
@@ -147,7 +158,6 @@ class SendRequestService
      */
     public function sendLibrariesRequest(string $libraryTypes, string $targetEndpoint, array $keyModelTypes): ClientAnswer
     {
-        $clientAddresses = $this->resolveClientAddresses();
         $librariesAnswer = $this->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -162,8 +172,7 @@ class SendRequestService
                 '',
                 [],
                 $this->systemDomainResolver->resolve(),
-                $clientAddresses['ip'],
-                $clientAddresses['forwardIp'],
+                $this->systemDomainResolver->instanceIdentity(),
             )
         );
 
@@ -190,12 +199,17 @@ class SendRequestService
      * @param array<string, mixed>  $additionalData
      * @param array<string, string> $models
      */
-    public function sendDataRequest(string $targetEndpoint, array $additionalData = [], string $prompt = '', string $langIsoCode = '', array $models = [], ?string $requestSystemDomain = null): ClientAnswer
+    public function sendDataRequest(string $targetEndpoint, array $additionalData = [], string $prompt = '', string $langIsoCode = '', array $models = [], ?string $requestSystemDomain = null, string $configuredModelSetting = ''): ClientAnswer
     {
+        $refusedModels = $this->refusedModels($models, $configuredModelSetting);
+        if ([] !== $refusedModels) {
+            $this->logger->warning('Refused a request with models the user may not use', ['models' => $refusedModels]);
+
+            return $this->buildErrorAnswer($this->localizationService->translate('aiSuite.error.modelNotAllowed', [implode(', ', $refusedModels)]));
+        }
         if ([] !== $models) {
             $additionalData['keys'] = $this->modelService->fetchKeysByModel($this->extConf, $models);
         }
-        $clientAddresses = $this->resolveClientAddresses();
         $answer = $this->sendRequest(
             new ServerRequest(
                 $this->extConf,
@@ -205,8 +219,7 @@ class SendRequestService
                 $langIsoCode,
                 $models,
                 $this->systemDomainResolver->resolve($requestSystemDomain),
-                $clientAddresses['ip'],
-                $clientAddresses['forwardIp'],
+                $this->systemDomainResolver->instanceIdentity(),
             )
         );
         if ('Error' === $answer->getType()) {
@@ -241,7 +254,7 @@ class SendRequestService
     public function isServerReachable(): bool
     {
         $baseUrl = (string) ($this->extConf['aiSuiteServer'] ?? '');
-        if ('' === $baseUrl) {
+        if (!self::isHttpsUrl($baseUrl)) {
             return false;
         }
 
@@ -273,22 +286,42 @@ class SendRequestService
         return trim($answer->getMessage());
     }
 
+    public static function isHttpsUrl(string $url): bool
+    {
+        return 'https' === strtolower((string) parse_url($url, PHP_URL_SCHEME)) && '' !== (string) parse_url($url, PHP_URL_HOST);
+    }
+
     /**
      * @return array{ip: string, forwardIp: string}
      */
-    private function resolveClientAddresses(): array
+    /**
+     * @param array<array-key, mixed> $models
+     *
+     * @return list<string>
+     */
+    private function refusedModels(array $models, string $configuredModelSetting): array
     {
-        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
-        if (!$request instanceof ServerRequestInterface) {
-            return ['ip' => '', 'forwardIp' => ''];
+        $backendUser = $this->backendUserService->getBackendUser();
+        if (null === $backendUser || $backendUser->isAdmin()) {
+            return [];
         }
 
-        $normalizedParams = $request->getAttribute('normalizedParams');
+        $configured = in_array($configuredModelSetting, self::CONFIGURED_MODEL_SETTINGS, true)
+            ? trim((string) ($this->extConf[$configuredModelSetting] ?? ''))
+            : '';
 
-        return [
-            'ip' => $normalizedParams instanceof NormalizedParams ? $normalizedParams->getRemoteAddress() : '',
-            'forwardIp' => $request->getHeaderLine('X-Forwarded-For'),
-        ];
+        $refused = [];
+        foreach ($models as $model) {
+            $model = is_string($model) ? trim($model) : '';
+            if ('' === $model || ('' !== $configured && $model === $configured)) {
+                continue;
+            }
+            if (!$this->backendUserService->checkPermissions('tx_aisuite_models:'.$model)) {
+                $refused[] = $model;
+            }
+        }
+
+        return array_values(array_unique($refused));
     }
 
     private function buildErrorAnswer(string $message, string $errorType = ''): ClientAnswer

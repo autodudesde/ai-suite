@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AutoDudes\AiSuite\Hooks;
 
 use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
+use AutoDudes\AiSuite\Service\GlobalInstructionService;
 use AutoDudes\AiSuite\Service\LocalizationService;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Exception;
@@ -31,10 +32,14 @@ class GlobalInstructionHook
                 $incomingFieldArray['selected_directories'] ??= '';
                 $selectedTree = 'pages' === $context ? $incomingFieldArray['selected_pages'] : $incomingFieldArray['selected_directories'];
                 $selectedTreeArray = GeneralUtility::trimExplode(',', $selectedTree, true);
+                if ([] === $selectedTreeArray) {
+                    return;
+                }
                 $globalInstruction = $globalInstructionsRepository->findExistingGlobalInstruction(
                     $context,
                     $scope,
-                    $selectedTreeArray
+                    $selectedTreeArray,
+                    str_starts_with($id, 'NEW') ? null : (int) $id
                 );
                 if (!empty($globalInstruction)) {
                     $existingSelectedTree = 'pages' === $context ? $globalInstruction['selected_pages'] : $globalInstruction['selected_directories'];
@@ -42,15 +47,8 @@ class GlobalInstructionHook
                     $fieldName = 'pages' === $context ? 'selected_pages' : 'selected_directories';
                     $uniqueTreeIds = array_diff($selectedTreeArray, $existingSelectedTreeArray);
                     $duplicateTreeIds = array_intersect($existingSelectedTreeArray, $selectedTreeArray);
-                    if (str_starts_with($id, 'NEW')) {
-                        $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);
-                        $this->buildFlashMessage($context, $scope, array_values($duplicateTreeIds));
-                    } else {
-                        if ((int) $id !== $globalInstruction['uid']) {
-                            $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);
-                            $this->buildFlashMessage($context, $scope, array_values($duplicateTreeIds));
-                        }
-                    }
+                    $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);
+                    $this->buildFlashMessage($context, $scope, array_values($duplicateTreeIds));
                 }
             }
         } catch (\Exception $e) {
@@ -66,8 +64,8 @@ class GlobalInstructionHook
     private function buildFlashMessage(string $context, string $scope, array $duplicateTreeIds): void
     {
         $localizationService = GeneralUtility::makeInstance(LocalizationService::class);
-        $contextTranslated = $localizationService->translate('tx_aisuite_domain_model_global_instructions.context.'.$context);
-        $scopeTranslated = $localizationService->translate('module:aiSuite.module.dashboard.card.managePromptTemplates.scope'.ucfirst($scope));
+        $contextTranslated = $localizationService->translate(GlobalInstructionService::contextLabel($context));
+        $scopeTranslated = $localizationService->translate(GlobalInstructionService::scopeLabel($context, $scope));
         $flashMessageTitle = $localizationService->translate('aiSuite.globalInstructions.duplicate_detected_title');
         $flashMessageText = $localizationService->translate('aiSuite.globalInstructions.duplicate_detected_message', [
             $contextTranslated,

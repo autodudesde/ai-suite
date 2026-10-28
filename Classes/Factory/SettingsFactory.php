@@ -47,11 +47,12 @@ class SettingsFactory
             if ($this->backendUserService->getBackendUser()?->isAdmin() ?? false) {
                 return $this->extConf;
             }
+            $merged = $this->extConf;
             foreach ($this->extConf as $key => $value) {
-                $this->extConf[$key] = $this->backendUserService->checkGroupSpecificInputs($key) ?: ($value ?? '');
+                $merged[$key] = $this->backendUserService->checkGroupSpecificInputs($key) ?: ($value ?? '');
             }
 
-            return $this->extConf;
+            return $merged;
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

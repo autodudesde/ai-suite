@@ -104,7 +104,8 @@ class GlossarController extends AbstractBackendController
                     $targetLanguageId,
                     $sourceLanguageIso,
                     $targetLanguageIso,
-                    $textAiModel
+                    $textAiModel,
+                    $this->glossarService->getSiteRootPageId((int) ($parsedBody['pageId'] ?? 0))
                 );
             }
         } catch (\Throwable $exception) {

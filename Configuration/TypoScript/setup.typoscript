@@ -1,7 +1,0 @@
-module.tx_aisuite {
-    view {
-        layoutRootPaths {
-            20 = EXT:ai_suite/Resources/Private/Layouts/
-        }
-    }
-}

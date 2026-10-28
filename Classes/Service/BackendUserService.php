@@ -294,13 +294,6 @@ class BackendUserService implements SingletonInterface
         return $folder;
     }
 
-    /**
-     * Whether this user may edit the record at all.
-     *
-     * Needed wherever a request names its own table and uid — a form field reporting that its
-     * suggestion was accepted, for instance. Without it the endpoint speaks for every record in the
-     * installation, and a register that anyone can write into proves nothing.
-     */
     public function canEditRecord(string $table, int $uid): bool
     {
         $beUser = $this->getBackendUser();
@@ -325,8 +318,8 @@ class BackendUserService implements SingletonInterface
             return $this->canEditFileMetadata((int) ($row['file'] ?? 0));
         }
 
-        if ('sys_file_reference' === $table) {
-            return $this->canEditFileReferenceMetadata((int) ($row['uid_local'] ?? 0));
+        if ('sys_file_reference' === $table && !$this->canEditFileReferenceMetadata((int) ($row['uid_local'] ?? 0))) {
+            return false;
         }
 
         if ('pages' === $table) {

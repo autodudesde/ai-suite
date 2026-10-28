@@ -612,6 +612,34 @@
                 <source>Content will be generated. This may take a moment. Please wait...</source>
                 <target>Inhalte werden generiert. Dies kann einen Moment dauern. Bitte warten...</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.general.promptRequired">
+                <source>Please enter a prompt.</source>
+                <target>Bitte gib einen Prompt ein.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.noContentSelectedTitle">
+                <source>No content selected</source>
+                <target>Kein Inhalt ausgewählt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.title">
+                <source>Compare with the original</source>
+                <target>Vergleich mit dem Original</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.removed">
+                <source>Removed</source>
+                <target>Entfernt</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.added">
+                <source>Added</source>
+                <target>Neu</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.accept">
+                <source>Accept</source>
+                <target>Übernehmen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.general.compare.discard">
+                <source>Discard</source>
+                <target>Verwerfen</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.general.noContentSelected">
                 <source>No content selected. Please select some content.</source>
                 <target>Kein Inhalt ausgewählt. Bitte wähle einen Inhalt aus.</target>
@@ -691,6 +719,10 @@
                 <source>X / Twitter Title</source>
                 <target>X / Twitter-Titel</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.all">
+                <source>All columns</source>
+                <target>Alle Felder</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.sys_file_metadata.alternative">
                 <source>Image alternative text</source>
                 <target>Alternativtext für Bilder</target>
@@ -767,9 +799,17 @@
                 <source>No pages available for your selection.</source>
                 <target>Für deine Auswahl sind keine Seiten verfügbar.</target>
             </trans-unit>
-            <trans-unit id="aiSuite.module.workflow.processing">
-                <source>Already handled %s:</source>
-                <target>Bereits bearbeitete %s:</target>
+            <trans-unit id="aiSuite.module.workflow.processing.pages">
+                <source>Already handled pages:</source>
+                <target>Bereits bearbeitete Seiten:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.processing.fileReferences">
+                <source>Already handled file references:</source>
+                <target>Bereits bearbeitete Dateireferenzen:</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.processing.files">
+                <source>Already handled files:</source>
+                <target>Bereits bearbeitete Dateien:</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.saveMetadataBtn">
                 <source><![CDATA[Update selected metadata <strong>(no credits needed)</strong>]]></source>
@@ -780,8 +820,8 @@
                 <target>Alle auswählen/abwählen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflow.translation.processing">
-                <source>Already handled %s translations:</source>
-                <target>%s Übersetzungen wurden bereits bearbeitet:</target>
+                <source>Already handled translations:</source>
+                <target>Bereits bearbeitete Übersetzungen:</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.workflowFilelist.allColumns">
@@ -796,11 +836,11 @@
 
             <trans-unit id="aiSuite.module.missingAiSuiteApiKey.message">
                 <source>If you don't have an API key yet, you can get one at https://www.autodudes.de</source>
-                <target>Wenn du noch keinen API-Schlüssel hast, kannst du dir einen unter https://www.autodudes.de anlegen.</target>
+                <target>Wenn du noch keinen API-Key hast, kannst du dir einen unter https://www.autodudes.de anlegen.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.missingAiSuiteApiKey.title">
                 <source>Please enter your AI Suite API key in the extension configuration.</source>
-                <target>Bitte gib deinen AI Suite-API-Schlüssel in der Erweiterungskonfiguration ein.</target>
+                <target>Bitte gib deinen AI Suite-API-Key in der Extension-Konfiguration ein.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.module.modal.abort">
@@ -1281,6 +1321,14 @@
                 <source>Generate page structure</source>
                 <target>Seitenstruktur generieren</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.pageStructure.sortable-input.addTitle">
+                <source>Add page</source>
+                <target>Seite hinzufügen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.pageStructure.sortable-input.editTitle">
+                <source>Rename page</source>
+                <target>Seite umbenennen</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.pageStructure.sortable-input.submit">
                 <source>Submit</source>
                 <target>Übernehmen</target>
@@ -1620,6 +1668,10 @@
             <trans-unit id="aiSuite.module.settings.saveError">
                 <source>An error occurred while saving the settings.</source>
                 <target>Beim Speichern der Einstellungen ist ein Fehler aufgetreten.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.metadataUpload.hint">
+                <source>Applies only when new files are uploaded. Existing files stay unchanged.</source>
+                <target>Greift nur, wenn neue Dateien hochgeladen werden. Bestehende Dateien bleiben unverändert.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.maskedHint">
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>
@@ -2157,6 +2209,10 @@
                 <source>Search intent</source>
                 <target>Suchintention</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.audit.result.notAvailable" approved="yes">
+                <source>n/a</source>
+                <target>keine Angabe</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.audit.type.gap" approved="yes">
                 <source>Content gap (rankings)</source>
                 <target>Content-Gap (Rankings)</target>
@@ -2366,8 +2422,8 @@
                 <target>Ganzen Seitenbaum auditieren</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.description" approved="yes">
-                <source>Runs the audit page by page for the selected page and its subpages. You see the total cost BEFORE anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
-                <target>Führt das Audit Seite für Seite für die gewählte Seite und ihre Unterseiten aus. Die Gesamtkosten siehst du VOR der ersten Abbuchung; geht das Guthaben mittendrin aus, stoppt der Lauf sauber und lässt sich fortsetzen. Versteckte Seiten werden dabei nicht berücksichtigt.</target>
+                <source>Runs the audit page by page for the selected page and its subpages. You see the total cost before anything is charged; if credits run out mid-run, the batch stops cleanly and can be resumed. Hidden pages are skipped.</source>
+                <target>Führt das Audit Seite für Seite für die gewählte Seite und ihre Unterseiten aus. Die Gesamtkosten siehst du vor der ersten Abbuchung; geht das Guthaben mittendrin aus, stoppt der Lauf sauber und lässt sich fortsetzen. Versteckte Seiten werden dabei nicht berücksichtigt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.depth" approved="yes">
                 <source>Depth</source>
@@ -2386,8 +2442,8 @@
                 <target>Ganzer Teilbaum</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.plan" approved="yes">
-                <source>Calculate cost estimate</source>
-                <target>Kostenvoranschlag berechnen</target>
+                <source>Calculate credit costs</source>
+                <target>Credit-Kosten berechnen</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.audit.batch.noPage" approved="yes">
                 <source>Please select a page first.</source>

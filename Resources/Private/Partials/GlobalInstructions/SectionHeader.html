@@ -10,16 +10,28 @@
             <f:count subject="{instructions}"/>
             )
         </div>
-        <be:link.newRecord
-            table="tx_aisuite_domain_model_global_instructions"
-            returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
-            class="btn btn-secondary"
-            pid="{pid}"
-        >
-            <core:icon identifier="actions-page-new" size="small"/>
-            <f:translate
-                key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"/>
-        </be:link.newRecord>
+        <f:if condition="{isRootLevel}">
+            <f:then>
+                <button type="button" class="btn btn-secondary" disabled aria-disabled="true" data-testid="global-instructions-create-disabled">
+                    <core:icon identifier="actions-page-new" size="small"/>
+                    <f:translate
+                        key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"/>
+                </button>
+            </f:then>
+            <f:else>
+                <be:link.newRecord
+                    table="tx_aisuite_domain_model_global_instructions"
+                    returnUrl="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
+                    class="btn btn-secondary"
+                    pid="{pid}"
+                    defaultValues="{tx_aisuite_domain_model_global_instructions: {context: context}}"
+                >
+                    <core:icon identifier="actions-page-new" size="small"/>
+                    <f:translate
+                        key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.manageGlobalInstructions.createNewGlobalInstructions"/>
+                </be:link.newRecord>
+            </f:else>
+        </f:if>
         <form action="{f:be.uri(route: 'ai_suite_global_instructions', parameters: '{id: pid}')}"
               name="input" enctype="multipart/form-data" method="POST"
               class="manage-global-instructions-search-form">

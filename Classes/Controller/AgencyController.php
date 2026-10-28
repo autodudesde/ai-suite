@@ -117,9 +117,22 @@ class AgencyController extends AbstractBackendController
 
             return $this->translateXlfAction();
         }
+
+        try {
+            $this->xliffService->languageFilePath((string) ($parsedBody['extensionKey'] ?? ''), $this->xliffService->translationFileName((string) $parsedBody['destinationLanguage'], (string) ($parsedBody['filename'] ?? '')));
+        } catch (FileNotFoundException|UnknownPackageException $exception) {
+            $this->logger->error($exception->getMessage());
+            $this->view->addFlashMessage(
+                $exception->getMessage(),
+                $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.errorFileNotFound.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->translateXlfAction();
+        }
         if ('missingProperties' === $parsedBody['translationMode']) {
             try {
-                $destinationFile = $this->xliffService->readXliff($parsedBody['extensionKey'], $parsedBody['destinationLanguage'].'.'.$parsedBody['filename'], false);
+                $destinationFile = $this->xliffService->readXliff($parsedBody['extensionKey'], $this->xliffService->translationFileName($parsedBody['destinationLanguage'], $parsedBody['filename']), false);
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());
                 $this->view->addFlashMessage(
@@ -248,14 +261,17 @@ class AgencyController extends AbstractBackendController
         }
     }
 
-    /**
-     * @throws UnknownPackageException
-     */
     public function writeXlfAction(): ResponseInterface
     {
         $parsedBody = (array) $this->request->getParsedBody();
 
-        if ($this->xliffService->writeXliff(json_decode($parsedBody['fileData'], true), $parsedBody['translations'])) {
+        try {
+            $written = $this->xliffService->writeXliff((array) json_decode((string) ($parsedBody['fileData'] ?? ''), true), (array) ($parsedBody['translations'] ?? []));
+        } catch (FileNotFoundException|UnknownPackageException $exception) {
+            $this->logger->error($exception->getMessage());
+            $written = false;
+        }
+        if ($written) {
             $this->view->addFlashMessage(
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.translationGenerationSuccessful.message'),
                 $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.translationGenerationSuccessful.title'),

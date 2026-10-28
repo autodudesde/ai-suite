@@ -165,7 +165,7 @@ class CliOverviewDashboard {
             return;
         }
         container.className = 'mt-3 alert ' + (data.success ? 'alert-success' : 'alert-danger');
-        container.innerHTML = data.message || '';
+        container.textContent = data.message || '';
         container.style.display = 'block';
     }
 }

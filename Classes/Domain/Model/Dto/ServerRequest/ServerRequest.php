@@ -27,6 +27,7 @@ class ServerRequest
      * @param array<string, mixed>  $additionalFormData
      * @param array<string, mixed>  $extConf
      * @param array<string, string> $models
+     * @param array<string, string> $instanceIdentity
      */
     public function __construct(
         protected readonly array $extConf,
@@ -36,8 +37,7 @@ class ServerRequest
         protected readonly string $language = '',
         protected readonly array $models = [],
         protected readonly ?string $requestSystemDomain = null,
-        protected readonly string $requestSystemIp = '',
-        protected readonly string $requestSystemForwardIp = '',
+        protected readonly array $instanceIdentity = [],
     ) {
         $this->endpoint = ((string) ($this->extConf['aiSuiteServer'] ?? '')).'api/'.$endpoint;
     }
@@ -51,7 +51,7 @@ class ServerRequest
             'headers' => [
                 'Authorization' => 'Bearer '.($this->extConf['aiSuiteApiKey'] ?? ''),
             ],
-            'form_params' => array_merge($this->getGeneralFormData(), $this->additionalFormData),
+            'form_params' => array_merge($this->getGeneralFormData(), $this->additionalFormData, $this->getIdentityFormData()),
         ];
     }
 
@@ -62,16 +62,28 @@ class ServerRequest
      */
     public function getGeneralFormData(): array
     {
-        return [
+        return array_merge([
             'prompt' => $this->prompt,
             'language' => $this->language,
             'models' => json_encode($this->models),
+        ], $this->getIdentityFormData());
+    }
+
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws Exception
+     */
+    public function getIdentityFormData(): array
+    {
+        return array_merge($this->instanceIdentity, [
             'request_system_domain' => $this->requestSystemDomain ?? '',
-            'request_system_ip' => $this->requestSystemIp,
-            'request_system_forward_ip' => $this->requestSystemForwardIp,
+            'force_gdpa' => !empty($this->extConf['forceGdpa']) ? 1 : 0,
+            'request_system_ip' => '',
+            'request_system_forward_ip' => '',
             'typo3_version' => GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion(),
             'ext_version' => ExtensionManagementUtility::getExtensionVersion('ai_suite'),
-        ];
+        ]);
     }
 
     public function getEndpoint(): string

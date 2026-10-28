@@ -131,6 +131,7 @@ class PagesController extends AbstractBackendController
     {
         try {
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/validation.js');
+            $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/pages/sortable-app.js');
             $parsedBody = (array) $this->request->getParsedBody();
             $textAi = $parsedBody['libraries']['textGenerationLibrary'] ?? '';
             $paidRequestsAvailable = isset($parsedBody['paidRequestsAvailable']) ? '1' === $parsedBody['paidRequestsAvailable'] : false;
@@ -171,8 +172,6 @@ class PagesController extends AbstractBackendController
                 'sysLanguages' => $this->aiSuiteContext->siteService->getAvailableLanguages(),
                 'selectedSysLanguage' => $langIsoCode,
                 'globalInstructions' => $globalInstructions,
-                // Carried into the create step as a hidden field: the tree is generated in this
-                // request and written in the next, so the model has to travel with the result.
                 'textAiModel' => $textAi,
             ]);
             $this->view->addFlashMessage(

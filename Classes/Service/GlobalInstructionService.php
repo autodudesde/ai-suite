@@ -13,10 +13,11 @@ use TYPO3\CMS\Core\Utility\RootlineUtility;
 class GlobalInstructionService implements SingletonInterface
 {
     protected const SCOPE_LABEL_PREFIX = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.scope.';
+    protected const CONTEXT_LABEL_PREFIX = 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.';
 
     /** @var array<string, list<string>> */
     protected const SCOPE_VALUES = [
-        'files' => ['general', 'imageWizard', 'metadata'],
+        'files' => ['general', 'imageWizard', 'metadata', 'translation'],
         'pages' => ['general', 'pageTree', 'imageWizard', 'contentElement', 'newsRecord', 'editContent', 'metadata', 'translation'],
     ];
 
@@ -35,12 +36,22 @@ class GlobalInstructionService implements SingletonInterface
         $items = [];
         foreach (self::SCOPE_VALUES[$context] as $value) {
             $items[] = [
-                'label' => self::SCOPE_LABEL_PREFIX.$context.'.'.$value,
+                'label' => self::scopeLabel($context, $value),
                 'value' => $value,
             ];
         }
 
         return $items;
+    }
+
+    public static function scopeLabel(string $context, string $scope): string
+    {
+        return self::SCOPE_LABEL_PREFIX.('files' === $context ? 'files' : 'pages').'.'.$scope;
+    }
+
+    public static function contextLabel(string $context): string
+    {
+        return self::CONTEXT_LABEL_PREFIX.('files' === $context ? 'files' : 'pages');
     }
 
     public function buildGlobalInstruction(string $context, string $scope, ?int $pageId = null, ?string $directoryPath = null): string
@@ -88,17 +99,21 @@ class GlobalInstructionService implements SingletonInterface
             return '';
         }
 
-        $additionalInstructions = '';
         $lastPageUid = $pageUids[array_key_last($pageUids)] ?? 0;
+        $applicableInstructions = [];
 
-        $globalInstructions = $this->globalInstructionsRepository->findByScope($scope, $context);
-
-        foreach ($globalInstructions as $globalInstruction) {
-            if (!$this->doesPageInstructionApply($globalInstruction, $lastPageUid, $pageUids)) {
-                continue;
+        foreach ($this->globalInstructionsRepository->findByScope($scope, $context) as $globalInstruction) {
+            $depth = $this->pageInstructionDepth($globalInstruction, $lastPageUid, $pageUids);
+            if (null !== $depth) {
+                $applicableInstructions[] = ['instruction' => $globalInstruction, 'depth' => $depth];
             }
+        }
 
-            $additionalInstructions = $this->processInstructionsText($globalInstruction, $additionalInstructions);
+        usort($applicableInstructions, static fn (array $a, array $b): int => $a['depth'] <=> $b['depth']);
+
+        $additionalInstructions = '';
+        foreach ($applicableInstructions as $item) {
+            $additionalInstructions = $this->processInstructionsText($item['instruction'], $additionalInstructions);
         }
 
         return trim($additionalInstructions);
@@ -146,33 +161,23 @@ class GlobalInstructionService implements SingletonInterface
      * @param array<string, mixed> $globalInstruction
      * @param list<int>            $pageUids
      */
-    private function doesPageInstructionApply(array $globalInstruction, int $targetPageUid, array $pageUids): bool
+    private function pageInstructionDepth(array $globalInstruction, int $targetPageUid, array $pageUids): ?int
     {
-        $selectedPages = GeneralUtility::trimExplode(',', $globalInstruction['selected_pages'] ?? '', true);
         $useForSubtree = (bool) ($globalInstruction['use_for_subtree'] ?? false);
+        $targetPageIndex = array_search($targetPageUid, $pageUids, true);
+        $depth = null;
 
-        if (empty($selectedPages)) {
-            return false;
-        }
-
-        foreach ($selectedPages as $selectedPageUid) {
-            $selectedPageUid = (int) $selectedPageUid;
-
-            if ($selectedPageUid === $targetPageUid) {
-                return true;
+        foreach (GeneralUtility::intExplode(',', (string) ($globalInstruction['selected_pages'] ?? ''), true) as $selectedPageUid) {
+            $selectedPageIndex = array_search($selectedPageUid, $pageUids, true);
+            if (false === $selectedPageIndex || false === $targetPageIndex) {
+                continue;
             }
-
-            if ($useForSubtree && in_array($selectedPageUid, $pageUids)) {
-                $selectedPageIndex = array_search($selectedPageUid, $pageUids);
-                $targetPageIndex = array_search($targetPageUid, $pageUids);
-
-                if (false !== $selectedPageIndex && false !== $targetPageIndex && $selectedPageIndex <= $targetPageIndex) {
-                    return true;
-                }
+            if ($selectedPageUid === $targetPageUid || ($useForSubtree && $selectedPageIndex <= $targetPageIndex)) {
+                $depth = max($depth ?? 0, $selectedPageIndex);
             }
         }
 
-        return false;
+        return $depth;
     }
 
     /**

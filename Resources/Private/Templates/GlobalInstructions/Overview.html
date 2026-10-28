@@ -11,11 +11,22 @@
         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.manageGlobalInstructions.header"/>
     </h1>
     <br/>
+    <f:if condition="{isRootLevel}">
+        <div class="alert alert-warning d-flex align-items-start gap-2 mb-3" role="alert" data-testid="global-instructions-root-level-warning">
+            <core:icon identifier="actions-exclamation-triangle" size="small"/>
+            <div>
+                <strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionStorageTitle"/></strong>
+                <p class="mb-0"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionStorageMessage"/></p>
+            </div>
+        </div>
+    </f:if>
     <div class="recordlist mb-4">
         <f:render partial="GlobalInstructions/SectionHeader" arguments="{
             sectionTitle: 'Pages',
             instructions: globalInstructionsPages,
             pid: pid,
+            isRootLevel: isRootLevel,
+            context: 'pages',
             search: search
         }" />
         <f:render partial="GlobalInstructions/InstructionsTable" arguments="{
@@ -28,6 +39,8 @@
             sectionTitle: 'Files',
             instructions: globalInstructionsFiles,
             pid: pid,
+            isRootLevel: isRootLevel,
+            context: 'files',
             search: search
         }" />
         <f:render partial="GlobalInstructions/InstructionsTable" arguments="{

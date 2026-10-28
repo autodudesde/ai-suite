@@ -181,13 +181,13 @@ class FilelistFilesPrepare {
                     if (res.output?.failedFiles?.length > 0) {
                         Notification.error(
                             TYPO3.lang['aiSuite.notification.generation.error'],
-                            TYPO3.lang['aiSuite.notification.generation.failedFiles'] + res.output.failedFiles.join(', ')
+                            TYPO3.lang['aiSuite.notification.generation.failedFiles'] + ' ' + res.output.failedFiles.join(', ')
                         );
                     }
 
                     let statusElement = document.querySelector('.module-body .spinner-overlay .status');
                     if (statusElement !== null && selectedFiles && handledFiles) {
-                        statusElement.innerHTML = `${res.output.message}${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
+                        statusElement.innerHTML = `${res.output.message} ${Object.keys(handledFiles).length} / ${Object.keys(selectedFiles).length}`;
                     }
 
                     return res;
@@ -266,7 +266,7 @@ class FilelistFilesPrepare {
 
     async updateContent() {
         Generation.showSpinner();
-        // The whole result section is replaced, so a prompt the editor already typed would be lost.
+        // Read before the result section is replaced, or a prompt the editor typed is lost
         const previousPrompt = PromptTemplate.readPrompt(document.querySelector('#resultsToExecute'), 'textarea#metadataGenerationPrompt');
         let filesForm = document.querySelector('form[name="filesPrepareExecute"]');
         const formData = new FormData(filesForm);

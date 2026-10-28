@@ -654,6 +654,87 @@ button.delete {
     to { visibility: visible; }
 }
 
+.ck.ck-reset_all .ck-ai-plugin {
+    .ck-dialog-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: var(--ck-spacing-medium);
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 450px;
+        max-width: 700px;
+        padding: var(--ck-spacing-large);
+        white-space: initial;
+    }
+
+    .ck-dialog-headerbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .ck-ai-plugin__title {
+        font-size: 1.1rem;
+        font-weight: bold;
+    }
+
+    .ck-ai-plugin__label {
+        display: flex;
+        align-items: center;
+        margin-top: var(--ck-spacing-small);
+
+        &,
+        > span {
+            font-weight: bold;
+        }
+    }
+
+    .ck-prompt-template-dropdown,
+    .ck-prompt-input,
+    .ck-save-button {
+        display: flex;
+        width: 100%;
+    }
+
+    .ck-ai-plugin__error {
+        display: none;
+        color: var(--typo3-state-danger-border-color, #c83c3c);
+        font-size: 0.85rem;
+    }
+
+    &.has-prompt-error {
+        .ck-ai-plugin__error {
+            display: block;
+        }
+
+        .ck-prompt-input textarea {
+            border-color: var(--typo3-state-danger-border-color, #c83c3c) !important;
+        }
+    }
+
+    .ck-radio-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        position: relative;
+    }
+
+    .ck-spinner-wrapper {
+        display: none;
+    }
+
+    &.is-loading {
+        .ck-dialog-inputs {
+            display: none;
+        }
+
+        .ck-spinner-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+}
+
 .ck-ai-plugin {
     .ck-dialog-headerbar .ck-button-cancel {
         color: var(--ai-suite-button-font-color) !important;
@@ -794,8 +875,9 @@ button.delete {
 
 .ck-spinner-wrapper {
     .spinner-wrapper {
-        width: 600px !important;
-        height: 400px !important;
+        width: 100% !important;
+        min-width: 450px !important;
+        height: 320px !important;
         position: relative !important;
         overflow: hidden !important;
     }
@@ -807,9 +889,13 @@ button.delete {
         width: 100% !important;
         height: 100% !important;
         display: flex !important;
+        flex-direction: column !important;
         justify-content: center !important;
-        align-content: center !important;
-        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 2rem !important;
+        padding: 1.5rem !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
         background-color: transparent !important;
         color: #fff !important;
         font-weight: 700 !important;
@@ -825,8 +911,10 @@ button.delete {
             }
 
             .message {
-                position: absolute !important;
-                top: 54% !important;
+                position: static !important;
+                margin: 0 !important;
+                white-space: normal !important;
+                text-align: center !important;
                 font-size: .9rem !important;
                 color: #fff !important;
                 font-weight: 700 !important;

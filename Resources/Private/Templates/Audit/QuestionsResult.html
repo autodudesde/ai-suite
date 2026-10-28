@@ -26,36 +26,38 @@
                         <span class="aisuite-audit-pill aisuite-audit-pill--error">{summary.open} <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span>
                     </p>
 
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th class="col-sm-1"></th>
-                                <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.question"/></th>
-                                <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.note"/></th>
-                                <th class="col-sm-1"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <f:for each="{questions}" as="item">
+                    <div class="table-fit">
+                        <table class="table table-striped table-hover">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <f:switch expression="{item.status}">
-                                            <f:case value="answered"><span class="aisuite-audit-pill aisuite-audit-pill--success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
-                                            <f:case value="partial"><span class="aisuite-audit-pill aisuite-audit-pill--warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
-                                            <f:defaultCase><span class="aisuite-audit-pill aisuite-audit-pill--error"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
-                                        </f:switch>
-                                    </td>
-                                    <td><strong>{item.question}</strong></td>
-                                    <td class="text-body-secondary">{item.note}</td>
-                                    <td>
-                                        <f:if condition="{item.source} == 'serp'">
-                                            <span class="aisuite-audit-tag"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.source.serp"/></span>
-                                        </f:if>
-                                    </td>
+                                    <th class="col-sm-1"></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.question"/></th>
+                                    <th><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.note"/></th>
+                                    <th class="col-sm-1"></th>
                                 </tr>
-                            </f:for>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <f:for each="{questions}" as="item">
+                                    <tr>
+                                        <td>
+                                            <f:switch expression="{item.status}">
+                                                <f:case value="answered"><span class="aisuite-audit-pill aisuite-audit-pill--success"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.answered"/></span></f:case>
+                                                <f:case value="partial"><span class="aisuite-audit-pill aisuite-audit-pill--warning"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.partial"/></span></f:case>
+                                                <f:defaultCase><span class="aisuite-audit-pill aisuite-audit-pill--error"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.open"/></span></f:defaultCase>
+                                            </f:switch>
+                                        </td>
+                                        <td><strong>{item.question}</strong></td>
+                                        <td class="text-body-secondary">{item.note}</td>
+                                        <td>
+                                            <f:if condition="{item.source} == 'serp'">
+                                                <span class="aisuite-audit-tag"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.questions.source.serp"/></span>
+                                            </f:if>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <f:if condition="{unansweredQuestionsJson}">
                         <f:if condition="{generatePrompt}">
@@ -65,7 +67,7 @@
                                         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.answers.hint"/>
                                         <br/>
                                         <button type="button" class="btn btn-primary btn-sm mt-2 audit-answers-btn"
-                                                data-url="{url}" data-questions="{unansweredQuestionsJson}">
+                                                data-url="{url}" data-page-id="{pageId}" data-language-uid="{languageUid}" data-questions="{unansweredQuestionsJson}">
                                             <core:icon identifier="actions-lightbulb-on" size="small"/>
                                             <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.answers.button"/>
                                         </button>

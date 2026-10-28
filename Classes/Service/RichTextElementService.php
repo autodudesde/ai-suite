@@ -32,8 +32,6 @@ use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforeGetExternalPluginsEvent;
 use TYPO3\CMS\RteCKEditor\Form\Element\Event\BeforePrepareConfigurationForEditorEvent;
 
 /**
- * Render rich text editor in FormEngine.
- *
  * @internal this is a specific Backend FormEngine implementation and is not considered part of the Public TYPO3 API
  */
 class RichTextElementService implements SingletonInterface
@@ -125,8 +123,6 @@ class RichTextElementService implements SingletonInterface
     }
 
     /**
-     * Determine the contents language iso code.
-     *
      * @param array<string, mixed> $data
      */
     protected function getLanguageIsoCodeOfContent(array $data): string
@@ -137,15 +133,12 @@ class RichTextElementService implements SingletonInterface
         }
         $contentLanguageUid = (int) max($currentLanguageUid, 0);
         if ($contentLanguageUid) {
-            // the language rows might not be fully initialized, so we fall back to en-US in this case
             $contentLanguage = $data['systemLanguageRows'][$currentLanguageUid]['iso'] ?? 'en-US';
         } else {
             $contentLanguage = $this->rteConfiguration['config']['defaultContentLanguage'] ?? 'en-US';
         }
         $languageCodeParts = explode('_', $contentLanguage);
         $contentLanguage = strtolower($languageCodeParts[0]).(!empty($languageCodeParts[1]) ? '_'.strtoupper($languageCodeParts[1]) : '');
-        // Find the configured language in the list of localization locales
-        // If not found, default to 'en'
         if ('default' === $contentLanguage || !$this->locales->isValidLanguageKey($contentLanguage)) {
             $contentLanguage = 'en';
         }
@@ -180,8 +173,6 @@ class RichTextElementService implements SingletonInterface
     }
 
     /**
-     * Get configuration of external/additional plugins.
-     *
      * @param array<string, mixed> $data
      *
      * @return array<string, mixed>
@@ -212,8 +203,6 @@ class RichTextElementService implements SingletonInterface
                 'configName' => $configuration['configName'] ?? $pluginName,
             ];
             unset($configuration['configName'], $configuration['resource']);
-            // CKEditor4 style config, unused in CKEditor5 and not forwarded to the resutling plugin config
-            unset($configuration['resource']);
 
             if ($configuration['route'] ?? null) {
                 $configuration['routeUrl'] = (string) $this->uriBuilder->buildUriFromRoute($configuration['route'], $urlParameters);
@@ -229,8 +218,6 @@ class RichTextElementService implements SingletonInterface
     }
 
     /**
-     * Add configuration to replace LLL: references with the translated value.
-     *
      * @param array<string, mixed> $configuration
      *
      * @return array<string, mixed>
@@ -249,8 +236,6 @@ class RichTextElementService implements SingletonInterface
     }
 
     /**
-     * Add configuration to replace absolute EXT: paths with relative ones.
-     *
      * @param array<string, mixed> $configuration
      *
      * @return array<string, mixed>
@@ -268,26 +253,18 @@ class RichTextElementService implements SingletonInterface
         return $configuration;
     }
 
-    /**
-     * Resolves an EXT: syntax file to an absolute web URL.
-     */
     protected function resolveUrlPath(string $value): string
     {
         return PathUtility::getPublicResourceWebPath($value);
     }
 
     /**
-     * Compiles the configuration set from the outside
-     * to have it easily injected into the CKEditor.
-     *
      * @param array<string, mixed> $data
      *
      * @return array<string, mixed>
      */
     protected function prepareConfigurationForEditor(array $data): array
     {
-        // Ensure custom config is empty so nothing additional is loaded
-        // Of course this can be overridden by the editor configuration below
         $configuration = [
             'customConfig' => '',
         ];
@@ -304,7 +281,6 @@ class RichTextElementService implements SingletonInterface
         $this->eventDispatcher->dispatch($beforeConfigEvent);
         $configuration = $beforeConfigEvent->getConfiguration();
 
-        // Set the UI language of the editor if not hard-coded by the existing configuration
         if (empty($configuration['language'])
             || (is_array($configuration['language']) && empty($configuration['language']['ui']))
         ) {
@@ -318,24 +294,13 @@ class RichTextElementService implements SingletonInterface
         }
         $configuration['language']['content'] = $this->getLanguageIsoCodeOfContent($data);
 
-        // Replace all label references
         $configuration = $this->replaceLanguageFileReferences($configuration);
-        // Replace all paths
         $configuration = $this->replaceAbsolutePathsToRelativeResourcesPath($configuration);
 
-        // unless explicitly set, the debug mode is enabled in development context
         if (!isset($configuration['debug'])) {
             $configuration['debug'] = ($GLOBALS['TYPO3_CONF_VARS']['BE']['debug'] ?? false) && Environment::getContext()->isDevelopment();
         }
 
-        // The removePlugins option needs to be assigned as an array in CKEditor5.
-        // While we recommended passing the option already as an array, CKEditor4
-        // needed a comma-separated string. The conversion was only handled if the
-        // Integrator passed an array, which means if someone already provided a
-        // comma-separated string the option was simply passed as is to the Editor.
-        // To avoid javascript errors we are going to migrate it to array for now.
-        // The possibility to pass the option as a string is deprecated and will be
-        // removed with version 13.
         if (isset($configuration['removePlugins']) && !is_array($configuration['removePlugins'])) {
             trigger_error('Passing the CKEditor removePlugins option as string is deprecated, use an array instead. Support for passing the option as string will be removed in TYPO3 v13.0.', E_USER_DEPRECATED);
             $configuration['removePlugins'] = explode(',', $configuration['removePlugins']);

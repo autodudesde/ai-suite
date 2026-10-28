@@ -7,9 +7,8 @@ namespace AutoDudes\AiSuite\Domain\Repository;
 use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\RootlineUtility;
 
 class GlossarRepository extends AbstractRepository
 {
@@ -23,60 +22,91 @@ class GlossarRepository extends AbstractRepository
     }
 
     /**
-     * @return list<array<string, mixed>>
-     *
-     * @throws Exception
+     * @return list<int>
      */
-    public function findBySysLanguageUid(int $languageId): array
+    public function findDistinctPids(): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
 
-        return $queryBuilder
-            ->select('l18n_parent', 'input')
+        return array_map(
+            'intval',
+            $queryBuilder->selectLiteral('DISTINCT pid')
+                ->from($this->table)
+                ->where(
+                    $queryBuilder->expr()->gt('pid', 0)
+                )
+                ->executeQuery()
+                ->fetchFirstColumn()
+        );
+    }
+
+    /**
+     * @param list<int> $pids
+     *
+     * @return list<array{uid: int, l18n_parent: int, input: string}>
+     *
+     * @throws Exception
+     */
+    public function findBySysLanguageUidAndPages(int $languageId, array $pids): array
+    {
+        if ([] === $pids) {
+            return [];
+        }
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $rows = $queryBuilder
+            ->select('uid', 'l18n_parent', 'input')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->eq('sys_language_uid', $languageId)
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($languageId, ParameterType::INTEGER)),
+                $queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($pids, Connection::PARAM_INT_ARRAY))
             )
             ->executeQuery()
             ->fetchAllAssociative()
         ;
+
+        return array_map(
+            static fn (array $row): array => [
+                'uid' => (int) $row['uid'],
+                'l18n_parent' => (int) $row['l18n_parent'],
+                'input' => (string) $row['input'],
+            ],
+            $rows
+        );
     }
 
     /**
-     * @return array<string, mixed>
+     * @param list<int> $parentUids
+     * @param list<int> $pids
+     *
+     * @return array<int, string>
+     *
+     * @throws Exception
      */
-    public function findEntryByUid(int $l18n_parent): array|false
+    public function findSourceInputsByParents(array $parentUids, int $sourceLanguageUid, array $pids): array
     {
+        if ([] === $parentUids || [] === $pids) {
+            return [];
+        }
+        $keyField = 0 === $sourceLanguageUid ? 'uid' : 'l18n_parent';
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-
-        return $queryBuilder
-            ->select('input')
+        $rows = $queryBuilder
+            ->select($keyField, 'input')
             ->from($this->table)
             ->where(
-                $queryBuilder->expr()->eq('uid', $l18n_parent)
+                $queryBuilder->expr()->in($keyField, $queryBuilder->createNamedParameter($parentUids, Connection::PARAM_INT_ARRAY)),
+                $queryBuilder->expr()->eq('sys_language_uid', $queryBuilder->createNamedParameter($sourceLanguageUid, ParameterType::INTEGER)),
+                $queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($pids, Connection::PARAM_INT_ARRAY))
             )
             ->executeQuery()
-            ->fetchAssociative()
+            ->fetchAllAssociative()
         ;
-    }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function findEntryByL18nParentAndUid(int $l18n_parent, int $srcLangUid): array|false
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $inputs = [];
+        foreach ($rows as $row) {
+            $inputs[(int) $row[$keyField]] = (string) $row['input'];
+        }
 
-        return $queryBuilder
-            ->select('input')
-            ->from($this->table)
-            ->where(
-                $queryBuilder->expr()->eq('l18n_parent', $l18n_parent),
-                $queryBuilder->expr()->eq('sys_language_uid', $srcLangUid)
-            )
-            ->executeQuery()
-            ->fetchAssociative()
-        ;
+        return $inputs;
     }
 
     public function findGlossarEntriesByPid(int $pid): mixed
@@ -103,7 +133,7 @@ class GlossarRepository extends AbstractRepository
         return $queryBuilder->select('*')
             ->from('tx_aisuite_domain_model_glossar')
             ->where(
-                $queryBuilder->expr()->in('pid', $foundPages)
+                $queryBuilder->expr()->in('pid', $queryBuilder->createNamedParameter($foundPages, Connection::PARAM_INT_ARRAY))
             )
             ->executeQuery()
             ->fetchAllAssociative()
@@ -197,51 +227,5 @@ class GlossarRepository extends AbstractRepository
             ];
             $connection->insert('tx_aisuite_domain_model_deepl', $data);
         }
-    }
-
-    /**
-     * @return list<int>
-     */
-    public function findDistinctRootPageUidsWithGlossaryEntries(): array
-    {
-        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
-        $pagesWithGlossaries = $queryBuilder->selectLiteral('DISTINCT pid')
-            ->from($this->table)
-            ->where(
-                $queryBuilder->expr()->gt('pid', 0)
-            )
-            ->executeQuery()
-            ->fetchFirstColumn()
-        ;
-
-        if (empty($pagesWithGlossaries)) {
-            return [];
-        }
-
-        $rootPageUids = [];
-
-        foreach ($pagesWithGlossaries as $pid) {
-            try {
-                $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pid);
-                $rootline = $rootlineUtility->get();
-
-                $rootPageUid = 0;
-                foreach ($rootline as $page) {
-                    if (0 === (int) $page['pid'] || 1 === (int) $page['is_siteroot']) {
-                        $rootPageUid = (int) $page['uid'];
-
-                        break;
-                    }
-                }
-
-                if ($rootPageUid > 0 && !in_array($rootPageUid, $rootPageUids)) {
-                    $rootPageUids[] = $rootPageUid;
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
-        }
-
-        return $rootPageUids;
     }
 }

@@ -150,7 +150,6 @@ class ContentTargetService implements SingletonInterface
                 if ('file' === $type) {
                     $hasImage = true;
                 }
-                // IRRE-Kindtabelle mit Frage/Antwort-Muster (>= 2 Textfelder)
                 if ('inline' === $type) {
                     $childTable = (string) ($config['foreign_table'] ?? '');
                     if ('' !== $childTable && 'sys_file_reference' !== $childTable && $this->childHasQuestionAnswerShape($childTable)) {
@@ -162,7 +161,6 @@ class ContentTargetService implements SingletonInterface
             // unbekannter CType/Schema -> keine Fähigkeiten
         }
 
-        // Autorenbox: Name (Header) + Bio (RTE) + Foto (Bildfeld)
         $authorbox = $section && $hasImage;
         $needle = mb_strtolower($cType.' '.$label);
         foreach (self::FAQ_NAME_SIGNALS as $signal) {

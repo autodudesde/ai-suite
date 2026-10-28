@@ -1,0 +1,15 @@
+.aisuite-settings-section {
+    --aisuite-settings-section-color: var(--typo3-state-info-bg, #c5ddf3);
+    border-inline-start: 0.5rem solid var(--aisuite-settings-section-color);
+    border-top: 0.5rem solid var(--aisuite-settings-section-color);
+    border-start-start-radius: var(--typo3-component-border-radius, 0.25rem);
+}
+.aisuite-settings-section-title {
+    background-color: var(--aisuite-settings-section-color);
+    color: var(--typo3-state-info-color, #000);
+    margin: 0;
+    padding: 0.5rem 1rem 0.75rem;
+}
+.aisuite-settings-section-body {
+    padding: 1rem 0 0 1rem;
+}

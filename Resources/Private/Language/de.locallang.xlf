@@ -161,13 +161,29 @@
                 <source>GDPR mode is active, so this AI model may not be used. Pick a data-protection-compliant model.</source>
                 <target>Der DSGVO-Modus ist aktiv, dieses KI-Modell darf daher nicht verwendet werden. Wähle bitte ein datenschutzkonformes Modell.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.modelNotAvailable">
+                <source>The selected AI model is currently not available for this action. Please pick another model.</source>
+                <target>Das gewählte KI-Modell steht für diese Aktion derzeit nicht zur Verfügung. Wähle bitte ein anderes Modell.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.keyIsFreddi">
+                <source>The configured key is a FrEddi key for the frontend assistant. It does not work in the AI Suite. Enter the AI Suite key here and the FrEddi key in the FrEddi extension (freddiApiKey).</source>
+                <target>Der eingetragene Key ist ein FrEddi-Key für den Assistenten im Frontend. Er funktioniert nicht in der AI Suite. Trage hier den Key der AI Suite ein und den FrEddi-Key in der Extension FrEddi (freddiApiKey).</target>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.targetLanguageNotSupported">
                 <source>The selected AI model does not support this target language.</source>
                 <target>Das gewählte KI-Modell unterstützt diese Zielsprache nicht.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.thirdPartyApi">
-                <source>The AI provider did not return a usable answer. Failed requests are not billed; please try again later.</source>
-                <target>Der KI-Anbieter hat keine verwertbare Antwort geliefert. Fehlgeschlagene Anfragen werden nicht berechnet; versuche es bitte später erneut.</target>
+                <source>The AI provider did not return a usable answer. Failed requests are not billed. Please try again later.</source>
+                <target>Der KI-Anbieter hat keine verwertbare Antwort geliefert. Fehlgeschlagene Anfragen werden nicht berechnet. Versuche es bitte später erneut.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.imageRehostFailed">
+                <source>The generated image could not be stored. Failed requests are not billed. Please try again.</source>
+                <target>Das erzeugte Bild konnte nicht gespeichert werden. Fehlgeschlagene Anfragen werden nicht berechnet. Versuche es bitte erneut.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.auditGatewayUnavailable">
+                <source>The audit service did not deliver a result. Failed requests are not billed. Please try again later.</source>
+                <target>Der Audit-Dienst hat kein Ergebnis geliefert. Fehlgeschlagene Anfragen werden nicht berechnet. Versuche es bitte später erneut.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.webSearchUnavailable">
                 <source>Web research is not available for this installation under the current data-protection settings.</source>
@@ -176,6 +192,10 @@
             <trans-unit id="aiSuite.error.server.promptViolation">
                 <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
                 <target>Die Eingabe wurde von der Inhaltsrichtlinie des Anbieters abgelehnt. Bitte umformulieren.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.moderationUnavailable">
+                <source>The prompt could not be checked against the content policy, so the request was not processed. Failed requests are not billed. Please try again later.</source>
+                <target>Die Eingabe konnte nicht gegen die Inhaltsrichtlinie geprüft werden, deshalb wurde die Anfrage nicht ausgeführt. Fehlgeschlagene Anfragen werden nicht berechnet. Versuche es bitte später erneut.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestStatusNotFound">
                 <source>The AI Suite server no longer knows this background task, so it could not be re-queued. Delete the task and start the action again.</source>
@@ -227,6 +247,14 @@
             <trans-unit id="aiSuite.fetchContentFailed">
                 <source>Page content could not be loaded. If HTTP basic auth is active, please activate it within the TYPO3 extension settings and enter the credentials there.</source>
                 <target>Seiteninhalt konnte nicht geladen werden. Wenn die Seite durch HTTP-Basisauthentifizierung geschützt ist, aktiviere bitte die entsprechende Option in den Erweiterungseinstellungen und gib dort die Zugangsdaten ein.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.notPublic" approved="yes">
+                <source>The URL does not point to a public website and was not fetched.</source>
+                <target>Die URL zeigt nicht auf eine öffentliche Website und wurde nicht abgerufen.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.fetchContentFailed.tooLarge" approved="yes">
+                <source>The page is too large to be analysed.</source>
+                <target>Die Seite ist zu groß, um analysiert zu werden.</target>
             </trans-unit>
             <trans-unit id="aiSuite.fetchContentFailed.httpStatus">
                 <source>Page content could not be loaded - the preview URL answered with HTTP %s. Hidden or time-restricted pages cannot be rendered for this request.</source>
@@ -455,7 +483,7 @@
 
             <trans-unit id="aiSuite.globalInstructions.duplicate_detected_message">
                 <source>A global instruction for context &quot;%s&quot;, scope &quot;%s&quot; and page/directory IDs %s already exists. The duplicate pages/directories have been removed from the selection. Please check your input.</source>
-                <target>Eine globale Anweisung für Kontext &quot;%s&quot;, Bereich &quot;%s&quot; und Seiten-/Verzeichnis-IDs %s existiert bereits. Die doppelten Seiten/Verzeichnisse wurden aus der Auswahl entfernt. Bitte überprüfe deine Eingabe.</target>
+                <target>Eine globale Anweisung für Kontext „%s“, Bereich „%s“ und Seiten-/Verzeichnis-IDs %s existiert bereits. Die doppelten Seiten/Verzeichnisse wurden aus der Auswahl entfernt. Bitte überprüfe deine Eingabe.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.globalInstructions.duplicate_detected_title">
@@ -556,8 +584,8 @@
                 <target>Dies kann einen Moment dauern.</target>
             </trans-unit>
             <trans-unit id="aiSuite.js.progress.translatingWholePage">
-                <source>Translating Whole Page...</source>
-                <target>Übersetze ganze Seite...</target>
+                <source>Translation in progress.</source>
+                <target>Übersetzung läuft.</target>
             </trans-unit>
 
             <trans-unit id="aiSuite.js.summary.contentElements">
@@ -1061,6 +1089,10 @@
                 <source>Page metadata was translated successfully, but no content elements were found for translation.</source>
                 <target>Die Seitenmetadaten wurden erfolgreich übersetzt, aber es wurden keine Inhaltselemente zur Übersetzung gefunden.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.translation.nothingSelected">
+                <source>Nothing was translated: select the content elements to translate, or translate the whole page.</source>
+                <target>Es wurde nichts übersetzt: Wähle die Inhaltselemente aus, die übersetzt werden sollen, oder übersetze die ganze Seite.</target>
+            </trans-unit>
 
             <trans-unit id="aiSuite.unableToFetchNewsRecord">
                 <source>Please contact your admin. Unable to fetch content of news record with ID %s. Page with ID %s has no plugin for displaying the news article detail view. Please check your AI Suite extension settings and make sure that you have inserted a correct page ID within the &quot;Metadata&quot; tab for fetching the news record.</source>
@@ -1324,6 +1356,34 @@
             <trans-unit id="aiSuite.form.label.description">
                 <source>Description</source>
                 <target>Beschreibung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.workflow.selectionNotAllowed" approved="yes">
+                <source>The selection contains records, fields or languages you may not edit.</source>
+                <target>Die Auswahl enthält Datensätze, Felder oder Sprachen, die du nicht bearbeiten darfst.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.modelNotAllowed" approved="yes">
+                <source>Your user group may not use the AI model %s.</source>
+                <target>Deine Benutzergruppe darf das KI-Modell %s nicht verwenden.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.noPageAccess" approved="yes">
+                <source>You do not have access to this page.</source>
+                <target>Du hast keinen Zugriff auf diese Seite.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.imageNotStored" approved="yes">
+                <source>The generated image could not be stored. The log names the reason.</source>
+                <target>Das generierte Bild konnte nicht gespeichert werden. Der Grund steht im Log.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.serverNotHttps" approved="yes">
+                <source>The AI Suite server URL must start with https://. No request was sent.</source>
+                <target>Die URL des AI Suite Servers muss mit https:// beginnen. Es wurde keine Anfrage gesendet.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.serverNotHttpsNotSaved" approved="yes">
+                <source>The AI Suite server URL must start with https://. The settings were not saved.</source>
+                <target>Die URL des AI Suite Servers muss mit https:// beginnen. Die Einstellungen wurden nicht gespeichert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.routeNotAllowed" approved="yes">
+                <source>You do not have permission to use this AI Suite feature.</source>
+                <target>Du hast keine Berechtigung für diese Funktion der AI Suite.</target>
             </trans-unit>
             <trans-unit id="aiSuite.error.generationNotAllowed" approved="yes">
                 <source>You do not have permission to use AI content generation.</source>

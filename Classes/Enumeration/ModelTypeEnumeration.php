@@ -19,7 +19,7 @@ final class ModelTypeEnumeration
     public const TEXT = 'CHATGPT,Vision';
     public const IMAGE = 'GPTImage,Midjourney,Flux';
     public const TRANSLATE = 'GoogleTranslate';
-    public const CHAT = 'OpenAiLuna,IonosQwen35,ClaudeHaiku45,ClaudeSonnet5,ClaudeOpus5';
+    public const CHAT = 'OpenAiLuna,IonosQwen38,IonosQwen35,ClaudeHaiku55,ClaudeSonnet55';
 
     public const CHATGPT = 'openAiApiKey';
     public const ANTHROPIC = 'anthropicApiKey';
@@ -30,14 +30,14 @@ final class ModelTypeEnumeration
     public const GOOGLETRANSLATE = 'googleTranslateApiKey';
     public const DEEPL = 'deeplApiKey,deeplApiMode';
     public const DEEPLGLOSSARYMANAGER = 'deeplApiKey,deeplApiMode';
-    public const AISUITETEXTULTIMATE = '';
+    public const AISUITETEXTULTIMATE = 'aiModelHubApiKey';
 
     public const MITTWALDMINISTRAL14B = 'mittwaldAiModelHubApiKey';
     public const MITTWALDMINISTRAL14BVISION = 'mittwaldAiModelHubApiKey';
 
     public const OPENAILUNA = 'openAiApiKey';
     public const IONOSQWEN35 = 'aiModelHubApiKey';
-    public const CLAUDEHAIKU45 = 'anthropicApiKey';
-    public const CLAUDESONNET5 = 'anthropicApiKey';
-    public const CLAUDEOPUS5 = 'anthropicApiKey';
+    public const IONOSQWEN38 = 'aiModelHubApiKey';
+    public const CLAUDEHAIKU55 = 'anthropicApiKey';
+    public const CLAUDESONNET55 = 'anthropicApiKey';
 }

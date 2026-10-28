@@ -62,12 +62,6 @@ class Creation {
         });
     }
 
-    /**
-     *
-     * @param selectors
-     * @param librarySelector
-     * @param calculateRequestAmountFn
-     */
     handleCheckboxChange(selectors, librarySelector, calculateRequestAmountFn) {
         const fileCheckboxes = document.querySelectorAll(selectors);
 

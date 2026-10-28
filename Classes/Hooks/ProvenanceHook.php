@@ -34,7 +34,7 @@ class ProvenanceHook
         }
 
         $uid = (int) $recordUid;
-        if ($uid <= 0) {
+        if ($uid <= 0 || ('update' === $status && [] === $fields)) {
             return;
         }
 

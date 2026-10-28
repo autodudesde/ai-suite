@@ -17,9 +17,6 @@ namespace AutoDudes\AiSuite\Service;
 use AutoDudes\AiSuite\Domain\Model\Dto\ProvenanceContext;
 use TYPO3\CMS\Core\SingletonInterface;
 
-/**
- * A request-scoped window in which every DataHandler write is attributed to an AI feature.
- */
 class ProvenanceCaptureService implements SingletonInterface
 {
     /** @var list<ProvenanceContext> */

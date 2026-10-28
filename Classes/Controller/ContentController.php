@@ -21,6 +21,7 @@ use AutoDudes\AiSuite\Exception\AiSuiteException;
 use AutoDudes\AiSuite\Factory\PageContentFactory;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\ContentService;
+use AutoDudes\AiSuite\Service\DiffService;
 use AutoDudes\AiSuite\Service\RichTextElementService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
@@ -45,6 +46,7 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 #[AsController]
 class ContentController extends AbstractBackendController
@@ -66,6 +68,7 @@ class ContentController extends AbstractBackendController
         protected readonly PageContentFactory $pageContentFactory,
         protected readonly LoggerInterface $logger,
         protected readonly ExtensionConfiguration $extensionConfiguration,
+        protected readonly DiffService $diffService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -103,8 +106,9 @@ class ContentController extends AbstractBackendController
                 $this->aiSuiteContext->localizationService->translate(''.$e->getTitleKey()),
                 ContextualFeedbackSeverity::ERROR
             );
-            if (!empty($e->getReturnUrl())) {
-                return new RedirectResponse($e->getReturnUrl());
+            $returnUrl = GeneralUtility::sanitizeLocalUrl($e->getReturnUrl());
+            if ('' !== $returnUrl) {
+                return new RedirectResponse($returnUrl);
             }
 
             return $this->view->renderResponse($e->getTemplate());
@@ -326,8 +330,6 @@ class ContentController extends AbstractBackendController
             'contentElementData' => $contentElementData,
             'selectedTcaColumns' => $requestFields,
             'initialImageAi' => $imageAi,
-            // Generation and saving are two separate requests, so the answer envelope naming the
-            // model is gone by the time the register row is written. The wizard carries it along.
             'generationModels' => $models,
             'uuid' => $this->uuidService->generateUuid(),
         ]);
@@ -373,8 +375,16 @@ class ContentController extends AbstractBackendController
                 $contentElementIrreFields[$table] = $fields['foreignField'];
             }
         }
-        $this->assertGenerationAllowed((string) (array_key_first($selectedTcaColumns) ?? 'tt_content'));
+        $writtenTables = array_merge(array_keys($contentElementTextData), array_keys($contentElementImageData));
+        $writesNews = in_array('tx_news_domain_model_news', $writtenTables, true);
+        if ($writesNews) {
+            $this->assertGenerationAllowed('tx_news_domain_model_news');
+        }
+        if (!$writesNews || in_array('tt_content', $writtenTables, true)) {
+            $this->assertGenerationAllowed('tt_content');
+        }
         $this->assertPageContentEditAccess((int) ($content['pid'] ?? 0));
+        $this->assertPageContentEditAccess((int) ($content['uidPid'] ?? 0));
         $generationModels = json_decode((string) ($parsedBody['generationModels'] ?? ''), true);
         $generationModels = is_array($generationModels) ? $generationModels : [];
         $this->aiSuiteContext->provenanceCapture->begin(
@@ -396,7 +406,9 @@ class ContentController extends AbstractBackendController
             $this->aiSuiteContext->provenanceCapture->end();
         }
 
-        return new RedirectResponse($content['returnUrl']);
+        $returnUrl = GeneralUtility::sanitizeLocalUrl((string) ($content['returnUrl'] ?? ''));
+
+        return new RedirectResponse('' !== $returnUrl ? $returnUrl : (string) $this->uriBuilder->buildUriFromRoute('web_layout', ['id' => (int) ($content['uidPid'] ?? 0)]));
     }
 
     public function ckeditorLibrariesAction(ServerRequestInterface $request): ResponseInterface
@@ -409,7 +421,7 @@ class ContentController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.htmlspecialchars($librariesAnswer->getMessage()).'</div>',
                     ]
                 )
             );
@@ -444,7 +456,7 @@ class ContentController extends AbstractBackendController
                 (string) json_encode(
                     [
                         'success' => false,
-                        'output' => '<div class="alert alert-danger" role="alert">'.$librariesAnswer->getMessage().'</div>',
+                        'output' => '<div class="alert alert-danger" role="alert">'.htmlspecialchars($librariesAnswer->getMessage()).'</div>',
                     ]
                 )
             );
@@ -493,22 +505,25 @@ class ContentController extends AbstractBackendController
                 'selectedContent' => $parsedBody['selectedContent'] ?? '',
                 'wholeContent' => $parsedBody['wholeContent'] ?? '',
                 'type' => $parsedBody['type'] ?? '',
-                'globalInstructions' => $globalInstructions,
+                'global_instructions' => $globalInstructions,
             ],
             $parsedBody['prompt'] ?? '',
             $parsedBody['languageCode'] ?? 'en',
             [
                 'text' => $textModel,
             ],
+            configuredModelSetting: 'easy-language' === ($parsedBody['type'] ?? '') ? 'easyLanguageLibrary' : '',
         );
         if ('Error' === $answer->getType()) {
             return $this->logError($answer->getResponseData()['message'], $response, 503);
         }
+        $output = (string) $answer->getResponseData()['editContentResult'];
         $response->getBody()->write(
             (string) json_encode(
                 [
                     'success' => true,
-                    'output' => $answer->getResponseData()['editContentResult'],
+                    'output' => $output,
+                    'diff' => $this->diffService->diffHtmlAsText((string) ($parsedBody['selectedContent'] ?? ''), $output),
                 ]
             )
         );
@@ -516,7 +531,6 @@ class ContentController extends AbstractBackendController
         return $response;
     }
 
-    // runs before any credits are spent
     protected function assertGenerationAllowed(string $table): void
     {
         $flag = 'tx_news_domain_model_news' === $table ? 'enable_news_generation' : 'enable_content_element_generation';

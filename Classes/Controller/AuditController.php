@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\AuditResultRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
+use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\AuditModelService;
 use AutoDudes\AiSuite\Service\ContentTargetService;
@@ -28,6 +29,7 @@ use AutoDudes\AiSuite\Service\LibraryService;
 use AutoDudes\AiSuite\Service\SendRequestService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
+use AutoDudes\AiSuite\Service\WorkflowViewService;
 use AutoDudes\AiSuite\Service\WorkspaceContextService;
 use AutoDudes\AiSuite\Utility\AuditScoreUtility;
 use Psr\Http\Message\ResponseInterface;
@@ -46,6 +48,7 @@ use TYPO3\CMS\Core\Localization\Locale;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\SiteFinder;
+use TYPO3\CMS\Core\Type\Bitmask\Permission;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -104,6 +107,7 @@ class AuditController extends AbstractBackendController
         protected readonly LoggerInterface $logger,
         protected readonly CsvExportService $csvExportService,
         protected readonly WorkspaceContextService $workspaceContextService,
+        protected readonly WorkflowViewService $workflowViewService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -185,6 +189,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $parsedBody = (array) $request->getParsedBody();
         $pageId = (int) ($parsedBody['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
         }
@@ -206,6 +213,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $parsedBody = (array) $request->getParsedBody();
         $pageId = (int) ($parsedBody['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $issueIds = json_decode((string) ($parsedBody['issueIds'] ?? '[]'), true);
         if ($pageId <= 0 || !\is_array($issueIds) || [] === $issueIds) {
             return $this->jsonError($response, 'pageId and issueIds are required.');
@@ -294,6 +304,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $kind = 'alt' === ($params['kind'] ?? '') ? 'alt' : 'metadata';
         $fields = json_decode((string) ($params['fields'] ?? '[]'), true);
         if ($pageId <= 0 || !\is_array($fields) || [] === $fields) {
@@ -310,8 +323,9 @@ class AuditController extends AbstractBackendController
                 $model = (string) ($params['visionAiModel'] ?? '');
                 $requestContent = $this->aiSuiteContext->metadataService->getFileContent($sysFileId);
                 $filename = $this->aiSuiteContext->metadataService->getFilename($sysFileId);
-                $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('files', 'metadata');
-                $overridePredefinedPrompt = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', ['']);
+                $folder = $this->workflowViewService->getFolderCombinedIdentifier($sysFileId);
+                $globalInstructions = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('files', 'metadata', null, $folder);
+                $overridePredefinedPrompt = $this->aiSuiteContext->globalInstructionService->checkOverridePredefinedPrompt('files', 'metadata', [$folder ?? '']);
             } else {
                 $model = (string) ($params['textAiModel'] ?? '');
                 $requestContent = $this->aiSuiteContext->metadataService->fetchContentFromUrl($this->aiSuiteContext->metadataService->getPreviewUrl($pageId));
@@ -339,7 +353,8 @@ class AuditController extends AbstractBackendController
                     ],
                     '',
                     (string) ($params['langIsoCode'] ?? 'en'),
-                    ['text' => $model]
+                    ['text' => $model],
+                    configuredModelSetting: 'auditDefaultTextModel',
                 );
                 if ('Error' === $answer->getType()) {
                     return $this->logError(strip_tags($this->requestService->getClientErrorMessage($answer)), $response, 503);
@@ -391,6 +406,9 @@ class AuditController extends AbstractBackendController
         $table = (string) ($params['table'] ?? '');
         $uid = (int) ($params['uid'] ?? 0);
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $auditType = \in_array($params['auditType'] ?? '', self::AUDIT_TYPES, true) ? (string) $params['auditType'] : 'seo';
         $values = json_decode((string) ($params['values'] ?? '[]'), true);
         $markFixed = json_decode((string) ($params['markFixedIssueIds'] ?? '[]'), true);
@@ -449,6 +467,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $auditType = \in_array($params['auditType'] ?? '', self::AUDIT_TYPES, true) ? (string) $params['auditType'] : 'seo';
         $issueId = trim((string) ($params['issueId'] ?? ''));
         $issueMessage = trim((string) ($params['issueMessage'] ?? ''));
@@ -489,7 +510,8 @@ class AuditController extends AbstractBackendController
                 ],
                 '',
                 $this->backendUserLanguage(),
-                ['text' => $model]
+                ['text' => $model],
+                configuredModelSetting: 'auditDefaultTextModel',
             );
             if ('Error' === $answer->getType()) {
                 return $this->logError(strip_tags($this->requestService->getClientErrorMessage($answer)), $response, 503);
@@ -524,6 +546,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
         }
@@ -558,7 +583,8 @@ class AuditController extends AbstractBackendController
                 ],
                 '',
                 $pageLanguage,
-                ['text' => $model]
+                ['text' => $model],
+                configuredModelSetting: 'auditDefaultTextModel',
             );
             if ('Error' === $answer->getType()) {
                 return $this->logError(strip_tags($this->requestService->getClientErrorMessage($answer)), $response, 503);
@@ -597,6 +623,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
         }
@@ -626,6 +655,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $name = trim((string) ($params['name'] ?? ''));
         if ($pageId <= 0 || '' === $name || mb_strlen($name) > 255) {
             return $this->jsonError($response, 'pageId and a name (max. 255 chars) are required.');
@@ -645,6 +677,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $depth = max(0, min(20, (int) ($params['depth'] ?? 0)));
         $auditType = (string) ($params['auditType'] ?? 'seo');
         if (!\array_key_exists($auditType, self::AUDIT_BATCH_PRICES)) {
@@ -679,6 +714,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $languageUid = max(0, (int) ($params['languageUid'] ?? 0));
         $auditType = (string) ($params['auditType'] ?? 'seo');
         if (!\array_key_exists($auditType, self::AUDIT_BATCH_PRICES)) {
@@ -729,6 +767,9 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
         $auditType = \in_array($params['auditType'] ?? '', self::AUDIT_TYPES, true) ? (string) $params['auditType'] : 'questions';
         if ($pageId <= 0) {
             return $this->jsonError($response, 'pageId is required.');
@@ -761,6 +802,13 @@ class AuditController extends AbstractBackendController
         $response = new Response();
         $params = (array) $request->getParsedBody();
         $url = trim((string) ($params['url'] ?? ''));
+        $pageId = (int) ($params['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            return $this->jsonError($response, $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'), 403);
+        }
+        if ($pageId > 0) {
+            $url = $this->aiSuiteContext->metadataService->getPreviewUrl($pageId, [], max(0, (int) ($params['languageUid'] ?? 0)));
+        }
         $questions = json_decode((string) ($params['questions'] ?? '[]'), true);
         if ('' === $url || !\is_array($questions) || [] === $questions) {
             return $this->jsonError($response, 'url and questions are required.');
@@ -775,12 +823,13 @@ class AuditController extends AbstractBackendController
             $answer = $this->requestService->sendDataRequest(
                 'questionsAnswers',
                 [
-                    'request_content' => $this->aiSuiteContext->metadataService->fetchContentFromUrl($url),
+                    'request_content' => $this->auditContent($url, $pageId),
                     'questions' => (string) json_encode(array_values(array_map('strval', $questions))),
                 ],
                 '',
                 $this->backendUserLanguage(),
-                ['text' => $model]
+                ['text' => $model],
+                configuredModelSetting: 'auditDefaultTextModel',
             );
             if ('Error' === $answer->getType()) {
                 return $this->logError(strip_tags($this->requestService->getClientErrorMessage($answer)), $response, 503);
@@ -807,6 +856,15 @@ class AuditController extends AbstractBackendController
     {
         $queryParams = $this->request->getQueryParams();
         $pageId = (int) ($queryParams['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            $this->view->addFlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->overviewAction();
+        }
         $auditType = \in_array($queryParams['auditType'] ?? '', self::AUDIT_TYPES, true) ? (string) $queryParams['auditType'] : 'seo';
         $languageUid = max(0, (int) ($queryParams['languageUid'] ?? 0));
 
@@ -835,6 +893,15 @@ class AuditController extends AbstractBackendController
         $parsedBody = (array) $this->request->getParsedBody();
         $auditType = \in_array($parsedBody['auditType'] ?? '', self::AUDIT_TYPES, true) ? $parsedBody['auditType'] : 'seo';
         $pageId = (int) ($parsedBody['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            $this->view->addFlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->overviewAction();
+        }
         $externalUrl = trim((string) ($parsedBody['externalUrl'] ?? ''));
         $keyword = \in_array($auditType, ['seo', 'questions', 'cluster'], true) ? trim((string) ($parsedBody['keyword'] ?? '')) : '';
         $languageUid = max(0, (int) ($parsedBody['languageUid'] ?? 0));
@@ -943,6 +1010,15 @@ class AuditController extends AbstractBackendController
     {
         $queryParams = $this->request->getQueryParams();
         $pageId = (int) ($queryParams['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            $this->view->addFlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->overviewAction();
+        }
         $auditType = \in_array($queryParams['auditType'] ?? '', self::AUDIT_TYPES, true) ? $queryParams['auditType'] : 'seo';
         $languageUid = max(0, (int) ($queryParams['languageUid'] ?? 0));
 
@@ -966,6 +1042,15 @@ class AuditController extends AbstractBackendController
     {
         $parsedBody = (array) $this->request->getParsedBody();
         $pageId = (int) ($parsedBody['pageId'] ?? 0);
+        if (!$this->mayReadPage($pageId)) {
+            $this->view->addFlashMessage(
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.noPageAccess'),
+                $this->aiSuiteContext->localizationService->translate('aiSuite.error.default.title'),
+                ContextualFeedbackSeverity::ERROR
+            );
+
+            return $this->overviewAction();
+        }
         $keyword = trim((string) ($parsedBody['keyword'] ?? ''));
 
         try {
@@ -1121,11 +1206,12 @@ class AuditController extends AbstractBackendController
                 'market' => $market,
                 'url' => $url,
                 'keyword' => $keyword,
-                'request_content' => $this->aiSuiteContext->metadataService->fetchContentFromUrl($url),
+                'request_content' => $this->auditContent($url, $sourcePageId),
             ],
             '',
             $langIsoCode,
-            ['text' => $model]
+            ['text' => $model],
+            configuredModelSetting: 'auditDefaultTextModel',
         );
         if ('Error' === $answer->getType()) {
             $this->view->addFlashMessage(
@@ -1170,6 +1256,7 @@ class AuditController extends AbstractBackendController
             'url' => $url,
             'keyword' => $keyword,
             'pageId' => $pageId,
+            'languageUid' => $languageUid,
             'cachedAt' => $cachedAt,
             'questions' => $questions,
             'summary' => \is_array($body['summary'] ?? null) ? $body['summary'] : [],
@@ -1215,11 +1302,12 @@ class AuditController extends AbstractBackendController
             [
                 'market' => $market,
                 'url' => $url,
-                'request_content' => $this->aiSuiteContext->metadataService->fetchContentFromUrl($url),
+                'request_content' => $this->auditContent($url, $sourcePageId),
             ],
             '',
             $this->backendUserLanguage(),
-            ['text' => $model]
+            ['text' => $model],
+            configuredModelSetting: 'auditDefaultTextModel',
         );
         if ('Error' === $answer->getType()) {
             $this->view->addFlashMessage(
@@ -1298,11 +1386,12 @@ class AuditController extends AbstractBackendController
             [
                 'market' => $market,
                 'url' => $url,
-                'request_content' => $this->aiSuiteContext->metadataService->fetchContentFromUrl($url),
+                'request_content' => $this->auditContent($url, $sourcePageId),
             ],
             '',
             $this->backendUserLanguage(),
-            ['text' => $model]
+            ['text' => $model],
+            configuredModelSetting: 'auditDefaultTextModel',
         );
         if ('Error' === $answer->getType()) {
             $this->view->addFlashMessage(
@@ -1396,11 +1485,12 @@ class AuditController extends AbstractBackendController
             [
                 'market' => $market,
                 'keyword' => $keyword,
-                'request_content' => $this->aiSuiteContext->metadataService->fetchContentFromUrl($url),
+                'request_content' => $this->auditContent($url, $sourcePageId),
             ],
             '',
             $this->backendUserLanguage(),
-            ['text' => $model]
+            ['text' => $model],
+            configuredModelSetting: 'auditDefaultTextModel',
         );
         if ('Error' === $answer->getType()) {
             $this->view->addFlashMessage(
@@ -1669,7 +1759,8 @@ class AuditController extends AbstractBackendController
             $issue['authorboxAction'] = 'eeat-author-missing' === $issueId && $pageId > 0 && !$issue['fixed'];
             $issue['advice'] = \is_array($adviceByIssue[$issueId] ?? null) ? $adviceByIssue[$issueId] : [];
             $issue['adviceable'] = $pageId > 0 && 'ai-assist' === $level && [] === $issue['advice'];
-            $issue['hasMoreInfo'] = '' !== (string) ($issue['hint'] ?? '') || '' !== (string) ($issue['docUrl'] ?? '');
+            $issue['docUrl'] = 1 === preg_match('#^https?://#i', (string) ($issue['docUrl'] ?? '')) ? (string) $issue['docUrl'] : '';
+            $issue['hasMoreInfo'] = '' !== (string) ($issue['hint'] ?? '') || '' !== $issue['docUrl'];
             $issue['hasActions'] = $issue['aiFixable'] || $issue['authorboxAction'] || $issue['adviceable'] || $issue['fixed'] || $issue['hasMoreInfo'];
             $grouped[$level][] = $issue;
         }
@@ -1876,5 +1967,25 @@ class AuditController extends AbstractBackendController
         $lang = (string) ($this->aiSuiteContext->backendUserService->getBackendUser()?->user['lang'] ?? 'default');
 
         return 'default' === $lang ? 'en' : substr($lang, 0, 2);
+    }
+
+    private function mayReadPage(int $pageId): bool
+    {
+        if ($pageId <= 0) {
+            return true;
+        }
+        $backendUser = $this->aiSuiteContext->backendUserService->getBackendUser();
+
+        return null !== $backendUser && \is_array(BackendUtility::readPageAccess($pageId, $backendUser->getPagePermsClause(Permission::PAGE_SHOW)));
+    }
+
+    /**
+     * @throws FetchedContentFailedException
+     */
+    private function auditContent(string $url, int $sourcePageId): string
+    {
+        return $sourcePageId > 0
+            ? $this->aiSuiteContext->metadataService->fetchContentFromUrl($url)
+            : $this->aiSuiteContext->metadataService->fetchPublicContent($url);
     }
 }

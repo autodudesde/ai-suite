@@ -70,6 +70,7 @@ class TranslationRepository extends AbstractRepository
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $this->addWorkspaceRestriction($queryBuilder);
 
         return $queryBuilder
             ->select('uid', 'pid', 'CType')
@@ -100,6 +101,7 @@ class TranslationRepository extends AbstractRepository
 
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()->removeAll()->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+        $this->addWorkspaceRestriction($queryBuilder);
         $element = $queryBuilder
             ->select('uid')
             ->from($table)

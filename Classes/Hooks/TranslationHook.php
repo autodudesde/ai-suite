@@ -167,8 +167,7 @@ class TranslationHook
 
         $translateFieldsJson = (string) json_encode($translateFields, SendRequestService::JSON_SAFE_FLAGS);
 
-        $glossarEntries = $this->glossarService->findGlossarEntries($translateFieldsJson, $destLangId, $srcLangId);
-        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
+        $glossaryParameters = $this->glossarService->buildRequestParameters($translateFieldsJson, $srcLangId, $destLangId, $rootPageId);
 
         $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
 
@@ -177,11 +176,11 @@ class TranslationHook
             [
                 'translate_fields' => $translateFieldsJson,
                 'translate_fields_count' => $elementsCount,
-                'glossary' => json_encode($glossarEntries, SendRequestService::JSON_SAFE_FLAGS),
+                'glossary' => $glossaryParameters['glossary'],
                 'source_lang' => $srcLangIsoCode,
                 'target_lang' => $destLangIsoCode,
                 'uuid' => $aiSuiteConfig['uuid'] ?? '',
-                'deepl_glossary_id' => $glossary['glossar_uuid'] ?? '',
+                'deepl_glossary_id' => $glossaryParameters['deepl_glossary_id'],
                 'global_instructions' => $globalInstructions,
             ],
             '',
@@ -267,8 +266,7 @@ class TranslationHook
         $translateAi = $aiSuiteConfig['translateAi'];
         $rootPageId = (int) $aiSuiteConfig['rootPageId'];
 
-        $glossarEntries = $this->glossarService->findGlossarEntries($translateFields, $destLangId, $srcLangId);
-        $glossary = $this->glossarService->findDeeplGlossary($rootPageId, $srcLangId, $destLangId);
+        $glossaryParameters = $this->glossarService->buildRequestParameters($translateFields, $srcLangId, $destLangId, $rootPageId);
 
         $globalInstructions = $this->globalInstructionService->buildGlobalInstruction('pages', 'translation', $pageId);
 
@@ -277,11 +275,11 @@ class TranslationHook
             [
                 'translate_fields' => $translateFields,
                 'translate_fields_count' => $elementsCount,
-                'glossary' => json_encode($glossarEntries, SendRequestService::JSON_SAFE_FLAGS),
+                'glossary' => $glossaryParameters['glossary'],
                 'source_lang' => $srcLangIsoCode,
                 'target_lang' => $destLangIsoCode,
                 'uuid' => $aiSuiteConfig['uuid'] ?? '',
-                'deepl_glossary_id' => $glossary['glossar_uuid'] ?? '',
+                'deepl_glossary_id' => $glossaryParameters['deepl_glossary_id'],
                 'whole_page_mode' => true,
                 'scope' => $aiSuiteConfig['scope'] ?? '',
                 'global_instructions' => $globalInstructions,
@@ -366,14 +364,11 @@ class TranslationHook
             }
             foreach ($records as $uid => $fields) {
                 if (is_array($fields)) {
-                    $translationResults[$table][$uid] = $this->translationService->claimTranslatedFields((string) $table, $fields);
+                    $translationResults[$table][$uid] = $this->translationService->claimTranslatedFields((string) $table, $fields, (int) $uid);
                 }
             }
         }
 
-        // The same window the module and CLI paths open. Without it the localization wizard — the
-        // entry point editors actually use — would produce translations the register never sees,
-        // while identical output from the other paths is marked.
         $capture = GeneralUtility::makeInstance(ProvenanceCaptureService::class);
         $capture->begin(ProvenanceContext::translated(ProvenanceContext::FEATURE_TRANSLATION, $model));
 

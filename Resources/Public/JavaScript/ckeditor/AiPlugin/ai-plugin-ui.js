@@ -6,6 +6,9 @@ import Ajax from '@autodudes/ai-suite/helper/ajax.js';
 import Notification from '@typo3/backend/notification.js';
 import Provenance from '@autodudes/ai-suite/helper/provenance.js';
 import {fallbackIcon, loadPluginIcon} from '@autodudes/ai-suite/ckeditor/plugin-icon.js';
+import {openCompareModal} from '@autodudes/ai-suite/ckeditor/CompareModal/compare-modal.js';
+
+const TARGET_MARKER = 'aiSuite:target';
 
 export default class AiPluginUI extends Plugin {
     static get requires() {
@@ -38,16 +41,13 @@ export default class AiPluginUI extends Plugin {
             });
 
             button.on( 'execute', async () => {
-                this.selectedContent = '';
-
                 await this._ensurePrefill();
                 if (this.libraries.length === 0) {
                     Notification.warning(TYPO3.lang['aiSuite.easyLanguagePlugin.noLibraryFound'], '', 8);
                     return;
                 }
 
-                const modalView = await this._createFormView(editor.locale);
-                this.selectedContent = await this._getSelectedContent(editor);
+                const modalView = this._createFormView();
 
                 this.contextualBalloon.add( {
                     view: modalView,
@@ -81,13 +81,8 @@ export default class AiPluginUI extends Plugin {
     }
 
     async _fetchRteContent(data) {
-        let res = await Ajax.fetchLibraries('aisuite_ckeditor_libraries', data);
-        if (General.isUsable(res)) {
-            return res.output;
-        } else {
-            console.error('Error');
-            return null;
-        }
+        const res = await Ajax.fetchLibraries('aisuite_ckeditor_libraries', data);
+        return General.isUsable(res) ? res.output : null;
     }
 
     _createFormView() {
@@ -102,27 +97,20 @@ export default class AiPluginUI extends Plugin {
         } );
         this.listenTo( modalView, 'cancel', () => {
             this.contextualBalloon.remove( modalView );
+            this._clearTarget();
         } );
-        this.listenTo( editor.model.document.selection, 'change:range', (evt) => {
-            this.selectedContent = this._getSelectedContent();
-        });
+        this.listenTo( modalView.promptInputView, 'input', () => modalView.showPromptError(false) );
         this.listenTo( modalView.saveButtonView, 'execute', async () => {
-            const prompt = modalView.promptInputView.element.value;
-            if(prompt.trim() === '') {
-                alert(TYPO3.lang['aiSuite.module.general.noContentSelected']);
+            const prompt = modalView.getPrompt();
+            if (prompt.trim() === '') {
+                modalView.showPromptError(true);
                 return;
             }
-            modalView.element.querySelector('.ck-dialog-inputs').style.display = 'none';
-            modalView.element.querySelector('.ck-spinner-wrapper').style.display = 'flex';
+            this.selectedContent = this._getSelectedContent();
+            const textModel = modalView.getSelectedModel();
+            this._markTarget();
+            modalView.setLoading(true);
 
-            let textModel = '';
-            modalView.radioButtonGroup.forEach( (radioButtonGroup) => {
-                radioButtonGroup.element.childNodes.forEach( (node) => {
-                    if(node.type !== undefined && node.type === 'radio' && node.checked) {
-                        textModel = node.value;
-                    }
-                });
-            })
             const postData = {
                 prompt: prompt,
                 textModel: textModel,
@@ -132,23 +120,55 @@ export default class AiPluginUI extends Plugin {
                 uuid: this.uuid,
                 pageId: this.pageId,
             };
-            let res = await Ajax.sendRteAjaxRequest( postData );
-            if(General.isUsable(res)) {
-                editor.model.change( () => {
-                    const viewFragment = this.editor.data.processor.toView( res.output );
-                    const modelFragment = this.editor.data.toModel( viewFragment );
-                    this.editor.model.insertContent(modelFragment);
-                    Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', textModel);
-                } );
-                modalView.element.querySelector('.ck-dialog-inputs').style.display = 'flex';
-                modalView.spinner.set( { isVisible: false } );
-                modalView.element.querySelector('.ck-spinner-wrapper').style.display = 'none';
-            } else {
-                console.error('Error');
+            const res = await Ajax.sendRteAjaxRequest( postData );
+            modalView.setLoading(false);
+            if (!General.isUsable(res)) {
+                return;
             }
-            this.contextualBalloon.remove( modalView );
+            if (this.contextualBalloon.hasView(modalView)) {
+                this.contextualBalloon.remove( modalView );
+            }
+            openCompareModal(res.diff ?? '', {
+                onAccept: () => {
+                    this._insertAtTarget(res.output);
+                    Provenance.recordAssistedForFieldName(editor.sourceElement?.name, 'content', textModel);
+                    this._clearTarget();
+                },
+                onDiscard: () => this.contextualBalloon.add( { view: modalView, position: this._getBalloonPositionData() } ),
+            });
         });
         return modalView;
+    }
+
+    _markTarget() {
+        const model = this.editor.model;
+        model.change( (writer) => {
+            const range = model.document.selection.getFirstRange();
+            if (model.markers.has(TARGET_MARKER)) {
+                writer.updateMarker(TARGET_MARKER, { range });
+            } else {
+                writer.addMarker(TARGET_MARKER, { range, usingOperation: false, affectsData: false });
+            }
+        } );
+    }
+
+    _insertAtTarget(html) {
+        const model = this.editor.model;
+        const marker = model.markers.get(TARGET_MARKER);
+        model.change( (writer) => {
+            if (marker) {
+                writer.setSelection(marker.getRange());
+            }
+            const modelFragment = this.editor.data.toModel( this.editor.data.processor.toView( html ) );
+            model.insertContent(modelFragment);
+        } );
+    }
+
+    _clearTarget() {
+        const model = this.editor.model;
+        if (model.markers.has(TARGET_MARKER)) {
+            model.change( (writer) => writer.removeMarker(TARGET_MARKER) );
+        }
     }
 
     _getSelectedContent() {
