@@ -304,12 +304,7 @@ class TranslationHook
                 ->addMessage($flashMessage)
             ;
         } else {
-            if ($this->writeTranslationResults($answer->getResponseData(), $dataHandler, (string) $translateAi)) {
-                $pageUid = (int) array_key_first($allTranslateFields['pages'] ?? []);
-                if ($pageUid > 0) {
-                    $this->translationService->updatePageSlug($pageUid);
-                }
-            }
+            $this->writeTranslationResults($answer->getResponseData(), $dataHandler, (string) $translateAi);
         }
     }
 
@@ -347,7 +342,7 @@ class TranslationHook
     /**
      * @param array<string, mixed> $responseData
      */
-    private function writeTranslationResults(array $responseData, DataHandler $dataHandler, string $model): bool
+    private function writeTranslationResults(array $responseData, DataHandler $dataHandler, string $model): void
     {
         $translationResults = $this->translationService->extractTranslationResults($responseData);
         [$translationResults, $untranslated] = $this->translationService->stripUntranslatedRecords($responseData, $translationResults);
@@ -355,7 +350,7 @@ class TranslationHook
         if ([] === $translationResults) {
             $this->addFlashMessage('aiSuite.translation.nothingTranslated', ContextualFeedbackSeverity::WARNING);
 
-            return false;
+            return;
         }
 
         foreach ($translationResults as $table => $records) {
@@ -383,7 +378,7 @@ class TranslationHook
         if (count($localDataHandler->errorLog) > 0) {
             $this->addErrorFlashMessage();
 
-            return false;
+            return;
         }
 
         if ([] !== $untranslated) {
@@ -392,8 +387,6 @@ class TranslationHook
                 implode(', ', $untranslated),
             ]);
         }
-
-        return true;
     }
 
     private function addErrorFlashMessage(): void

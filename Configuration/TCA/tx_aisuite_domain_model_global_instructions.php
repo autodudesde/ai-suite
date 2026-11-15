@@ -37,7 +37,7 @@ return [
     'types' => [
         '1' => [
             'showitem' => '
-        name, instructions, context, scope, use_for_subtree, extend_previous_instructions, override_predefined_prompt, selected_pages, selected_directories,
+        name, instructions, scope, use_for_subtree, apply_to_files, extend_previous_instructions, override_predefined_prompt, selected_pages, selected_directories,
         --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.access, hidden,',
         ],
     ],
@@ -115,13 +115,13 @@ return [
         'context' => [
             'exclude' => true,
             'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context',
-            'onChange' => 'reload',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'items' => [
                     ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.pages', 'value' => 'pages'],
                     ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.files', 'value' => 'files'],
+                    ['label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.context.global', 'value' => 'global'],
                 ],
                 'default' => 'pages',
                 'size' => 1,
@@ -149,7 +149,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectTree',
                 'foreign_table' => 'pages',
-                'foreign_table_where' => 'AND pages.doktype IN (1,4,254) ORDER BY pages.sorting',
+                'foreign_table_where' => 'AND pages.doktype <> 255 ORDER BY pages.sorting',
                 'size' => 30,
                 'treeConfig' => [
                     'parentField' => 'pid',
@@ -184,6 +184,22 @@ return [
         'use_for_subtree' => [
             'exclude' => true,
             'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.use_for_subtree',
+            'displayCond' => 'FIELD:context:!=:global',
+            'config' => [
+                'type' => 'check',
+                'default' => 1,
+                'items' => [
+                    [
+                        'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.enable',
+                    ],
+                ],
+            ],
+        ],
+        'apply_to_files' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.apply_to_files',
+            'description' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_tca.xlf:aiSuite.tca.globalInstructions.apply_to_files.description',
+            'displayCond' => 'FIELD:context:=:global',
             'config' => [
                 'type' => 'check',
                 'default' => 1,

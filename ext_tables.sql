@@ -21,7 +21,8 @@ CREATE TABLE tx_aisuite_domain_model_global_instructions (
     override_predefined_prompt tinyint(3) DEFAULT '0' NOT NULL,
     context VARCHAR(255) DEFAULT '' NOT NULL,
     selected_pages VARCHAR(255) DEFAULT '',
-    selected_directories LONGTEXT DEFAULT NULL
+    selected_directories LONGTEXT DEFAULT NULL,
+    apply_to_files tinyint(3) DEFAULT '1' NOT NULL
 );
 
 CREATE TABLE tx_aisuite_domain_model_requests (

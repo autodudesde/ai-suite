@@ -23,7 +23,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 class FolderSelectionService implements SingletonInterface
 {
     public const MAX_DEPTH = 5;
-    public const MAX_FOLDERS = 50;
     public const MAX_FILES = 1000;
 
     public function __construct(
@@ -115,7 +114,6 @@ class FolderSelectionService implements SingletonInterface
         $visitedFolders = [];
         $seenFileUids = [];
         $limitReached = false;
-        $folderCount = 0;
         $fileCount = 0;
 
         $rootFolders = [];
@@ -149,12 +147,11 @@ class FolderSelectionService implements SingletonInterface
                 }
                 $visitedFolders[$combinedIdentifier] = true;
 
-                if ($folderCount >= self::MAX_FOLDERS || $fileCount >= self::MAX_FILES) {
+                if ($fileCount >= self::MAX_FILES) {
                     $limitReached = true;
 
                     break 2;
                 }
-                ++$folderCount;
 
                 if (!$this->backendUserService->canReadFolder($folder)) {
                     $skipped[] = $combinedIdentifier;

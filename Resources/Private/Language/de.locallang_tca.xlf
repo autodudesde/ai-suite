@@ -339,6 +339,14 @@
                 <source>Global Instructions</source>
                 <target>Globale Anweisungen</target>
             </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.apply_to_files">
+                <source>Also for files</source>
+                <target>Auch für Dateien</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.apply_to_files.description">
+                <source>Also applies in the file list, file workflows and file metadata, independent of the site.</source>
+                <target>Gilt auch in der Dateiliste, in Datei-Workflows und bei Dateimetadaten, unabhängig von der Site.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.context">
                 <source>Context</source>
                 <target>Kontext</target>
@@ -346,6 +354,10 @@
             <trans-unit id="aiSuite.tca.globalInstructions.context.files">
                 <source>Filelist/AI Suite Filelist Module</source>
                 <target>Dateilisten-/AI Suite-Dateilistenmodul</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.context.global">
+                <source>Global (all pages of the site)</source>
+                <target>Global (alle Seiten der Site)</target>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.context.pages">
                 <source>Page/List/AI Suite Web Module</source>
@@ -386,6 +398,38 @@
             <trans-unit id="aiSuite.tca.globalInstructions.scope.files.translation">
                 <source>Metadata translations (Files, DeepL and Google Translate are excluded)</source>
                 <target>Metadaten-Übersetzungen (Dateien, DeepL und Google Translate sind ausgeschlossen)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.contentElement">
+                <source>ContentElements</source>
+                <target>Inhaltselemente</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.editContent">
+                <source>RTE Content Editing</source>
+                <target>RTE-Inhaltsbearbeitung</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.general">
+                <source>General (everywhere)</source>
+                <target>Allgemein (überall)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.imageWizard">
+                <source>ImageWizard (pages and files)</source>
+                <target>ImageWizard (Seiten und Dateien)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.metadata">
+                <source>Metadata (pages and files)</source>
+                <target>Metadaten (Seiten und Dateien)</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.newsRecord">
+                <source>News Records</source>
+                <target>News-Datensätze</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.pageTree">
+                <source>PageTree</source>
+                <target>Seitenbaum</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.translation">
+                <source>Translations (pages and files, DeepL and Google Translate are excluded)</source>
+                <target>Übersetzungen (Seiten und Dateien, DeepL und Google Translate sind ausgeschlossen)</target>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
                 <source>ContentElements</source>
@@ -461,12 +505,12 @@
                 <target>Zeigt den Button „Mit KI generieren und im Hintergrund automatisch ausfüllen“ im Workflow-Manager. So erstellte Hintergrund-Aufgaben werden asynchron vom Scheduler-gesteuerten Befehl ai-suite:process-tasks verarbeitet. Erfordert EXT:scheduler.</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAudit" approved="yes">
-                <source>Enable SEO and accessibility audits</source>
-                <target>SEO- und Barrierefreiheits-Audits aktivieren</target>
+                <source>Enable SEO, accessibility and content audits</source>
+                <target>SEO-, Barrierefreiheits- und Inhalts-Audits aktivieren</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAuditDescription" approved="yes">
-                <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
-                <target>Erlaubt SEO- und WCAG-Barrierefreiheits-Audits für öffentliche Seiten-URLs über die AutoDudes-Audit-Infrastruktur (Seiten-URL und Inhalt verlassen die TYPO3-Instanz).</target>
+                <source>Allows running SEO, WCAG accessibility and content audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
+                <target>Erlaubt SEO-, WCAG-Barrierefreiheits- und Inhalts-Audits für öffentliche Seiten-URLs über die AutoDudes-Audit-Infrastruktur (Seiten-URL und Inhalt verlassen die TYPO3-Instanz).</target>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAutoTranslation" approved="yes">
                 <source>Enable automatic translation of content elements on save</source>

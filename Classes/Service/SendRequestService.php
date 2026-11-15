@@ -35,6 +35,8 @@ class SendRequestService
 
     private const SERVER_TIMEOUT = 180;
 
+    private const ERROR_TYPES_WITH_SERVER_DETAIL = ['invalidRequest'];
+
     /**
      * @var array<string, string>
      */
@@ -279,11 +281,17 @@ class SendRequestService
     {
         $errorType = $answer->getErrorType();
 
+        $serverMessage = trim($answer->getMessage());
         if ('' !== $errorType && array_key_exists($errorType, self::ERROR_TYPE_MESSAGE_MAP)) {
-            return $this->localizationService->translate(self::ERROR_TYPE_MESSAGE_MAP[$errorType]);
+            $label = $this->localizationService->translate(self::ERROR_TYPE_MESSAGE_MAP[$errorType]);
+            if ('' !== $serverMessage && in_array($errorType, self::ERROR_TYPES_WITH_SERVER_DETAIL, true)) {
+                return $label."\n".$serverMessage;
+            }
+
+            return $label;
         }
 
-        return trim($answer->getMessage());
+        return $serverMessage;
     }
 
     public static function isHttpsUrl(string $url): bool

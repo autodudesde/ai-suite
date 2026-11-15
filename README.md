@@ -55,14 +55,14 @@ AI Suite adds a dedicated backend module whose dashboard gives access to the mai
 
 | Area | Purpose |
 |---|---|
-| **WorkflowManager** | Run tasks instantly, e.g. metadata generation for pages and/or images as well as translations. |
+| **WorkflowManager** | Run tasks instantly, e.g. metadata generation for pages and/or images as well as translations. A link can prefill the form through `aiSuitePreselect[...]` (field, depth, language, translation scope); it starts nothing, and every value is checked against the user's permissions. |
 | **TaskEngine** | Monitor and manage background tasks, e.g. the processing of bulk metadata generation or translations. |
-| **Global instructions** | Instructions applied to the prompts for selected pages or folders (optionally their subtree). |
+| **Global instructions** | Instructions applied to the prompts for a whole site, or for selected pages or folders (optionally their subtree). |
 | **Prompt templates** | Reusable, editable prompt templates for recurring generation tasks. |
 | **Page tree** | Generate a page tree (optionally including page metadata and content) from a prompt. |
 | **Agencies** | Special-purpose helpers, currently translating, validating and writing XLF files. |
 | **Settings** | Global extension configuration, e.g. AI Suite API Key, GDPR mode or directory protection. |
-| **Audit** | Run and review SEO, accessibility and further page audits; export SEO and accessibility results as CSV. |
+| **Audit** | Run and review SEO, accessibility and further page audits; export SEO and accessibility results as CSV. Other extensions can add actions to a finding through `AuditFindingActionsEvent`. |
 | **Statistics** | Usage per month and model, as reported by the AI Suite Server. |
 | **AI content** | Everything an AI feature wrote, with its edit state since generation (see [Transparency](#transparency-of-ai-generated-content-eu-ai-act-art-50)). |
 | **About this AI system** | Provider and roles under the EU AI Act. |
@@ -121,7 +121,7 @@ own page TSconfig if you want the prefix back.
 AI Suite can drive AI providers two ways:
 
 - **AutoDudes credits (single key).** One AI Suite API key unlocks every integrated provider; usage is billed against credits. Credits come as **Packs** (one-off, no subscription) and **Plans** (credits in a monthly/yearly subscription). The backend toolbar and dashboard show the remaining Pack credits and the Plan credits used.
-- **Bring your own keys (BYOK).** Configure your own provider keys (OpenAI, Anthropic, IONOS AI Model Hub for Flux and the IONOS models, Mittwald AI Model Hub, DeepL, Google Translate, Midjourney, and Staan for ChEddi's web research under GDPR mode) in the extension configuration. Requests still go through the AI Suite Server, which uses your keys under your own contracts.
+- **Bring your own keys (BYOK).** Configure your own provider keys (OpenAI, Anthropic, IONOS AI Model Hub for Flux and the IONOS models, Mittwald AI Model Hub, DeepL, Google Translate, Midjourney, and Staan for ChEddi's web research) in the extension configuration. Requests still go through the AI Suite Server, which uses your keys under your own contracts.
 
 See [autodudes.de](https://www.autodudes.de/) for current packages and pricing.
 
@@ -148,7 +148,7 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 | `easyLanguageLibrary` | `ChatGPT` | Model used for Easy Language rewrites (`ChatGPT`, `Anthropic`, or `AiSuiteTextUltimate` / Meta Llama-3.3). |
 | `disableTranslationFunctionality` | `0` | Master switch that unregisters the translation decorators (`DatabaseRecordList` and the core's page-localization handler) and the translation DataHandler hooks, translation on save included. |
 | `enableAutoTranslateOnSave` | `0` | Translate content elements into all site languages automatically when they are saved. |
-| `autoTranslateMode` | `pageModule` | `pageModule` applies finished translations when the page module is opened (status shown in the page tree), `cli` needs `ai-suite:process-tasks` running, `direct` translates synchronously on save (blocks the save, only for few languages). |
+| `autoTranslateMode` | `pageModule` | `pageModule` applies finished translations when the page module is opened (status shown in the page tree), `cli` hands the translation to `ai-suite:process-tasks` (needs EXT:scheduler, an active Scheduler task for that command and `enable_cli_workflow_execution` for the saving editor), `direct` translates synchronously on save (blocks the save, only for few languages). |
 | `autoTranslateModel` | `ChatGPT` | Model used for translation on save (`ChatGPT`, `Deepl`, `GoogleTranslate`, `Anthropic`, `MittwaldMinistral14B`). |
 | `autoTranslateMaxElementsPerSave` | `15` | Safety cap per save: a save that changes more elements skips automatic translation and notifies the editor. `0` = no limit. |
 
@@ -162,7 +162,7 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 | `metadataAutogenerateModel` | `Vision` | Model used for auto-generated file metadata. |
 | `metadataAutogenerateApproach` | `taskEngine` | `taskEngine` queues suggestions for review; `saveDirectly` writes the first suggestion immediately. |
 | `metadataAutogeneratePrompt` | _(empty)_ | Own prompt for file metadata generated on upload; replaces the predefined instruction. |
-| `minPlausiblePageContentLength` | `100` | Minimum length in characters of the fetched page HTML, markup included. A shorter answer counts as no usable page content and is not sent for page metadata generation. |
+| `minPlausiblePageContentLength` | `100` | Minimum length in bytes of the fetched page HTML, markup included (it must also contain `<html` or `<body`). A shorter answer counts as no usable page content and is not sent for page metadata generation. |
 
 ### Media
 
@@ -265,7 +265,7 @@ whoever works with the system.
 | `midjourneyId` | _(empty)_ | Your Midjourney account ID. |
 | `aiModelHubApiKey` | _(empty)_ | Your IONOS AI Model Hub API key (IONOS models, also used for Flux). |
 | `mittwaldAiModelHubApiKey` | _(empty)_ | Your Mittwald AI Model Hub API key (Mittwald models). |
-| `staanApiKey` | _(empty)_ | Your Staan API key. Only needed on a plan that runs on your own provider keys, and only for ChEddi's web research under GDPR mode. |
+| `staanApiKey` | _(empty)_ | Your Staan API key, used for ChEddi's web research on plans that run on your own provider keys. |
 
 ## Backend-group permissions
 
@@ -296,7 +296,7 @@ AI Suite gates access on two independent axes that both apply on every action: *
 | `enable_toolbar_stats_item` | Credits toolbar item |
 | `enable_global_settings` | Settings area inside the backend module |
 | `enable_agency` | Agencies area |
-| `enable_audit` | All page audits: SEO, accessibility and content audits (Audit module, context menu, ChEddi and MCP audit tools) |
+| `enable_audit` | All page audits: SEO, accessibility and content audits (Audit module, context menu and MCP audit tools; in ChEddi, `tx_cheddi_features:enable_cheddi_audit` applies instead) |
 | `enable_statistics` | Statistics view |
 | `enable_provenance_overview` | *AI content* overview, including marking entries as reviewed |
 
@@ -367,7 +367,8 @@ With `enableAutoTranslateOnSave`, a saved content element is translated into all
 site. `autoTranslateMode` decides when the result lands: when the page module is opened (the page
 tree shows the status), through `ai-suite:process-tasks`, or synchronously during the save.
 `autoTranslateMaxElementsPerSave` keeps a bulk edit from starting a large translation run. It needs
-`enable_auto_translation` and the permission for the `autoTranslateModel`, only targets languages
+`enable_auto_translation` and the permission for the `autoTranslateModel` (in the `cli` mode also
+`enable_cli_workflow_execution` and an active Scheduler task for `ai-suite:process-tasks`), only targets languages
 the page is already translated into and whose content is not in free mode, and never runs inside a
 workspace. In the synchronous mode the edit form says so on submit, so the editor knows why the
 save takes longer. A target language that fails or comes back empty is reported per language in
@@ -402,7 +403,8 @@ Two RTE plugins ship with the extension: an **AI assistant** (`AiPlugin`) for in
 ### Prompt templates & global instructions
 
 - **Prompt templates**: reusable, editable templates for recurring generation tasks (custom and server-provided).
-- **Global instructions**: instructions for selected pages or folders (optionally including their subtree), automatically applied to the prompts generated there, so house style, tone and constraints stay consistent. A **scope** limits an instruction to one generation context (metadata, content elements, the image wizard, translation, the page tree, news records), while `extend_previous_instructions` and `override_predefined_prompt` decide whether it adds to the instructions above it and whether it replaces the built-in prompt. A preview tooltip shows the effective combined prompt.
+- **Global instructions**: instructions for selected pages or folders (optionally including their subtree), automatically applied to the prompts generated there, so house style, tone and constraints stay consistent. A **scope** limits an instruction to one generation context (general, metadata, content elements, RTE content editing, the image wizard, translation, the page tree, news records; folder instructions offer general, image wizard, metadata and translation), while `extend_previous_instructions` decides whether it adds to the instructions above it and, for the metadata scope, `override_predefined_prompt` whether it replaces the built-in prompt. A preview tooltip shows the effective combined prompt.
+- **Global context**: a global instruction created in the **Global** section of the overview has no page or folder selection; the section sets the context, the form has no field for it. It applies to every page of the site whose page tree it is stored in, and with **Also for files** (on by default) also to every file call (file list, file workflows, file metadata), independent of the site. It is the lowest layer: page and folder instructions follow it, and one with `extend_previous_instructions` switched off replaces it. Its scopes cover both lists, so a global `translation` instruction applies to page and file translations alike.
 
 ## Background processing
 
@@ -428,7 +430,7 @@ vendor/bin/typo3 ai-suite:retry-tasks
 `--page-type`, `--column`, `--sys-language`, `--show-only-empty` and `--include-hidden` select the
 pages for a metadata run, `--source-language`, `--target-language` and `--translation-scope` a
 translation, `--directory`, `--depth` (subfolder levels, max 5) and `--show-only-used` a file
-metadata run, and `--prompt` overrides the generated prompt. In the Scheduler task form,
+metadata run, and `--prompt` replaces the predefined instruction of the selected field. In the Scheduler task form,
 `--type`, `--model` and `--column` are dropdowns: model and column only list what fits the chosen
 type, and the model falls back to a text field when the AI Suite Server cannot be reached.
 `ai-suite:retry-tasks` takes
@@ -500,7 +502,7 @@ It also adds columns to `be_groups` for the per-group overrides of the API keys 
 
 ## MCP server (optional sub-extension)
 
-AI Suite ships with an optional **MCP (Model Context Protocol) server** sub-extension, `ai_suite_mcp`, which exposes your TYPO3 content and a subset of the AI capabilities (page and file metadata, images, translation, audits) to MCP-compatible clients (Claude Desktop, Claude.ai, ChatGPT, MCP Inspector, …) so a model can drive your TYPO3 backend directly from a chat. Most of its tools run locally and cost nothing; the client's model composes the content. It reuses AI Suite's providers, credit accounting and per-feature / per-model permissions, and adds OAuth 2.1 auth and workspace-aware writes.
+An optional, separately installed **MCP (Model Context Protocol) server** extension, `ai_suite_mcp` (`autodudes/ai-suite-mcp`), exposes your TYPO3 content and a subset of the AI capabilities (page and file metadata, images, translation, audits) to MCP-compatible clients (Claude Desktop, Claude.ai, ChatGPT, MCP Inspector, …) so a model can drive your TYPO3 backend directly from a chat. Most of its tools run locally and cost nothing; the client's model composes the content. It reuses AI Suite's providers, credit accounting and per-feature / per-model permissions, and adds OAuth 2.1 auth and workspace-aware writes.
 
 The endpoint stays off until `enableMcp` is set. The extension requires the system extensions `workspaces` and `reports`, and it adds the backend-group flags `enable_mcp_access`, `enable_mcp_media_upload` and `enable_mcp_rendered_page_read`.
 
@@ -513,7 +515,7 @@ See the [`ai_suite_mcp` extension on the TYPO3 Extension Repository](https://ext
 ChEddi (`autodudes/cheddi`, extension key `cheddi`) puts a chat drawer on every backend page. Editors say in plain language what they need, and ChEddi works on the real records through the tools of `ai_suite_mcp`, run inside the backend as the logged-in user and with exactly that user's permissions. Read-only steps run on their own unless they carry a fixed credit cost (the audits), in which case they are confirmed like a write; every write needs a click and a destructive one a second click. By default the changes land in a workspace draft the editor can publish or discard from the drawer.
 
 - **Dependencies:** `ai_suite`, `ai_suite_mcp`, `workspaces`, `reports` and `scheduler`; Composer pulls them in.
-- **Access:** the backend-group flag `tx_aisuite_features:enable_cheddi_interface` plus at least one chat model (`OpenAiLuna`, `IonosQwen35`, `IonosQwen38`, `ClaudeHaiku55`, `ClaudeSonnet55`). The experimental web research has its own flag, `enable_web_research`.
+- **Access:** the backend-group flag `tx_cheddi_features:enable_cheddi_interface` plus at least one chat model under `tx_cheddi_models` (`OpenAiLuna`, `IonosQwen35`, `IonosQwen38`, `ClaudeHaiku55`, `ClaudeSonnet55`). The experimental web research has its own flag, `tx_cheddi_features:enable_web_research`.
 - **AI Suite Server:** every turn goes through the server configured here (`aiSuiteServer`, `aiSuiteApiKey`), also on plans that run on your own keys.
 - **Settings:** ChEddi's own settings are prefixed `chat*`. Settings with an `ai_suite_mcp` counterpart inherit it (GDPR mode comes from `ai_suite`), table lists extend the MCP lists, and markup and GDPR settings can only tighten; `chatWriteMode` and `chatLogVerbose` replace the MCP value.
 

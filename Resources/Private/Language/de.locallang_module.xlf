@@ -691,6 +691,14 @@
                 <source>0 (only this page)</source>
                 <target>0 (nur diese Seite)</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.openInTaskEngine">
+                <source>View suggestions</source>
+                <target>Vorschläge ansehen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.workflow.taskEngineTaskUnavailable">
+                <source>This task is no longer available in the TaskEngine. It has probably been saved or deleted already.</source>
+                <target>Diese Aufgabe ist in der TaskEngine nicht mehr verfügbar. Vermutlich wurde sie bereits gespeichert oder gelöscht.</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.workflow.columns.pages.abstract">
                 <source>Abstract</source>
                 <target>Zusammenfassung</target>
@@ -1290,8 +1298,8 @@
                 <target>%s Datei(en)</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.limitReached">
-                <source>Too many folders or files selected, the result list was truncated.</source>
-                <target>Zu viele Ordner oder Dateien ausgewählt, die Ergebnisliste wurde gekürzt.</target>
+                <source>Too many files selected, the result list was truncated.</source>
+                <target>Zu viele Dateien ausgewählt, die Ergebnisliste wurde gekürzt.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.workflowFilelist.skippedDirectories">
                 <source>Some directories were skipped (missing permissions or not found).</source>
@@ -1436,6 +1444,30 @@
             <trans-unit id="aiSuite.module.globalInstructionsManager.manageGlobalInstructions.header">
                 <source>Global Instructions</source>
                 <target>Globale Anweisungen</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.section.global">
+                <source>Global</source>
+                <target>Global</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.section.pages">
+                <source>Pages</source>
+                <target>Seiten</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.section.files">
+                <source>Files</source>
+                <target>Dateien</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.selection.site">
+                <source>All pages of the site</source>
+                <target>Alle Seiten der Site</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.selection.noSite">
+                <source>Storage page belongs to no site, the instruction applies nowhere</source>
+                <target>Die Speicherseite gehört zu keiner Site, die Anweisung greift nirgends</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.globalInstructionsManager.selection.alsoFiles">
+                <source>Also for files</source>
+                <target>Auch für Dateien</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.promptTemplateManager.managePromptTemplates.header">
                 <source>Prompt Templates</source>

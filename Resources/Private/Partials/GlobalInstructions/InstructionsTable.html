@@ -72,15 +72,37 @@
                                 {directory}<br/>
                             </f:for>
                         </f:if>
+                        <f:if condition="{instruction.context} == 'global'">
+                            <f:if condition="{instruction.site}">
+                                <f:then>
+                                    <span data-test-global-site="{instruction.site.rootPageId}">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.selection.site"/>:
+                                        {instruction.site.title} ({instruction.site.identifier}, ID: {instruction.site.rootPageId})
+                                    </span><br/>
+                                </f:then>
+                                <f:else>
+                                    <span class="text-danger" data-test-global-site="0">
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.selection.noSite"/>
+                                    </span><br/>
+                                </f:else>
+                            </f:if>
+                            <f:if condition="{instruction.apply_to_files}">
+                                <span data-test-global-files="1">
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.globalInstructionsManager.selection.alsoFiles"/>
+                                </span>
+                            </f:if>
+                        </f:if>
                     </td>
                     <td data-test-subtree="{instruction.use_for_subtree}">
-                        <f:if condition="{instruction.use_for_subtree}">
-                            <f:then>
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.yes"/>
-                            </f:then>
-                            <f:else>
-                                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.no"/>
-                            </f:else>
+                        <f:if condition="{instruction.context} != 'global'">
+                            <f:if condition="{instruction.use_for_subtree}">
+                                <f:then>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.yes"/>
+                                </f:then>
+                                <f:else>
+                                    <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang.xlf:aiSuite.no"/>
+                                </f:else>
+                            </f:if>
                         </f:if>
                     </td>
                     <td data-test-extendprevious="{instruction.extend_previous_instructions}">
