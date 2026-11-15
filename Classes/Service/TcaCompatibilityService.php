@@ -492,6 +492,36 @@ class TcaCompatibilityService implements SingletonInterface
     }
 
     /**
+     * @return array<string, array<string, mixed>>
+     *
+     * @throws UndefinedSchemaException
+     */
+    public function getTranslatableSlugFieldConfigs(string $table): array
+    {
+        $configs = [];
+        if (null !== $this->tcaSchemaFactory) {
+            if (!$this->tcaSchemaFactory->has($table)) {
+                return [];
+            }
+            foreach ($this->tcaSchemaFactory->get($table)->getFields() as $field) {
+                if ($field->isType(TableColumnType::SLUG) && FieldTranslationBehaviour::Excluded !== $field->getTranslationBehaviour()) {
+                    $configs[$field->getName()] = $field->getConfiguration();
+                }
+            }
+
+            return $configs;
+        }
+
+        foreach ($GLOBALS['TCA'][$table]['columns'] ?? [] as $name => $column) {
+            if ('slug' === ($column['config']['type'] ?? '') && 'exclude' !== ($column['l10n_mode'] ?? '')) {
+                $configs[(string) $name] = $column['config'];
+            }
+        }
+
+        return $configs;
+    }
+
+    /**
      * @return list<string>
      *
      * @throws UndefinedSchemaException

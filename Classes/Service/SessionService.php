@@ -67,6 +67,7 @@ class SessionService implements SingletonInterface
         protected readonly SiteFinder $siteFinder,
         protected readonly ResourceFactory $resourceFactory,
         protected readonly LoggerInterface $logger,
+        protected readonly WorkflowPreselectionService $workflowPreselection,
     ) {}
 
     public function trackRequestParameters(ServerRequestInterface $request, string $route): void
@@ -84,6 +85,7 @@ class SessionService implements SingletonInterface
         $postParams = $request->getParsedBody() ?? [];
 
         $this->storeContextForRoute($sessionData, $route, $postParams, $this->isModuleRequest($request));
+        $this->storePreselection($sessionData, $route, $queryParams);
 
         $this->backendUserService->getBackendUser()?->setAndSaveSessionData(self::SESSION_NAMESPACE, $sessionData);
     }
@@ -268,6 +270,26 @@ class SessionService implements SingletonInterface
                 );
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $sessionData
+     * @param array<string, mixed> $queryParams
+     */
+    private function storePreselection(array &$sessionData, string $route, array $queryParams): void
+    {
+        $formKey = $this->workflowPreselection->formKeyOf($route);
+        $raw = $queryParams[WorkflowPreselectionService::QUERY_PARAMETER] ?? null;
+        if (null === $formKey || !is_array($raw)) {
+            return;
+        }
+        $values = $this->workflowPreselection->sanitize($route, $raw, (int) ($queryParams['id'] ?? 0));
+        if ([] === $values) {
+            return;
+        }
+        $sessionKey = self::AI_SUITE_ROUTES[$route] ?? $route;
+        $existing = is_array($sessionData[$sessionKey][$formKey] ?? null) ? $sessionData[$sessionKey][$formKey] : [];
+        $sessionData[$sessionKey][$formKey] = array_merge($existing, $values);
     }
 
     private function isModuleRequest(ServerRequestInterface $request): bool

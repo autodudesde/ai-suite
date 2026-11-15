@@ -116,6 +116,43 @@ class GlobalInstructionsRepository
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function findByUid(int $uid): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, Connection::PARAM_INT)))
+            ->executeQuery()
+            ->fetchAssociative() ?: [];
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function findGlobalByScope(string $scope): array
+    {
+        $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
+        $scopes = array_values(array_unique(['general', '' === $scope ? 'general' : $scope]));
+
+        return $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where(
+                $queryBuilder->expr()->eq('context', $queryBuilder->createNamedParameter('global')),
+                $queryBuilder->expr()->in('scope', $queryBuilder->createNamedParameter($scopes, Connection::PARAM_STR_ARRAY)),
+            )
+            ->orderBy('uid', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative()
+        ;
+    }
+
+    /**
      * @param list<int|string> $selectedTree
      *
      * @return array<string, mixed>

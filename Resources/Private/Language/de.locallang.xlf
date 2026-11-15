@@ -780,6 +780,10 @@
                 <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
                 <target>Unerwarteter Fehler beim Speichern der ausgewählten Seitenmetadaten. Weitere Informationen findest du in den Log-Dateien.</target>
             </trans-unit>
+            <trans-unit id="aiSuite.notification.accessDenied">
+                <source>Access denied</source>
+                <target>Keine Berechtigung</target>
+            </trans-unit>
             <trans-unit id="aiSuite.notification.generation.requestError">
                 <source>Request error</source>
                 <target>Request-Fehler</target>

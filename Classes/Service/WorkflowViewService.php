@@ -48,6 +48,8 @@ class WorkflowViewService implements SingletonInterface
         protected readonly PromptTemplateScopeService $promptTemplateScopeService,
         protected readonly FolderSelectionService $folderSelectionService,
         protected readonly UriBuilder $uriBuilder,
+        protected readonly TaskEngineLinkService $taskEngineLinkService,
+        protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
         protected readonly Typo3Version $typo3Version,
         protected readonly LoggerInterface $logger,
     ) {}
@@ -70,6 +72,7 @@ class WorkflowViewService implements SingletonInterface
         $availableLanguages = $this->siteService->getAvailableLanguages(true);
 
         $pendingFileMetadata = [];
+        $taskEngineLinks = [];
         $fileMetadata = [];
         $unsupportedFileMetadata = [];
         $folderGroups = [];
@@ -143,14 +146,14 @@ class WorkflowViewService implements SingletonInterface
             }
             $translatedMetadataUids = array_column($translatedMetadata, 'uid');
             $nonTranslatedMetadataUids = array_column($nonTranslatedMetadata, 'uid');
-            $pendingTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($translatedMetadataUids, 'sys_file_metadata', $column, '', 'metadata');
-            $pendingTranslatedFileMetadata = array_column($pendingTranslatedFileMetadata, 'status', 'table_uid');
-            $pendingNonTranslatedFileMetadata = [];
+            $pendingTranslatedEntries = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($translatedMetadataUids, 'sys_file_metadata', $column, '', 'metadata');
+            $pendingNonTranslatedEntries = [];
             if ($languageId > 0) {
-                $pendingNonTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($nonTranslatedMetadataUids, 'sys_file_metadata', $column, 'NEW', 'metadata');
-                $pendingNonTranslatedFileMetadata = array_column($pendingNonTranslatedFileMetadata, 'status', 'table_uid');
+                $pendingNonTranslatedEntries = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($nonTranslatedMetadataUids, 'sys_file_metadata', $column, 'NEW', 'metadata');
             }
-            $pendingFileMetadata = $pendingTranslatedFileMetadata + $pendingNonTranslatedFileMetadata;
+            $pendingFileMetadata = array_column($pendingTranslatedEntries, 'status', 'table_uid') + array_column($pendingNonTranslatedEntries, 'status', 'table_uid');
+            $taskEngineLinks = $this->taskEngineLinkService->buildLinks($pendingTranslatedEntries, TaskEngineLinkService::FILTER_FILE_METADATA)
+                + $this->taskEngineLinkService->buildLinks($pendingNonTranslatedEntries, TaskEngineLinkService::FILTER_FILE_METADATA);
         }
 
         foreach ($collected['groups'] as $groupIdentifier => $group) {
@@ -185,6 +188,7 @@ class WorkflowViewService implements SingletonInterface
             'folderGroups' => $folderGroups,
             'limitReached' => $collected['limitReached'],
             'skippedDirectories' => $collected['skipped'],
+            'cliExecutionAvailable' => $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadata'),
             'depth' => $depth,
             'fileMetadata' => $fileMetadata,
             'unsupportedFileMetadata' => $unsupportedFileMetadata,
@@ -196,6 +200,7 @@ class WorkflowViewService implements SingletonInterface
             'activeColumn' => $activeColumn,
             'sysLanguages' => $availableLanguages,
             'alreadyPendingFiles' => $pendingFileMetadata,
+            'taskEngineLinks' => $taskEngineLinks,
             'parentUuid' => $this->uuidService->generateUuid(),
             'textGenerationLibraries' => $this->libraryService->prepareLibraries($textGenerationLibraries),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],
@@ -243,6 +248,7 @@ class WorkflowViewService implements SingletonInterface
         $textGenerationLibraries = $librariesAnswer->getResponseData()['textGenerationLibraries'];
 
         $pendingFileMetadata = [];
+        $taskEngineLinks = [];
         $fileMetadata = [];
         $folderGroups = [];
 
@@ -324,12 +330,12 @@ class WorkflowViewService implements SingletonInterface
                     $translatedMetadataUids[] = $data['target']['uid'];
                 }
             }
-            $pendingTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($translatedMetadataUids, 'sys_file_metadata', $column, '', 'translation', $targetLanguageId);
-            $pendingTranslatedFileMetadata = array_column($pendingTranslatedFileMetadata, 'status', 'table_uid');
-            $pendingNonTranslatedFileMetadata = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($nonTranslatedMetadataUids, 'sys_file_metadata', $column, 'NEW', 'translation', $targetLanguageId);
-            $pendingNonTranslatedFileMetadata = array_column($pendingNonTranslatedFileMetadata, 'status', 'table_uid');
+            $pendingTranslatedEntries = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($translatedMetadataUids, 'sys_file_metadata', $column, '', 'translation', $targetLanguageId);
+            $pendingNonTranslatedEntries = $this->backgroundTaskRepository->fetchAlreadyPendingEntries($nonTranslatedMetadataUids, 'sys_file_metadata', $column, 'NEW', 'translation', $targetLanguageId);
 
-            $pendingFileMetadata = $pendingTranslatedFileMetadata + $pendingNonTranslatedFileMetadata;
+            $pendingFileMetadata = array_column($pendingTranslatedEntries, 'status', 'table_uid') + array_column($pendingNonTranslatedEntries, 'status', 'table_uid');
+            $taskEngineLinks = $this->taskEngineLinkService->buildLinks($pendingTranslatedEntries, TaskEngineLinkService::FILTER_FILE_METADATA_TRANSLATION)
+                + $this->taskEngineLinkService->buildLinks($pendingNonTranslatedEntries, TaskEngineLinkService::FILTER_FILE_METADATA_TRANSLATION);
         }
 
         foreach ($collected['groups'] as $groupIdentifier => $group) {
@@ -362,6 +368,7 @@ class WorkflowViewService implements SingletonInterface
             'folderGroups' => $folderGroups,
             'limitReached' => $collected['limitReached'],
             'skippedDirectories' => $collected['skipped'],
+            'cliExecutionAvailable' => $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadataTranslation'),
             'depth' => $depth,
             'depths' => $this->folderSelectionService->getDepthOptions(),
             'fileMetadata' => $fileMetadata,
@@ -371,6 +378,7 @@ class WorkflowViewService implements SingletonInterface
             ),
             'activeColumn' => $sessionData['options']['column'] ?? 'all',
             'alreadyPendingFiles' => $pendingFileMetadata,
+            'taskEngineLinks' => $taskEngineLinks,
             'parentUuid' => $this->uuidService->generateUuid(),
             'textGenerationLibraries' => $this->libraryService->prepareLibraries($textGenerationLibraries),
             'paidRequestsAvailable' => $librariesAnswer->getResponseData()['paidRequestsAvailable'],

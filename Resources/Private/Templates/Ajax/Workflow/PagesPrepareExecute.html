@@ -20,7 +20,7 @@
                     </span>
                 </label>
                 <div id="sortable-pages" class="sortable-wrap">
-                    <f:render partial="Workflow/PageTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, column: column, columnName: columnName}" />
+                    <f:render partial="Workflow/PageTask" arguments="{tasks: pages, alreadyPendingPages: alreadyPendingPages, taskEngineLinks: taskEngineLinks, column: column, columnName: columnName}" />
                 </div>
                 <div class="d-flex">
                     <button class="btn btn-primary mt-4" type="submit" id="pagesExecuteFormSubmitBtn">

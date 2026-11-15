@@ -114,7 +114,8 @@ class BackgroundTaskController extends AbstractBackendController
             ];
             $uuidStatus = [];
 
-            $this->backgroundTaskService->prefillArrays($backgroundTasks, $uuidStatus);
+            $taskUuid = $this->request->getQueryParams()['taskUuid'] ?? '';
+            $this->backgroundTaskService->prefillArrays($backgroundTasks, $uuidStatus, is_string($taskUuid) ? $taskUuid : '');
 
             if (count($backgroundTasks['page']) > 0 || count($backgroundTasks['fileReference']) > 0 || count($backgroundTasks['fileMetadata']) > 0 || count($backgroundTasks['fileMetadataTranslation']) > 0) {
                 $answer = $this->requestService->sendDataRequest(

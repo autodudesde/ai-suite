@@ -280,11 +280,20 @@
             <trans-unit id="aiSuite.tca.globalInstructions">
                 <source>Global Instructions</source>
             </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.apply_to_files">
+                <source>Also for files</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.apply_to_files.description">
+                <source>Also applies in the file list, file workflows and file metadata, independent of the site.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.context">
                 <source>Context</source>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.context.files">
                 <source>Filelist/AI Suite Filelist Module</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.context.global">
+                <source>Global (all pages of the site)</source>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.context.pages">
                 <source>Page/List/AI Suite Web Module</source>
@@ -315,6 +324,30 @@
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.files.translation">
                 <source>Metadata translations (Files, DeepL and Google Translate are excluded)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.contentElement">
+                <source>ContentElements</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.editContent">
+                <source>RTE Content Editing</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.general">
+                <source>General (everywhere)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.imageWizard">
+                <source>ImageWizard (pages and files)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.metadata">
+                <source>Metadata (pages and files)</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.newsRecord">
+                <source>News Records</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.pageTree">
+                <source>PageTree</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.tca.globalInstructions.scope.global.translation">
+                <source>Translations (pages and files, DeepL and Google Translate are excluded)</source>
             </trans-unit>
             <trans-unit id="aiSuite.tca.globalInstructions.scope.pages.contentElement">
                 <source>ContentElements</source>
@@ -376,10 +409,10 @@
                 <source>Allow backend users of this group to open the AI Suite "Statistics" view with usage charts (requests per month, by model, and add-on charts such as ChEddi chat usage).</source>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAudit">
-                <source>Enable SEO and accessibility audits</source>
+                <source>Enable SEO, accessibility and content audits</source>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableAuditDescription">
-                <source>Allows running SEO and WCAG accessibility audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
+                <source>Allows running SEO, WCAG accessibility and content audits for public page URLs via the AutoDudes audit infrastructure (page URL and content leave the TYPO3 instance).</source>
             </trans-unit>
             <trans-unit id="aiSuite.permissions.enableProvenanceOverview" resname="aiSuite.permissions.enableProvenanceOverview">
                 <source>AI content overview</source>

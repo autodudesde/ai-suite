@@ -24,13 +24,16 @@ class GlobalInstructionHook
         try {
             if ('tx_aisuite_domain_model_global_instructions' === $table) {
                 $globalInstructionsRepository = GeneralUtility::makeInstance(GlobalInstructionsRepository::class);
-                $context = $incomingFieldArray['context'] ?? null;
-                $scope = $incomingFieldArray['scope'] ?? null;
-                if (empty($context) || empty($scope)) {
+                $isNew = str_starts_with($id, 'NEW');
+                $stored = $isNew ? [] : $globalInstructionsRepository->findByUid((int) $id);
+                $context = $incomingFieldArray['context'] ?? $stored['context'] ?? null;
+                $scope = $incomingFieldArray['scope'] ?? $stored['scope'] ?? null;
+                if (empty($context) || empty($scope) || 'global' === $context) {
                     return;
                 }
+                $fieldName = 'pages' === $context ? 'selected_pages' : 'selected_directories';
+                $selectedTree = (string) ($incomingFieldArray[$fieldName] ?? $stored[$fieldName] ?? '');
                 $incomingFieldArray['selected_directories'] ??= '';
-                $selectedTree = 'pages' === $context ? $incomingFieldArray['selected_pages'] : $incomingFieldArray['selected_directories'];
                 $selectedTreeArray = GeneralUtility::trimExplode(',', $selectedTree, true);
                 if ([] === $selectedTreeArray) {
                     return;
@@ -39,12 +42,11 @@ class GlobalInstructionHook
                     $context,
                     $scope,
                     $selectedTreeArray,
-                    str_starts_with($id, 'NEW') ? null : (int) $id
+                    $isNew ? null : (int) $id
                 );
                 if (!empty($globalInstruction)) {
                     $existingSelectedTree = 'pages' === $context ? $globalInstruction['selected_pages'] : $globalInstruction['selected_directories'];
                     $existingSelectedTreeArray = GeneralUtility::trimExplode(',', $existingSelectedTree, true);
-                    $fieldName = 'pages' === $context ? 'selected_pages' : 'selected_directories';
                     $uniqueTreeIds = array_diff($selectedTreeArray, $existingSelectedTreeArray);
                     $duplicateTreeIds = array_intersect($existingSelectedTreeArray, $selectedTreeArray);
                     $incomingFieldArray[$fieldName] = implode(',', $uniqueTreeIds);

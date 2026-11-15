@@ -19,7 +19,7 @@
                     </span>
                 </label>
                 <div id="sortable-file-references" class="sortable-wrap">
-                    <f:render partial="Workflow/FileReferenceTask" arguments="{tasks: fileReferences, alreadyPendingFileReferences: alreadyPendingFileReferences, column: column, columnName: columnName, maxAllowedFileSize: maxAllowedFileSize}" />
+                    <f:render partial="Workflow/FileReferenceTask" arguments="{tasks: fileReferences, alreadyPendingFileReferences: alreadyPendingFileReferences, taskEngineLinks: taskEngineLinks, column: column, columnName: columnName, maxAllowedFileSize: maxAllowedFileSize}" />
                 </div>
         </f:if>
         <f:if condition="{unsupportedFileReferences -> f:count()} > 0">
