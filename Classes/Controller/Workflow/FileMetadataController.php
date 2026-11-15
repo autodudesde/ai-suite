@@ -26,6 +26,7 @@ use AutoDudes\AiSuite\Service\DirectiveService;
 use AutoDudes\AiSuite\Service\MetadataService;
 use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\TaskEngineLinkService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
@@ -66,6 +67,7 @@ class FileMetadataController extends AbstractBackendController
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
         protected readonly PromptTemplateScopeService $promptTemplateScopeService,
+        protected readonly TaskEngineLinkService $taskEngineLinkService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -136,6 +138,7 @@ class FileMetadataController extends AbstractBackendController
 
                 return $carry;
             }, []);
+            $params['taskEngineLinks'] = $this->taskEngineLinkService->buildLinks($alreadyPendingFiles, TaskEngineLinkService::FILTER_FILE_REFERENCE);
 
             $params['maxAllowedFileSize'] = $this->directiveService->getEffectiveMaxUploadSize();
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
@@ -270,7 +273,6 @@ class FileMetadataController extends AbstractBackendController
             }
 
             $viewProperties = $this->workflowViewService->filelistFileDirectorySupport($librariesAnswer);
-            $viewProperties['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadata');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $serverRequest,

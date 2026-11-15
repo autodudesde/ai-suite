@@ -22,7 +22,6 @@ use TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExis
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\RelationHandler;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
-use TYPO3\CMS\Core\DataHandling\SlugHelper;
 use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -78,6 +77,7 @@ class TranslationService
         protected readonly WorkspaceContextService $workspaceContextService,
         protected readonly ProvenanceCaptureService $provenanceCapture,
         protected readonly LinkTitleService $linkTitleService,
+        protected readonly InheritedSlugService $inheritedSlugService,
     ) {}
 
     /**
@@ -523,13 +523,6 @@ class TranslationService
                 $this->executeDataHandler($datamap, []);
                 ++$applied;
 
-                if (isset($datamap['pages'])) {
-                    $translatedPageUid = (int) array_key_first($datamap['pages']);
-                    if ($translatedPageUid > 0) {
-                        $this->updatePageSlug($translatedPageUid);
-                    }
-                }
-
                 $this->backgroundTaskRepository->deleteByUuid($task['uuid']);
             } catch (\Throwable $e) {
                 ++$failed;
@@ -681,27 +674,20 @@ class TranslationService
     }
 
     /**
+     * @param array<array-key, mixed> $writtenFields
+     *
      * @throws \Exception
      */
-    public function updatePageSlug(int $pageUid): void
+    public function regenerateInheritedSlugs(string $table, int $uid, array $writtenFields): bool
     {
-        $fieldConfig = $this->tcaCompatibilityService->getSlugFieldConfig();
-        $slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'pages', 'slug', $fieldConfig);
-        $pageRecord = BackendUtility::getRecordWSOL('pages', $pageUid);
-
-        if ($pageRecord) {
-            $slug = $slugHelper->generate($pageRecord, $pageRecord['pid']);
-
-            $datamap = [
-                'pages' => [
-                    $pageUid => [
-                        'slug' => $slug,
-                    ],
-                ],
-            ];
-
-            $this->executeDataHandler($datamap, []);
+        $slugFields = $this->inheritedSlugService->inheritedSlugFields($table, $uid, $writtenFields);
+        if ([] === $slugFields) {
+            return false;
         }
+
+        $this->executeDataHandler([$table => [$uid => array_fill_keys($slugFields, '')]], []);
+
+        return true;
     }
 
     /**
@@ -884,6 +870,12 @@ class TranslationService
         }
 
         $fields = $this->linkTitleService->restoreLinks($table, $fields, $targetRow);
+
+        if (null !== $targetUid && $targetUid > 0) {
+            foreach ($this->inheritedSlugService->inheritedSlugFields($table, $targetUid, $fields) as $slugField) {
+                $fields[$slugField] = '';
+            }
+        }
 
         $languageState = [];
         foreach (array_keys($fields) as $field) {
@@ -1438,7 +1430,6 @@ class TranslationService
         switch ($translationScope) {
             case 'metadata':
                 $this->applyPageMetadataTranslation($translatedPageUid, $translationData);
-                $this->updatePageSlug($translatedPageUid);
 
                 break;
 
@@ -1451,7 +1442,6 @@ class TranslationService
             case 'all':
                 $skipped = $this->ensurePageContentLocalized($pageUid, $targetLanguageUid);
                 $skipped = array_merge($skipped, $this->applyCompletePageTranslation($translatedPageUid, $targetLanguageUid, $translationData));
-                $this->updatePageSlug($translatedPageUid);
 
                 break;
 

@@ -21,6 +21,16 @@ async function errorDetail(error) {
     return error?.statusText || error?.message || "";
 }
 
+async function notifyFailure(error) {
+    const detail = await errorDetail(error);
+    if (error?.response?.status === 403) {
+        Notification.warning(TYPO3.lang['aiSuite.notification.accessDenied'], detail);
+        return;
+    }
+
+    Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], detail);
+}
+
 class Ajax {
     sendStatusAjaxRequest(postData) {
         return new AjaxRequest(TYPO3.settings.ajaxUrls['aisuite_generation_status'])
@@ -60,7 +70,7 @@ class Ajax {
                 }
             })
             .catch(async (error) => {
-                Notification.error(TYPO3.lang['aiSuite.notification.generation.error'], await errorDetail(error));
+                await notifyFailure(error);
                 return null;
             });
     }
@@ -78,10 +88,7 @@ class Ajax {
                 }
             })
             .catch(async (error) => {
-                Notification.error(
-                    TYPO3.lang['aiSuite.notification.generation.error'],
-                    await errorDetail(error)
-                );
+                await notifyFailure(error);
                 return null;
             });
     }
@@ -101,10 +108,7 @@ class Ajax {
                 }
             })
             .catch(async (error) => {
-                Notification.error(
-                    TYPO3.lang['aiSuite.notification.generation.error'],
-                    await errorDetail(error)
-                );
+                await notifyFailure(error);
                 return null;
             });
     }

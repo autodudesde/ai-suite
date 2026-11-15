@@ -58,11 +58,42 @@ class Overview {
                 noBackgroundTasks.style.display = 'none';
             }
         }
-        const firstAccordionItem = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .panel .open-accordion-item');
-        if (firstAccordionItem) {
-            firstAccordionItem.click();
+        const taskUuidParam = urlParams.get('taskUuid');
+        if (taskUuidParam) {
+            this.removeTaskUuidFromUrl();
+        }
+        if (!taskUuidParam || !this.openTask(taskUuidParam)) {
+            if (taskUuidParam) {
+                Notification.info(TYPO3.lang['aiSuite.module.workflow.taskEngineTaskUnavailable']);
+            }
+            const firstAccordionItem = document.querySelector('#accordionBackgroundTasks' + this.activeView + ' .panel .open-accordion-item');
+            if (firstAccordionItem) {
+                firstAccordionItem.click();
+            }
         }
         this.updateDeleteAllButtonVisibility();
+    }
+
+    openTask(uuid) {
+        const accordion = document.querySelector('#accordionBackgroundTasks' + this.activeView);
+        if (!accordion) {
+            return false;
+        }
+        const panel = Array.from(accordion.querySelectorAll('.panel[data-uuid]')).find((element) => element.dataset.uuid === uuid);
+        const openButton = panel?.querySelector('.open-accordion-item');
+        if (!openButton) {
+            return false;
+        }
+        openButton.click();
+        panel.scrollIntoView({block: 'start', behavior: 'smooth'});
+
+        return true;
+    }
+
+    removeTaskUuidFromUrl() {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('taskUuid');
+        window.history.replaceState({}, '', url.toString());
     }
 
     addFilterEventListener() {
@@ -394,6 +425,7 @@ class Overview {
             newUrl.searchParams.set('backgroundTaskFilter', filterSelect.value);
             const clickAndSaveValue = this.clickAndSave ? '1' : '0';
             newUrl.searchParams.set('clickAndSave', clickAndSaveValue);
+            newUrl.searchParams.delete('taskUuid');
             taskEngineButton.setAttribute('href', newUrl.toString());
             window.history.replaceState({}, '', newUrl.toString());
         }

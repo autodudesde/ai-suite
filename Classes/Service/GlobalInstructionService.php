@@ -6,7 +6,9 @@ namespace AutoDudes\AiSuite\Service;
 
 use AutoDudes\AiSuite\Domain\Repository\GlobalInstructionsRepository;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\RootlineUtility;
 
@@ -19,12 +21,17 @@ class GlobalInstructionService implements SingletonInterface
     protected const SCOPE_VALUES = [
         'files' => ['general', 'imageWizard', 'metadata', 'translation'],
         'pages' => ['general', 'pageTree', 'imageWizard', 'contentElement', 'newsRecord', 'editContent', 'metadata', 'translation'],
+        'global' => ['general', 'pageTree', 'imageWizard', 'contentElement', 'newsRecord', 'editContent', 'metadata', 'translation'],
     ];
+
+    /** @var array<int, ?int> */
+    private array $siteRootByPageId = [];
 
     public function __construct(
         protected readonly GlobalInstructionsRepository $globalInstructionsRepository,
         protected readonly BackendUserService $backendUserService,
         protected readonly LoggerInterface $logger,
+        protected readonly SiteFinder $siteFinder,
     ) {}
 
     /**
@@ -32,7 +39,7 @@ class GlobalInstructionService implements SingletonInterface
      */
     public function getScopeItems(string $context): array
     {
-        $context = 'files' === $context ? 'files' : 'pages';
+        $context = self::normalizeContext($context);
         $items = [];
         foreach (self::SCOPE_VALUES[$context] as $value) {
             $items[] = [
@@ -46,29 +53,26 @@ class GlobalInstructionService implements SingletonInterface
 
     public static function scopeLabel(string $context, string $scope): string
     {
-        return self::SCOPE_LABEL_PREFIX.('files' === $context ? 'files' : 'pages').'.'.$scope;
+        return self::SCOPE_LABEL_PREFIX.self::normalizeContext($context).'.'.$scope;
     }
 
     public static function contextLabel(string $context): string
     {
-        return self::CONTEXT_LABEL_PREFIX.('files' === $context ? 'files' : 'pages');
+        return self::CONTEXT_LABEL_PREFIX.self::normalizeContext($context);
     }
 
     public function buildGlobalInstruction(string $context, string $scope, ?int $pageId = null, ?string $directoryPath = null): string
     {
-        if (null === $pageId && null === $directoryPath) {
-            return '';
-        }
-        if ('pages' === $context && $pageId && $pageId <= 0) {
-            return '';
+        if ('pages' === $context && null !== $pageId && $pageId > 0) {
+            return $this->buildPageTreeInstructions($scope, $pageId, $context, $this->buildSiteWideInstructions($scope, $pageId));
         }
 
-        if ('pages' === $context && null !== $pageId) {
-            return $this->buildPageTreeInstructions($scope, $pageId, $context);
-        }
+        if ('files' === $context) {
+            $siteWide = $this->buildSiteWideInstructions($scope, null);
 
-        if ('files' === $context && null !== $directoryPath) {
-            return $this->buildFileTreeInstructions($scope, $directoryPath, $context);
+            return null === $directoryPath
+                ? trim($siteWide)
+                : $this->buildFileTreeInstructions($scope, $directoryPath, $context, $siteWide);
         }
 
         return '';
@@ -84,10 +88,74 @@ class GlobalInstructionService implements SingletonInterface
             return (bool) ($globalInstruction['override_predefined_prompt'] ?? false);
         }
 
+        $pageId = 'pages' === $context ? (int) ($selectedTree[0] ?? 0) : null;
+        if ('pages' === $context && $pageId <= 0) {
+            return false;
+        }
+        foreach ($this->findSiteWideInstructions($scope, $pageId) as $siteWideInstruction) {
+            if ($scope === ($siteWideInstruction['scope'] ?? '') && (bool) ($siteWideInstruction['override_predefined_prompt'] ?? false)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
-    private function buildPageTreeInstructions(string $scope, int $pageId, string $context): string
+    public static function normalizeContext(string $context): string
+    {
+        return in_array($context, ['files', 'global'], true) ? $context : 'pages';
+    }
+
+    private function buildSiteWideInstructions(string $scope, ?int $pageId): string
+    {
+        $instructions = '';
+        foreach ($this->findSiteWideInstructions($scope, $pageId) as $siteWideInstruction) {
+            $instructions = $this->processInstructionsText($siteWideInstruction, $instructions);
+        }
+
+        return $instructions;
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private function findSiteWideInstructions(string $scope, ?int $pageId): array
+    {
+        $siteRoot = null === $pageId ? null : $this->siteRootPageId($pageId);
+        if (null !== $pageId && null === $siteRoot) {
+            return [];
+        }
+
+        $applicable = [];
+        foreach ($this->globalInstructionsRepository->findGlobalByScope($scope) as $siteWideInstruction) {
+            $applies = null === $pageId
+                ? (bool) ($siteWideInstruction['apply_to_files'] ?? false)
+                : $siteRoot === $this->siteRootPageId((int) ($siteWideInstruction['pid'] ?? 0));
+            if ($applies) {
+                $applicable[] = $siteWideInstruction;
+            }
+        }
+
+        return $applicable;
+    }
+
+    private function siteRootPageId(int $pageId): ?int
+    {
+        if ($pageId <= 0) {
+            return null;
+        }
+        if (!array_key_exists($pageId, $this->siteRootByPageId)) {
+            try {
+                $this->siteRootByPageId[$pageId] = $this->siteFinder->getSiteByPageId($pageId)->getRootPageId();
+            } catch (SiteNotFoundException) {
+                $this->siteRootByPageId[$pageId] = null;
+            }
+        }
+
+        return $this->siteRootByPageId[$pageId];
+    }
+
+    private function buildPageTreeInstructions(string $scope, int $pageId, string $context, string $siteWideInstructions): string
     {
         try {
             $rootlineUtility = GeneralUtility::makeInstance(RootlineUtility::class, $pageId, '');
@@ -111,7 +179,7 @@ class GlobalInstructionService implements SingletonInterface
 
         usort($applicableInstructions, static fn (array $a, array $b): int => $a['depth'] <=> $b['depth']);
 
-        $additionalInstructions = '';
+        $additionalInstructions = $siteWideInstructions;
         foreach ($applicableInstructions as $item) {
             $additionalInstructions = $this->processInstructionsText($item['instruction'], $additionalInstructions);
         }
@@ -119,7 +187,7 @@ class GlobalInstructionService implements SingletonInterface
         return trim($additionalInstructions);
     }
 
-    private function buildFileTreeInstructions(string $scope, string $directoryPath, string $context): string
+    private function buildFileTreeInstructions(string $scope, string $directoryPath, string $context, string $siteWideInstructions): string
     {
         $globalInstructions = $this->globalInstructionsRepository->findByScope($scope, $context);
         $applicableInstructions = [];
@@ -149,7 +217,7 @@ class GlobalInstructionService implements SingletonInterface
             return $a['depth'] <=> $b['depth'];
         });
 
-        $additionalInstructions = '';
+        $additionalInstructions = $siteWideInstructions;
         foreach ($applicableInstructions as $item) {
             $additionalInstructions = $this->processInstructionsText($item['instruction'], $additionalInstructions);
         }

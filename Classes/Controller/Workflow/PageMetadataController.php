@@ -24,6 +24,7 @@ use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\CliCommandAvailabilityService;
 use AutoDudes\AiSuite\Service\PromptTemplateScopeService;
 use AutoDudes\AiSuite\Service\SendRequestService;
+use AutoDudes\AiSuite\Service\TaskEngineLinkService;
 use AutoDudes\AiSuite\Service\TranslationService;
 use AutoDudes\AiSuite\Service\ViewFactoryService;
 use AutoDudes\AiSuite\Service\WorkflowProcessingService;
@@ -61,6 +62,7 @@ class PageMetadataController extends AbstractBackendController
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly CliCommandAvailabilityService $cliCommandAvailabilityService,
         protected readonly PromptTemplateScopeService $promptTemplateScopeService,
+        protected readonly TaskEngineLinkService $taskEngineLinkService,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -117,6 +119,7 @@ class PageMetadataController extends AbstractBackendController
 
                     return $carry;
                 }, []);
+                $params['taskEngineLinks'] = $this->taskEngineLinkService->buildLinks($alreadyPendingPages, TaskEngineLinkService::FILTER_PAGE);
             }
             $params['globalInstructions'] = $this->aiSuiteContext->globalInstructionService->buildGlobalInstruction('pages', 'metadata', $pageId);
             $params['promptTemplates'] = $this->aiSuiteContext->promptTemplateService->getAllPromptTemplates(

@@ -219,6 +219,14 @@
                                                                 <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.audit.authorbox.button"/>
                                                             </button>
                                                         </f:if>
+                                                        <f:for each="{issue.extraActions}" as="action">
+                                                            <button type="button" class="btn btn-default btn-sm audit-finding-action"
+                                                                    data-audit-finding-action="{action.identifier}"
+                                                                    data-audit-finding-payload="{action.payload}">
+                                                                <core:icon identifier="{action.icon}" size="small"/>
+                                                                {action.label}
+                                                            </button>
+                                                        </f:for>
                                                         <f:if condition="{issue.adviceable}">
                                                             <button type="button" class="btn btn-default btn-sm audit-advice-btn"
                                                                     data-issue-id="{issue.id}"

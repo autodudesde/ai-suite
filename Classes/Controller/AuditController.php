@@ -20,6 +20,7 @@ use AutoDudes\AiSuite\Domain\Repository\AuditResultRepository;
 use AutoDudes\AiSuite\Domain\Repository\PagesRepository;
 use AutoDudes\AiSuite\Domain\Repository\SysFileReferenceRepository;
 use AutoDudes\AiSuite\Enumeration\GenerationLibraryEnumeration;
+use AutoDudes\AiSuite\Events\AuditFindingActionsEvent;
 use AutoDudes\AiSuite\Exception\FetchedContentFailedException;
 use AutoDudes\AiSuite\Service\AiSuiteContext;
 use AutoDudes\AiSuite\Service\AuditModelService;
@@ -1697,7 +1698,7 @@ class AuditController extends AbstractBackendController
                 'notices' => max(0, (int) ($summary['notices'] ?? 0)),
             ],
             'lighthouseScores' => $this->lighthouseScores($audit),
-            'issueGroups' => $this->groupIssuesByFixability($audit['issues'] ?? [], $actionPageId, $fixedIssues, $adviceByIssue),
+            'issueGroups' => $this->groupIssuesByFixability($audit['issues'] ?? [], $actionPageId, $fixedIssues, $adviceByIssue, $this->auditTypeLabel($auditType, $audit)),
             'keywordData' => $keywordData,
             'canSaveKeyword' => 'seo' === $auditType && $actionPageId > 0 && '' !== $keyword && $keyword !== $currentKeywords,
         ]);
@@ -1739,7 +1740,7 @@ class AuditController extends AbstractBackendController
      *
      * @return list<array{fixability: string, label: string, fixableIssueIdsJson: string, issues: list<array<string, mixed>>}>
      */
-    private function groupIssuesByFixability(array $issues, int $pageId = 0, array $fixedIssues = [], array $adviceByIssue = []): array
+    private function groupIssuesByFixability(array $issues, int $pageId = 0, array $fixedIssues = [], array $adviceByIssue = [], string $auditLabel = ''): array
     {
         $grouped = array_fill_keys(self::FIXABILITY_ORDER, []);
         $fixableIds = array_fill_keys(self::FIXABILITY_ORDER, []);
@@ -1761,7 +1762,8 @@ class AuditController extends AbstractBackendController
             $issue['adviceable'] = $pageId > 0 && 'ai-assist' === $level && [] === $issue['advice'];
             $issue['docUrl'] = 1 === preg_match('#^https?://#i', (string) ($issue['docUrl'] ?? '')) ? (string) $issue['docUrl'] : '';
             $issue['hasMoreInfo'] = '' !== (string) ($issue['hint'] ?? '') || '' !== $issue['docUrl'];
-            $issue['hasActions'] = $issue['aiFixable'] || $issue['authorboxAction'] || $issue['adviceable'] || $issue['fixed'] || $issue['hasMoreInfo'];
+            $issue['extraActions'] = $this->extraActions($issue, $pageId, $auditLabel);
+            $issue['hasActions'] = [] !== $issue['extraActions'] || $issue['aiFixable'] || $issue['authorboxAction'] || $issue['adviceable'] || $issue['fixed'] || $issue['hasMoreInfo'];
             $grouped[$level][] = $issue;
         }
 
@@ -1779,6 +1781,23 @@ class AuditController extends AbstractBackendController
         }
 
         return $groups;
+    }
+
+    /**
+     * @param array<string, mixed> $issue
+     *
+     * @return list<array{identifier: string, label: string, icon: string, payload: string}>
+     */
+    private function extraActions(array $issue, int $pageId, string $auditLabel): array
+    {
+        if ($pageId <= 0 || $issue['fixed']) {
+            return [];
+        }
+
+        $event = new AuditFindingActionsEvent($pageId, $auditLabel, $issue, $issue['aiFixable'] || $issue['authorboxAction']);
+        $this->eventDispatcher->dispatch($event);
+
+        return $event->getActions();
     }
 
     private function isAiFixable(string $issueId): bool

@@ -18,6 +18,15 @@
                     <f:if condition="{taskStatus} != ''">
                         <f:then>
                             <span class="badge badge-{taskStatus}">{taskStatus}</span>
+                            <f:if condition="{taskEngineLinks}">
+                                <f:variable name="taskEngineLink">{aiSuite:inArray(needle: task.uid, haystack: taskEngineLinks)}</f:variable>
+                                <f:if condition="{taskEngineLink}">
+                                    <a href="{taskEngineLink}" class="btn btn-default btn-sm task-engine-link">
+                                        <core:icon identifier="actions-eye" size="small" />
+                                        <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.openInTaskEngine" />
+                                    </a>
+                                </f:if>
+                            </f:if>
                         </f:then>
                         <f:else>
                             <input

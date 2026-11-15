@@ -609,6 +609,9 @@
             <trans-unit id="aiSuite.notification.generation.pageUpdateError">
                 <source>Unexpected error while saving selected page metadata. Please check your logs for further information.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.notification.accessDenied">
+                <source>Access denied</source>
+            </trans-unit>
             <trans-unit id="aiSuite.notification.generation.requestError">
                 <source>Request error</source>
             </trans-unit>

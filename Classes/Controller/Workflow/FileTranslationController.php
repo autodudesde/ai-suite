@@ -84,7 +84,6 @@ class FileTranslationController extends AbstractBackendController
             }
 
             $viewProperties = $this->workflowViewService->filelistFileTranslationDirectorySupport($librariesAnswer);
-            $viewProperties['cliExecutionAvailable'] = $this->cliCommandAvailabilityService->isCliExecutionAvailable('fileMetadataTranslation');
 
             $output = $this->viewFactoryService->renderTemplate(
                 $serverRequest,

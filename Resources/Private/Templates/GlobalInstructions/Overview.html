@@ -20,9 +20,21 @@
             </div>
         </div>
     </f:if>
-    <div class="recordlist mb-4">
+    <div class="recordlist mb-4" data-testid="global-instructions-section-global">
         <f:render partial="GlobalInstructions/SectionHeader" arguments="{
-            sectionTitle: 'Pages',
+            instructions: globalInstructionsGlobal,
+            pid: pid,
+            isRootLevel: isRootLevel,
+            context: 'global',
+            search: search
+        }" />
+        <f:render partial="GlobalInstructions/InstructionsTable" arguments="{
+            instructions: globalInstructionsGlobal,
+            pid: pid
+        }" />
+    </div>
+    <div class="recordlist mb-4" data-testid="global-instructions-section-pages">
+        <f:render partial="GlobalInstructions/SectionHeader" arguments="{
             instructions: globalInstructionsPages,
             pid: pid,
             isRootLevel: isRootLevel,
@@ -34,9 +46,8 @@
             pid: pid
         }" />
     </div>
-    <div class="recordlist">
+    <div class="recordlist" data-testid="global-instructions-section-files">
         <f:render partial="GlobalInstructions/SectionHeader" arguments="{
-            sectionTitle: 'Files',
             instructions: globalInstructionsFiles,
             pid: pid,
             isRootLevel: isRootLevel,

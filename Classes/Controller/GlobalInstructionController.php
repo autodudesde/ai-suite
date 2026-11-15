@@ -30,11 +30,13 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Exception\SiteNotFoundException;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Site\Entity\NullSite;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 #[AsController]
@@ -56,6 +58,7 @@ class GlobalInstructionController extends AbstractBackendController
         protected readonly LoggerInterface $logger,
         protected readonly ViewFactoryService $viewFactoryService,
         protected readonly TcaSelectLabelService $tcaSelectLabelService,
+        protected readonly SiteFinder $siteFinder,
     ) {
         parent::__construct(
             $moduleTemplateFactory,
@@ -102,6 +105,12 @@ class GlobalInstructionController extends AbstractBackendController
             $allowedMounts = $this->aiSuiteContext->backendUserService->getSearchableWebmounts($rootPageId, 10);
             $search = ((array) $this->request->getParsedBody())['search'] ?? '';
 
+            $globalInstructionsGlobal = $this->prepareGlobalInstructions(
+                $this->globalInstructionsRepository->findByAllowedMounts($allowedMounts, $search, '', 'global'),
+                $sites,
+                'global'
+            );
+
             $globalInstructionsPages = $this->prepareGlobalInstructions(
                 $this->globalInstructionsRepository->findByAllowedMounts($allowedMounts, $search, ''),
                 $sites,
@@ -116,6 +125,7 @@ class GlobalInstructionController extends AbstractBackendController
 
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/global-instructions/overview.js');
             $this->view->assignMultiple([
+                'globalInstructionsGlobal' => $globalInstructionsGlobal,
                 'globalInstructionsPages' => $globalInstructionsPages,
                 'globalInstructionsFiles' => $globalInstructionsFiles,
                 'search' => $search,
@@ -230,10 +240,30 @@ class GlobalInstructionController extends AbstractBackendController
             } elseif ('files' === $type) {
                 $selectedDirectories = $globalInstruction['selected_directories'] ? explode(',', $globalInstruction['selected_directories']) : [];
                 $instructions[$key]['selected_directories'] = $selectedDirectories;
+            } elseif ('global' === $type) {
+                $instructions[$key]['site'] = $this->siteOfStoragePage((int) ($globalInstruction['pid'] ?? 0));
             }
         }
 
         return $instructions;
+    }
+
+    /**
+     * @return null|array{identifier: string, title: string, rootPageId: int}
+     */
+    private function siteOfStoragePage(int $pid): ?array
+    {
+        try {
+            $site = $this->siteFinder->getSiteByPageId($pid);
+        } catch (SiteNotFoundException) {
+            return null;
+        }
+
+        return [
+            'identifier' => $site->getIdentifier(),
+            'title' => (string) ($site->getConfiguration()['websiteTitle'] ?? ''),
+            'rootPageId' => $site->getRootPageId(),
+        ];
     }
 
     /**

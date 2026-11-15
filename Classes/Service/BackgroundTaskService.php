@@ -42,7 +42,7 @@ class BackgroundTaskService implements SingletonInterface
      * @param array<mixed> $backgroundTasks
      * @param array<mixed> $uuidStatus
      */
-    public function prefillArrays(array &$backgroundTasks, array &$uuidStatus): void
+    public function prefillArrays(array &$backgroundTasks, array &$uuidStatus, string $focusUuid = ''): void
     {
         $foundBackgroundTasksPages = $this->backgroundTaskRepository->findAllPageBackgroundTasks();
         $counter = [
@@ -77,8 +77,8 @@ class BackgroundTaskService implements SingletonInterface
             if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
                 continue;
             }
-            if ($counter[$foundBackgroundTask['column']] < 50) {
-                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+            if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
+                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
             }
             $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             ++$counter[$foundBackgroundTask['column']];
@@ -112,8 +112,8 @@ class BackgroundTaskService implements SingletonInterface
                 if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
                     continue;
                 }
-                if ($counter[$foundBackgroundTask['column']] < 50) {
-                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -143,8 +143,8 @@ class BackgroundTaskService implements SingletonInterface
                 if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
                     continue;
                 }
-                if ($counter[$foundBackgroundTask['column']] < 50) {
-                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -171,8 +171,8 @@ class BackgroundTaskService implements SingletonInterface
                 if (!array_key_exists($foundBackgroundTask['column'], $counter)) {
                     continue;
                 }
-                if ($counter[$foundBackgroundTask['column']] < 50) {
-                    $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['table_uid']] = $foundBackgroundTask;
+                if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
+                    $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -762,7 +762,7 @@ class BackgroundTaskService implements SingletonInterface
             $processed = 0;
             $failed = 0;
             foreach ($tasks as $task) {
-                if ('translation' === $task['type']) {
+                if ('translation' === $task['type'] && 'sys_file_metadata' !== $task['table_name']) {
                     try {
                         if ($this->translationService->processTranslationTask($task)) {
                             ++$processed;
@@ -1034,11 +1034,10 @@ class BackgroundTaskService implements SingletonInterface
             if (!is_array($decoded) || !isset($decoded['body']) || !is_array($decoded['body']) || [] === $decoded['body']) {
                 throw new \Exception('Background task '.($task['uuid'] ?? '').' has invalid or empty answer payload.');
             }
-            $result = $decoded['body'];
             $data = [
                 'uuid' => $task['uuid'],
                 'column' => $task['column'],
-                'inputValue' => $result[array_key_first($result)][0],
+                'inputValue' => $this->firstSuggestion($task, $decoded['body']),
             ];
             $backgroundTask = $this->backgroundTaskRepository->findByUuid($data['uuid']);
             if (empty($backgroundTask)) {
@@ -1098,5 +1097,27 @@ class BackgroundTaskService implements SingletonInterface
                 'message' => 'An error occurred: '.$e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * @param array<string, mixed> $task
+     * @param array<mixed>         $body
+     */
+    private function firstSuggestion(array $task, array $body): string
+    {
+        if ('translation' === ($task['type'] ?? '')) {
+            $records = $body['translationResults']['sys_file_metadata'] ?? null;
+            $value = is_array($records) && [] !== $records
+                ? ($records[array_key_first($records)][$task['column']] ?? null)
+                : null;
+        } else {
+            $suggestions = $body[array_key_first($body)];
+            $value = is_array($suggestions) ? ($suggestions[0] ?? null) : null;
+        }
+        if (!is_string($value) || '' === $value) {
+            throw new \Exception('Background task '.($task['uuid'] ?? '').' has no usable suggestion for column '.($task['column'] ?? '').'.');
+        }
+
+        return $value;
     }
 }

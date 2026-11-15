@@ -286,7 +286,7 @@ class BackgroundTaskRepository
             $constraints[] = $queryBuilder->expr()->eq('column', $queryBuilder->createNamedParameter($column));
         }
 
-        return $queryBuilder->select('table_name', 'table_uid', 'mode', 'status')
+        return $queryBuilder->select('uuid', 'table_name', 'table_uid', 'mode', 'status')
             ->from($this->table)
             ->where(
                 ...$constraints
@@ -498,6 +498,10 @@ class BackgroundTaskRepository
     public function findContentElementTranslationTasksForPage(int $pageUid, string $status): array
     {
         $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class))
+        ;
 
         return $queryBuilder
             ->select('bt.*')

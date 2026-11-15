@@ -27,7 +27,10 @@ class ScopeItemsProcFunc
      */
     public function getScopeItems(array &$config): void
     {
-        $context = $config['row']['context'][0] ?? 'pages';
+        $context = $config['row']['context'] ?? 'pages';
+        if (is_array($context)) {
+            $context = $context[0] ?? 'pages';
+        }
 
         $config['items'] = $this->globalInstructionService->getScopeItems((string) $context);
     }
