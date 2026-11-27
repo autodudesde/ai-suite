@@ -4,7 +4,7 @@
     data-namespace-typo3-fluid="true"
 >
 
-<div class="d-flex align-items-center">
+<div class="d-flex align-items-center flex-grow-1">
     <span class="badge {f:if(condition: '{task.status} == \'finished\'', then: 'badge-success', else: '{f:if(condition: \'{task.status} == \'task-error\', then: \'badge-danger\', else: \'badge-info\')}')} me-2">
         {task.status}
     </span>

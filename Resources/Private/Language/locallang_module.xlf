@@ -11,6 +11,18 @@
                 <source>Generate content</source>
             </trans-unit>
 
+            <trans-unit id="aiSuite.module.backgroundTask.retentionNotice">
+                <source>Tasks whose results were not applied are deleted automatically, including failed and pending ones. The clock next to a task shows the date when you point at it.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry">
+                <source>until %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry.title">
+                <source>Deleted automatically on %s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry.dateFormat">
+                <source>Y-m-d</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.backgroundTask.deleteAll">
                 <source>Delete all visible tasks</source>
             </trans-unit>
@@ -1055,6 +1067,9 @@
             <trans-unit id="aiSuite.module.preparePagesTranslation.pageType">
                 <source>Page type</source>
             </trans-unit>
+            <trans-unit id="aiSuite.module.preparePagesTranslation.showOnlyUntranslated">
+                <source>Show only pages not yet translated</source>
+            </trans-unit>
             <trans-unit id="aiSuite.module.preparePagesTranslation.sourceLanguage">
                 <source>Source/default language</source>
             </trans-unit>
@@ -1287,6 +1302,12 @@
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.metadataUpload.hint">
                 <source>Applies only when new files are uploaded. Existing files stay unchanged.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.adminOnlyHint">
+                <source>Only administrators can change this setting.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.adminOnlyNotice">
+                <source>For security reasons, only administrators can change the address of the AI Suite Server, the GDPR mode, the API keys and the HTTP basic authentication. Earlier versions also allowed this to every group with access to this module.</source>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.maskedHint">
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>

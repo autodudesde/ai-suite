@@ -11,7 +11,8 @@
                        id="settings_{setting.formKey}"
                        name="settings[{setting.formKey}]"
                        value="1"
-                       {f:if(condition: setting.value, then: 'checked="checked"')} />
+                       {f:if(condition: setting.value, then: 'checked="checked"')}
+                       {f:if(condition: setting.locked, then: 'disabled="disabled"')} />
                 <label class="form-check-label" for="settings_{setting.formKey}">
                     <f:translate key="{setting.label}" default="{setting.label}" />
                 </label>
@@ -23,7 +24,8 @@
             </label>
             <select class="form-select"
                     id="settings_{setting.formKey}"
-                    name="settings[{setting.formKey}]">
+                    name="settings[{setting.formKey}]"
+                    {f:if(condition: setting.locked, then: 'disabled="disabled"')}>
                 <f:for each="{setting.options}" key="optionValue" as="optionLabel">
                     <option value="{optionValue}" {f:if(condition: '{setting.currentValue} == {optionValue}', then: 'selected="selected"')}>{optionLabel}</option>
                 </f:for>
@@ -38,7 +40,8 @@
                    id="settings_{setting.formKey}"
                    name="settings[{setting.formKey}]"
                    value="{setting.value}"
-                   min="0" />
+                   min="0"
+                   {f:if(condition: setting.locked, then: 'disabled="disabled"')} />
         </f:else>
         <f:else>
             <label class="form-label fw-bold" for="settings_{setting.formKey}">
@@ -49,13 +52,19 @@
                    id="settings_{setting.formKey}"
                    name="settings[{setting.formKey}]"
                    value="{setting.value}"
-                   {f:if(condition: setting.masked, then: 'autocomplete="off"')} />
-            <f:if condition="{setting.masked}">
+                   {f:if(condition: setting.masked, then: 'autocomplete="off"')}
+                   {f:if(condition: setting.locked, then: 'disabled="disabled"')} />
+            <f:if condition="{setting.masked} && !{setting.locked}">
                 <small class="form-text text-muted">
                     <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.maskedHint" />
                 </small>
             </f:if>
         </f:else>
+    </f:if>
+    <f:if condition="{setting.locked}">
+        <small class="form-text text-muted d-block">
+            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.adminOnlyHint" />
+        </small>
     </f:if>
 </div>
 

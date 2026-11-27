@@ -342,6 +342,46 @@ class BackgroundTaskRepository
     }
 
     /**
+     * @return list<string>
+     */
+    public function findExpiredUuids(int $now): array
+    {
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+
+        return array_values(array_unique(array_map(
+            'strval',
+            $queryBuilder
+                ->select('uuid')
+                ->from($this->table)
+                ->where(
+                    $queryBuilder->expr()->gt('expires_at', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT)),
+                    $queryBuilder->expr()->lte('expires_at', $queryBuilder->createNamedParameter($now, Connection::PARAM_INT)),
+                )
+                ->executeQuery()
+                ->fetchFirstColumn()
+        )));
+    }
+
+    /**
+     * @param array<string, int> $expiresAt
+     */
+    public function updateExpiries(array $expiresAt): void
+    {
+        foreach ($expiresAt as $uuid => $timestamp) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable($this->table);
+            $queryBuilder
+                ->update($this->table)
+                ->set('expires_at', $timestamp, true, Connection::PARAM_INT)
+                ->where(
+                    $queryBuilder->expr()->eq('uuid', $queryBuilder->createNamedParameter($uuid)),
+                    $queryBuilder->expr()->neq('expires_at', $queryBuilder->createNamedParameter($timestamp, Connection::PARAM_INT)),
+                )
+                ->executeStatement()
+            ;
+        }
+    }
+
+    /**
      * @return list<array<string, mixed>>
      */
     public function findByParentUuid(string $parentUuid): array

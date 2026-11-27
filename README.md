@@ -55,7 +55,7 @@ AI Suite adds a dedicated backend module whose dashboard gives access to the mai
 
 | Area | Purpose |
 |---|---|
-| **WorkflowManager** | Run tasks instantly, e.g. metadata generation for pages and/or images as well as translations. A link can prefill the form through `aiSuitePreselect[...]` (field, depth, language, translation scope); it starts nothing, and every value is checked against the user's permissions. |
+| **WorkflowManager** | Run tasks instantly, e.g. metadata generation for pages and/or images as well as translations. A link can prefill the form through `aiSuitePreselect[...]` (field, depth, language, translation scope, only untranslated pages); it starts nothing, and every value is checked against the user's permissions. |
 | **TaskEngine** | Monitor and manage background tasks, e.g. the processing of bulk metadata generation or translations. |
 | **Global instructions** | Instructions applied to the prompts for a whole site, or for selected pages or folders (optionally their subtree). |
 | **Prompt templates** | Reusable, editable prompt templates for recurring generation tasks. |
@@ -174,7 +174,7 @@ All settings live under **Admin Tools → Settings → Extension Configuration �
 
 | Setting | Default | Description |
 |---|---|---|
-| `forceGdpa` | `0` | Offer only GDPR-compliant models; the flag is sent to the AI Suite Server with the request for the available models. |
+| `forceGdpa` | `0` | Offer only GDPR-compliant models. The flag goes with every request, and the AI Suite Server refuses any other model, including one it does not know. Off by default, see [Risks to know before use](#risks-to-know-before-use). |
 
 The extension sends no IP addresses of editors to the AI Suite Server. API keys stored in backend groups are masked in the form. Errors are logged with the exception object (PSR-3); TYPO3's file writer adds its stack trace, which contains argument values (content, keys) unless PHP's `zend.exception_ignore_args` is on, as it is in `php.ini-production`. Keep it on in production.
 
@@ -237,6 +237,13 @@ whoever works with the system.
 |---|---|---|
 | `maxTasks` | `50` | Maximum number of CLI background tasks handled per `ai-suite:process-tasks` run. |
 
+Background tasks whose results were not applied are deleted on the date the AI Suite Server names for them
+(`taskRetentionDays` of the server), failed and pending ones included. The server deletes its copy itself; the AI Suite
+stores the date with every status check and deletes its own copy with every `ai-suite:process-tasks` run and when the
+TaskEngine is opened. A task the server has named no date for is kept, also when the server keeps its tasks for good.
+The TaskEngine shows a clock next to each task's delete button with the deletion date as its tooltip; in the last 14
+days the date is shown next to the clock and highlighted.
+
 ### Audit
 
 | Setting | Default | Description |
@@ -267,6 +274,22 @@ whoever works with the system.
 | `mittwaldAiModelHubApiKey` | _(empty)_ | Your Mittwald AI Model Hub API key (Mittwald models). |
 | `staanApiKey` | _(empty)_ | Your Staan API key, used for ChEddi's web research on plans that run on your own provider keys. |
 
+### Keys from environment variables
+
+The keys above are stored in plain text in the extension configuration (`settings.php`), and the
+group overrides in `be_groups`. To keep them out of both files and their backups, leave the fields
+empty and set the values from environment variables in `config/system/additional.php`, which TYPO3
+applies on top of `settings.php` on every request:
+
+```php
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['ai_suite']['aiSuiteApiKey'] = (string)getenv('AI_SUITE_API_KEY');
+$GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['ai_suite']['openAiApiKey'] = (string)getenv('AI_SUITE_OPENAI_API_KEY');
+```
+
+Use the same pattern for every other key; `basicAuth.pass` is nested as
+`['ai_suite']['basicAuth']['pass']`. A key set as a group override in
+`be_groups` takes precedence for non-admins and is still stored in the database.
+
 ## Backend-group permissions
 
 AI Suite gates access on two independent axes that both apply on every action: **per feature** and **per AI model**. Both are TYPO3 custom permission options set on each backend group (`be_groups`) under the **AI Suite Features** (`tx_aisuite_features`) and **AI Suite Models** (`tx_aisuite_models`) sections. A user needs the feature flag for the action **and** the model flag for the model that action uses.
@@ -294,7 +317,7 @@ AI Suite gates access on two independent axes that both apply on every action: *
 | `enable_global_instructions_button` | Manage global instructions |
 | `enable_prompt_template_button` | Manage prompt templates |
 | `enable_toolbar_stats_item` | Credits toolbar item |
-| `enable_global_settings` | Settings area inside the backend module |
+| `enable_global_settings` | Settings area inside the backend module (server address, GDPR mode, keys and basic auth only for admins) |
 | `enable_agency` | Agencies area |
 | `enable_audit` | All page audits: SEO, accessibility and content audits (Audit module, context menu and MCP audit tools; in ChEddi, `tx_cheddi_features:enable_cheddi_audit` applies instead) |
 | `enable_statistics` | Statistics view |
@@ -520,6 +543,103 @@ ChEddi (`autodudes/cheddi`, extension key `cheddi`) puts a chat drawer on every 
 - **Settings:** ChEddi's own settings are prefixed `chat*`. Settings with an `ai_suite_mcp` counterpart inherit it (GDPR mode comes from `ai_suite`), table lists extend the MCP lists, and markup and GDPR settings can only tighten; `chatWriteMode` and `chatLogVerbose` replace the MCP value.
 
 The ChEddi README (`autodudes/cheddi`) covers installation, permissions, web research and configuration.
+
+## Product and security information
+
+User information under the EU Cyber Resilience Act (Regulation (EU) 2024/2847, Annex II).
+
+### Manufacturer and product
+
+- **Manufacturer:** AutoDudes GmbH & Co. KG, Ringstr. 24, 95191 Leupoldsgrün, Germany,
+  [service@autodudes.de](mailto:service@autodudes.de), <https://www.autodudes.de>
+- **Product:** AI Suite, Composer package `autodudes/ai-suite`, extension key `ai_suite`. The
+  installed version is shown in the Extension Manager and in `composer.lock`.
+- **Vulnerabilities:** report them to [security@autodudes.de](mailto:security@autodudes.de), see
+  [SECURITY.md](SECURITY.md).
+- **Support period:** five years of security updates per major, from its first release. The end
+  date of each major is listed in [SECURITY.md](SECURITY.md#supported-versions).
+- **Software bill of materials:** available on request at security@autodudes.de.
+
+### Intended purpose and security properties
+
+AI Suite lets backend users of a TYPO3 installation generate, translate and check content with AI
+models. It runs inside the TYPO3 backend and only for authenticated backend users; every feature and
+every AI model is a backend-group permission. All AI requests go over HTTPS to the AI Suite Server
+operated by AutoDudes (`aiSuiteServer`), which reaches the AI providers, also with your own keys.
+
+### Risks to know before use
+
+- **API keys** (`aiSuiteApiKey` and the [own provider keys](#bring-your-own-keys)) are stored in
+  the TYPO3 extension configuration (`settings.php`) and in `be_groups` for group
+  overrides, in plain text. Protect these files and database backups like credentials. Own
+  provider keys also leave the installation: they go with every request that uses them to the AI
+  Suite Server, which calls the provider with them.
+- **Content leaves the installation.** The content a feature works on is sent to the AI Suite Server
+  and to the chosen AI provider. Use the [GDPR mode](#gdpr) (`forceGdpa`) and the model permissions
+  to limit which providers are used.
+- **GDPR mode is off by default** (`forceGdpa = 0`). A group that may use a model of a provider
+  outside the EU, such as OpenAI or Anthropic, sends its content there, and `easyLanguageLibrary`
+  and `autoTranslateModel` default to `ChatGPT`. Decide on the mode before editors start.
+- **Models set in the extension configuration bypass the model permissions.**
+  `metadataAutogenerateModel`, `easyLanguageLibrary` and `auditDefaultTextModel` are used for every
+  editor who may use the feature, whether their group may use that model or not.
+- **AI output is not trusted input.** Generated text and images can be wrong or unsuitable; review
+  them before publishing.
+- **Logs can hold content.** See [GDPR](#gdpr) for `zend.exception_ignore_args` in production.
+
+### Secure use
+
+- Grant the AI Suite permissions only to the backend groups that need them. With
+  `enable_global_settings`, a non-admin can change the module settings, but not `aiSuiteServer`,
+  `forceGdpa`, the API keys or the HTTP basic authentication: those are shown read-only and can
+  only be changed by administrators.
+- Keep `aiSuiteServer` on the default unless AutoDudes gives you another address; it has to use
+  HTTPS.
+- To keep content with EU providers, set `forceGdpa = 1` and switch `easyLanguageLibrary` and
+  `autoTranslateModel` to an EU model, for example `AiSuiteTextUltimate` and
+  `MittwaldMinistral14B`. A feature still set to another model is refused by the AI Suite Server.
+- Schedule `ai-suite:process-tasks` only if you use background or CLI workflows.
+
+### Updates
+
+Security fixes are released as regular versions of each supported major. Install them with
+`composer update autodudes/ai-suite` or through the Extension Manager, then run **Admin Tools →
+Maintenance → Analyze Database Structure** and flush the caches. AI Suite never installs updates by
+itself, so there is no automatic update to switch off.
+
+When the AI Suite Server knows of a vulnerability in an installed version of AI Suite, AI Suite MCP,
+ChEddi or AI Suite Transparency, admins see it in **System → Reports** (*AI Suite security updates*)
+and in the system information menu of the toolbar, with the advisory and the first fixed version.
+For this, every request to the server carries the installed versions of these four extensions, and
+the report and the toolbar ask the server at most once a day, as soon as an AI Suite API key is set
+and even if no AI feature is used. That request carries the site's domain, a hashed instance
+identifier and the installed versions, no content. For a critical vulnerability the
+server can refuse requests from affected versions until the update is installed; the error message
+names the update.
+
+AI Suite depends on the TYPO3 Core and on packages that Composer installs alongside it. Their
+security fixes come from the TYPO3 Security Team and the package maintainers, not from AutoDudes:
+follow the [TYPO3 security advisories](https://typo3.org/help/security-advisories) and keep TYPO3 on
+the latest patch level of your major (`composer update "typo3/*"`). For TYPO3 12, Core security
+fixes from 12.4.46 on require TYPO3 Extended Long Term Support (ELTS). The minimum versions in
+`composer.json` are technical requirements, not a statement that older patch levels are safe.
+
+### Decommissioning
+
+1. Remove the Scheduler tasks that run `ai-suite:*` commands.
+2. Uninstall the extension (`composer remove autodudes/ai-suite`, or deactivate and delete it in the
+   Extension Manager). Remove AI Suite MCP, ChEddi and AI Suite Transparency first if they are
+   installed.
+3. Run **Analyze Database Structure** twice: the first run renames the
+   [AI Suite tables](#database-tables) and the `be_groups` columns to `zzz_deleted_…`, the second
+   drops them. This deletes the stored group keys, prompts, glossaries, background tasks,
+   audit results and the provenance register.
+4. Delete the `ai_suite` entry under `EXTENSIONS` in `settings.php`, which still holds the API keys
+   after the uninstall.
+5. Content AI Suite wrote into your records and files (metadata, translations, generated images in
+   `mediaStorageFolder`) is your content and stays.
+6. Cancel the AI Suite subscription; data stored on the AI Suite Server is deleted under the
+   retention periods of the data processing agreement, or on request at service@autodudes.de.
 
 ## Documentation
 

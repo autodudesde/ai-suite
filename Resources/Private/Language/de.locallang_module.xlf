@@ -13,6 +13,22 @@
                 <target>Inhalt generieren</target>
             </trans-unit>
 
+            <trans-unit id="aiSuite.module.backgroundTask.retentionNotice">
+                <source>Tasks whose results were not applied are deleted automatically, including failed and pending ones. The clock next to a task shows the date when you point at it.</source>
+                <target>Tasks, deren Ergebnisse nicht übernommen wurden, werden automatisch gelöscht, auch fehlerhafte und noch laufende. Die Uhr neben einem Task zeigt das Datum, wenn du mit der Maus darauf zeigst.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry">
+                <source>until %s</source>
+                <target>bis %s</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry.title">
+                <source>Deleted automatically on %s</source>
+                <target>Wird am %s automatisch gelöscht</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.backgroundTask.expiry.dateFormat">
+                <source>Y-m-d</source>
+                <target>d.m.Y</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.backgroundTask.deleteAll">
                 <source>Delete all visible tasks</source>
                 <target>Alle sichtbaren Aufgaben löschen</target>
@@ -1389,6 +1405,10 @@
                 <source>Page type</source>
                 <target>Seitentyp</target>
             </trans-unit>
+            <trans-unit id="aiSuite.module.preparePagesTranslation.showOnlyUntranslated">
+                <source>Show only pages not yet translated</source>
+                <target>Nur noch nicht übersetzte Seiten anzeigen</target>
+            </trans-unit>
             <trans-unit id="aiSuite.module.preparePagesTranslation.sourceLanguage">
                 <source>Source/default language</source>
                 <target>Ausgangssprache</target>
@@ -1704,6 +1724,14 @@
             <trans-unit id="aiSuite.module.settings.metadataUpload.hint">
                 <source>Applies only when new files are uploaded. Existing files stay unchanged.</source>
                 <target>Greift nur, wenn neue Dateien hochgeladen werden. Bestehende Dateien bleiben unverändert.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.adminOnlyHint">
+                <source>Only administrators can change this setting.</source>
+                <target>Nur Administratoren können diese Einstellung ändern.</target>
+            </trans-unit>
+            <trans-unit id="aiSuite.module.settings.adminOnlyNotice">
+                <source>For security reasons, only administrators can change the address of the AI Suite Server, the GDPR mode, the API keys and the HTTP basic authentication. Earlier versions also allowed this to every group with access to this module.</source>
+                <target>Aus Sicherheitsgründen können nur Administratoren die Adresse des AI Suite Servers, den DSGVO-Modus, die API-Schlüssel und die HTTP-Basic-Authentifizierung ändern. Frühere Versionen erlaubten das jeder Gruppe mit Zugriff auf dieses Modul.</target>
             </trans-unit>
             <trans-unit id="aiSuite.module.settings.maskedHint">
                 <source>This value is masked for security. Leave unchanged to keep the current value, or enter a new value to update.</source>

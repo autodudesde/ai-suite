@@ -12,6 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -20,6 +21,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class BackgroundTaskService implements SingletonInterface
 {
+    public const EXPIRY_WARNING_DAYS = 14;
+
     public function __construct(
         protected readonly BackendUserService $backendUserService,
         protected readonly BackgroundTaskRepository $backgroundTaskRepository,
@@ -36,7 +39,51 @@ class BackgroundTaskService implements SingletonInterface
         protected readonly SysFileMetadataRepository $sysFileMetadataRepository,
         protected readonly ProvenanceCaptureService $provenanceCapture,
         protected readonly WorkflowSelectionGuard $workflowSelectionGuard,
+        protected readonly Context $context,
     ) {}
+
+    /**
+     * @param array<string, mixed>                                              $responseData
+     * @param array<string, array<string, array<string, array<string, mixed>>>> $backgroundTasks
+     */
+    public function rememberExpiries(array $responseData, array &$backgroundTasks = []): void
+    {
+        $expiresAt = [];
+        foreach (is_array($responseData['expiresAt'] ?? null) ? $responseData['expiresAt'] : [] as $uuid => $timestamp) {
+            if (is_string($uuid) && '' !== $uuid && is_int($timestamp) && $timestamp > 0) {
+                $expiresAt[$uuid] = $timestamp;
+            }
+        }
+        $this->backgroundTaskRepository->updateExpiries($expiresAt);
+
+        foreach ($backgroundTasks as $scope => $columns) {
+            foreach ($columns as $column => $tasks) {
+                foreach ($tasks as $uuid => $task) {
+                    if (isset($expiresAt[$uuid])) {
+                        $backgroundTasks[$scope][$column][$uuid] = $this->withExpiry(['expires_at' => $expiresAt[$uuid]] + $task);
+                    }
+                }
+            }
+        }
+    }
+
+    public function deleteExpiredTasks(): int
+    {
+        $deleted = 0;
+        foreach (array_chunk($this->backgroundTaskRepository->findExpiredUuids($this->now()), 500) as $uuids) {
+            try {
+                $failed = 'Error' === $this->sendRequestService->sendDataRequest('handleBackgroundTask', ['uuids' => $uuids, 'mode' => 'delete'])->getType();
+            } catch (\Throwable) {
+                $failed = true;
+            }
+            if ($failed) {
+                $this->logger->error('Expired background tasks could not be deleted on the server', ['count' => count($uuids)]);
+            }
+            $deleted += $this->backgroundTaskRepository->deleteByUuids($uuids);
+        }
+
+        return $deleted;
+    }
 
     /**
      * @param array<mixed> $backgroundTasks
@@ -78,7 +125,7 @@ class BackgroundTaskService implements SingletonInterface
                 continue;
             }
             if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
-                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $this->withExpiry($foundBackgroundTask);
             }
             $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
             ++$counter[$foundBackgroundTask['column']];
@@ -113,7 +160,7 @@ class BackgroundTaskService implements SingletonInterface
                     continue;
                 }
                 if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
-                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $this->withExpiry($foundBackgroundTask);
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -144,7 +191,7 @@ class BackgroundTaskService implements SingletonInterface
                     continue;
                 }
                 if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
-                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                    $backgroundTasks[$foundBackgroundTask['scope']][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $this->withExpiry($foundBackgroundTask);
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -172,7 +219,7 @@ class BackgroundTaskService implements SingletonInterface
                     continue;
                 }
                 if ($counter[$foundBackgroundTask['column']] < 50 || ('' !== $focusUuid && $foundBackgroundTask['uuid'] === $focusUuid)) {
-                    $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $foundBackgroundTask;
+                    $backgroundTasks['fileMetadataTranslation'][$foundBackgroundTask['column']][$foundBackgroundTask['uuid']] = $this->withExpiry($foundBackgroundTask);
                 }
                 $uuidStatus[$foundBackgroundTask['uuid']] = $this->statusSyncEntry($foundBackgroundTask);
                 ++$counter[$foundBackgroundTask['column']];
@@ -364,6 +411,7 @@ class BackgroundTaskService implements SingletonInterface
                 return;
             }
 
+            $this->rememberExpiries($answer->getResponseData());
             $statusData = $answer->getResponseData()['statusData'] ?? [];
             if (is_array($statusData) && [] !== $statusData) {
                 $this->backgroundTaskRepository->updateStatus($statusData);
@@ -393,6 +441,7 @@ class BackgroundTaskService implements SingletonInterface
                 ]);
 
                 if ('Error' !== $answer->getType()) {
+                    $this->rememberExpiries($answer->getResponseData());
                     $statusData = $answer->getResponseData()['statusData'] ?? [];
                     $this->backgroundTaskRepository->updateStatus($statusData);
                 }
@@ -743,6 +792,7 @@ class BackgroundTaskService implements SingletonInterface
                         'message' => $message,
                     ];
                 }
+                $this->rememberExpiries($answer->getResponseData());
                 $statusData = $answer->getResponseData()['statusData'] ?? [];
                 $this->mergeBackgroundTasksAndUpdateStatus($backgroundTasks, $statusData);
             }
@@ -1119,5 +1169,23 @@ class BackgroundTaskService implements SingletonInterface
         }
 
         return $value;
+    }
+
+    /**
+     * @param array<string, mixed> $task
+     *
+     * @return array<string, mixed>
+     */
+    private function withExpiry(array $task): array
+    {
+        $task['expiresAt'] = max(0, (int) ($task['expires_at'] ?? 0));
+        $task['expiresSoon'] = $task['expiresAt'] > 0 && $task['expiresAt'] - $this->now() < self::EXPIRY_WARNING_DAYS * 86400;
+
+        return $task;
+    }
+
+    private function now(): int
+    {
+        return (int) $this->context->getPropertyFromAspect('date', 'timestamp');
     }
 }

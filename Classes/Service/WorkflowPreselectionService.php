@@ -55,6 +55,9 @@ class WorkflowPreselectionService
             if (in_array($raw['translationScope'] ?? null, self::TRANSLATION_SCOPES, true)) {
                 $values['translationScope'] = (string) $raw['translationScope'];
             }
+            if (in_array($raw['showOnlyUntranslated'] ?? null, ['0', '1'], true)) {
+                $values['showOnlyUntranslated'] = (string) $raw['showOnlyUntranslated'];
+            }
 
             return $values;
         }

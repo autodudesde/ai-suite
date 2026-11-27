@@ -11,6 +11,14 @@
         <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.header" />
     </h1>
 
+    <f:if condition="{adminOnlyFieldsLocked}">
+        <div class="callout callout-info">
+            <div class="callout-body">
+                <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.adminOnlyNotice" />
+            </div>
+        </div>
+    </f:if>
+
     <form method="post" action="{f:be.uri(route: 'ai_suite_settings_save', parameters: '{id: id}')}">
 
         <div id="aiSuiteSettingsAccordion">

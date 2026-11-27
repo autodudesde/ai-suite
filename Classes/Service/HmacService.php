@@ -14,7 +14,7 @@ class HmacService
         private readonly Typo3Version $typo3Version,
     ) {}
 
-    public function hmac(string $input, string $additionalSecret): string
+    public function hmac(string $input, #[\SensitiveParameter] string $additionalSecret): string
     {
         if ('' === (string) ($GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'] ?? '') || '' === $additionalSecret) {
             throw new \LogicException('An HMAC needs the encryptionKey and a non-empty additional secret.', 1760900000);
@@ -28,7 +28,7 @@ class HmacService
         return GeneralUtility::hmac($input, $additionalSecret);
     }
 
-    public function validate(string $input, string $additionalSecret, string $hmac): bool
+    public function validate(string $input, #[\SensitiveParameter] string $additionalSecret, string $hmac): bool
     {
         return hash_equals($this->hmac($input, $additionalSecret), $hmac);
     }

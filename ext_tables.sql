@@ -47,6 +47,7 @@ CREATE TABLE tx_aisuite_domain_model_backgroundtask (
     status varchar(40) DEFAULT '',
     error text,
     crdate int(11) DEFAULT '0',
+    expires_at int(11) DEFAULT '0' NOT NULL,
 
     table_name text,
     id_column text,

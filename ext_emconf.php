@@ -10,6 +10,7 @@ $EM_CONF['ai_suite'] = [
     'constraints' => [
         'depends' => [
             'typo3' => '14.3.0-14.9.99',
+            'reports' => '14.3.0-14.9.99',
         ],
         'conflicts' => [
             'ai_seo_helper' => '0.1.0-1.9.99',
@@ -28,5 +29,5 @@ $EM_CONF['ai_suite'] = [
     'state' => 'stable',
     'uploadfolder' => 0,
     'clearCacheOnLoad' => 1,
-    'version' => '14.8.0',
+    'version' => '14.9.0',
 ];

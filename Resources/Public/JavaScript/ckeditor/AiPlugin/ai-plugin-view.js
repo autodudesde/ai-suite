@@ -1,5 +1,5 @@
 import { View, TextareaView, ButtonView, createDropdown, addListToDropdown, ViewModel } from '@ckeditor/ckeditor5-ui';
-import { Collection } from '@ckeditor/ckeditor5-utils';
+import { Collection, uid } from '@ckeditor/ckeditor5-utils';
 import RadioView from "@autodudes/ai-suite/ckeditor/RadioView/radio-view.js";
 import SpinnerView from "@autodudes/ai-suite/ckeditor/SpinnerView/spinner-view.js";
 import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.js";
@@ -7,8 +7,15 @@ import GlobalInstructions from "@autodudes/ai-suite/helper/global-instructions.j
 export default class ModalView extends View {
     constructor(editorLocale, libraries, promptTemplates, globalInstructions) {
         super(editorLocale);
+        const id = uid();
+        const titleId = 'ck-ai-plugin-title-' + id;
+        const promptId = 'ck-ai-plugin-prompt-' + id;
+        const modelLabelId = 'ck-ai-plugin-models-' + id;
         const iconCancel = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="M11.9 5.5 9.4 8l2.5 2.5c.2.2.2.5 0 .7l-.7.7c-.2.2-.5.2-.7 0L8 9.4l-2.5 2.5c-.2.2-.5.2-.7 0l-.7-.7c-.2-.2-.2-.5 0-.7L6.6 8 4.1 5.5c-.2-.2-.2-.5 0-.7l.7-.7c.2-.2.5-.2.7 0L8 6.6l2.5-2.5c.2-.2.5-.2.7 0l.7.7c.2.2.2.5 0 .7z"/></g></svg>';
-        this.cancelButtonView = this._createButton( '', iconCancel, 'ck-button-cancel' );
+        this.cancelButtonView = this._createButton( TYPO3.lang['aiSuite.errorDetails.close'], iconCancel, 'ck-button-cancel', false );
+        this.cancelButtonView.delegate( 'execute' ).to( this, 'cancel' );
+        this.abortButtonView = this._createButton( TYPO3.lang['aiSuite.module.spinner.cancel'], undefined, 'ck-button-abort' );
+        this.abortButtonView.delegate( 'execute' ).to( this, 'cancel' );
 
         this.globalInstructions = globalInstructions;
         const iconEye = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8.07 3C4.112 3 1 5.286 1 8s2.97 5 7 5c3.889 0 7-2.286 7-4.93C15 5.285 11.889 3.142 8.212 3h-.141Zm-.025 1.127c.141 0 .423.141.423.282s-.14.282-.423.282c-.845 0-1.69.704-1.69 1.55 0 .14-.141.282-.423.282-.282 0-.423-.141-.423-.282.141-1.127 1.268-2.114 2.536-2.114ZM2 8.03c0-1.298 1.017-2.591 2.647-3.312-.296.432-.296 1.01-.296 1.587 0 2.02 1.63 3.606 3.703 3.606 2.074 0 3.704-1.587 3.704-3.606 0-.577-.148-1.01-.296-1.443C12.943 5.582 14 6.875 14 8.029c-.148 2.02-2.841 3.924-6 3.971-3.36-.047-6-1.95-6-3.97Z"/></g></svg>';
@@ -16,21 +23,11 @@ export default class ModalView extends View {
         this.globalInstructionsButtonView.set({
             tooltip: TYPO3.lang['aiSuite.globalInstructions.tooltip']
         });
-        this.cancelButtonView.delegate( 'execute' ).to( this, 'cancel' );
         this.promptInputView = this._createTextarea();
+        this.promptInputView.id = promptId;
         this.promptInputView.delegate( 'execute' ).to( this, 'promptInputViewActive' );
-        this.radioButtonGroup = [];
-        let count = 0;
-        for (const library of libraries) {
-            let radioButton;
-            if (count === 0) {
-                radioButton = new RadioView(editorLocale, library.name, library.model_identifier, 'textModel', library.weight, true);
-                count++;
-            } else {
-                radioButton = new RadioView(editorLocale, library.name, library.model_identifier, 'textModel', library.weight);
-            }
-            this.radioButtonGroup.push(radioButton);
-        }
+        const radioName = 'textModel-' + id;
+        this.radioButtonGroup = libraries.map((library, index) => new RadioView(editorLocale, library.name, library.model_identifier, radioName, library.weight, index === 0));
         this.dropdown = null;
         if (promptTemplates.length > 0) {
             this.dropdown = createDropdown( editorLocale );
@@ -72,6 +69,8 @@ export default class ModalView extends View {
             attributes: {
                 tabindex: -1,
                 class: 'ck-ai-plugin ck-dialog-wrapper',
+                role: 'dialog',
+                'aria-labelledby': titleId,
             },
             children: [
                 {
@@ -88,59 +87,77 @@ export default class ModalView extends View {
                             children: [
                                 {
                                     tag: 'span',
-                                    attributes: { class: 'ck-ai-plugin__title' },
+                                    attributes: { class: 'ck-ai-plugin__title', id: titleId },
                                     children: [ TYPO3.lang['aiSuite.module.general.adjustContentWithAi'] ]
                                 },
                                 this.cancelButtonView
                             ]
                         },
-                        this.dropdown ? {
-                            tag: 'div',
-                            attributes: { class: 'ck-ai-plugin__label' },
-                            children: [ TYPO3.lang['aiSuite.module.general.promptTemplates'] ]
-                        } : null,
-                        this.dropdown ? {
-                            tag: 'div',
-                            attributes: { class: 'ck-prompt-template-dropdown' },
-                            children: [ this.dropdown ]
-                        } : null,
                         {
                             tag: 'div',
-                            attributes: { class: 'ck-ai-plugin__label ck-prompt-input-label' },
+                            attributes: { class: 'ck-ai-plugin__body' },
                             children: [
+                                this.dropdown ? {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-ai-plugin__label' },
+                                    children: [ TYPO3.lang['aiSuite.module.general.promptTemplates'] ]
+                                } : null,
+                                this.dropdown ? {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-prompt-template-dropdown' },
+                                    children: [ this.dropdown ]
+                                } : null,
                                 {
-                                    tag: 'span',
-                                    children: [ TYPO3.lang['aiSuite.module.general.prompt'] ]
+                                    tag: 'div',
+                                    attributes: { class: 'ck-ai-plugin__label ck-prompt-input-label' },
+                                    children: [
+                                        {
+                                            tag: 'label',
+                                            attributes: { for: promptId },
+                                            children: [ TYPO3.lang['aiSuite.module.general.prompt'] ]
+                                        },
+                                        this.globalInstructions ? this.globalInstructionsButtonView : null,
+                                    ].filter(child => child !== null)
                                 },
-                                this.globalInstructions ? this.globalInstructionsButtonView : null,
-                            ].filter(child => child !== null)
+                                {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-prompt-input' },
+                                    children: [ this.promptInputView ]
+                                },
+                                {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-ai-plugin__error', role: 'alert' },
+                                    children: [ TYPO3.lang['aiSuite.module.general.promptRequired'] ]
+                                },
+                                {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-ai-plugin__label', id: modelLabelId },
+                                    children: [ TYPO3.lang['aiSuite.textGenerationLibrary'] ]
+                                },
+                                {
+                                    tag: 'div',
+                                    attributes: {
+                                        class: 'ck-radio-button-group',
+                                        role: 'radiogroup',
+                                        'aria-labelledby': modelLabelId,
+                                    },
+                                    children: this.radioButtonGroup
+                                },
+                            ].filter(child => child !== null),
                         },
                         {
                             tag: 'div',
-                            attributes: { class: 'ck-prompt-input' },
-                            children: [ this.promptInputView ]
+                            attributes: { class: 'ck-ai-plugin__footer' },
+                            children: [
+                                this.abortButtonView,
+                                {
+                                    tag: 'div',
+                                    attributes: { class: 'ck-save-button' },
+                                    children: [ this.saveButtonView ]
+                                },
+                            ]
                         },
-                        {
-                            tag: 'div',
-                            attributes: { class: 'ck-ai-plugin__error', role: 'alert' },
-                            children: [ TYPO3.lang['aiSuite.module.general.promptRequired'] ]
-                        },
-                        {
-                            tag: 'div',
-                            attributes: { class: 'ck-ai-plugin__label' },
-                            children: [ TYPO3.lang['aiSuite.textGenerationLibrary'] ]
-                        },
-                        {
-                            tag: 'div',
-                            attributes: { class: 'ck-radio-button-group' },
-                            children: this.radioButtonGroup
-                        },
-                        {
-                            tag: 'div',
-                            attributes: { class: 'ck-save-button' },
-                            children: [ this.saveButtonView ]
-                        },
-                    ].filter(child => child !== null),
+                    ],
                 },
                 {
                     tag: 'div',
@@ -190,15 +207,14 @@ export default class ModalView extends View {
         return labeledTextarea;
     }
 
-    _createButton( label, icon, className, ariaLabel= '') {
+    _createButton( label, icon, className, withText = true ) {
         const button = new ButtonView();
         button.set( {
             label,
             icon,
             tooltip: true,
-            withText: true,
+            withText,
             class: className,
-            ariaLabel: ariaLabel
         } );
 
         return button;
