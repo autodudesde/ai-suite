@@ -5,35 +5,34 @@
     xmlns:aiSuite="http://typo3.org/ns/AutoDudes/AiSuite/ViewHelpers"
 >
 <div class="translation-tasks">
-    <!-- Header Row -->
     <div class="d-flex align-items-center p-2 border-bottom">
-        <div style="width: 40px;"></div>
-        <div class="flex-fill"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.page" /></strong></div>
-        <div class="text-center" style="width: 150px;"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.alreadyTranslated" /></strong></div>
+        <div class="translation-task-col-40"></div>
+        <div class="translation-task-col-title"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.page" /></strong></div>
+        <div class="text-center translation-task-col-150"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.alreadyTranslated" /></strong></div>
         <f:if condition="{translationScope} == 'all'">
             <f:then>
-                <div class="text-center" style="width: 150px;"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.contentElements" /></strong></div>
-                <div class="text-center" style="width: 150px;"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.metadataFields" /></strong></div>
+                <div class="text-center translation-task-col-150"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.contentElements" /></strong></div>
+                <div class="text-center translation-task-col-150"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.metadataFields" /></strong></div>
             </f:then>
             <f:else>
                 <f:switch expression="{translationScope}">
                     <f:case value="metadata">
-                        <div class="text-center" style="width: 150px;"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.metadataFields" /></strong></div>
+                        <div class="text-center translation-task-col-150"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.metadataFields" /></strong></div>
                     </f:case>
                     <f:case value="content">
-                        <div class="text-center" style="width: 150px;"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.contentElements" /></strong></div>
+                        <div class="text-center translation-task-col-150"><strong><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.workflow.translation.header.contentElements" /></strong></div>
                     </f:case>
                 </f:switch>
             </f:else>
         </f:if>
-        <div style="width: 50px;"></div>
+        <div class="translation-task-col-50"></div>
     </div>
 
     <f:for each="{tasks}" as="task">
         <f:variable name="taskStatus">{aiSuite:inArray(needle: task.uid, haystack: alreadyPendingPages)}</f:variable>
         <f:if condition="{translationScope} == 'all' || {task.isAlreadyTranslated}">
             <div class="d-flex align-items-center p-2 border-bottom hover-highlight translation-task-item">
-                <div class="height-auto d-flex justify-content-start align-items-center" style="width: 40px;">
+                <div class="height-auto d-flex justify-content-start align-items-center translation-task-col-40">
                     <f:if condition="{taskStatus} == ''">
                         <input type="checkbox"
                                name="page-translation-selection"
@@ -42,19 +41,19 @@
                                data-title="{task.title}" />
                     </f:if>
                 </div>
-                <div class="flex-fill">
+                <div class="translation-task-col-title">
                     <div class="d-flex align-items-center">
                         <div class="mx-2">
                             <core:iconForRecord table="pages" row="{task}" size="small" />
                         </div>
-                        <div class="flex-fill">
-                            <div class="d-flex align-items-center justify-content-between">
+                        <div class="flex-fill text-break">
+                            <div class="d-flex align-items-center justify-content-between gap-2">
                                 <div>
                                     <div class="font-weight-bold">{task.title}</div>
                                     <small class="text-muted">PID: {task.uid}</small>
                                 </div>
                                 <f:if condition="{taskStatus} != ''">
-                                    <div class="ml-2">
+                                    <div class="flex-shrink-0">
                                         <f:switch expression="{taskStatus}">
                                             <f:case value="pending">
                                                 <span class="badge badge-pending"><f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.dashboard.card.backgroundTaskStats.pending" /></span>
@@ -75,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="text-center" style="width: 150px;">
+                <div class="text-center translation-task-col-150">
                     <f:if condition="{task.isAlreadyTranslated}">
                         <f:then>
                             <span class="label label-success translated"
@@ -96,14 +95,14 @@
 
                 <f:if condition="{translationScope} == 'all'">
                     <f:then>
-                        <div class="text-center content-elements" style="width: 150px;">
+                        <div class="text-center content-elements translation-task-col-150">
                             <span class="label label-primary"
                                   data-toggle="tooltip"
                                   title="{task.contentElementsCount} content elements">
                                 {task.contentElementsCount}
                             </span>
                         </div>
-                        <div class="text-center metadata" style="width: 150px;">
+                        <div class="text-center metadata translation-task-col-150">
                             <span class="label label-info"
                                   data-toggle="tooltip"
                                   title="{task.pagePropertiesCount} metadata fields">
@@ -114,7 +113,7 @@
                     <f:else>
                         <f:switch expression="{translationScope}">
                             <f:case value="metadata">
-                                <div class="text-center metadata" style="width: 150px;">
+                                <div class="text-center metadata translation-task-col-150">
                                     <span class="label label-info"
                                           data-toggle="tooltip"
                                           title="{task.pagePropertiesCount} metadata fields">
@@ -123,7 +122,7 @@
                                 </div>
                             </f:case>
                             <f:case value="content">
-                                <div class="text-center content-elements" style="width: 150px;">
+                                <div class="text-center content-elements translation-task-col-150">
                                     <span class="label label-primary"
                                           data-toggle="tooltip"
                                           title="{task.contentElementsCount} content elements">
@@ -135,7 +134,7 @@
                     </f:else>
                 </f:if>
 
-                <div style="width: 50px;">
+                <div class="translation-task-col-50">
                     <button type="button"
                             class="btn btn-default btn-xs page-translation-content-info"
                             data-toggle="tooltip"

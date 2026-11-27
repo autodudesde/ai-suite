@@ -15,7 +15,24 @@ class PagesTranslationPrepare {
         this.pageTranslationSelectionEventDelegation();
         GlobalInstructions.metadataTooltipEventDelegation();
         this.parentUuid = '';
+        this.untranslatedFilterEventListener();
         this.init();
+    }
+
+    untranslatedFilterEventListener() {
+        const scopeSelect = document.getElementById('translationScope');
+        const wrapper = document.getElementById('showOnlyUntranslatedWrapper');
+        if (scopeSelect === null || wrapper === null) {
+            return;
+        }
+        const checkbox = wrapper.querySelector('input[type="checkbox"]');
+        const update = () => {
+            const applies = scopeSelect.value === 'all';
+            wrapper.classList.toggle('d-none', !applies);
+            checkbox.disabled = !applies;
+        };
+        scopeSelect.addEventListener('change', update);
+        update();
     }
 
     init() {

@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace AutoDudes\AiSuite\Domain\Model\Dto\ServerRequest;
 
+use AutoDudes\AiSuite\Service\SecurityAdvisoryStore;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Package\Exception;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -83,6 +84,7 @@ class ServerRequest
             'request_system_forward_ip' => '',
             'typo3_version' => GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion(),
             'ext_version' => ExtensionManagementUtility::getExtensionVersion('ai_suite'),
+            'ext_versions' => (string) json_encode(SecurityAdvisoryStore::installedVersions()),
         ]);
     }
 

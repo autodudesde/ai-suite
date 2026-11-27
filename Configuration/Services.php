@@ -264,4 +264,11 @@ return function (ContainerConfigurator $configurator, ContainerBuilder $containe
             'event' => \TYPO3\CMS\Backend\Controller\Event\AfterBackendPageRenderEvent::class,
             'identifier' => 'tx-ai-suite/credits-toolbar'
         ]);
+
+    $services->set(\AutoDudes\AiSuite\EventListener\SecurityAdvisoryToolbarListener::class)
+        ->tag('event.listener', [
+            'method' => '__invoke',
+            'event' => \TYPO3\CMS\Backend\Backend\Event\SystemInformationToolbarCollectorEvent::class,
+            'identifier' => 'tx-ai-suite/security-advisory-toolbar'
+        ]);
 };

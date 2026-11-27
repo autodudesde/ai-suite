@@ -280,11 +280,15 @@ class PagesRepository extends AbstractRepository
         }
 
         $sourcePages = $queryBuilder->executeQuery()->fetchAllAssociative();
+        $onlyUntranslated = !empty($workflowData['showOnlyUntranslated']) && 'all' === ($workflowData['translationScope'] ?? 'all');
 
         $pages = [];
         foreach ($sourcePages as $page) {
             $pageUid = (int) $page['uid'];
             $page['isAlreadyTranslated'] = $this->isAlreadyTranslated($pageUid, $targetLanguageUid);
+            if ($onlyUntranslated && $page['isAlreadyTranslated']) {
+                continue;
+            }
             $page['contentElementsCount'] = $this->countContentElementsOnPage($pageUid, $sourceLanguageUid, $targetLanguageUid);
             $page['pagePropertiesCount'] = $this->countTranslatablePageProperties($pageUid, $sourceLanguageUid);
             $page['fileReferencesCount'] = count($this->getFileReferencesOnPage($pageUid, $sourceLanguageUid));

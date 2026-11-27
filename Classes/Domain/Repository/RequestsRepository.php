@@ -29,7 +29,7 @@ class RequestsRepository
     /**
      * @return array<string, mixed>
      */
-    public function findEntryByApiKey(string $apiKey): array
+    public function findEntryByApiKey(#[\SensitiveParameter] string $apiKey): array
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $result = $queryBuilder
@@ -45,7 +45,7 @@ class RequestsRepository
         return array_key_exists('0', $result) ? $result[0] : [];
     }
 
-    public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
+    public function setRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, #[\SensitiveParameter] string $apiKey): void
     {
         $this->deleteUnhashedKeys();
         $apiKeyEntity = $this->findEntryByApiKey($apiKey);
@@ -58,7 +58,7 @@ class RequestsRepository
         }
     }
 
-    public function updateRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
+    public function updateRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, #[\SensitiveParameter] string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
@@ -74,7 +74,7 @@ class RequestsRepository
         ;
     }
 
-    public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, string $apiKey): void
+    public function insertRequests(int $freeRequests, int $paidRequests, int $aboRequests, string $modelType, #[\SensitiveParameter] string $apiKey): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder
@@ -90,7 +90,7 @@ class RequestsRepository
         ;
     }
 
-    public function deleteRequests(string $apiKey = ''): void
+    public function deleteRequests(#[\SensitiveParameter] string $apiKey = ''): void
     {
         $queryBuilder = $this->connectionPool->getConnectionForTable($this->table)->createQueryBuilder();
         $queryBuilder->delete($this->table);
@@ -102,7 +102,7 @@ class RequestsRepository
         $queryBuilder->executeStatement();
     }
 
-    private function keyOf(string $apiKey): string
+    private function keyOf(#[\SensitiveParameter] string $apiKey): string
     {
         return hash('sha256', $apiKey);
     }

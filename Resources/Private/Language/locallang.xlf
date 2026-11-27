@@ -148,6 +148,12 @@
             <trans-unit id="aiSuite.error.server.webSearchUnavailable">
                 <source>Web research is not available for this installation under the current data-protection settings.</source>
             </trans-unit>
+            <trans-unit id="aiSuite.error.server.webSearchDisabled">
+                <source>Web research is switched off on the AI Suite Server.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.auditDisabled">
+                <source>Audits are switched off on the AI Suite Server. The request was not billed.</source>
+            </trans-unit>
             <trans-unit id="aiSuite.error.server.promptViolation">
                 <source>The prompt was rejected by the provider’s content policy. Please rephrase it.</source>
             </trans-unit>
@@ -156,6 +162,36 @@
             </trans-unit>
             <trans-unit id="aiSuite.error.server.requestStatusNotFound">
                 <source>The AI Suite server no longer knows this background task, so it could not be re-queued. Delete the task and start the action again.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.error.server.securityUpdateRequired">
+                <source>The AI Suite Server refuses requests from this installation until a security update is installed. Update the extension named below.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.label">
+                <source>AI Suite security updates</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.title">
+                <source>Security updates for AI Suite, AI Suite MCP, ChEddi and AI Suite Transparency</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.affected.value">
+                <source>%1$s %2$s has a known vulnerability</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.affected.message">
+                <source>Advisory %1$s, severity %2$s. Install version %3$s or later. Details: %4$s</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.ok.value">
+                <source>No known vulnerability</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.ok.message">
+                <source>The AI Suite Server reported no security advisory for the installed versions (last checked %s).</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.unchecked.value">
+                <source>Not checked yet</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.status.unchecked.message">
+                <source>The AI Suite Server has not been asked about security advisories yet. Check the AI Suite-API-Key and the server URL in the extension configuration.</source>
+            </trans-unit>
+            <trans-unit id="aiSuite.securityAdvisory.toolbar">
+                <source>Security update: %1$s %2$s is affected, install %3$s or later</source>
             </trans-unit>
             <trans-unit id="aiSuite.error.server.notEnoughRequests">
                 <source>Your AI Suite API key does not have enough requests left for this action. Please top up your requests at https://www.autodudes.de</source>
