@@ -52,6 +52,10 @@ class ProcessTasksCommand extends Command
         $io->title('Task status update');
 
         try {
+            $expired = $this->backgroundTaskService->deleteExpiredTasks();
+            if ($expired > 0) {
+                $io->writeln(sprintf('Deleted %d expired tasks', $expired));
+            }
             $result = $this->backgroundTaskService->updateAllTaskStatuses();
         } catch (\Throwable $e) {
             $this->logger->error('Task status update aborted', ['exception' => $e]);

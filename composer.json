@@ -24,9 +24,13 @@
     "AutoDudes",
     "AI Suite"
   ],
-  "version": "13.20.0",
+  "version": "13.21.0",
   "support": {
-    "issues": "https://github.com/autodudesde/ai-suite/issues"
+    "email": "service@autodudes.de",
+    "issues": "https://github.com/autodudesde/ai-suite/issues",
+    "source": "https://github.com/autodudesde/ai-suite",
+    "docs": "https://www.autodudes.de/en/documentation/ai-suite/introduction",
+    "security": "https://github.com/autodudesde/ai-suite/security/policy"
   },
   "require": {
     "php": "^8.2",
@@ -34,6 +38,7 @@
     "typo3/cms-backend": "^13.4",
     "typo3/cms-filelist": "^13.4",
     "typo3/cms-fluid": "^13.4",
+    "typo3/cms-reports": "^13.4",
     "typo3/cms-rte-ckeditor": "^13.4",
     "typo3/cms-seo": "^13.4"
   },

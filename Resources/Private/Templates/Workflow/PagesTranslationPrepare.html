@@ -139,6 +139,23 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-md-4 d-flex align-items-center" id="showOnlyUntranslatedWrapper">
+                    <label class="fw-bold d-flex gap-2 mb-3">
+                        <f:if condition="{preSelection} && {preSelection.showOnlyUntranslated}">
+                            <f:then>
+                                <input type="checkbox" name="workflowPagesTranslationPrepare[showOnlyUntranslated]" id="showOnlyUntranslated" value="1" checked="checked"/>
+                            </f:then>
+                            <f:else>
+                                <input type="checkbox" name="workflowPagesTranslationPrepare[showOnlyUntranslated]" id="showOnlyUntranslated" value="1"/>
+                            </f:else>
+                        </f:if>
+                        <span>
+                            <f:translate key="LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.preparePagesTranslation.showOnlyUntranslated"/>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-md-12">
                     <input type="submit" class="btn btn-primary" value="{f:translate(key: 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.preparePagesTranslation.showPrepareResults')}" />
                 </div>

@@ -86,6 +86,7 @@ class BackgroundTaskController extends AbstractBackendController
     public function overviewAction(): ResponseInterface
     {
         try {
+            $this->backgroundTaskService->deleteExpiredTasks();
             $this->pageRenderer->loadJavaScriptModule('@autodudes/ai-suite/background-task/overview.js');
             $answer = $this->requestService->sendDataRequest('getRequestsState');
             if ('RequestsState' === $answer->getType()) {
@@ -130,6 +131,9 @@ class BackgroundTaskController extends AbstractBackendController
                         $this->aiSuiteContext->localizationService->translate('module:aiSuite.module.warningFetchingTaskStatus.title'),
                         ContextualFeedbackSeverity::WARNING
                     );
+                }
+                if ('Error' !== $answer->getType()) {
+                    $this->backgroundTaskService->rememberExpiries($answer->getResponseData(), $backgroundTasks);
                 }
                 $statusData = $answer->getResponseData()['statusData'] ?? null;
                 if (null !== $statusData) {

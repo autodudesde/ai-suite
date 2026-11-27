@@ -68,7 +68,7 @@
 
     <div class="d-flex flex-wrap gap-3 align-items-stretch">
         <f:if condition="{cardPermissions.workflowSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-play',
                     cardname: 'workflowSection',
@@ -79,7 +79,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.backgroundTaskSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-clock',
                     cardname: 'backgroundTaskSection',
@@ -90,7 +90,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.manageGlobalInstructions}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-cog-alt',
                     cardname: 'manageGlobalInstructions',
@@ -101,7 +101,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.managePromptTemplates}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-message-dots',
                     cardname: 'managePromptTemplates',
@@ -112,7 +112,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.createPagetree}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-page-new',
                     cardname: 'createPagetree',
@@ -123,7 +123,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.agencySection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-rocket',
                     cardname: 'agencySection',
@@ -134,7 +134,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.auditSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-search',
                     cardname: 'auditSection',
@@ -145,7 +145,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.provenanceSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-list-alternative',
                     cardname: 'provenanceSection',
@@ -156,7 +156,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.statisticsSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'content-widget-chart-bar',
                     cardname: 'statisticsSection',
@@ -167,7 +167,7 @@
         </f:if>
 
         <f:if condition="{cardPermissions.globalSettingsSection}">
-            <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+            <div class="d-flex aisuite-card-col">
                 <f:render partial="DashboardCards/DynamicCard" arguments="{
                     icon: 'actions-cog',
                     cardname: 'globalSettingsSection',
@@ -177,7 +177,7 @@
             </div>
         </f:if>
 
-        <div class="d-flex" style="flex: 0 0 calc(50% - 0.75rem);">
+        <div class="d-flex aisuite-card-col">
             <div class="panel panel-default flex-fill">
                 <div class="panel-heading">
                     <label class="panel-title fw-bold">

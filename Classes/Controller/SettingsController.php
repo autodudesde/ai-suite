@@ -91,10 +91,12 @@ class SettingsController extends AbstractBackendController
 
         $definitions = $this->settingsFactory->parseExtConfTemplate();
         $extConf = $this->extensionConfiguration->get('ai_suite');
-        $settings = $this->decorateAuditModelSetting($this->settingsService->buildSettingsForView($definitions, $extConf));
+        $isAdmin = $this->isAdmin();
+        $settings = $this->decorateAuditModelSetting($this->settingsService->buildSettingsForView($definitions, $extConf, $isAdmin));
 
         $this->view->assignMultiple([
             'settings' => $settings,
+            'adminOnlyFieldsLocked' => !$isAdmin,
             'categories' => $this->settingsService->buildCategoryTree($definitions, $settings),
             'currentAction' => 'settings',
         ]);
@@ -116,9 +118,17 @@ class SettingsController extends AbstractBackendController
         $definitions = $this->settingsFactory->parseExtConfTemplate();
         $currentConf = $this->extensionConfiguration->get('ai_suite');
         $newConf = [];
+        $isAdmin = $this->isAdmin();
 
         foreach ($definitions as $key => $definition) {
             $formKey = str_replace('.', '_', $key);
+
+            if (!$isAdmin && $this->settingsService->isAdminOnlyField($key)) {
+                $current = $this->settingsService->getNestedValue($currentConf, $key);
+                $this->settingsService->setNestedValue($newConf, $key, '' !== $current ? $current : ($definition['default'] ?? ''));
+
+                continue;
+            }
 
             if ($this->settingsService->isMaskedField($key)) {
                 $submittedValue = $submittedSettings[$formKey] ?? '';
@@ -165,6 +175,11 @@ class SettingsController extends AbstractBackendController
         $this->flashMessageService->getMessageQueueByIdentifier('ai_suite.template.flashMessages')->enqueue($flashMessage);
 
         return $this->indexAction($request);
+    }
+
+    protected function isAdmin(): bool
+    {
+        return true === $this->aiSuiteContext->backendUserService->getBackendUser()?->isAdmin();
     }
 
     /**

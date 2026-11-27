@@ -33,6 +33,13 @@ class SettingsService implements SingletonInterface
         'basicAuth.pass',
     ];
 
+    private const ADMIN_ONLY_FIELDS = [
+        'aiSuiteServer',
+        'forceGdpa',
+        'basicAuth.enable',
+        'basicAuth.user',
+    ];
+
     private const SECTION_HINTS = [
         'metadataupload' => 'LLL:EXT:ai_suite/Resources/Private/Language/locallang_module.xlf:aiSuite.module.settings.metadataUpload.hint',
     ];
@@ -42,13 +49,18 @@ class SettingsService implements SingletonInterface
         return in_array($key, self::MASKED_FIELDS, true);
     }
 
+    public function isAdminOnlyField(string $key): bool
+    {
+        return $this->isMaskedField($key) || in_array($key, self::ADMIN_ONLY_FIELDS, true);
+    }
+
     /**
      * @param array<string, array<string, mixed>> $definitions
      * @param array<string, mixed>                $extConf
      *
      * @return array<string, array<string, mixed>>
      */
-    public function buildSettingsForView(array $definitions, array $extConf): array
+    public function buildSettingsForView(array $definitions, array $extConf, bool $mayChangeAdminOnlyFields = true): array
     {
         $settings = [];
         foreach ($definitions as $key => $definition) {
@@ -63,6 +75,7 @@ class SettingsService implements SingletonInterface
                 'label' => $definition['label'],
                 'value' => $isMasked && !empty($value) ? self::MASK_PLACEHOLDER : ($value ?? ($definition['default'] ?? '')),
                 'masked' => $isMasked,
+                'locked' => !$mayChangeAdminOnlyFields && $this->isAdminOnlyField($key),
             ];
 
             if (isset($definition['options'])) {

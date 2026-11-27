@@ -4,25 +4,22 @@ import { View } from '@ckeditor/ckeditor5-ui';
 export default class RadioView extends View {
     constructor( locale , label, value, name, credits, checked = false) {
         super( locale );
-        let title = label;
+        let creditsLabel = '';
         if(credits !== undefined && credits !== null) {
-            title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.oneCredit'] + ')';
-            if (credits > 1) {
-                title = label + ' (' + credits + ' ' + TYPO3.lang['aiSuite.module.multipleCredits'] + ')';
-            }
+            creditsLabel = credits + ' ' + TYPO3.lang[credits > 1 ? 'aiSuite.module.multipleCredits' : 'aiSuite.module.oneCredit'];
         }
 
         this.setTemplate( {
             tag: 'label',
             attributes: {
-                class: "d-flex flex-row-reverse align-items-center",
+                class: 'ck-ai-radio',
             },
             children: [
-                title,
                 {
                     tag: 'input',
                     attributes: {
-                        type: "radio",
+                        type: 'radio',
+                        class: 'ck-ai-radio__input',
                         value: value,
                         checked: checked,
                         name: name
@@ -31,8 +28,31 @@ export default class RadioView extends View {
                 {
                     tag: 'span',
                     attributes: {
-                        class: "mx-1 checkmark",
+                        class: 'ck-ai-radio__mark',
+                        'aria-hidden': 'true',
                     }
+                },
+                {
+                    tag: 'span',
+                    attributes: {
+                        class: 'ck-ai-radio__text',
+                    },
+                    children: [
+                        {
+                            tag: 'span',
+                            attributes: {
+                                class: 'ck-ai-radio__label',
+                            },
+                            children: [ label ]
+                        },
+                        creditsLabel !== '' ? {
+                            tag: 'span',
+                            attributes: {
+                                class: 'ck-ai-radio__credits',
+                            },
+                            children: [ '(' + creditsLabel + ')' ]
+                        } : null,
+                    ].filter(child => child !== null)
                 },
             ],
         } );

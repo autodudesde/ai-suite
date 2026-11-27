@@ -22,6 +22,7 @@ final class CollectUsageStatisticsEvent
     private array $sections = [];
 
     public function __construct(
+        #[\SensitiveParameter]
         private readonly string $apiKey,
         private readonly ServerRequestInterface $request,
     ) {}

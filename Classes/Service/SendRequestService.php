@@ -35,7 +35,7 @@ class SendRequestService
 
     private const SERVER_TIMEOUT = 180;
 
-    private const ERROR_TYPES_WITH_SERVER_DETAIL = ['invalidRequest'];
+    private const ERROR_TYPES_WITH_SERVER_DETAIL = ['invalidRequest', 'securityUpdateRequired'];
 
     /**
      * @var array<string, string>
@@ -58,10 +58,13 @@ class SendRequestService
         'imageRehostFailed' => 'aiSuite.error.server.imageRehostFailed',
         'auditGatewayUnavailable' => 'aiSuite.error.server.auditGatewayUnavailable',
         'webSearchUnavailable' => 'aiSuite.error.server.webSearchUnavailable',
+        'webSearchDisabled' => 'aiSuite.error.server.webSearchDisabled',
+        'auditDisabled' => 'aiSuite.error.server.auditDisabled',
         'promptViolation' => 'aiSuite.error.server.promptViolation',
         'moderationUnavailable' => 'aiSuite.error.server.moderationUnavailable',
         'payloadTooLarge' => 'aiSuite.error.server.payloadTooLarge',
         'requestStatusNotFound' => 'aiSuite.error.server.requestStatusNotFound',
+        'securityUpdateRequired' => 'aiSuite.error.server.securityUpdateRequired',
     ];
 
     /** @var array<string, mixed> */
@@ -77,11 +80,12 @@ class SendRequestService
         protected readonly SystemDomainResolver $systemDomainResolver,
         protected readonly ProvenanceCaptureService $provenanceCapture,
         protected readonly BackendUserService $backendUserService,
+        protected readonly SecurityAdvisoryStore $securityAdvisoryStore,
     ) {
         $this->extConf = $this->settingsFactory->mergeExtConfAndUserGroupSettings();
     }
 
-    public function sendRequest(ServerRequest $serverRequest): ClientAnswer
+    public function sendRequest(ServerRequest $serverRequest, int $timeout = self::SERVER_TIMEOUT): ClientAnswer
     {
         if (empty($this->extConf['aiSuiteApiKey'])) {
             $this->logger->warning('AI Suite request skipped: no API key configured');
@@ -96,8 +100,8 @@ class SendRequestService
 
         try {
             $data = $serverRequest->getDataForRequest();
-            $data['connect_timeout'] = self::SERVER_CONNECT_TIMEOUT;
-            $data['timeout'] = self::SERVER_TIMEOUT;
+            $data['connect_timeout'] = min(self::SERVER_CONNECT_TIMEOUT, $timeout);
+            $data['timeout'] = $timeout;
             $data['http_errors'] = false;
             $endpoint = $serverRequest->getEndpoint();
             $request = $this->requestFactory->request(
@@ -133,6 +137,7 @@ class SendRequestService
             }
 
             $answer = new ClientAnswer($requestContent, $requestContent['type']);
+            $this->securityAdvisoryStore->recordAnswer(is_array($requestContent['body'] ?? null) ? $requestContent['body'] : [], 'Error' === $answer->getType());
 
             if ('Error' === $answer->getType()) {
                 $requestContent['body']['message'] = $this->getClientErrorMessage($answer);
